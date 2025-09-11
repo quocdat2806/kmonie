@@ -13,7 +13,7 @@ class AppColors {
 
   static const Color lightBlue = Color(0xFFF8F9FB);
   static const Color black = Color(0xFF050708);
-  static const Color yellow = Color(0xFFFFFF00);
+  static const Color yellow = Color(0xFFFFDA3E);
   static const Color grey = Color(0xFF737273);
   static const Color yellowBold = Color(0xFFBA913F);
   static const Color yellowThin = Color(0xFFC8A765);
@@ -42,4 +42,32 @@ class AppColors {
   static const Color imageBG = Color(0xFF919191);
   static const Color bottomNavigationBar = Color(0xFF919191);
   static const Color boxShadowColor = Color(0x3D40BFFF);
+
+  static const Color darkGreen = Color(0xFF006400);
+  static const Color forestGreen = Color(0xFF228B22);
+  static const Color hunterGreen = Color(0xFF355E3B);
+  static const Color seaGreen = Color(0xFF2E8B57);
+  static const Color mediumSeaGreen = Color(0xFF3CB371);
+  static const Color kellyGreen = Color(0xFF4CBB17);
+  static const Color limeGreen = Color(0xFF32CD32);
+  static const Color lightGreen = Color(0xFF90EE90);
+  static const Color paleGreen = Color(0xFF98FB98);
+  static const Color mintGreen = Color(0xFF98FF98);
+
+  static const Color neutralGray100 = Color(0xFFF5F5F5);
+  static const Color neutralGray200 = Color(0xFFCCCCCC);
+
+  static const Color teal = Color(0xFF008080);
+  static const Color aqua = Color(0xFF00FFFF);
+
+  static const Color chartreuse = Color(0xFF7FFF00);
+  static const Color chartreuseLight = Color(0xFFDFFF00);
+
+  static const Color terracottaLight = Color(0xFFE6A57E);
+  static const Color redSoft = Color(0xFFFF4D4D);
+
+  static const Color earthyBrown = Color(0xFF9A6735);
+  static const Color earthyGreen = Color(0xFF55883B);
+
+  static const Color sageGreen = Color(0xFF9AAB89);        
 }
