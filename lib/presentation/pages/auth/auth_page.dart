@@ -56,11 +56,11 @@ class _AuthScreenState extends State<AuthScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        // Text(TextConstants.userName, style: AppTextStyle.blackS12W800),
+        // Text(TextConstants.userName, style: AppTextStyle.blackS12Black),
         const SizedBox(height: 8),
         AppTextField(controller: _userName, hintText: 'Username'),
         const SizedBox(height: 16),
-        // Text(TextConstants.password, style: AppTextStyle.blackS12W800),
+        // Text(TextConstants.password, style: AppTextStyle.blackS12Black),
         const SizedBox(height: 8),
         AppTextField(
           controller: _password,
@@ -117,7 +117,7 @@ class _AuthScreenState extends State<AuthScreen> {
               elevation: 0,
             ),
             onPressed: _handleSubmit,
-            child: Text(submitLabel, style: AppTextStyle.blackS16W500),
+            child: Text(submitLabel, style: AppTextStyle.blackS16Medium),
           ),
         ),
 

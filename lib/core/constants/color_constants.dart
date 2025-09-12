@@ -37,6 +37,8 @@ class AppColors {
   static const Color buttonBGWhite = Color(0xFFcdd0d5);
   static const Color buttonBGPrimary = primary;
   static const Color buttonBGBlack = Color(0xFF4A4A4A);
+  static const Color bottomNavigationColor = Color(0xFF272525);
+
   static const Color buttonBGDisabled = Color(0xFF919191);
   static const Color buttonBorder = Color(0xFFC9C8C8);
   static const Color imageBG = Color(0xFF919191);

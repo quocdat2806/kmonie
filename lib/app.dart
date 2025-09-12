@@ -1,3 +1,4 @@
+import 'package:kmonie/core/configs/app_configs.dart';
 import 'package:kmonie/core/theme/input_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -17,6 +18,7 @@ class App extends StatelessWidget {
         theme: ThemeData(
           useMaterial3: true,
           inputDecorationTheme: AppInputTheme.defaultInput,
+          fontFamily: AppConfigs.fontFamily,
         ),
         routerConfig: appRouter.router,
       ),

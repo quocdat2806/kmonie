@@ -32,7 +32,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       title: title is String
           ? Text(
               title as String,
-              style: titleTextStyle ?? AppTextStyle.blackS18W700,
+              style: titleTextStyle ?? AppTextStyle.blackS18Bold,
             )
           : title as Widget,
       centerTitle: centerTitle,
