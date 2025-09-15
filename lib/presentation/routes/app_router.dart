@@ -1,7 +1,7 @@
 import 'package:kmonie/application/auth/auth_bloc.dart';
-import 'package:kmonie/application/auth/auths_state.dart';
 import 'package:kmonie/core/enums/auth_mode.dart';
 import 'package:kmonie/core/navigation/go_router_refresh.dart';
+import 'package:kmonie/presentation/pages/add_transaction/add_transaction_page.dart';
 import 'package:kmonie/presentation/pages/auth/auth_page.dart';
 import 'package:kmonie/presentation/pages/main/main_page.dart';
 import 'package:flutter/material.dart';
@@ -36,6 +36,10 @@ class AppRouter {
         ],
       ),
       GoRoute(path: RouterPath.main, builder: (_, _) => const MainPage()),
+      GoRoute(
+        path: RouterPath.addTransaction,
+        builder: (_, _) => const AddTransactionPage(),
+      ),
     ],
     // redirect: (_, GoRouterState state) {
     //   final AuthState authState = authBloc.state;

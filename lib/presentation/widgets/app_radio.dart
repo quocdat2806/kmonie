@@ -24,7 +24,7 @@ class AppSelectTile<T> extends StatelessWidget {
   final EdgeInsets padding;
   final double spacing;
 
-  bool get _isRadio => value != null && groupValue != null;
+  bool get _isRadio => value != null && groupValue != null && onChanged != null;
 
   @override
   Widget build(BuildContext context) {
@@ -44,11 +44,10 @@ class AppSelectTile<T> extends StatelessWidget {
   }
 
   Widget _buildRadio() {
-    return Radio<T>(
-      value: value as T,
+    return RadioGroup<T>(
       groupValue: groupValue as T,
-      onChanged: onChanged,
-      activeColor: activeColor,
+      onChanged: onChanged!,
+      child: Radio<T>(value: value as T, activeColor: activeColor),
     );
   }
 

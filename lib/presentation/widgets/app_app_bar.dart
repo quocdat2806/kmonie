@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:kmonie/core/constants/color_constants.dart';
+import 'package:kmonie/core/navigation/app_navigation.dart';
 import 'package:kmonie/core/text_styles/app_text_styles.dart';
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
@@ -43,8 +44,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
           ? (leading ??
                 IconButton(
                   icon: const Icon(Icons.arrow_back, color: AppColors.black),
-                  onPressed:
-                      onLeadingTap ?? () => Navigator.of(context).maybePop(),
+                  onPressed: onLeadingTap ?? () => _handleBack(context),
                 ))
           : null,
       actions: actions,
@@ -53,4 +53,8 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Size get preferredSize => const Size.fromHeight(kToolbarHeight);
+
+  void _handleBack(BuildContext context) {
+    AppNavigator(context: context).maybePop();
+  }
 }

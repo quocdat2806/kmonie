@@ -71,5 +71,10 @@ class AppColors {
   static const Color earthyBrown = Color(0xFF9A6735);
   static const Color earthyGreen = Color(0xFF55883B);
 
-  static const Color sageGreen = Color(0xFF9AAB89);        
+  static const Color sageGreen = Color(0xFF9AAB89);
+
+  static const Color orange = Color(0xFFFF9800);
+  static const Color purple = Color(0xFF9C27B0);
+  static const Color brown = Color(0xFF795548);
+  static const Color cyan = Color(0xFF00BCD4);
 }

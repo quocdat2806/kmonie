@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:kmonie/core/constants/color_constants.dart';
+import 'package:kmonie/core/constants/ui_constants.dart';
 import 'package:kmonie/core/text_styles/app_text_styles.dart';
 
-class BottomNavItem extends StatelessWidget {
+class NavigationItem extends StatelessWidget {
   final int index;
   final int currentIndex;
   final String iconPath;
@@ -12,7 +13,7 @@ class BottomNavItem extends StatelessWidget {
   final EdgeInsets textMargin;
   final VoidCallback? onTap;
 
-  const BottomNavItem({
+  const NavigationItem({
     super.key,
     required this.index,
     required this.currentIndex,
@@ -41,12 +42,12 @@ class BottomNavItem extends StatelessWidget {
               margin: iconMargin,
               child: SvgPicture.asset(
                 iconPath,
-                width: 20,
-                height: 20,
+                width: UIConstants.defaultIconSize,
+                height: UIConstants.defaultIconSize,
                 colorFilter: ColorFilter.mode(iconColor, BlendMode.srcIn),
               ),
             ),
-            const SizedBox(height: 4),
+            const SizedBox(height: UIConstants.extraSmallSpacing),
             Container(
               margin: textMargin,
               child: Text(label, style: textStyle, textAlign: TextAlign.center),
