@@ -14,14 +14,11 @@ Before running this project, make sure you have the following installed on your 
 | **Dart SDK** | `3.9.2` | (Included with Flutter) |
 | **Java JDK** | `17` | [Download OpenJDK 17](https://adoptium.net/temurin/releases/?version=17) |
 | **Android Studio** | Latest | [Download Android Studio](https://developer.android.com/studio) |
-| **Gradle** | `8.11.1` | (Included with Android Studio) |
+| **Gradle** | `8.13.0` | (Included with Android Studio) |
 
 ### System Requirements
 
-- **Operating System**: Windows 10/11, macOS, or Linux
-- **RAM**: Minimum 8GB (16GB recommended)
-- **Storage**: At least 10GB free space
-- **Android SDK**: API Level 21+ (Android 5.0+), Target API 35 (Android 15)
+- **Android SDK**: API Level 21+ (Android 5.0+), Target API 36 (Android 16)
 
 ## 🚀 Getting Started
 
@@ -67,13 +64,13 @@ flutter run -d <device-id>
 
 ### Android Configuration
 
-- **Compile SDK**: 35
+- **Compile SDK**: 36
 - **Min SDK**: 21
-- **Target SDK**: 35
+- **Target SDK**: 36
 - **Java Version**: 17
-- **Gradle Version**: 8.11.1
-- **Android Gradle Plugin**: 8.10.0
-- **Kotlin**: 2.1.0
+- **Gradle Version**: 8.13.0
+- **Android Gradle Plugin**: 8.13.0
+- **Kotlin**: 2.2.20
 
 ### Project Structure
 
@@ -117,56 +114,9 @@ The app is configured to build for Android with the following settings:
 - **Application ID**: `com.quocdat.kmonie`
 - **Namespace**: `com.quocdat.kmonie`
 - **Min SDK**: 21 (Android 5.0)
-- **Target SDK**: 34 (Android 14)
-- **Compile SDK**: 34
+- **Target SDK**: 36 (Android 16)
+- **Compile SDK**: 36
 
-### Gradle Configuration
-
-```gradle
-// Java version
-sourceCompatibility = JavaVersion.VERSION_11
-targetCompatibility = JavaVersion.VERSION_11
-
-// JVM target for Kotlin
-jvmTarget = JavaVersion.VERSION_11.toString()
-
-// Gradle JVM args
-org.gradle.jvmargs=-Xmx8G -XX:MaxMetaspaceSize=4G -XX:ReservedCodeCacheSize=512m
-```
-
-## 📦 Dependencies
-
-### Main Dependencies
-
-- `flutter_bloc: ^9.1.1` - State management
-- `dio: ^5.9.0` - HTTP client
-- `retrofit: ^4.6.0` - API client generator
-- `go_router: ^16.2.1` - Navigation
-- `flutter_secure_storage: ^9.2.4` - Secure storage
-- `amplitude_flutter: ^4.3.7` - Analytics
-- `flutter_svg: ^2.2.1` - SVG support
-
-### Development Dependencies
-
-- `flutter_lints: ^6.0.0` - Linting rules
-- `build_runner: ^2.6.0` - Code generation
-- `retrofit_generator: ^10.0.1` - API client generation
-- `json_serializable: ^6.10.0` - JSON serialization
-
-## 🎨 Design System
-
-### Colors
-- Primary colors defined in `AppColors`
-- Consistent color scheme across the app
-
-### Typography
-- Font Family: OpenSans
-- Text styles: Regular, Medium, Bold, Black
-- Consistent sizing: 10, 12, 14, 16, 18, 20, 24
-
-### Icons
-- SVG icons in `assets/svgs/`
-- Material Icons for system icons
 
 ## 🚨 Troubleshooting
 
@@ -198,31 +148,6 @@ org.gradle.jvmargs=-Xmx8G -XX:MaxMetaspaceSize=4G -XX:ReservedCodeCacheSize=512m
    flutter packages pub run build_runner clean
    flutter packages pub run build_runner build --delete-conflicting-outputs
    ```
-
-### Performance Optimization
-
-- **Gradle JVM**: Configured with 8GB heap size
-- **Build Cache**: Enabled for faster builds
-- **Code Splitting**: Implemented for better performance
-
-## 📄 License
-
-This project is private and not intended for public distribution.
-
-## 👥 Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Run tests and linting
-5. Submit a pull request
-
 ## 📞 Support
 
-For support and questions, please contact the development team.
-
----
-
-**Last Updated**: September 2024
-**Flutter Version**: 3.35.3
-**Dart Version**: 3.9.2
+For support and questions, please contact dath33603@gmail.com(+84327596141)
