@@ -13,37 +13,22 @@ class AddTransactionTabBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<AddTransactionBloc, AddTransactionState>(
-      builder: (context, state) {
-        return state.when(
-          initial: (selectedIndex) => _buildTabBar(selectedIndex),
-          loaded: (selectedIndex) => _buildTabBar(selectedIndex),
-          error: (selectedIndex, message) => _buildTabBar(selectedIndex),
-        );
-      },
+      builder: (context, state) => _buildTabBar(state.selectedIndex),
     );
   }
 
   Widget _buildTabBar(int selectedIndex) {
     return Builder(
-      builder: (context) => Container(
-        margin: const EdgeInsets.symmetric(
-          horizontal: UIConstants.defaultPadding,
-        ),
-        decoration: BoxDecoration(
-          color: AppColors.white,
-          borderRadius: BorderRadius.circular(UIConstants.defaultBorderRadius),
-        ),
-        child: Row(
-          children: TransactionConstants.transactionTypes
-              .map(
-                (transactionType) => _buildTab(
-                  context: context,
-                  transactionType: transactionType,
-                  currentIndex: selectedIndex,
-                ),
-              )
-              .toList(),
-        ),
+      builder: (context) => Row(
+        children: TransactionConstants.transactionTypes
+            .map(
+              (transactionType) => _buildTab(
+                context: context,
+                transactionType: transactionType,
+                currentIndex: selectedIndex,
+              ),
+            )
+            .toList(),
       ),
     );
   }
@@ -59,25 +44,28 @@ class AddTransactionTabBar extends StatelessWidget {
       child: GestureDetector(
         onTap: () {
           context.read<AddTransactionBloc>().add(
-            AddTransactionEvent.switchTab(transactionType.typeIndex),
+            AddTransactionSwitchTab(transactionType.typeIndex),
           );
         },
-        child: Container(
-          padding: const EdgeInsets.symmetric(
-            vertical: UIConstants.smallPadding + UIConstants.extraSmallSpacing,
-          ),
-          decoration: BoxDecoration(
-            color: isSelected ? AppColors.black : AppColors.white,
-            borderRadius: BorderRadius.circular(
-              UIConstants.defaultBorderRadius,
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(UIConstants.defaultBorderRadius),
+          child: ColoredBox(
+            color: isSelected ? AppColors.yellow : AppColors.neutralGray200,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(
+                vertical:
+                    UIConstants.smallPadding + UIConstants.extraSmallSpacing,
+              ),
+              child: Text(
+                transactionType.displayName,
+                textAlign: TextAlign.center,
+                style: isSelected
+                    ? AppTextStyle.blackS14Medium
+                    : AppTextStyle.blackS14Medium.copyWith(
+                        color: AppColors.earthyBrown,
+                      ),
+              ),
             ),
-          ),
-          child: Text(
-            transactionType.displayName,
-            textAlign: TextAlign.center,
-            style: isSelected
-                ? AppTextStyle.whiteS14Medium
-                : AppTextStyle.blackS14Medium,
           ),
         ),
       ),

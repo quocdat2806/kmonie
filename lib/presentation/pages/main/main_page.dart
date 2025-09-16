@@ -44,64 +44,63 @@ class MainPageChild extends StatelessWidget {
       builder: (BuildContext context, MainState state) {
         final int currentIndex = state.selectedIndex;
         return Scaffold(
-          body: _buildBody(currentIndex),
+          body: pageList[currentIndex],
           bottomNavigationBar: _buildBottomNavigationBar(context, currentIndex),
         );
       },
     );
   }
 
-  Widget _buildBody(int currentIndex) {
-    return pageList[currentIndex];
-  }
-
   Widget _buildBottomNavigationBar(BuildContext context, int currentIndex) {
     return SafeArea(
-      child: Container(
+      child: SizedBox(
         width: double.infinity,
         height: UIConstants.bottomNavigationHeight,
-        color: AppColors.bottomNavigationColor,
-        child: Row(
-          children: [
-            _buildNavItem(
-              context: context,
-              index: NavigationConstants.homeIndex,
-              currentIndex: currentIndex,
-              iconPath: Assets.svgsNote,
-              label: NavigationConstants.homeLabel,
-            ),
-            _buildNavItem(
-              context: context,
-              index: NavigationConstants.chartIndex,
-              currentIndex: currentIndex,
-              iconPath: Assets.svgsTime,
-              label: NavigationConstants.chartLabel,
-              iconMargin: const EdgeInsets.only(
-                left: UIConstants.extraSmallSpacing,
+        child: ColoredBox(
+          color: AppColors.bottomNavigationColor,
+          child: Row(
+            children: [
+              _buildNavItem(
+                context: context,
+                index: NavigationConstants.homeIndex,
+                currentIndex: currentIndex,
+                iconPath: Assets.svgsNote,
+                label: NavigationConstants.homeLabel,
               ),
-            ),
-            FloatingAddButton(currentIndex: currentIndex),
-            _buildNavItem(
-              context: context,
-              index: NavigationConstants.reportIndex,
-              currentIndex: currentIndex,
-              iconPath: Assets.svgsReport,
-              label: NavigationConstants.reportLabel,
-              iconMargin: const EdgeInsets.only(
-                left: UIConstants.smallPadding + UIConstants.extraSmallSpacing,
+              _buildNavItem(
+                context: context,
+                index: NavigationConstants.chartIndex,
+                currentIndex: currentIndex,
+                iconPath: Assets.svgsTime,
+                label: NavigationConstants.chartLabel,
+                iconMargin: const EdgeInsets.only(
+                  left: UIConstants.extraSmallSpacing,
+                ),
               ),
-            ),
-            _buildNavItem(
-              context: context,
-              index: NavigationConstants.profileIndex,
-              currentIndex: currentIndex,
-              iconPath: Assets.svgsProfile,
-              label: NavigationConstants.profileLabel,
-              textMargin: const EdgeInsets.only(
-                right: UIConstants.extraSmallSpacing / 2,
+              FloatingAddButton(currentIndex: currentIndex),
+              _buildNavItem(
+                context: context,
+                index: NavigationConstants.reportIndex,
+                currentIndex: currentIndex,
+                iconPath: Assets.svgsReport,
+                label: NavigationConstants.reportLabel,
+                iconMargin: const EdgeInsets.only(
+                  left:
+                      UIConstants.smallPadding + UIConstants.extraSmallSpacing,
+                ),
               ),
-            ),
-          ],
+              _buildNavItem(
+                context: context,
+                index: NavigationConstants.profileIndex,
+                currentIndex: currentIndex,
+                iconPath: Assets.svgsProfile,
+                label: NavigationConstants.profileLabel,
+                textMargin: const EdgeInsets.only(
+                  right: UIConstants.extraSmallSpacing / 2,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

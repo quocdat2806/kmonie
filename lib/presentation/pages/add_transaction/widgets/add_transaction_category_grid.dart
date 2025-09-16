@@ -15,19 +15,22 @@ class AddTransactionCategoryGrid extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<AddTransactionBloc, AddTransactionState>(
       builder: (context, state) {
-        return state.when(
-          initial: (selectedIndex) => _buildCategoryGrid(selectedIndex),
-          loaded: (selectedIndex) => _buildCategoryGrid(selectedIndex),
-          error: (selectedIndex, message) => _buildErrorWidget(message),
-        );
+        if (state.message != null && state.message!.isNotEmpty) {
+          return _buildErrorWidget(state.message!);
+        }
+        return _buildCategoryGrid(context, state.selectedIndex);
       },
     );
   }
 
-  Widget _buildCategoryGrid(int selectedIndex) {
+  Widget _buildCategoryGrid(BuildContext context, int selectedIndex) {
     final transactionType = TransactionType.fromIndex(selectedIndex);
     final categories = TransactionCategoryService.getCategories(
       transactionType,
+    );
+    final String? selectedId = context.select<AddTransactionBloc, String?>(
+      (AddTransactionBloc b) =>
+          b.state.selectedCategoryForType(transactionType),
     );
 
     return Padding(
@@ -42,7 +45,13 @@ class AddTransactionCategoryGrid extends StatelessWidget {
         itemCount: categories.length,
         itemBuilder: (context, index) {
           final category = categories[index];
-          return _buildCategoryItem(category);
+          final bool isSelected = category.id == selectedId;
+          return _buildCategoryItem(
+            context: context,
+            category: category,
+            transactionType: transactionType,
+            isSelected: isSelected,
+          );
         },
       ),
     );
@@ -69,32 +78,62 @@ class AddTransactionCategoryGrid extends StatelessWidget {
     );
   }
 
-  Widget _buildCategoryItem(TransactionCategory category) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Container(
-          width: UIConstants.largeContainerSize,
-          height: UIConstants.largeContainerSize,
-          decoration: BoxDecoration(
-            color: category.color,
-            shape: BoxShape.circle,
+  Widget _buildCategoryItem({
+    required BuildContext context,
+    required TransactionCategory category,
+    required TransactionType transactionType,
+    required bool isSelected,
+  }) {
+    final Color backgroundColor = isSelected
+        ? AppColors.yellow
+        : AppColors.neutralGray200;
+    final Color iconColor = isSelected
+        ? AppColors.black
+        : AppColors.earthyBrown;
+
+    return GestureDetector(
+      onTap: () {
+        context.read<AddTransactionBloc>().add(
+          AddTransactionCategoryChanged(
+            type: transactionType,
+            categoryId: category.id,
           ),
-          child: Icon(
-            category.icon,
-            color: AppColors.white,
-            size: UIConstants.largeIconSize,
+        );
+      },
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          ClipRRect(
+            borderRadius: BorderRadius.circular(
+              UIConstants.defaultBorderRadius,
+            ),
+            child: ColoredBox(
+              color: backgroundColor,
+              child: SizedBox(
+                width: UIConstants.largeContainerSize,
+                height: UIConstants.largeContainerSize,
+                child: Icon(
+                  Icons.category,
+                  color: iconColor,
+                  size: UIConstants.largeIconSize,
+                ),
+              ),
+            ),
           ),
-        ),
-        const SizedBox(height: UIConstants.smallSpacing),
-        Text(
-          category.name,
-          textAlign: TextAlign.center,
-          style: AppTextStyle.blackS12Medium,
-          maxLines: UIConstants.defaultMaxLines,
-          overflow: TextOverflow.ellipsis,
-        ),
-      ],
+          const SizedBox(height: UIConstants.smallSpacing),
+          Text(
+            category.title,
+            textAlign: TextAlign.center,
+            style: isSelected
+                ? AppTextStyle.blackS12Medium
+                : AppTextStyle.blackS12Medium.copyWith(
+                    color: AppColors.earthyBrown,
+                  ),
+            maxLines: UIConstants.defaultMaxLines,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ],
+      ),
     );
   }
 }

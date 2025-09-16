@@ -2,7 +2,7 @@ class TextConstants {
   TextConstants._();
 
   // Add Transaction Page
-  static const String addTransactionTitle = 'Thêm giao dịch';
+  static const String addTransactionTitle = 'Thêm';
   static const String cancelButtonText = 'Hủy';
   static const String settingsButtonText = 'Cài đặt';
 

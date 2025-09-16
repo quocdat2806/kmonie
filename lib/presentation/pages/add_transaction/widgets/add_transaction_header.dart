@@ -10,11 +10,8 @@ class AddTransactionHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(
-        horizontal: UIConstants.defaultPadding,
-        vertical: UIConstants.smallPadding + UIConstants.extraSmallSpacing,
-      ),
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -22,23 +19,16 @@ class AddTransactionHeader extends StatelessWidget {
             onTap: () => _handleCancel(context),
             child: Text(
               TextConstants.cancelButtonText,
-              style: AppTextStyle.blackS16Medium,
+              style: AppTextStyle.blackS14Medium,
             ),
           ),
           Text(
             TextConstants.addTransactionTitle,
             style: AppTextStyle.blackS18Bold,
           ),
-          Container(
-            width: UIConstants.smallContainerSize,
-            height: UIConstants.smallContainerSize,
-            decoration: BoxDecoration(
-              color: AppColors.white,
-              borderRadius: BorderRadius.circular(
-                UIConstants.defaultBorderRadius,
-              ),
-            ),
-            child: const Icon(
+          const ColoredBox(
+            color: AppColors.white,
+            child: Icon(
               Icons.checklist,
               color: AppColors.black,
               size: UIConstants.defaultIconSize,

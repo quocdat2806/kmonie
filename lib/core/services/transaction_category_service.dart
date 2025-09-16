@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:kmonie/core/constants/transaction_category_constants.dart';
 import 'package:kmonie/core/enums/transaction_type.dart';
 import 'package:kmonie/entities/transaction_category.dart';
@@ -25,9 +24,9 @@ class TransactionCategoryService {
       final data = entry.value;
       return TransactionCategory(
         id: entry.key,
-        name: data['name'] as String,
-        icon: data['icon'] as IconData,
-        color: data['color'] as Color,
+        title: data['name'] as String,
+        // For now, we do not have image URLs. Keep empty or map later.
+        image: '',
       );
     }).toList();
   }

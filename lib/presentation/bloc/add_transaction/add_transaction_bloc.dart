@@ -1,17 +1,19 @@
 import 'package:bloc/bloc.dart';
-import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:equatable/equatable.dart';
 import 'package:kmonie/core/enums/transaction_type.dart';
 
 part 'add_transaction_event.dart';
 part 'add_transaction_state.dart';
-part 'add_transaction_bloc.freezed.dart';
 
 class AddTransactionBloc
     extends Bloc<AddTransactionEvent, AddTransactionState> {
-  AddTransactionBloc() : super(const AddTransactionState.initial()) {
-    on<AddTransactionEvent>((event, emit) {
-      event.when(switchTab: (index) => _onSwitchTab(index, emit));
-    });
+  AddTransactionBloc() : super(const AddTransactionState()) {
+    on<AddTransactionSwitchTab>(
+      (event, emit) => _onSwitchTab(event.index, emit),
+    );
+    on<AddTransactionCategoryChanged>(
+      (event, emit) => _onCategoryChanged(event.type, event.categoryId, emit),
+    );
   }
 
   void _onSwitchTab(int index, Emitter<AddTransactionState> emit) {
@@ -21,6 +23,18 @@ class AddTransactionBloc
 
     if (index == state.selectedIndex) return;
 
-    emit(AddTransactionState.loaded(selectedIndex: index));
+    emit(state.copyWith(selectedIndex: index));
+  }
+
+  void _onCategoryChanged(
+    TransactionType type,
+    String categoryId,
+    Emitter<AddTransactionState> emit,
+  ) {
+    final next = Map<TransactionType, String?>.from(
+      state.selectedCategoriesByType,
+    );
+    next[type] = categoryId;
+    emit(state.copyWith(selectedCategoriesByType: next));
   }
 }

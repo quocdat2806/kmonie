@@ -24,28 +24,21 @@ class AddTransactionPageChild extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return const Scaffold(
       backgroundColor: AppColors.yellow,
       body: SafeArea(
         child: Column(
           children: [
-            const AddTransactionHeader(),
-            const AddTransactionTabBar(),
+            AddTransactionHeader(),
+            AddTransactionTabBar(),
+            SizedBox(height: UIConstants.defaultPadding),
             Expanded(
-              child: Container(
-                width: double.infinity,
-                decoration: const BoxDecoration(
-                  color: AppColors.white,
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(
-                      UIConstants.extraLargeBorderRadius,
-                    ),
-                    topRight: Radius.circular(
-                      UIConstants.extraLargeBorderRadius,
-                    ),
-                  ),
+              child: ColoredBox(
+                color: AppColors.white,
+                child: SizedBox(
+                  width: double.infinity,
+                  child: AddTransactionCategoryGrid(),
                 ),
-                child: const AddTransactionCategoryGrid(),
               ),
             ),
           ],

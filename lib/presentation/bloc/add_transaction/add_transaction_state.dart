@@ -1,20 +1,39 @@
 part of 'add_transaction_bloc.dart';
 
-@freezed
-class AddTransactionState with _$AddTransactionState {
-  const factory AddTransactionState.initial({@Default(0) int selectedIndex}) =
-      _Initial;
+class AddTransactionState extends Equatable {
+  const AddTransactionState({
+    this.selectedIndex = 0,
+    this.selectedCategoriesByType = const <TransactionType, String?>{},
+    this.message,
+  });
 
-  const factory AddTransactionState.loaded({@Default(0) int selectedIndex}) =
-      _Loaded;
+  final int selectedIndex;
+  final Map<TransactionType, String?> selectedCategoriesByType;
+  final String? message; // used when error
 
-  const factory AddTransactionState.error({
-    @Default(0) int selectedIndex,
-    required String message,
-  }) = _Error;
-}
+  AddTransactionState copyWith({
+    int? selectedIndex,
+    Map<TransactionType, String?>? selectedCategoriesByType,
+    String? message,
+  }) {
+    return AddTransactionState(
+      selectedIndex: selectedIndex ?? this.selectedIndex,
+      selectedCategoriesByType:
+          selectedCategoriesByType ?? this.selectedCategoriesByType,
+      message: message ?? this.message,
+    );
+  }
 
-extension AddTransactionStateX on AddTransactionState {
   TransactionType get currentTransactionType =>
       TransactionType.fromIndex(selectedIndex);
+
+  String? selectedCategoryForType(TransactionType type) =>
+      selectedCategoriesByType[type];
+
+  @override
+  List<Object?> get props => <Object?>[
+    selectedIndex,
+    selectedCategoriesByType,
+    message,
+  ];
 }
