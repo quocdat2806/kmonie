@@ -1,39 +1,21 @@
-part of 'add_transaction_bloc.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:kmonie/core/enums/transaction_type.dart';
 
-class AddTransactionState extends Equatable {
-  const AddTransactionState({
-    this.selectedIndex = 0,
-    this.selectedCategoriesByType = const <TransactionType, String?>{},
-    this.message,
-  });
+part 'add_transaction_state.freezed.dart';
 
-  final int selectedIndex;
-  final Map<TransactionType, String?> selectedCategoriesByType;
-  final String? message; // used when error
+@freezed
+class AddTransactionState with _$AddTransactionState {
+  const AddTransactionState._();
 
-  AddTransactionState copyWith({
-    int? selectedIndex,
-    Map<TransactionType, String?>? selectedCategoriesByType,
+  const factory AddTransactionState({
+    @Default(0) int selectedIndex,
+    @Default(<TransactionType, String?>{}) Map<TransactionType, String?> selectedCategoriesByType,
     String? message,
-  }) {
-    return AddTransactionState(
-      selectedIndex: selectedIndex ?? this.selectedIndex,
-      selectedCategoriesByType:
-          selectedCategoriesByType ?? this.selectedCategoriesByType,
-      message: message ?? this.message,
-    );
-  }
+  }) = _AddTransactionState;
 
   TransactionType get currentTransactionType =>
       TransactionType.fromIndex(selectedIndex);
 
   String? selectedCategoryForType(TransactionType type) =>
       selectedCategoriesByType[type];
-
-  @override
-  List<Object?> get props => <Object?>[
-    selectedIndex,
-    selectedCategoriesByType,
-    message,
-  ];
 }

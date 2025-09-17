@@ -12,7 +12,7 @@ void main() async {
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
   await di.init();
   final AuthBloc authBloc = AuthBloc(di.sl<SecureStorageService>())
-    ..add(AuthAppStarted());
+    ..add(const AuthAppStarted());
   final AppRouter appRouter = AppRouter(authBloc);
   runApp(App(authBloc: authBloc, appRouter: appRouter));
 }

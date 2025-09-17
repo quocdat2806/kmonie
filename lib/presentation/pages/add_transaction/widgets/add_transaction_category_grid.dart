@@ -8,6 +8,9 @@ import 'package:kmonie/core/services/transaction_category_service.dart';
 import 'package:kmonie/core/text_styles/app_text_styles.dart';
 import 'package:kmonie/presentation/bloc/add_transaction/add_transaction_bloc.dart';
 
+import '../../../bloc/add_transaction/add_transaction_event.dart';
+import '../../../bloc/add_transaction/add_transaction_state.dart';
+
 class AddTransactionCategoryGrid extends StatelessWidget {
   const AddTransactionCategoryGrid({super.key});
 

@@ -1,5 +1,6 @@
 import 'package:get_it/get_it.dart';
-import 'package:internet_connection_checker/internet_connection_checker.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
+
 import 'package:kmonie/core/networks/network_info.dart';
 import 'package:kmonie/core/networks/logging_interceptor.dart';
 import 'package:kmonie/core/networks/app_dio.dart';
@@ -10,16 +11,14 @@ final GetIt sl = GetIt.instance;
 
 Future<void> init() async {
   sl
-    ..registerLazySingleton<InternetConnectionChecker>(
-      () => InternetConnectionChecker.createInstance(),
-    )
+    ..registerLazySingleton<Connectivity>(() => Connectivity())
     ..registerLazySingleton<NetworkInfo>(
-      () => NetworkInfoImpl(sl<InternetConnectionChecker>()),
+          () => NetworkInfoImpl(sl<Connectivity>()),
     )
     ..registerLazySingleton<SecureStorageService>(() => SecureStorageService())
     ..registerLazySingleton<LoggingInterceptor>(() => LoggingInterceptor())
     ..registerLazySingleton<AppDio>(
-      () => TranslationDio(
+          () => TranslationDio(
         networkInfo: sl<NetworkInfo>(),
         secure: sl<SecureStorageService>(),
         logging: sl<LoggingInterceptor>(),

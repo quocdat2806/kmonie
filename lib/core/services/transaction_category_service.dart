@@ -25,8 +25,6 @@ class TransactionCategoryService {
       return TransactionCategory(
         id: entry.key,
         title: data['name'] as String,
-        // For now, we do not have image URLs. Keep empty or map later.
-        image: '',
       );
     }).toList();
   }

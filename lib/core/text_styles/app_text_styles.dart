@@ -4,12 +4,9 @@ import 'package:kmonie/core/constants/color_constants.dart';
 class AppTextStyle {
   AppTextStyle._();
 
-  // Font Weight Constants
   static const FontWeight medium = FontWeight.w500;
   static const FontWeight bold = FontWeight.bold;
   static const FontWeight blackWeight = FontWeight.w900;
-
-  // Primary Text Styles
   static const TextStyle primary = TextStyle(color: AppColors.primary);
   static final TextStyle primaryS12 = primary.copyWith(fontSize: 12);
   static final TextStyle primaryS12Medium = primaryS12.copyWith(
@@ -29,7 +26,6 @@ class AppTextStyle {
     fontWeight: blackWeight,
   );
 
-  // Black Text Styles
   static const TextStyle black = TextStyle(color: AppColors.textBlack);
   static final TextStyle blackS12 = black.copyWith(fontSize: 12);
   static final TextStyle blackS12Medium = blackS12.copyWith(fontWeight: medium);
@@ -73,7 +69,6 @@ class AppTextStyle {
     fontWeight: blackWeight,
   );
 
-  // Grey Text Styles
   static const TextStyle grey = TextStyle(color: AppColors.grey);
   static final TextStyle greyS12 = grey.copyWith(fontSize: 12);
   static final TextStyle greyS12Medium = greyS12.copyWith(fontWeight: medium);
@@ -89,8 +84,36 @@ class AppTextStyle {
     fontWeight: blackWeight,
   );
 
-  // Blue Text Styles
-  static const TextStyle blue = TextStyle(color: AppColors.secondary);
+  static const TextStyle secondary = TextStyle(color: AppColors.secondary);
+  static final TextStyle secondaryS12 = secondary.copyWith(fontSize: 12);
+  static final TextStyle secondaryS12Medium = secondaryS12.copyWith(fontWeight: medium);
+  static final TextStyle secondaryS12Bold = secondaryS12.copyWith(fontWeight: bold);
+  static final TextStyle secondaryS12Black = secondaryS12.copyWith(
+    fontWeight: blackWeight,
+  );
+
+  static final TextStyle secondaryS14 = secondary.copyWith(fontSize: 14);
+  static final TextStyle secondaryS14Medium = secondaryS14.copyWith(fontWeight: medium);
+  static final TextStyle secondaryS14Bold = secondaryS14.copyWith(fontWeight: bold);
+  static final TextStyle secondaryS14Black = secondaryS14.copyWith(
+    fontWeight: blackWeight,
+  );
+
+  static final TextStyle secondaryS16 = secondary.copyWith(fontSize: 16);
+  static final TextStyle secondaryS16Medium = secondaryS16.copyWith(fontWeight: medium);
+  static final TextStyle secondaryS16Bold = secondaryS16.copyWith(fontWeight: bold);
+  static final TextStyle secondaryS16Black = secondaryS16.copyWith(
+    fontWeight: blackWeight,
+  );
+
+  static final TextStyle secondaryS18 = secondary.copyWith(fontSize: 18);
+  static final TextStyle secondaryS18Medium = secondaryS18.copyWith(fontWeight: medium);
+  static final TextStyle secondaryS18Bold = secondaryS18.copyWith(fontWeight: bold);
+  static final TextStyle secondaryS18Black = secondaryS18.copyWith(
+    fontWeight: blackWeight,
+  );
+
+  static const TextStyle blue = TextStyle(color: AppColors.blue);
   static final TextStyle blueS12 = blue.copyWith(fontSize: 12);
   static final TextStyle blueS12Medium = blueS12.copyWith(fontWeight: medium);
   static final TextStyle blueS12Bold = blueS12.copyWith(fontWeight: bold);
@@ -119,38 +142,7 @@ class AppTextStyle {
     fontWeight: blackWeight,
   );
 
-  // Blue1 Text Styles
-  static const TextStyle blue1 = TextStyle(color: AppColors.blue);
-  static final TextStyle blue1S12 = blue1.copyWith(fontSize: 12);
-  static final TextStyle blue1S12Medium = blue1S12.copyWith(fontWeight: medium);
-  static final TextStyle blue1S12Bold = blue1S12.copyWith(fontWeight: bold);
-  static final TextStyle blue1S12Black = blue1S12.copyWith(
-    fontWeight: blackWeight,
-  );
-
-  static final TextStyle blue1S14 = blue1.copyWith(fontSize: 14);
-  static final TextStyle blue1S14Medium = blue1S14.copyWith(fontWeight: medium);
-  static final TextStyle blue1S14Bold = blue1S14.copyWith(fontWeight: bold);
-  static final TextStyle blue1S14Black = blue1S14.copyWith(
-    fontWeight: blackWeight,
-  );
-
-  static final TextStyle blue1S16 = blue1.copyWith(fontSize: 16);
-  static final TextStyle blue1S16Medium = blue1S16.copyWith(fontWeight: medium);
-  static final TextStyle blue1S16Bold = blue1S16.copyWith(fontWeight: bold);
-  static final TextStyle blue1S16Black = blue1S16.copyWith(
-    fontWeight: blackWeight,
-  );
-
-  static final TextStyle blue1S18 = blue1.copyWith(fontSize: 18);
-  static final TextStyle blue1S18Medium = blue1S18.copyWith(fontWeight: medium);
-  static final TextStyle blue1S18Bold = blue1S18.copyWith(fontWeight: bold);
-  static final TextStyle blue1S18Black = blue1S18.copyWith(
-    fontWeight: blackWeight,
-  );
-
-  // Red Text Styles
-  static const TextStyle red = TextStyle(color: Colors.red);
+  static const TextStyle red = TextStyle(color: AppColors.red);
   static final TextStyle redS10 = red.copyWith(fontSize: 10);
   static final TextStyle redS10Medium = redS10.copyWith(fontWeight: medium);
   static final TextStyle redS10Bold = redS10.copyWith(fontWeight: bold);
@@ -166,8 +158,7 @@ class AppTextStyle {
   static final TextStyle redS14Bold = redS14.copyWith(fontWeight: bold);
   static final TextStyle redS14Black = redS14.copyWith(fontWeight: blackWeight);
 
-  // Yellow Text Styles
-  static const TextStyle yellow = TextStyle(color: Colors.yellow);
+  static const TextStyle yellow = TextStyle(color: AppColors.yellow);
   static final TextStyle yellowS10 = yellow.copyWith(fontSize: 10);
   static final TextStyle yellowS10Medium = yellowS10.copyWith(
     fontWeight: medium,
@@ -177,8 +168,7 @@ class AppTextStyle {
     fontWeight: blackWeight,
   );
 
-  // White Text Styles
-  static const TextStyle white = TextStyle(color: Colors.white);
+  static const TextStyle white = TextStyle(color: AppColors.white);
   static final TextStyle whiteS10 = white.copyWith(fontSize: 10);
   static final TextStyle whiteS10Medium = whiteS10.copyWith(fontWeight: medium);
   static final TextStyle whiteS10Bold = whiteS10.copyWith(fontWeight: bold);
@@ -228,7 +218,6 @@ class AppTextStyle {
     fontWeight: blackWeight,
   );
 
-  // Gray Text Styles
   static const TextStyle gray = TextStyle(color: AppColors.textGray);
   static final TextStyle grayS10 = gray.copyWith(fontSize: 10);
   static final TextStyle grayS10Medium = grayS10.copyWith(fontWeight: medium);
@@ -265,7 +254,6 @@ class AppTextStyle {
     fontWeight: blackWeight,
   );
 
-  // Yellow Bold Text Styles
   static const TextStyle yellowBold = TextStyle(color: AppColors.yellowBold);
   static final TextStyle yellowBoldS10 = yellowBold.copyWith(fontSize: 10);
   static final TextStyle yellowBoldS10Medium = yellowBoldS10.copyWith(
@@ -289,7 +277,6 @@ class AppTextStyle {
     fontWeight: blackWeight,
   );
 
-  // Yellow Thin Text Styles
   static const TextStyle yellowThin = TextStyle(color: AppColors.yellowThin);
   static final TextStyle yellowThinS12 = yellowThin.copyWith(fontSize: 12);
   static final TextStyle yellowThinS12Medium = yellowThinS12.copyWith(
@@ -302,7 +289,6 @@ class AppTextStyle {
     fontWeight: blackWeight,
   );
 
-  // Green Text Styles
   static const TextStyle green = TextStyle(color: AppColors.green);
   static final TextStyle greenS12 = green.copyWith(fontSize: 12);
   static final TextStyle greenS12Medium = greenS12.copyWith(fontWeight: medium);

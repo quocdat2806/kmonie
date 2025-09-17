@@ -1,16 +1,10 @@
-part of 'main_bloc.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 
- class MainState extends Equatable {
-  const MainState({
-    this.selectedIndex = 0,
-  });
-  final int selectedIndex;
-  MainState copyWith({int? selectedIndex}) {
-    return MainState(
-      selectedIndex: selectedIndex ?? this.selectedIndex,
-    );
-  }
+part 'main_state.freezed.dart';
 
-  @override
-  List<Object?> get props => <Object?>[selectedIndex];
+@freezed
+class MainState with _$MainState {
+  const factory MainState({
+    @Default(0) int selectedIndex,
+  }) = _MainState;
 }

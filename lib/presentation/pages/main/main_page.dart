@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kmonie/core/constants/color_constants.dart';
-import 'package:kmonie/core/constants/navigation_constants.dart';
 import 'package:kmonie/core/constants/ui_constants.dart';
+import 'package:kmonie/core/enums/main_tabs.dart';
 import 'package:kmonie/generated/assets.dart';
 import 'package:kmonie/presentation/bloc/main/main_bloc.dart';
 import 'package:kmonie/presentation/pages/chart/chart_page.dart';
@@ -11,6 +11,9 @@ import 'package:kmonie/presentation/pages/main/widgets/floating_add_button.dart'
 import 'package:kmonie/presentation/pages/main/widgets/navigation_item.dart';
 import 'package:kmonie/presentation/pages/profile/profile_page.dart';
 import 'package:kmonie/presentation/pages/report/report_page.dart';
+
+import '../../bloc/main/main_event.dart';
+import '../../bloc/main/main_state.dart';
 
 final List<Widget> pageList = <Widget>[
   const HomePage(),
@@ -62,17 +65,17 @@ class MainPageChild extends StatelessWidget {
             children: [
               _buildNavItem(
                 context: context,
-                index: NavigationConstants.homeIndex,
+                index: MainTabs.home.tabIndex,
                 currentIndex: currentIndex,
                 iconPath: Assets.svgsNote,
-                label: NavigationConstants.homeLabel,
+                label: MainTabs.home.label,
               ),
               _buildNavItem(
                 context: context,
-                index: NavigationConstants.chartIndex,
+                index: MainTabs.chart.tabIndex,
                 currentIndex: currentIndex,
                 iconPath: Assets.svgsTime,
-                label: NavigationConstants.chartLabel,
+                label: MainTabs.chart.label,
                 iconMargin: const EdgeInsets.only(
                   left: UIConstants.extraSmallSpacing,
                 ),
@@ -80,10 +83,10 @@ class MainPageChild extends StatelessWidget {
               FloatingAddButton(currentIndex: currentIndex),
               _buildNavItem(
                 context: context,
-                index: NavigationConstants.reportIndex,
+                index: MainTabs.report.index,
                 currentIndex: currentIndex,
                 iconPath: Assets.svgsReport,
-                label: NavigationConstants.reportLabel,
+                label: MainTabs.report.label,
                 iconMargin: const EdgeInsets.only(
                   left:
                       UIConstants.smallPadding + UIConstants.extraSmallSpacing,
@@ -91,10 +94,10 @@ class MainPageChild extends StatelessWidget {
               ),
               _buildNavItem(
                 context: context,
-                index: NavigationConstants.profileIndex,
+                index: MainTabs.profile.index,
                 currentIndex: currentIndex,
                 iconPath: Assets.svgsProfile,
-                label: NavigationConstants.profileLabel,
+                label: MainTabs.profile.label,
                 textMargin: const EdgeInsets.only(
                   right: UIConstants.extraSmallSpacing / 2,
                 ),

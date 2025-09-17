@@ -8,13 +8,13 @@ Before running this project, make sure you have the following installed on your 
 
 ### Required Software
 
-| Software | Version | Download Link |
-|----------|---------|---------------|
+| Software | Version  | Download Link |
+|----------|----------|---------------|
 | **Flutter SDK** | `3.35.3` | [Download Flutter](https://flutter.dev/docs/get-started/install) |
-| **Dart SDK** | `3.9.2` | (Included with Flutter) |
-| **Java JDK** | `17` | [Download OpenJDK 17](https://adoptium.net/temurin/releases/?version=17) |
-| **Android Studio** | Latest | [Download Android Studio](https://developer.android.com/studio) |
-| **Gradle** | `8.13.0` | (Included with Android Studio) |
+| **Dart SDK** | `3.9.2`  | (Included with Flutter) |
+| **Java JDK** | `17`     | [Download OpenJDK 17](https://adoptium.net/temurin/releases/?version=17) |
+| **Android Studio** | Latest   | [Download Android Studio](https://developer.android.com/studio) |
+| **Gradle** | `9.0.0`  | (Included with Android Studio) |
 
 ### System Requirements
 
@@ -54,8 +54,6 @@ flutter run --release
 flutter run -d <device-id>
 ```
 
-## 🛠️ Development Setup
-
 ### Flutter Configuration
 
 - **Flutter Version**: 3.35.3
@@ -68,7 +66,7 @@ flutter run -d <device-id>
 - **Min SDK**: 21
 - **Target SDK**: 36
 - **Java Version**: 17
-- **Gradle Version**: 8.13.0
+- **Gradle Version**: 9.0.0
 - **Android Gradle Plugin**: 8.13.0
 - **Kotlin**: 2.2.20
 

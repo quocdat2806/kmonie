@@ -1,12 +1,8 @@
-part of 'main_bloc.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 
-sealed class MainEvent extends Equatable {
-  const MainEvent();
-}
-final class MainSwitchTab extends MainEvent {
-  const MainSwitchTab(this.index);
-  final int index;
+part 'main_event.freezed.dart';
 
-  @override
-  List<Object?> get props => <Object?>[index];
+@freezed
+class MainEvent with _$MainEvent {
+  const factory MainEvent.switchTab(int index) = MainSwitchTab;
 }

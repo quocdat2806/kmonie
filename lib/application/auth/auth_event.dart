@@ -1,8 +1,10 @@
-abstract class AuthEvent {}
+import 'package:freezed_annotation/freezed_annotation.dart';
 
-class AuthAppStarted extends AuthEvent {}
-class AuthSignedIn extends AuthEvent {
-  AuthSignedIn(this.token);
-  final String token;
+part 'auth_event.freezed.dart';
+
+@freezed
+class AuthEvent with _$AuthEvent {
+  const factory AuthEvent.appStarted() = AuthAppStarted;
+  const factory AuthEvent.signedIn(String token) = AuthSignedIn;
+  const factory AuthEvent.signedOut() = AuthSignedOut;
 }
-class AuthSignedOut extends AuthEvent {}

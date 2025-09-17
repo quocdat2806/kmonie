@@ -1,38 +1,16 @@
-import 'package:equatable/equatable.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 
-class TransactionCategory extends Equatable {
-  const TransactionCategory({
-    required this.id,
-    required this.title,
-    required this.image,
-  });
+part 'transaction_category.freezed.dart';
+part 'transaction_category.g.dart';
 
-  final String id;
-  final String title;
-  final String image;
+@freezed
+class TransactionCategory with _$TransactionCategory {
+  const factory TransactionCategory({
+    required String id,
+    required String title,
+    @Default('') String image,
+  }) = _TransactionCategory;
 
-  TransactionCategory copyWith({String? id, String? title, String? image}) {
-    return TransactionCategory(
-      id: id ?? this.id,
-      title: title ?? this.title,
-      image: image ?? this.image,
-    );
-  }
-
-  factory TransactionCategory.fromJson(Map<String, dynamic> json) {
-    return TransactionCategory(
-      id: json['id'] as String,
-      title: json['title'] as String,
-      image: json['image'] as String? ?? '',
-    );
-  }
-
-  Map<String, dynamic> toJson() => <String, dynamic>{
-    'id': id,
-    'title': title,
-    'image': image,
-  };
-
-  @override
-  List<Object?> get props => <Object?>[id, title, image];
+  factory TransactionCategory.fromJson(Map<String, dynamic> json) =>
+      _$TransactionCategoryFromJson(json);
 }

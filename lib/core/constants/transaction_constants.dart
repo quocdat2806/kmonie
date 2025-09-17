@@ -8,5 +8,4 @@ class TransactionConstants {
 
   static const TransactionType defaultTransactionType = TransactionType.expense;
 
-  // Removed categoryColors; UI now uses a unified color scheme per selection state.
 }

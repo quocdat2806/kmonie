@@ -2,7 +2,7 @@ import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:kmonie/core/error/dio_error_mapper.dart';
 import 'package:kmonie/core/error/exceptions.dart';
-import 'package:kmonie/core/error/failures.dart';
+import 'package:kmonie/core/error/failure.dart';
 
 typedef EitherFailureOr<T> = Either<Failure, T>;
 
@@ -15,13 +15,13 @@ Future<EitherFailureOr<T>> guardFuture<T>(Future<T> Function() run) async {
   } on DioException catch (e) {
     return left(mapDioErrorToFailure(e));
   } on ServerException catch (e) {
-    return left(ServerFailure(message: e.message));
+    return left(ServerFailure( e.message));
   } on CacheException catch (e) {
-    return left(CacheFailure(message: e.message));
+    return left(CacheFailure(e.message));
   } on NetworkException catch (e) {
-    return left(NetworkFailure(message: e.message));
+    return left(NetworkFailure( e.message));
   } catch (e) {
-    return left(ServerFailure(message: e.toString()));
+    return left(ServerFailure( e.toString()));
   }
 }
 
@@ -34,12 +34,12 @@ EitherFailureOr<T> guardSync<T>(T Function() run) {
   } on DioException catch (e) {
     return left(mapDioErrorToFailure(e));
   } on ServerException catch (e) {
-    return left(ServerFailure(message: e.message));
+    return left(ServerFailure( e.message));
   } on CacheException catch (e) {
-    return left(CacheFailure(message: e.message));
+    return left(CacheFailure(e.message));
   } on NetworkException catch (e) {
-    return left(NetworkFailure(message: e.message));
+    return left(NetworkFailure( e.message));
   } catch (e) {
-    return left(ServerFailure(message: e.toString()));
+    return left(ServerFailure( e.toString()));
   }
 }
