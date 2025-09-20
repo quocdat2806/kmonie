@@ -15,16 +15,16 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   static const String tokenKey = 'token';
 
   Future<void> _onAppStarted(
-      AuthAppStarted event,
-      Emitter<AuthState> emit,
-      ) async {
+    AuthAppStarted event,
+    Emitter<AuthState> emit,
+  ) async {
     try {
       final String? token = await secure.read(tokenKey);
       if (token != null && token.isNotEmpty) {
         emit(AuthState.authenticated(token));
-      } else {
-        emit(const AuthState.unauthenticated());
+        return;
       }
+      emit(const AuthState.unauthenticated());
     } catch (_) {
       emit(const AuthState.unauthenticated());
     }
@@ -36,9 +36,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   }
 
   Future<void> _onSignedOut(
-      AuthSignedOut event,
-      Emitter<AuthState> emit,
-      ) async {
+    AuthSignedOut event,
+    Emitter<AuthState> emit,
+  ) async {
     await secure.delete(tokenKey);
     emit(const AuthState.unauthenticated());
   }

@@ -14,6 +14,7 @@ class UIConstants {
   static const double defaultBorderRadius = 8.0;
   static const double largeBorderRadius = 12.0;
   static const double extraLargeBorderRadius = 20.0;
+  static const double maxBorderRadius = 9999;
 
   static const double smallIconSize = 16.0;
   static const double defaultIconSize = 20.0;

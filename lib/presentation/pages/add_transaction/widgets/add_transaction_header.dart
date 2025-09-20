@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:kmonie/core/constants/color_constants.dart';
 import 'package:kmonie/core/constants/text_constants.dart';
-import 'package:kmonie/core/constants/ui_constants.dart';
 import 'package:kmonie/core/navigation/app_navigation.dart';
 import 'package:kmonie/core/text_styles/app_text_styles.dart';
+import 'package:kmonie/generated/assets.dart';
 
 class AddTransactionHeader extends StatelessWidget {
   const AddTransactionHeader({super.key});
@@ -15,7 +16,7 @@ class AddTransactionHeader extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          GestureDetector(
+          InkWell(
             onTap: () => _handleCancel(context),
             child: Text(
               TextConstants.cancelButtonText,
@@ -26,12 +27,17 @@ class AddTransactionHeader extends StatelessWidget {
             TextConstants.addTransactionTitle,
             style: AppTextStyle.blackS18Bold,
           ),
-          const ColoredBox(
-            color: AppColors.white,
-            child: Icon(
-              Icons.checklist,
-              color: AppColors.black,
-              size: UIConstants.defaultIconSize,
+          InkWell(
+            onTap: () {},
+            child: DecoratedBox(
+              decoration: const BoxDecoration(
+                shape: BoxShape.circle,
+                color: AppColors.divider,
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(8),
+                child: SvgPicture.asset(Assets.svgsChecklist),
+              ),
             ),
           ),
         ],

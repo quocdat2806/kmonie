@@ -20,6 +20,7 @@ class App extends StatelessWidget {
           inputDecorationTheme: AppInputTheme.defaultInput,
           fontFamily: AppConfigs.fontFamily,
         ),
+        debugShowCheckedModeBanner: false,
         routerConfig: appRouter.router,
       ),
     );

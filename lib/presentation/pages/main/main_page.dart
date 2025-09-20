@@ -80,7 +80,7 @@ class MainPageChild extends StatelessWidget {
                   left: UIConstants.extraSmallSpacing,
                 ),
               ),
-              FloatingAddButton(currentIndex: currentIndex),
+              const FloatingAddButton(),
               _buildNavItem(
                 context: context,
                 index: MainTabs.report.index,

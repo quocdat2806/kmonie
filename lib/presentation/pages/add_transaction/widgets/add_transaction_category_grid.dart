@@ -7,6 +7,7 @@ import 'package:kmonie/entities/transaction_category.dart';
 import 'package:kmonie/core/services/transaction_category_service.dart';
 import 'package:kmonie/core/text_styles/app_text_styles.dart';
 import 'package:kmonie/presentation/bloc/add_transaction/add_transaction_bloc.dart';
+import 'package:kmonie/presentation/widgets/app_error_widget.dart';
 
 import '../../../bloc/add_transaction/add_transaction_event.dart';
 import '../../../bloc/add_transaction/add_transaction_state.dart';
@@ -19,7 +20,7 @@ class AddTransactionCategoryGrid extends StatelessWidget {
     return BlocBuilder<AddTransactionBloc, AddTransactionState>(
       builder: (context, state) {
         if (state.message != null && state.message!.isNotEmpty) {
-          return _buildErrorWidget(state.message!);
+          return AppErrorWidget(message: state.message!);
         }
         return _buildCategoryGrid(context, state.selectedIndex);
       },
@@ -60,27 +61,6 @@ class AddTransactionCategoryGrid extends StatelessWidget {
     );
   }
 
-  Widget _buildErrorWidget(String message) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const Icon(
-            Icons.error_outline,
-            size: UIConstants.extraLargeIconSize,
-            color: AppColors.red,
-          ),
-          const SizedBox(height: UIConstants.defaultSpacing),
-          Text(
-            message,
-            style: AppTextStyle.redS14,
-            textAlign: TextAlign.center,
-          ),
-        ],
-      ),
-    );
-  }
-
   Widget _buildCategoryItem({
     required BuildContext context,
     required TransactionCategory category,
@@ -90,11 +70,8 @@ class AddTransactionCategoryGrid extends StatelessWidget {
     final Color backgroundColor = isSelected
         ? AppColors.yellow
         : AppColors.neutralGray200;
-    final Color iconColor = isSelected
-        ? AppColors.black
-        : AppColors.earthyBrown;
 
-    return GestureDetector(
+    return InkWell(
       onTap: () {
         context.read<AddTransactionBloc>().add(
           AddTransactionCategoryChanged(
@@ -107,19 +84,13 @@ class AddTransactionCategoryGrid extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           ClipRRect(
-            borderRadius: BorderRadius.circular(
-              UIConstants.defaultBorderRadius,
-            ),
+            borderRadius: BorderRadius.circular(UIConstants.maxBorderRadius),
             child: ColoredBox(
               color: backgroundColor,
-              child: SizedBox(
+              child: const SizedBox(
                 width: UIConstants.largeContainerSize,
                 height: UIConstants.largeContainerSize,
-                child: Icon(
-                  Icons.category,
-                  color: iconColor,
-                  size: UIConstants.largeIconSize,
-                ),
+                child: Icon(Icons.category),
               ),
             ),
           ),
@@ -127,11 +98,7 @@ class AddTransactionCategoryGrid extends StatelessWidget {
           Text(
             category.title,
             textAlign: TextAlign.center,
-            style: isSelected
-                ? AppTextStyle.blackS12Medium
-                : AppTextStyle.blackS12Medium.copyWith(
-                    color: AppColors.earthyBrown,
-                  ),
+            style: AppTextStyle.blackS12Medium,
             maxLines: UIConstants.defaultMaxLines,
             overflow: TextOverflow.ellipsis,
           ),

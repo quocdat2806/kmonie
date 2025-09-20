@@ -7,9 +7,7 @@ import 'package:kmonie/generated/assets.dart';
 import 'package:kmonie/presentation/routes/router_path.dart';
 
 class FloatingAddButton extends StatelessWidget {
-  final int currentIndex;
-  const FloatingAddButton({super.key, required this.currentIndex});
-
+  const FloatingAddButton({super.key});
   @override
   Widget build(BuildContext context) {
     return Expanded(

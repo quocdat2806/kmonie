@@ -4,7 +4,7 @@ import 'package:kmonie/core/enums/transaction_type.dart';
 part 'add_transaction_state.freezed.dart';
 
 @freezed
-class AddTransactionState with _$AddTransactionState {
+abstract class AddTransactionState with _$AddTransactionState {
   const AddTransactionState._();
 
   const factory AddTransactionState({

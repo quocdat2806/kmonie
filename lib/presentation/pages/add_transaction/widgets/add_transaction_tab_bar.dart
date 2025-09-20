@@ -6,7 +6,6 @@ import 'package:kmonie/core/constants/ui_constants.dart';
 import 'package:kmonie/core/enums/transaction_type.dart';
 import 'package:kmonie/core/text_styles/app_text_styles.dart';
 import 'package:kmonie/presentation/bloc/add_transaction/add_transaction_bloc.dart';
-
 import '../../../bloc/add_transaction/add_transaction_event.dart';
 import '../../../bloc/add_transaction/add_transaction_state.dart';
 
@@ -16,58 +15,98 @@ class AddTransactionTabBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<AddTransactionBloc, AddTransactionState>(
-      builder: (context, state) => _buildTabBar(state.selectedIndex),
+      builder: (context, state) {
+        final transactionTypes = TransactionConstants.transactionTypes;
+
+        return Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+          child: Row(
+            children: List.generate(transactionTypes.length, (index) {
+              final transactionType = transactionTypes[index];
+              final bool isFirst = index == 0;
+              final bool isLast = index == transactionTypes.length - 1;
+              final bool isSelected =
+                  transactionType.typeIndex == state.selectedIndex;
+
+              return Expanded(
+                child: _TransactionTabItem(
+                  transactionType: transactionType,
+                  isSelected: isSelected,
+                  isFirst: isFirst,
+                  isLast: isLast,
+                  onTap: () {
+                    context.read<AddTransactionBloc>().add(
+                      AddTransactionSwitchTab(transactionType.typeIndex),
+                    );
+                  },
+                ),
+              );
+            }),
+          ),
+        );
+      },
     );
   }
+}
 
-  Widget _buildTabBar(int selectedIndex) {
-    return Builder(
-      builder: (context) => Row(
-        children: TransactionConstants.transactionTypes
-            .map(
-              (transactionType) => _buildTab(
-                context: context,
-                transactionType: transactionType,
-                currentIndex: selectedIndex,
-              ),
-            )
-            .toList(),
-      ),
+class _TransactionTabItem extends StatelessWidget {
+  final TransactionType transactionType;
+  final bool isSelected;
+  final bool isFirst;
+  final bool isLast;
+  final VoidCallback onTap;
+
+  const _TransactionTabItem({
+    required this.transactionType,
+    required this.isSelected,
+    required this.isFirst,
+    required this.isLast,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final BorderRadius borderRadius = BorderRadius.only(
+      topLeft: isFirst
+          ? const Radius.circular(UIConstants.defaultBorderRadius)
+          : Radius.zero,
+      bottomLeft: isFirst
+          ? const Radius.circular(UIConstants.defaultBorderRadius)
+          : Radius.zero,
+      topRight: isLast
+          ? const Radius.circular(UIConstants.defaultBorderRadius)
+          : Radius.zero,
+      bottomRight: isLast
+          ? const Radius.circular(UIConstants.defaultBorderRadius)
+          : Radius.zero,
     );
-  }
 
-  Widget _buildTab({
-    required BuildContext context,
-    required TransactionType transactionType,
-    required int currentIndex,
-  }) {
-    final bool isSelected = transactionType.typeIndex == currentIndex;
-
-    return Expanded(
-      child: GestureDetector(
-        onTap: () {
-          context.read<AddTransactionBloc>().add(
-            AddTransactionSwitchTab(transactionType.typeIndex),
-          );
-        },
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(UIConstants.defaultBorderRadius),
-          child: ColoredBox(
-            color: isSelected ? AppColors.yellow : AppColors.neutralGray200,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(
-                vertical:
-                    UIConstants.smallPadding + UIConstants.extraSmallSpacing,
-              ),
-              child: Text(
-                transactionType.displayName,
-                textAlign: TextAlign.center,
-                style: isSelected
-                    ? AppTextStyle.blackS14Medium
-                    : AppTextStyle.blackS14Medium.copyWith(
-                        color: AppColors.earthyBrown,
-                      ),
-              ),
+    return InkWell(
+      hoverColor: Colors.transparent,
+      onTap: onTap,
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          color: isSelected ? AppColors.black : AppColors.yellow,
+          border: Border(
+            top: const BorderSide(color: AppColors.black, width: 1),
+            bottom: const BorderSide(color: AppColors.black, width: 1),
+            left: isFirst
+                ? const BorderSide(color: AppColors.black, width: 1)
+                : BorderSide.none,
+            right: const BorderSide(color: AppColors.black, width: 1),
+          ),
+          borderRadius: borderRadius,
+        ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(
+            vertical: UIConstants.smallPadding + UIConstants.extraSmallSpacing,
+          ),
+          child: Center(
+            child: Text(
+              transactionType.displayName,
+              style: isSelected
+                  ? AppTextStyle.yellowS14Medium
+                  : AppTextStyle.blackS14Medium,
             ),
           ),
         ),

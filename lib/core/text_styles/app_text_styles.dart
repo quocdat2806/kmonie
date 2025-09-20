@@ -86,29 +86,45 @@ class AppTextStyle {
 
   static const TextStyle secondary = TextStyle(color: AppColors.secondary);
   static final TextStyle secondaryS12 = secondary.copyWith(fontSize: 12);
-  static final TextStyle secondaryS12Medium = secondaryS12.copyWith(fontWeight: medium);
-  static final TextStyle secondaryS12Bold = secondaryS12.copyWith(fontWeight: bold);
+  static final TextStyle secondaryS12Medium = secondaryS12.copyWith(
+    fontWeight: medium,
+  );
+  static final TextStyle secondaryS12Bold = secondaryS12.copyWith(
+    fontWeight: bold,
+  );
   static final TextStyle secondaryS12Black = secondaryS12.copyWith(
     fontWeight: blackWeight,
   );
 
   static final TextStyle secondaryS14 = secondary.copyWith(fontSize: 14);
-  static final TextStyle secondaryS14Medium = secondaryS14.copyWith(fontWeight: medium);
-  static final TextStyle secondaryS14Bold = secondaryS14.copyWith(fontWeight: bold);
+  static final TextStyle secondaryS14Medium = secondaryS14.copyWith(
+    fontWeight: medium,
+  );
+  static final TextStyle secondaryS14Bold = secondaryS14.copyWith(
+    fontWeight: bold,
+  );
   static final TextStyle secondaryS14Black = secondaryS14.copyWith(
     fontWeight: blackWeight,
   );
 
   static final TextStyle secondaryS16 = secondary.copyWith(fontSize: 16);
-  static final TextStyle secondaryS16Medium = secondaryS16.copyWith(fontWeight: medium);
-  static final TextStyle secondaryS16Bold = secondaryS16.copyWith(fontWeight: bold);
+  static final TextStyle secondaryS16Medium = secondaryS16.copyWith(
+    fontWeight: medium,
+  );
+  static final TextStyle secondaryS16Bold = secondaryS16.copyWith(
+    fontWeight: bold,
+  );
   static final TextStyle secondaryS16Black = secondaryS16.copyWith(
     fontWeight: blackWeight,
   );
 
   static final TextStyle secondaryS18 = secondary.copyWith(fontSize: 18);
-  static final TextStyle secondaryS18Medium = secondaryS18.copyWith(fontWeight: medium);
-  static final TextStyle secondaryS18Bold = secondaryS18.copyWith(fontWeight: bold);
+  static final TextStyle secondaryS18Medium = secondaryS18.copyWith(
+    fontWeight: medium,
+  );
+  static final TextStyle secondaryS18Bold = secondaryS18.copyWith(
+    fontWeight: bold,
+  );
   static final TextStyle secondaryS18Black = secondaryS18.copyWith(
     fontWeight: blackWeight,
   );
@@ -160,11 +176,27 @@ class AppTextStyle {
 
   static const TextStyle yellow = TextStyle(color: AppColors.yellow);
   static final TextStyle yellowS10 = yellow.copyWith(fontSize: 10);
+  static final TextStyle yellowS12 = yellow.copyWith(fontSize: 12);
+  static final TextStyle yellowS14 = yellow.copyWith(fontSize: 14);
   static final TextStyle yellowS10Medium = yellowS10.copyWith(
     fontWeight: medium,
   );
   static final TextStyle yellowS10Bold = yellowS10.copyWith(fontWeight: bold);
   static final TextStyle yellowS10Black = yellowS10.copyWith(
+    fontWeight: blackWeight,
+  );
+  static final TextStyle yellowS12Medium = yellowS12.copyWith(
+    fontWeight: medium,
+  );
+  static final TextStyle yellowS12Bold = yellowS12.copyWith(fontWeight: bold);
+  static final TextStyle yellowS12Black = yellowS12.copyWith(
+    fontWeight: blackWeight,
+  );
+  static final TextStyle yellowS14Medium = yellowS14.copyWith(
+    fontWeight: medium,
+  );
+  static final TextStyle yellowS14Bold = yellowS14.copyWith(fontWeight: bold);
+  static final TextStyle yellowS14Black = yellowS14.copyWith(
     fontWeight: blackWeight,
   );
 
