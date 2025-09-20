@@ -47,7 +47,8 @@ class MainPageChild extends StatelessWidget {
       builder: (BuildContext context, MainState state) {
         final int currentIndex = state.selectedIndex;
         return Scaffold(
-          body: pageList[currentIndex],
+          backgroundColor: AppColors.yellow,
+          body:SafeArea(child:  pageList[currentIndex]),
           bottomNavigationBar: _buildBottomNavigationBar(context, currentIndex),
         );
       },
