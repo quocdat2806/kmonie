@@ -1,17 +1,18 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:kmonie/core/enums/transaction_type.dart';
 
+import '../../../core/exports.dart';
 import 'add_transaction_event.dart';
 import 'add_transaction_state.dart';
 
-class AddTransactionBloc extends Bloc<AddTransactionEvent, AddTransactionState> {
+class AddTransactionBloc
+    extends Bloc<AddTransactionEvent, AddTransactionState> {
   AddTransactionBloc() : super(const AddTransactionState()) {
     on<AddTransactionSwitchTab>(
-          (event, emit) => _onSwitchTab(event.index, emit),
+      (event, emit) => _onSwitchTab(event.index, emit),
     );
 
     on<AddTransactionCategoryChanged>(
-          (event, emit) => _onCategoryChanged(event.type, event.categoryId, emit),
+      (event, emit) => _onCategoryChanged(event.type, event.categoryId, emit),
     );
   }
 
@@ -20,16 +21,20 @@ class AddTransactionBloc extends Bloc<AddTransactionEvent, AddTransactionState> 
 
     if (index == state.selectedIndex) return;
 
-    emit(state.copyWith(selectedIndex: index));
+    emit(
+      state.copyWith(
+        selectedIndex: index,
+        selectedCategoriesByType: const <TransactionType, String?>{},
+      ),
+    );
   }
 
   void _onCategoryChanged(
-      TransactionType type,
-      String categoryId,
-      Emitter<AddTransactionState> emit,
-      ) {
-    final updated = Map<TransactionType, String?>.from(state.selectedCategoriesByType);
-    updated[type] = categoryId;
+    TransactionType type,
+    String categoryId,
+    Emitter<AddTransactionState> emit,
+  ) {
+    final updated = <TransactionType, String?>{type: categoryId};
 
     emit(state.copyWith(selectedCategoriesByType: updated));
   }

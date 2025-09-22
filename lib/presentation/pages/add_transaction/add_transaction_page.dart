@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:kmonie/core/constants/color_constants.dart';
-import 'package:kmonie/core/constants/ui_constants.dart';
-import 'package:kmonie/presentation/bloc/add_transaction/add_transaction_bloc.dart';
-import 'package:kmonie/presentation/pages/add_transaction/widgets/add_transaction_category_grid.dart';
-import 'package:kmonie/presentation/pages/add_transaction/widgets/add_transaction_header.dart';
-import 'package:kmonie/presentation/pages/add_transaction/widgets/add_transaction_tab_bar.dart';
+import '../../../../core/exports.dart';
+import '../../../presentation/exports.dart';
+import 'widgets/add_transaction_category_grid.dart';
+import 'widgets/add_transaction_header.dart';
+import 'widgets/add_transaction_tab_bar.dart';
 
 class AddTransactionPage extends StatelessWidget {
   const AddTransactionPage({super.key});
@@ -25,7 +24,7 @@ class AddTransactionPageChild extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const Scaffold(
-      backgroundColor: AppColors.yellow,
+      backgroundColor: ColorConstants.yellow,
       body: SafeArea(
         child: Column(
           children: [
@@ -34,7 +33,7 @@ class AddTransactionPageChild extends StatelessWidget {
             SizedBox(height: UIConstants.defaultPadding),
             Expanded(
               child: ColoredBox(
-                color: AppColors.white,
+                color: ColorConstants.white,
                 child: SizedBox(
                   width: double.infinity,
                   child: AddTransactionCategoryGrid(),

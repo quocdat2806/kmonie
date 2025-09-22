@@ -1,6 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:kmonie/core/enums/auth_status.dart';
-
+import '../../core/exports.dart';
 part 'auth_state.freezed.dart';
 
 @freezed

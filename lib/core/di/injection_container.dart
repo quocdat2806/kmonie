@@ -1,11 +1,7 @@
 import 'package:get_it/get_it.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
-
-import 'package:kmonie/core/networks/network_info.dart';
-import 'package:kmonie/core/networks/logging_interceptor.dart';
-import 'package:kmonie/core/networks/app_dio.dart';
-import 'package:kmonie/core/networks/api_client.dart';
-import 'package:kmonie/database/secure_storage_service.dart';
+import '../exports.dart';
+import '../../database/exports.dart';
 
 final GetIt sl = GetIt.instance;
 
@@ -13,12 +9,12 @@ Future<void> init() async {
   sl
     ..registerLazySingleton<Connectivity>(() => Connectivity())
     ..registerLazySingleton<NetworkInfo>(
-          () => NetworkInfoImpl(sl<Connectivity>()),
+      () => NetworkInfoImpl(sl<Connectivity>()),
     )
     ..registerLazySingleton<SecureStorageService>(() => SecureStorageService())
     ..registerLazySingleton<LoggingInterceptor>(() => LoggingInterceptor())
     ..registerLazySingleton<AppDio>(
-          () => TranslationDio(
+      () => TranslationDio(
         networkInfo: sl<NetworkInfo>(),
         secure: sl<SecureStorageService>(),
         logging: sl<LoggingInterceptor>(),

@@ -1,9 +1,9 @@
-import 'package:kmonie/core/configs/app_configs.dart';
-import 'package:kmonie/core/theme/input_theme.dart';
+import 'core/config/app_config.dart';
+import 'core/theme/input_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'application/auth/auth_bloc.dart';
-import 'presentation/routes/app_router.dart';
+import 'core/navigation/app_router.dart';
 
 class App extends StatelessWidget {
   const App({super.key, required this.authBloc, required this.appRouter});
@@ -20,6 +20,7 @@ class App extends StatelessWidget {
           inputDecorationTheme: AppInputTheme.defaultInput,
           fontFamily: AppConfigs.fontFamily,
         ),
+        debugShowCheckedModeBanner: false,
         routerConfig: appRouter.router,
       ),
     );

@@ -88,18 +88,4 @@ class AppNavigator {
   void go(String location, {Object? extra}) {
     GoRouter.of(context).go(location, extra: extra);
   }
-
-  void clearAndGoNamed(
-    String name, {
-    Map<String, String> pathParameters = const <String, String>{},
-    Map<String, dynamic> queryParameters = const <String, dynamic>{},
-    Object? extra,
-  }) {
-    GoRouter.of(context).goNamed(
-      name,
-      pathParameters: pathParameters,
-      queryParameters: queryParameters,
-      extra: extra,
-    );
-  }
 }

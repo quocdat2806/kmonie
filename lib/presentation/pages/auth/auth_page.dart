@@ -1,9 +1,7 @@
-import 'package:kmonie/core/constants/color_constants.dart';
-import 'package:kmonie/core/enums/auth_mode.dart';
-import 'package:kmonie/core/text_styles/app_text_styles.dart';
-import 'package:kmonie/presentation/widgets/app_text_field.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import '../../../../core/exports.dart';
+import '../../../presentation/exports.dart';
 
 class AuthScreen extends StatefulWidget {
   const AuthScreen({super.key, required this.mode});
@@ -30,7 +28,7 @@ class _AuthScreenState extends State<AuthScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(backgroundColor: AppColors.white, body: _buildBody());
+    return Scaffold(backgroundColor: ColorConstants.white, body: _buildBody());
   }
 
   Widget _buildBody() {
@@ -109,8 +107,8 @@ class _AuthScreenState extends State<AuthScreen> {
           height: 48,
           child: ElevatedButton(
             style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.black,
-              foregroundColor: AppColors.white,
+              backgroundColor: ColorConstants.black,
+              foregroundColor: ColorConstants.white,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(14),
               ),
