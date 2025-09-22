@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import '../../application/exports.dart';
-import '../../presentation/exports.dart';
-import '../exports.dart';
+
+import '../../application/auth/auth_export.dart';
+import '../navigation/exports.dart';
+import '../../presentation/pages/exports.dart';
+import '../enum/exports.dart';
+
 
 class AppRouter {
   AppRouter(this.authBloc);

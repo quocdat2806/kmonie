@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../../core/exports.dart';
-import '../../../bloc/exports.dart';
+import '../../../../core/constant/exports.dart';
+import '../../../../core/enum/exports.dart';
+import '../../../../core/text_style/exports.dart';
+import '../../../bloc/add_transaction/add_transaction_export.dart';
 
 class AddTransactionTabBar extends StatelessWidget {
   const AddTransactionTabBar({super.key});
@@ -82,12 +84,12 @@ class _TransactionTabItem extends StatelessWidget {
         decoration: BoxDecoration(
           color: isSelected ? ColorConstants.black : ColorConstants.yellow,
           border: Border(
-            top: const BorderSide(color: ColorConstants.black, width: 1),
-            bottom: const BorderSide(color: ColorConstants.black, width: 1),
+            top: const BorderSide(color: ColorConstants.black),
+            bottom: const BorderSide(color: ColorConstants.black),
             left: isFirst
-                ? const BorderSide(color: ColorConstants.black, width: 1)
+                ? const BorderSide(color: ColorConstants.black)
                 : BorderSide.none,
-            right: const BorderSide(color: ColorConstants.black, width: 1),
+            right: const BorderSide(color: ColorConstants.black),
           ),
           borderRadius: borderRadius,
         ),

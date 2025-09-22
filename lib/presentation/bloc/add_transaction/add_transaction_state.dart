@@ -1,5 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import '../../../core/exports.dart';
+import '../../../core/enum/exports.dart';
 part 'add_transaction_state.freezed.dart';
 
 @freezed

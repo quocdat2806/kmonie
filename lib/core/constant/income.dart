@@ -1,4 +1,4 @@
-import '../exports.dart';
+import '../enum/exports.dart';
 
 class IncomeConstants {
   IncomeConstants._();

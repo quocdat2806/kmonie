@@ -1,6 +1,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
-import '../exports.dart';
+import '../error//exports.dart';
 
 typedef EitherFailureOr<T> = Either<Failure, T>;
 

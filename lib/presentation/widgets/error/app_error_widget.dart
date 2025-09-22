@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../../../../core/exports.dart';
+import '../../../core/constant/exports.dart';
+import '../../../core/text_style/exports.dart';
 
 class AppErrorWidget extends StatelessWidget {
   final String message;

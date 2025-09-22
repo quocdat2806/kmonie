@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../../../core/exports.dart';
+import '../../../../core/constant/exports.dart';
+import '../../../../core/navigation/exports.dart';
 import '../../../generated/assets.dart';
 
 class SplashPage extends StatefulWidget {

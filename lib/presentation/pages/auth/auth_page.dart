@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import '../../../../core/exports.dart';
+import '../../../../core/constant/exports.dart';
+import '../../../../core/enum/exports.dart';
+import '../../../../core/text_style/exports.dart';
 import '../../../presentation/exports.dart';
 
 class AuthScreen extends StatefulWidget {

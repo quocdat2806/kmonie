@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'app_cached_network_image.dart';
-import '../../../../core/exports.dart';
+import '../../../core/constant/exports.dart';
 
 class AppCircleImage extends StatelessWidget {
   final String? imageUrl;

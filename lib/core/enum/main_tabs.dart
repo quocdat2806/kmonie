@@ -1,4 +1,5 @@
-import '../exports.dart';
+import '../constant/exports.dart';
+
 
 enum MainTabs {
   home(0, TextConstants.homeLabel),
