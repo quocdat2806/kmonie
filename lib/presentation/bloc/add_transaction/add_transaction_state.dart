@@ -11,6 +11,7 @@ abstract class AddTransactionState with _$AddTransactionState {
     @Default(<TransactionType, String?>{})
     Map<TransactionType, String?> selectedCategoriesByType,
     String? message,
+    @Default(false) bool isKeyboardVisible
   }) = _AddTransactionState;
 
   TransactionType get currentTransactionType =>

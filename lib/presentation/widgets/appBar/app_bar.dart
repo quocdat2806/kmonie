@@ -12,7 +12,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
     this.leading,
     this.actions,
     this.onLeadingTap,
-    this.backgroundColor = Colors.white,
+    this.backgroundColor = ColorConstants.yellow,
     this.elevation = 0.0,
     this.centerTitle = true,
     this.titleTextStyle,

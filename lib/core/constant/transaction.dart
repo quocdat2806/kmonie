@@ -1,4 +1,5 @@
-import '../enum/exports.dart';
+import 'package:kmonie/core/enum/transaction_type.dart';
+
 
 
 class TransactionConstants {

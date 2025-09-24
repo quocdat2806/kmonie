@@ -1,4 +1,4 @@
-import '../enum/exports.dart';
+import 'package:kmonie/core/enum/income_type.dart' show IncomeType;
 
 class IncomeConstants {
   IncomeConstants._();

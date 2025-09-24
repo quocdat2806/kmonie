@@ -35,7 +35,9 @@ class AddTransactionBloc
     Emitter<AddTransactionState> emit,
   ) {
     final updated = <TransactionType, String?>{type: categoryId};
-
+    if(!state.isKeyboardVisible){
+      emit(state.copyWith(isKeyboardVisible: !state.isKeyboardVisible));
+    }
     emit(state.copyWith(selectedCategoriesByType: updated));
   }
 }

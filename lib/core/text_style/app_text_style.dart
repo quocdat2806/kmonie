@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import '../constant/exports.dart';
+import 'package:kmonie/core/constant/color.dart';
+
 
 class AppTextStyle {
   AppTextStyle._();
@@ -7,7 +8,7 @@ class AppTextStyle {
   static const FontWeight medium = FontWeight.w500;
   static const FontWeight bold = FontWeight.bold;
   static const FontWeight blackWeight = FontWeight.w900;
-  static const TextStyle primary = TextStyle(color: ColorConstants.primary);
+  static final TextStyle primary = const TextStyle(color: ColorConstants.primary);
   static final TextStyle primaryS12 = primary.copyWith(fontSize: 12);
   static final TextStyle primaryS12Medium = primaryS12.copyWith(
     fontWeight: medium,

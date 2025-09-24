@@ -61,6 +61,7 @@ class AppTextField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return TextFormField(
+
       enabled: editAble,
       style: style,
       controller: controller,
@@ -83,6 +84,8 @@ class AppTextField extends StatelessWidget {
       labelText: label,
       hintText: hintText,
       isDense: isDense ?? true,
+      filled: true,
+      fillColor: Colors.transparent,
       prefixIcon: prefixIcon == null
           ? null
           : Padding(
@@ -113,13 +116,13 @@ class AppTextField extends StatelessWidget {
       ),
       prefixIconConstraints: const BoxConstraints(),
       suffixIconConstraints: const BoxConstraints(),
-      border:
-          border ??
-          UnderlineInputBorder(
-            borderSide: BorderSide(
-              color: borderBottomColor ?? ColorConstants.error,
-            ),
-          ),
+      // border:
+      //     border ??
+      //     UnderlineInputBorder(
+      //       borderSide: BorderSide(
+      //         color: borderBottomColor ?? ColorConstants.error,
+      //       ),
+      //     ),
       contentPadding:
           contentPadding ??
           const EdgeInsets.symmetric(horizontal: 16, vertical: 12),

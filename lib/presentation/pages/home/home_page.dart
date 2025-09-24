@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import '../../../core/constant/exports.dart';
-import '../../../core/text_style//exports.dart';
-
-import '../../../generated/assets.dart';
-import 'widgets/header_summary.dart';
+import '../../../core/text_style/exports.dart';
 import '../../widgets/exports.dart';
+import '../../../generated/assets.dart';
+import 'widgets/monthly_expense_summary.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -16,7 +15,10 @@ class HomePage extends StatelessWidget {
       color: Colors.white,
       child: Column(
         children: <Widget>[
-          const HeaderSummary(),
+           MonthlyExpenseSummary(
+            onCalendarTap: (){},
+            onSearchTap: (){},
+          ),
           Expanded(
             child: CustomScrollView(
               slivers: <Widget>[

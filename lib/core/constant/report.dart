@@ -1,5 +1,6 @@
-import '../enum/exports.dart';
 
+
+import 'package:kmonie/core/enum/report_type.dart';
 
 class ReportConstants {
   ReportConstants._();

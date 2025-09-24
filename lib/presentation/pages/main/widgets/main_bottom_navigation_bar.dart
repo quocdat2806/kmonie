@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../../core/constant/exports.dart';
 import '../../../../core/enum/exports.dart';
-
-
 import '../../../../generated/assets.dart';
 import '../../../widgets/exports.dart';
 import 'main_navigation_item.dart';
@@ -21,7 +19,6 @@ class MainBottomNavigationBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return SafeArea(
       child: SizedBox(
-        width: double.infinity,
         height: UIConstants.bottomNavigationHeight,
         child: ColoredBox(
           color: ColorConstants.bottomNavigationColor,

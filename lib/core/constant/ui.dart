@@ -27,7 +27,7 @@ class UIConstants {
   static const double largeButtonHeight = 52.0;
 
   static const double smallContainerSize = 32.0;
-  static const double mediumContainerSize = 40.0;
+  static const double mediumContainerSize = 48.0;
   static const double largeContainerSize = 60.0;
   static const double extraLargeContainerSize = 80.0;
 
@@ -37,9 +37,11 @@ class UIConstants {
   static const double largeSpacing = 24.0;
 
   static const int defaultGridCrossAxisCount = 4;
-  static const double defaultGridChildAspectRatio = 0.8;
-  static const double defaultGridCrossAxisSpacing = 16.0;
-  static const double defaultGridMainAxisSpacing = 16.0;
+  static const double defaultGridChildAspectRatio = 0.7;
+  static const double defaultGridCrossAxisSpacing = 8.0;
+  static const double defaultGridMainAxisSpacing = 8.0;
+  static const double zeroInsets = 0.0;
+
 
   static const int defaultMaxLines = 2;
   static const int singleLine = 1;

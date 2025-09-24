@@ -6,7 +6,6 @@ export 'button/app_button.dart';
 export 'chart/app_chart_cicular.dart';
 export 'divider/app_divider.dart';
 export 'dropdown/custom_app_drop_down.dart';
-export 'error/app_error_widget.dart';
 export 'image/app_cached_network_image.dart';
 export 'image/app_circle_image.dart';
 export 'loading/loading_circle.dart';

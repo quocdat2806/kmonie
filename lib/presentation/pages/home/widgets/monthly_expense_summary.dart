@@ -1,13 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import '../../../../core/text_style/exports.dart';
-import '../../../../core/constant//exports.dart';
-import '../../../../core/navigation///exports.dart';
+import '../../../../core/constant/exports.dart';
 import '../../../../generated/assets.dart';
 import '../../../widgets/exports.dart';
 
-class HeaderSummary extends StatelessWidget {
-  const HeaderSummary({super.key});
+class MonthlyExpenseSummary extends StatelessWidget {
+  final VoidCallback onSearchTap;
+  final VoidCallback onCalendarTap;
+
+  const MonthlyExpenseSummary({
+    super.key,
+    required this.onCalendarTap,
+    required this.onSearchTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -25,20 +31,12 @@ class HeaderSummary extends StatelessWidget {
                 Row(
                   children: <Widget>[
                     InkWell(
-                      onTap: () {
-                        AppNavigator(
-                          context: context,
-                        ).push(RouterPath.searchTransaction);
-                      },
+                      onTap: onSearchTap,
                       child: SvgPicture.asset(Assets.svgsSearch),
                     ),
                     const SizedBox(width: UIConstants.defaultSpacing),
                     InkWell(
-                      onTap: () {
-                        AppNavigator(
-                          context: context,
-                        ).push(RouterPath.monthCalendar);
-                      },
+                      onTap: onCalendarTap,
                       child: SvgPicture.asset(Assets.svgsCalendar),
                     ),
                   ],

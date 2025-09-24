@@ -1,10 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:kmonie/application/auth/auth_bloc.dart';
+import 'package:kmonie/core/enum/auth_mode.dart';
+import 'package:kmonie/core/navigation/router_path.dart';
+import 'package:kmonie/core/navigation/router_refresh.dart';
+import 'package:kmonie/presentation/pages/add_transaction/add_transaction_page.dart';
+import 'package:kmonie/presentation/pages/auth/auth_page.dart';
+import 'package:kmonie/presentation/pages/main/main_page.dart';
+import 'package:kmonie/presentation/pages/search_transaction/search_transaction.dart';
+import 'package:kmonie/presentation/pages/splash/splash_page.dart';
 
-import '../../application/auth/auth_export.dart';
-import '../navigation/exports.dart';
-import '../../presentation/pages/exports.dart';
-import '../enum/exports.dart';
+
+
 
 
 class AppRouter {
