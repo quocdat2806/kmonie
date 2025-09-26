@@ -6,10 +6,10 @@ part 'transaction_category.g.dart';
 @freezed
 abstract class TransactionCategory with _$TransactionCategory {
   const factory TransactionCategory({
-    @Default(null) int? id,
+     int? id,
     required String title,
     @Default('') String pathAsset,
-    @Default(0) int transactionType,
+    @Default(TransactionType.expense) TransactionType transactionType,
     @Default(true) bool isCategoryDefaultSystem,
   }) = _TransactionCategory;
 

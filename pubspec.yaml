@@ -62,7 +62,7 @@ dependencies:
   calendar_date_picker2: ^2.0.1
   drift_flutter: ^0.2.7
   path_provider: ^2.1.5
-  sqlite3_flutter_libs: ^0.5.24
+  sqlite3_flutter_libs: ^0.5.39
 
 dev_dependencies:
   flutter_test:

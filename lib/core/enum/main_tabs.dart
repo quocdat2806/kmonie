@@ -1,6 +1,5 @@
 import '../constant/exports.dart';
 
-
 enum MainTabs {
   home(0, TextConstants.homeLabel),
   chart(1, TextConstants.chartLabel),

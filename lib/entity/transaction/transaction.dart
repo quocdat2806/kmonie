@@ -5,7 +5,7 @@ part 'transaction.g.dart';
 @freezed
 abstract class Transaction with _$Transaction {
   const factory Transaction({
-    @Default(null) int? id,
+    int? id,
     required double amount,
     required DateTime date,
     required int transactionCategoryId,

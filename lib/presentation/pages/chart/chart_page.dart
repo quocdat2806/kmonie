@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../core/constant/exports.dart';
+import '../../../core/enum/income_type.dart';
 import '../../widgets/exports.dart';
 
 class ChartPage extends StatefulWidget {
@@ -13,9 +14,7 @@ class _ChartPageState extends State<ChartPage> {
   final GlobalKey _dropdownKey = GlobalKey();
   String selected = 'Tháng';
 
-  final List<String> options = IncomeConstants.incomeTypes
-      .map((e) => e.displayName)
-      .toList();
+  final List<String> options = ExIncomeType.toList;
 
   final List<DateTime> _months = [];
   int _selectedMonthIndex = 0;

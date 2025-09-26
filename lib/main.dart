@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'core/navigation/app_router.dart';
+import 'app.dart';
 import 'application/auth/auth_bloc.dart';
 import 'application/auth/auth_event.dart';
-import 'database/secure_storage.dart';
-import 'app.dart';
+import 'core/navigation/app_router.dart';
 import 'core/di/injection_container.dart' as di;
+import 'database/secure_storage.dart';
+
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

@@ -12,7 +12,7 @@ class TransactionTabBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<AddTransactionBloc, AddTransactionState>(
       builder: (context, state) {
-        final transactionTypes = TransactionConstants.transactionTypes;
+        final transactionTypes = ExTransactionType.transactionTypes;
         return Padding(
           padding: const EdgeInsets.symmetric(horizontal:UIConstants.smallPadding),
           child: AppTabView<TransactionType>(

@@ -22,13 +22,11 @@ class TransactionCategoryService {
   }
 
 
-  /// Lấy toàn bộ categories (một lần)
   Future<List<TransactionCategory>> getAll() async {
     final rows = await _db.select(_db.transactionCategoryTb).get();
     return rows.map(_mapRow).toList();
   }
 
-  /// Lấy theo type (expense/income/transfer)
   Future<List<TransactionCategory>> getByType(TransactionType type) async {
     final q = _db.select(_db.transactionCategoryTb)
       ..where((t) => t.transactionType.equals(type.typeIndex));
@@ -53,24 +51,18 @@ class TransactionCategoryService {
     }
     return SeparatedCategories(expense: expense, income: income, transfer: transfer);
   }
-
-  // --------------- Streams (reactive) ---------------
-
-  /// Stream toàn bộ categories (realtime)
   Stream<List<TransactionCategory>> watchAll() {
     return _db.select(_db.transactionCategoryTb).watch().map(
           (rows) => rows.map(_mapRow).toList(),
     );
   }
 
-  /// Stream theo type (realtime)
   Stream<List<TransactionCategory>> watchByType(TransactionType type) {
     final q = _db.select(_db.transactionCategoryTb)
       ..where((t) => t.transactionType.equals(type.typeIndex));
     return q.watch().map((rows) => rows.map(_mapRow).toList());
   }
 
-  /// Stream & tách list (realtime)
   Stream<SeparatedCategories> watchSeparated() {
     return _db.select(_db.transactionCategoryTb).watch().map((rows) {
       final expense = <TransactionCategory>[];
@@ -89,7 +81,6 @@ class TransactionCategoryService {
   }
 }
 
-/// DTO tách list
 class SeparatedCategories {
   final List<TransactionCategory> expense;
   final List<TransactionCategory> income;

@@ -17,4 +17,10 @@ enum IncomeType {
   }
 
   static const int totalTypes = 2;
+
+}
+extension ExIncomeType on IncomeType{
+static List<String> toList = IncomeType.values
+    .map((e) => e.displayName)
+    .toList();
 }

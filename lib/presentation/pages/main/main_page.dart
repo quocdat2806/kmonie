@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:kmonie/core/exports.dart';
 import '../../../../core/constant/exports.dart';
 import '../../../presentation/pages/exports.dart';
 import '../../../presentation/bloc/exports.dart';
@@ -22,21 +23,23 @@ class MainPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider<MainBloc>(
-      create: (_) => MainBloc(),
-      child: BlocBuilder<MainBloc, MainState>(
-        builder: (context, state) {
-          final int currentIndex = state.selectedIndex;
-          return Scaffold(
-            backgroundColor: ColorConstants.yellow,
-            body: SafeArea(child: pageList[currentIndex]),
-            bottomNavigationBar: MainBottomNavigationBar(
-              currentIndex: currentIndex,
-              onTabSelected: (i) => _onTabSelected(context: context, index: i),
-            ),
-          );
-        },
-      ),
-    );
+
+    return Text("main");
+    // return BlocProvider<MainBloc>(
+    //   create: (_) => MainBloc(),
+    //   child: BlocBuilder<MainBloc, MainState>(
+    //     builder: (context, state) {
+    //       final int currentIndex = state.selectedIndex;
+    //       return Scaffold(
+    //         backgroundColor: ColorConstants.yellow,
+    //         body: SafeArea(child: pageList[currentIndex]),
+    //         bottomNavigationBar: MainBottomNavigationBar(
+    //           currentIndex: currentIndex,
+    //           onTabSelected: (i) => _onTabSelected(context: context, index: i),
+    //         ),
+    //       );
+    //     },
+    //   ),
+    // );
   }
 }
