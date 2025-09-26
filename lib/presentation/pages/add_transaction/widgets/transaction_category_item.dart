@@ -3,11 +3,11 @@ import '../../../../core/constant/color.dart';
 import '../../../../core/constant/ui.dart';
 import '../../../../core/enum/transaction_type.dart';
 import '../../../../core/text_style/app_text_style.dart';
-import '../../../../entity/transaction_category/transaction_category.dart';
+import '../../../../entity/category/category.dart';
 
 
 class TransactionCategoryItem extends StatelessWidget {
-  final TransactionCategory category;
+  final Category category;
   final TransactionType transactionType;
   final bool isSelected;
   final double itemWidth;

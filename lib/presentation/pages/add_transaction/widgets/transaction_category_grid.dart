@@ -12,42 +12,43 @@ class TransactionCategoryGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<AddTransactionBloc, AddTransactionState>(
-      builder: (context, state) {
-        final transactionType = TransactionType.fromIndex(state.selectedIndex);
-        final categories = TransactionCategoryService.getCategories(
-          transactionType,
-        );
-        final String? selectedId = context.select<AddTransactionBloc, String?>(
-          (AddTransactionBloc b) =>
-              b.state.selectedCategoryForType(transactionType),
-        );
-        return AppGrid(
-          mainAxisSpacing: UIConstants.zeroInsets,
-          crossAxisSpacing: UIConstants.zeroInsets,
-          crossAxisCount: UIConstants.defaultGridCrossAxisCount,
-          itemCount: categories.length,
-          itemBuilder: (context, index) {
-            final category = categories[index];
-            return TransactionCategoryItem(
-              category: category,
-              transactionType: transactionType,
-              isSelected: category.id == selectedId,
-              itemWidth:
-                  MediaQuery.of(context).size.width /
-                  UIConstants.defaultGridCrossAxisCount,
-              onTap: () {
-                context.read<AddTransactionBloc>().add(
-                  AddTransactionCategoryChanged(
-                    type: transactionType,
-                    categoryId: category.id,
-                  ),
-                );
-              },
-            );
-          },
-        );
-      },
-    );
+    return SizedBox();
+    // return BlocBuilder<AddTransactionBloc, AddTransactionState>(
+    //   builder: (context, state) {
+    //     final transactionType = TransactionType.fromIndex(state.selectedIndex);
+    //     final categories = TransactionCategoryService.getCategories(
+    //       transactionType,
+    //     );
+    //     final String? selectedId = context.select<AddTransactionBloc, String?>(
+    //       (AddTransactionBloc b) =>
+    //           b.state.selectedCategoryForType(transactionType),
+    //     );
+    //     return AppGrid(
+    //       mainAxisSpacing: UIConstants.zeroInsets,
+    //       crossAxisSpacing: UIConstants.zeroInsets,
+    //       crossAxisCount: UIConstants.defaultGridCrossAxisCount,
+    //       itemCount: categories.length,
+    //       itemBuilder: (context, index) {
+    //         final category = categories[index];
+    //         return TransactionCategoryItem(
+    //           category: category,
+    //           transactionType: transactionType,
+    //           isSelected: category.id == selectedId,
+    //           itemWidth:
+    //               MediaQuery.of(context).size.width /
+    //               UIConstants.defaultGridCrossAxisCount,
+    //           onTap: () {
+    //             context.read<AddTransactionBloc>().add(
+    //               AddTransactionCategoryChanged(
+    //                 type: transactionType,
+    //                 categoryId: category.id,
+    //               ),
+    //             );
+    //           },
+    //         );
+    //       },
+    //     );
+    //   },
+    // );
   }
 }

@@ -11,4 +11,6 @@ class AddTransactionEvent with _$AddTransactionEvent {
     required TransactionType type,
     required String categoryId,
   }) = AddTransactionCategoryChanged;
+  const factory AddTransactionEvent.toggleKeyboardVisibility() =
+      AddTransactionToggleKeyboardVisibility;
 }

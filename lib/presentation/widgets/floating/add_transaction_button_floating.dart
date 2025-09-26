@@ -34,7 +34,7 @@ class AddTransactionButtonFloating extends StatelessWidget {
                 child: Padding(
                   padding: const EdgeInsets.all(UIConstants.defaultPadding),
                   child: SvgPicture.asset(
-                    Assets.svgsAdd,
+                    Assets.svgsPlus,
                     width: UIConstants.largeIconSize,
                     height: UIConstants.largeIconSize,
                   ),

@@ -5,12 +5,11 @@ part 'transaction.g.dart';
 @freezed
 abstract class Transaction with _$Transaction {
   const factory Transaction({
-    required String id,
-    required String title,
+    required int id,
     required double amount,
     required DateTime date,
-    @Default(0) int type,
-    @Default('') String categoryUrl,
+    required int categoryId,
+    @Default('') String content,
   }) = _Transaction;
 
   factory Transaction.fromJson(Map<String, dynamic> json) =>

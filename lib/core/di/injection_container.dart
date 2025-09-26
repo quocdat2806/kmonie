@@ -12,6 +12,7 @@ Future<void> init() async {
       () => NetworkInfoImpl(sl<Connectivity>()),
     )
     ..registerLazySingleton<SecureStorageService>(() => SecureStorageService())
+    ..registerLazySingleton<KMonieDatabase>(() => KMonieDatabase())
     ..registerLazySingleton<LoggingInterceptor>(() => LoggingInterceptor())
     ..registerLazySingleton<AppDio>(
       () => TranslationDio(
@@ -21,4 +22,7 @@ Future<void> init() async {
       ),
     )
     ..registerLazySingleton<ApiClient>(() => ApiClient(sl<AppDio>().dio));
+
+
+  await sl<KMonieDatabase>().warmUp();
 }

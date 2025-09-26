@@ -14,19 +14,24 @@ class AddTransactionBloc
     on<AddTransactionCategoryChanged>(
       (event, emit) => _onCategoryChanged(event.type, event.categoryId, emit),
     );
+    on<AddTransactionToggleKeyboardVisibility>(
+      (event, emit) => _onToggleKeyboardVisibility(emit),
+    );
   }
 
   void _onSwitchTab(int index, Emitter<AddTransactionState> emit) {
     if (!TransactionType.values.any((type) => type.typeIndex == index)) return;
-
     if (index == state.selectedIndex) return;
-
     emit(
       state.copyWith(
         selectedIndex: index,
         selectedCategoriesByType: const <TransactionType, String?>{},
       ),
     );
+  }
+  
+  void _onToggleKeyboardVisibility(Emitter<AddTransactionState> emit) {
+    emit(state.copyWith(isKeyboardVisible: !state.isKeyboardVisible));
   }
 
   void _onCategoryChanged(
@@ -36,7 +41,7 @@ class AddTransactionBloc
   ) {
     final updated = <TransactionType, String?>{type: categoryId};
     if(!state.isKeyboardVisible){
-      emit(state.copyWith(isKeyboardVisible: !state.isKeyboardVisible));
+     add(const AddTransactionToggleKeyboardVisibility());
     }
     emit(state.copyWith(selectedCategoriesByType: updated));
   }
