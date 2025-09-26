@@ -1,5 +1,3 @@
-export 'app.dart';
-export 'main.dart';
 export 'application/exports.dart';
 export 'core/exports.dart';
 export 'database/exports.dart';

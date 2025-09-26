@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
-import '../../../../core/constant/color.dart';
-import '../../../../core/constant/ui.dart';
+import 'package:kmonie/core/constant/exports.dart';
+import 'package:kmonie/entity/exports.dart';
 import '../../../../core/enum/transaction_type.dart';
 import '../../../../core/text_style/app_text_style.dart';
-import '../../../../entity/category/category.dart';
 
 
 class TransactionCategoryItem extends StatelessWidget {
-  final Category category;
+  final TransactionCategory category;
   final TransactionType transactionType;
   final bool isSelected;
   final double itemWidth;
