@@ -6,7 +6,10 @@ class NetworkGuardInterceptor extends Interceptor {
   final NetworkInfo networkInfo;
 
   @override
-  Future<void> onRequest(RequestOptions options, RequestInterceptorHandler handler) async {
+  Future<void> onRequest(
+    RequestOptions options,
+    RequestInterceptorHandler handler,
+  ) async {
     final bool online = await networkInfo.isConnected;
     if (!online) {
       return handler.reject(

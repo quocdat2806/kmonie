@@ -2,6 +2,7 @@ import 'package:get_it/get_it.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import '../network/exports.dart';
 import '../../database/exports.dart';
+import '../service/transaction_category.dart';
 
 final GetIt sl = GetIt.instance;
 
@@ -21,8 +22,8 @@ Future<void> init() async {
         logging: sl<LoggingInterceptor>(),
       ),
     )
-    ..registerLazySingleton<ApiClient>(() => ApiClient(sl<AppDio>().dio));
-
-
+    ..registerLazySingleton<ApiClient>(() => ApiClient(sl<AppDio>().dio))
+    ..registerLazySingleton<TransactionCategoryService>(
+            () => TransactionCategoryService(sl<KMonieDatabase>()));
   await sl<KMonieDatabase>().warmUp();
 }

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '../constant/exports.dart';
+import '../navigation/exports.dart';
 
 class AppDialogs {
   AppDialogs._();
@@ -10,12 +12,12 @@ class AppDialogs {
     return showDialog(
       context: context,
       builder: (_) => AlertDialog(
-        title: const Text('Error'),
+        title: const Text(TextConstants.error),
         content: Text(message),
         actions: [
           TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('OK'),
+            onPressed: () => AppNavigator(context: context).pop(),
+            child: const Text(TextConstants.gotIt),
           ),
         ],
       ),
@@ -36,14 +38,14 @@ class AppDialogs {
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Cancel'),
+            child: const Text(TextConstants.cancel),
           ),
           TextButton(
             onPressed: () {
-              Navigator.of(context).pop();
+              AppNavigator(context: context).pop();
               onConfirm();
             },
-            child: const Text('OK'),
+            child: const Text(TextConstants.confirm),
           ),
         ],
       ),

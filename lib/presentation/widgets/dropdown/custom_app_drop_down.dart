@@ -16,7 +16,7 @@ class CustomDropdownOverlay {
     _remove();
 
     final RenderBox renderBox =
-    targetKey.currentContext!.findRenderObject() as RenderBox;
+        targetKey.currentContext!.findRenderObject() as RenderBox;
     final Size size = renderBox.size;
     final Offset offset = renderBox.localToGlobal(Offset.zero);
 

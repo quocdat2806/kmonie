@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:kmonie/core/constant/color.dart';
-
+import '../constant/exports.dart';
 
 class AppTextStyle {
   AppTextStyle._();
@@ -8,26 +7,8 @@ class AppTextStyle {
   static const FontWeight medium = FontWeight.w500;
   static const FontWeight bold = FontWeight.bold;
   static const FontWeight blackWeight = FontWeight.w900;
-  static final TextStyle primary = const TextStyle(color: ColorConstants.primary);
-  static final TextStyle primaryS12 = primary.copyWith(fontSize: 12);
-  static final TextStyle primaryS12Medium = primaryS12.copyWith(
-    fontWeight: medium,
-  );
-  static final TextStyle primaryS12Bold = primaryS12.copyWith(fontWeight: bold);
-  static final TextStyle primaryS12Black = primaryS12.copyWith(
-    fontWeight: blackWeight,
-  );
 
-  static final TextStyle primaryS14 = primary.copyWith(fontSize: 14);
-  static final TextStyle primaryS14Medium = primaryS14.copyWith(
-    fontWeight: medium,
-  );
-  static final TextStyle primaryS14Bold = primaryS14.copyWith(fontWeight: bold);
-  static final TextStyle primaryS14Black = primaryS14.copyWith(
-    fontWeight: blackWeight,
-  );
-
-  static const TextStyle black = TextStyle(color: ColorConstants.textBlack);
+  static const TextStyle black = TextStyle(color: ColorConstants.black);
   static final TextStyle blackS12 = black.copyWith(fontSize: 12);
   static final TextStyle blackS12Medium = blackS12.copyWith(fontWeight: medium);
   static final TextStyle blackS12Bold = blackS12.copyWith(fontWeight: bold);
@@ -175,7 +156,7 @@ class AppTextStyle {
   static final TextStyle redS14Bold = redS14.copyWith(fontWeight: bold);
   static final TextStyle redS14Black = redS14.copyWith(fontWeight: blackWeight);
 
-  static const TextStyle yellow = TextStyle(color: ColorConstants.yellow);
+  static const TextStyle yellow = TextStyle(color: ColorConstants.primary);
   static final TextStyle yellowS10 = yellow.copyWith(fontSize: 10);
   static final TextStyle yellowS12 = yellow.copyWith(fontSize: 12);
   static final TextStyle yellowS14 = yellow.copyWith(fontSize: 14);

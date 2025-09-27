@@ -35,13 +35,11 @@ class _DonutChartState extends State<DonutChart>
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(
-      vsync: this,
-      duration: widget.duration,
-    );
-    _animation = Tween<double>(begin: 0, end: 1).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeOutCubic),
-    );
+    _controller = AnimationController(vsync: this, duration: widget.duration);
+    _animation = Tween<double>(
+      begin: 0,
+      end: 1,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOutCubic));
 
     _controller.forward(); // bắt đầu animation
   }
@@ -101,8 +99,8 @@ class DonutChartPainter extends CustomPainter {
       double segmentStart = accumulatedPercent;
       double segmentEnd = accumulatedPercent + segmentPercent;
 
-      double visiblePercent =
-      ((progress - segmentStart) / segmentPercent).clamp(0.0, 1.0);
+      double visiblePercent = ((progress - segmentStart) / segmentPercent)
+          .clamp(0.0, 1.0);
 
       final paint = Paint()
         ..color = data[i].color

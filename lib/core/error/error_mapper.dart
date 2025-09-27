@@ -46,19 +46,19 @@ Failure mapDioErrorToFailure(DioException e) {
       String message = serverMsg.isNotEmpty ? serverMsg : 'Request failed';
       if (code == 401) {
         message = serverMsg.isNotEmpty ? serverMsg : 'Unauthorized';
-        return ServerFailure( message);
+        return ServerFailure(message);
       }
       if (code == 403) {
         message = serverMsg.isNotEmpty ? serverMsg : 'Forbidden';
-        return ServerFailure( message);
+        return ServerFailure(message);
       }
       if (code == 404) {
         message = serverMsg.isNotEmpty ? serverMsg : 'Not found';
-        return ServerFailure( message);
+        return ServerFailure(message);
       }
       if (code == 409) {
         message = serverMsg.isNotEmpty ? serverMsg : 'Conflict';
-        return ServerFailure( message);
+        return ServerFailure(message);
       }
       if (code == 422) {
         message = serverMsg.isNotEmpty ? serverMsg : 'Validation error';
@@ -66,10 +66,10 @@ Failure mapDioErrorToFailure(DioException e) {
       }
       if (code >= 500) {
         message = serverMsg.isNotEmpty ? serverMsg : 'Server error';
-        return ServerFailure( message);
+        return ServerFailure(message);
       }
       return ServerFailure(message);
     case DioExceptionType.unknown:
-      return const NetworkFailure( 'No Internet or unknown error');
+      return const NetworkFailure('No Internet or unknown error');
   }
 }

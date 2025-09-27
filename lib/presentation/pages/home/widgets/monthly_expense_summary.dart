@@ -18,7 +18,7 @@ class MonthlyExpenseSummary extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ColoredBox(
-      color: ColorConstants.yellow,
+      color: ColorConstants.primary,
       child: Padding(
         padding: const EdgeInsets.all(UIConstants.defaultPadding),
         child: Column(

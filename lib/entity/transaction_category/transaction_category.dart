@@ -1,12 +1,12 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import '../../core/enum/transaction_type.dart';
+import '../../core/enum/exports.dart';
 part 'transaction_category.freezed.dart';
 part 'transaction_category.g.dart';
 
 @freezed
 abstract class TransactionCategory with _$TransactionCategory {
   const factory TransactionCategory({
-     int? id,
+    int? id,
     required String title,
     @Default('') String pathAsset,
     @Default(TransactionType.expense) TransactionType transactionType,

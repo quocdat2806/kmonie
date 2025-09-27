@@ -29,7 +29,7 @@ class AddTransactionButtonFloating extends StatelessWidget {
               child: DecoratedBox(
                 decoration: const BoxDecoration(
                   shape: BoxShape.circle,
-                  color: ColorConstants.yellow,
+                  color: ColorConstants.primary,
                 ),
                 child: Padding(
                   padding: const EdgeInsets.all(UIConstants.defaultPadding),

@@ -6,7 +6,6 @@ import '../../../presentation/pages/exports.dart';
 import '../../../presentation/bloc/exports.dart';
 import 'widgets/main_bottom_navigation_bar.dart';
 
-
 final List<Widget> pageList = const <Widget>[
   HomePage(),
   ChartPage(),
@@ -23,23 +22,21 @@ class MainPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
-    return Text("main");
-    // return BlocProvider<MainBloc>(
-    //   create: (_) => MainBloc(),
-    //   child: BlocBuilder<MainBloc, MainState>(
-    //     builder: (context, state) {
-    //       final int currentIndex = state.selectedIndex;
-    //       return Scaffold(
-    //         backgroundColor: ColorConstants.yellow,
-    //         body: SafeArea(child: pageList[currentIndex]),
-    //         bottomNavigationBar: MainBottomNavigationBar(
-    //           currentIndex: currentIndex,
-    //           onTabSelected: (i) => _onTabSelected(context: context, index: i),
-    //         ),
-    //       );
-    //     },
-    //   ),
-    // );
+    return BlocProvider<MainBloc>(
+      create: (_) => MainBloc(),
+      child: BlocBuilder<MainBloc, MainState>(
+        builder: (context, state) {
+          final int currentIndex = state.selectedIndex;
+          return Scaffold(
+            backgroundColor: ColorConstants.primary,
+            body: SafeArea(child: pageList[currentIndex]),
+            bottomNavigationBar: MainBottomNavigationBar(
+              currentIndex: currentIndex,
+              onTabSelected: (i) => _onTabSelected(context: context, index: i),
+            ),
+          );
+        },
+      ),
+    );
   }
 }

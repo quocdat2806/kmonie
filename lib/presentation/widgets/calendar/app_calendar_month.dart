@@ -66,7 +66,9 @@ class _CalendarScreenState extends State<CalendarScreen> {
     const days = ['CN', 'Th 2', 'Th 3', 'Th 4', 'Th 5', 'Th 6', 'Th 7'];
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceAround,
-      children: days.map((d) => Expanded(child: Center(child: Text(d)))).toList(),
+      children: days
+          .map((d) => Expanded(child: Center(child: Text(d))))
+          .toList(),
     );
   }
 

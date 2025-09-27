@@ -3,14 +3,14 @@ import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
 import 'package:path_provider/path_provider.dart';
 
-import '../core/constant/transaction_category.dart';
+import '../core/constant/exports.dart';
 
 part 'drift_local_database.g.dart';
 
 class TransactionsTb extends Table {
   IntColumn get id => integer().autoIncrement()();
 
-  IntColumn  get amount => integer()();
+  IntColumn get amount => integer()();
 
   DateTimeColumn get date => dateTime()();
 

@@ -20,6 +20,6 @@ enum TransactionType {
   static const int totalTypes = 3;
 }
 
-extension ExTransactionType on TransactionType{
+extension ExTransactionType on TransactionType {
   static const List<TransactionType> transactionTypes = TransactionType.values;
 }

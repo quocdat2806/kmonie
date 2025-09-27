@@ -61,7 +61,6 @@ class AppTextField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return TextFormField(
-
       enabled: editAble,
       style: style,
       controller: controller,

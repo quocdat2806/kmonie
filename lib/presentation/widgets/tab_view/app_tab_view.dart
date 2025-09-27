@@ -50,7 +50,7 @@ class AppTabView<T> extends StatelessWidget {
               decoration: BoxDecoration(
                 color: isSelected
                     ? ColorConstants.black
-                    : ColorConstants.yellow,
+                    : ColorConstants.primary,
                 border: Border(
                   top: const BorderSide(color: ColorConstants.black),
                   bottom: const BorderSide(color: ColorConstants.black),
@@ -63,8 +63,8 @@ class AppTabView<T> extends StatelessWidget {
               ),
               child: Padding(
                 padding: const EdgeInsets.symmetric(
-                  vertical: UIConstants.smallPadding +
-                      UIConstants.extraSmallSpacing,
+                  vertical:
+                      UIConstants.smallPadding + UIConstants.extraSmallSpacing,
                 ),
                 child: Text(
                   getDisplayName(type),

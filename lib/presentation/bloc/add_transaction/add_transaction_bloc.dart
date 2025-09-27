@@ -1,48 +1,61 @@
+import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
 import '../../../core/enum/exports.dart';
+import '../../../core/service/exports.dart';
+import '../../../entity/exports.dart';
 import 'add_transaction_event.dart';
 import 'add_transaction_state.dart';
 
 class AddTransactionBloc
     extends Bloc<AddTransactionEvent, AddTransactionState> {
-  AddTransactionBloc() : super(const AddTransactionState()) {
-    on<AddTransactionSwitchTab>(
-      (event, emit) => _onSwitchTab(event.index, emit),
-    );
+  final TransactionCategoryService service;
 
-    on<AddTransactionCategoryChanged>(
-      (event, emit) => _onCategoryChanged(event.type, event.categoryId, emit),
-    );
+  AddTransactionBloc(this.service) : super(const AddTransactionState()) {
+    on<AddTransactionSwitchTab>(_onSwitchTab);
+    on<AddTransactionLoadCategories>(_onLoadCategories);
+    on<AddTransactionCategoryChanged>(_onCategoryChanged);
     on<AddTransactionToggleKeyboardVisibility>(
-      (event, emit) => _onToggleKeyboardVisibility(emit),
+          (e, emit) => emit(state.copyWith(isKeyboardVisible: !state.isKeyboardVisible)),
     );
+
+    add(AddTransactionLoadCategories(state.currentType));
   }
 
-  void _onSwitchTab(int index, Emitter<AddTransactionState> emit) {
-    if (!TransactionType.values.any((type) => type.typeIndex == index)) return;
-    if (index == state.selectedIndex) return;
-    emit(
-      state.copyWith(
-        selectedIndex: index,
-        selectedCategoriesByType: const <TransactionType, String?>{},
-      ),
-    );
+  Future<void> _onSwitchTab(
+      AddTransactionSwitchTab e,
+      Emitter<AddTransactionState> emit,
+      ) async {
+    if (e.index == state.selectedIndex) return;
+
+    final newType = TransactionType.fromIndex(e.index);
+    emit(state.copyWith(selectedIndex: e.index));
+
+    if (!state.categoriesByType.containsKey(newType)) {
+      add(AddTransactionLoadCategories(newType));
+    }
   }
-  
-  void _onToggleKeyboardVisibility(Emitter<AddTransactionState> emit) {
-    emit(state.copyWith(isKeyboardVisible: !state.isKeyboardVisible));
+
+  Future<void> _onLoadCategories(
+      AddTransactionLoadCategories e,
+      Emitter<AddTransactionState> emit,
+      ) async {
+    emit(state.copyWith(isLoading: true));
+    final list = await service.getByType(e.type);
+    final updated = Map<TransactionType, List<TransactionCategory>>.from(state.categoriesByType)
+      ..[e.type] = list;
+    emit(state.copyWith(isLoading: false, categoriesByType: updated));
   }
 
   void _onCategoryChanged(
-    TransactionType type,
-    String categoryId,
-    Emitter<AddTransactionState> emit,
-  ) {
-    final updated = <TransactionType, String?>{type: categoryId};
-    if(!state.isKeyboardVisible){
-     add(const AddTransactionToggleKeyboardVisibility());
+      AddTransactionCategoryChanged e,
+      Emitter<AddTransactionState> emit,
+      ) {
+    final next = Map<TransactionType, int?>.from(state.selectedCategoryIdByType)
+      ..[e.type] = e.categoryId;
+
+    if (!state.isKeyboardVisible) {
+      add(const AddTransactionToggleKeyboardVisibility());
     }
-    emit(state.copyWith(selectedCategoriesByType: updated));
+    emit(state.copyWith(selectedCategoryIdByType: next));
   }
 }

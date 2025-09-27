@@ -15,10 +15,7 @@ class HomePage extends StatelessWidget {
       color: Colors.white,
       child: Column(
         children: <Widget>[
-           MonthlyExpenseSummary(
-            onCalendarTap: (){},
-            onSearchTap: (){},
-          ),
+          MonthlyExpenseSummary(onCalendarTap: () {}, onSearchTap: () {}),
           Expanded(
             child: CustomScrollView(
               slivers: <Widget>[

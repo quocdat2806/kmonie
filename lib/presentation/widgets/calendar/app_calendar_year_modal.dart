@@ -37,7 +37,10 @@ class _MonthPickerDialogState extends State<MonthPickerDialog> {
             children: [
               Text(
                 'tháng $selectedMonth năm $selectedYear',
-                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               const SizedBox(height: 16),
               GridView.builder(
@@ -58,9 +61,13 @@ class _MonthPickerDialogState extends State<MonthPickerDialog> {
                     child: Container(
                       alignment: Alignment.center,
                       decoration: BoxDecoration(
-                        color: isSelected ? Colors.yellow[700] : Colors.grey[200],
+                        color: isSelected
+                            ? Colors.yellow[700]
+                            : Colors.grey[200],
                         borderRadius: BorderRadius.circular(30),
-                        border: isSelected ? Border.all(color: Colors.black87) : null,
+                        border: isSelected
+                            ? Border.all(color: Colors.black87)
+                            : null,
                       ),
                       child: Text('Thg $month'),
                     ),
@@ -73,10 +80,15 @@ class _MonthPickerDialogState extends State<MonthPickerDialog> {
                 children: [
                   TextButton(
                     onPressed: () => Navigator.pop(context),
-                    child: const Text('Hủy', style: TextStyle(color: Colors.amber)),
+                    child: const Text(
+                      'Hủy',
+                      style: TextStyle(color: Colors.amber),
+                    ),
                   ),
                   ElevatedButton(
-                    style: ElevatedButton.styleFrom(backgroundColor: Colors.amber),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.amber,
+                    ),
                     onPressed: () {
                       Navigator.pop(context, {
                         'month': selectedMonth,

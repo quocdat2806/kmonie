@@ -1,6 +1,5 @@
 import '../constant/exports.dart';
 
-
 enum ReportType {
   analysis(0, TextConstants.analysisReportTitle),
   account(1, TextConstants.accountReportTitle);

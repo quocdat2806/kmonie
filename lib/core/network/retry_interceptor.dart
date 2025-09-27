@@ -15,7 +15,13 @@ class RetryInterceptor extends Interceptor {
     },
     this.retryAbleStatusCodes = const <int>{},
     this.delayBuilder,
-    this.retryMethods = const <String>{'GET', 'PUT', 'DELETE', 'HEAD', 'OPTIONS'},
+    this.retryMethods = const <String>{
+      'GET',
+      'PUT',
+      'DELETE',
+      'HEAD',
+      'OPTIONS',
+    },
   });
 
   final Dio dio;
@@ -74,7 +80,10 @@ class RetryInterceptor extends Interceptor {
   }
 
   @override
-  Future<void> onError(DioException err, ErrorInterceptorHandler handler) async {
+  Future<void> onError(
+    DioException err,
+    ErrorInterceptorHandler handler,
+  ) async {
     final RequestOptions req = err.requestOptions;
 
     final int attempt = req.extra['__retry_attempt'] as int? ?? 0;
@@ -89,7 +98,10 @@ class RetryInterceptor extends Interceptor {
 
       try {
         final RequestOptions opts = req.copyWith(
-          extra: <String, dynamic>{...req.extra, '__retry_attempt': nextAttempt},
+          extra: <String, dynamic>{
+            ...req.extra,
+            '__retry_attempt': nextAttempt,
+          },
         );
 
         final Response<RequestOptions> response = await dio.fetch(opts);

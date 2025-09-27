@@ -1,4 +1,3 @@
-// Pages exports
 export 'add_transaction/add_transaction_page.dart';
 export 'auth/auth_page.dart';
 export 'chart/chart_page.dart';

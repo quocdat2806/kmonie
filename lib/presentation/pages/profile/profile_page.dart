@@ -16,13 +16,13 @@ class ProfilePage extends StatelessWidget {
 
   Widget _buildHeader() {
     return ColoredBox(
-      color: ColorConstants.yellow,
+      color: ColorConstants.primary,
       child: Padding(
         padding: const EdgeInsets.all(UIConstants.defaultPadding),
         child: Row(
           children: [
             const AppCircleImage(
-              backgroundColor: ColorConstants.yellow,
+              backgroundColor: ColorConstants.primary,
               fallbackIcon: Icon(Icons.person, color: ColorConstants.black),
               imageUrl:
                   'https://hoanghamobile.com/tin-tuc/wp-content/uploads/2024/11/tai-hinh-nen-dep-mien-phi.jpg',

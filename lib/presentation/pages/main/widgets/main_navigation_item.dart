@@ -22,7 +22,7 @@ class NavigationItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bool isActive = index == currentIndex;
-    final Color iconColor = isActive ? ColorConstants.yellow : Colors.white;
+    final Color iconColor = isActive ? ColorConstants.primary : Colors.white;
     final TextStyle textStyle = isActive
         ? AppTextStyle.yellowS10
         : AppTextStyle.whiteS10;

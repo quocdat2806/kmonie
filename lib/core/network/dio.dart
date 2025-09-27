@@ -3,7 +3,6 @@ import '../../database/exports.dart';
 import '../config/exports.dart';
 import '../network/exports.dart';
 
-
 abstract class AppDio {
   Dio get dio;
 }

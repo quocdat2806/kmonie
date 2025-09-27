@@ -3,8 +3,6 @@ import '../../../core/constant/exports.dart';
 import '../../../core/text_style/exports.dart';
 import '../../../core/navigation/exports.dart';
 
-
-
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   const CustomAppBar({
     super.key,
@@ -12,7 +10,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
     this.leading,
     this.actions,
     this.onLeadingTap,
-    this.backgroundColor = ColorConstants.yellow,
+    this.backgroundColor = ColorConstants.primary,
     this.elevation = 0.0,
     this.centerTitle = true,
     this.titleTextStyle,

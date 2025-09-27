@@ -1,8 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:kmonie/lib.dart';
-import 'package:kmonie/presentation/widgets/keyboard/app_keyboard.dart';
+import '../../../core/di/exports.dart';
+import '../../../core/service/exports.dart';
+import '../../../core/constant/exports.dart';
+import '../../../core/text_style/exports.dart';
+
+import '../../../core/tool/export.dart';
+import '../../../generated/assets.dart';
+import '../../bloc/exports.dart';
+import '../../widgets/exports.dart';
 import 'widgets/transaction_category_grid.dart';
 import 'widgets/transaction_tab_bar.dart';
 
@@ -11,10 +18,7 @@ class AddTransactionPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider<AddTransactionBloc>(
-      create: (_) => AddTransactionBloc(),
-      child: const AddTransactionPageChild(),
-    );
+    return BlocProvider<AddTransactionBloc>(create: (_) => AddTransactionBloc(sl<TransactionCategoryService>()), child: const AddTransactionPageChild());
   }
 }
 
@@ -25,54 +29,57 @@ class AddTransactionPageChild extends StatefulWidget {
   State<AddTransactionPageChild> createState() => _AddTransactionPageChildState();
 }
 
-class _AddTransactionPageChildState extends State<AddTransactionPageChild>
-    with SingleTickerProviderStateMixin {
+class _AddTransactionPageChildState extends State<AddTransactionPageChild> with SingleTickerProviderStateMixin,WidgetsBindingObserver {
   final TextEditingController _noteController = TextEditingController();
   final FocusNode _noteFocusNode = FocusNode();
   late AnimationController _animationController;
   late Animation<double> _slideAnimation;
+  double _previousKeyboardHeight = 0;
 
   @override
   void initState() {
     super.initState();
-    _animationController = AnimationController(
-      duration: const Duration(milliseconds: 300),
-      vsync: this,
-    );
-    _slideAnimation = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _animationController,
-      curve: Curves.easeOutQuart,
-    ));
+    _animationController = AnimationController(duration: const Duration(milliseconds: 200), vsync: this);
+    _slideAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(CurvedAnimation(parent: _animationController, curve: Curves.easeOutQuart));
+    WidgetsBinding.instance.addObserver(this);
   }
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _animationController.dispose();
     _noteController.dispose();
     _noteFocusNode.dispose();
     super.dispose();
   }
+  @override
+  void didChangeMetrics() {
+    super.didChangeMetrics();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        final view = View.of(context);
+        final keyboardHeight = view.viewInsets.bottom / view.devicePixelRatio;
+        if (keyboardHeight != _previousKeyboardHeight) {
+          _previousKeyboardHeight = keyboardHeight;
+          if (keyboardHeight > 0) {
+            _animationController.forward();
+            return;
+          }
+            _animationController.reverse();
+        }
+      }
+    });
+
+  }
+
 
   @override
   Widget build(BuildContext context) {
     final keyboardHeight = MediaQuery.of(context).viewInsets.bottom;
-    final isSystemKeyboardVisible = keyboardHeight > 0;
-
-    // Trigger animation when system keyboard visibility changes
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (isSystemKeyboardVisible) {
-        _animationController.forward();
-      } else {
-        _animationController.reverse();
-      }
-    });
-
+    print("zzzz");
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      backgroundColor: ColorConstants.yellow,
+      backgroundColor: ColorConstants.primary,
       body: SafeArea(
         child: Stack(
           children: [
@@ -80,26 +87,24 @@ class _AddTransactionPageChildState extends State<AddTransactionPageChild>
               children: [
                 CustomAppBar(
                   title: 'Thêm',
-                  leading: GestureDetector(
-                    onTap: () => Navigator.pop(context),
-                    child: Center(
-                      child: Text('Hủy', style: AppTextStyle.blackS14Medium),
+                  leading: ConstrainedBox(
+                    constraints: const BoxConstraints(minWidth: UIConstants.mediumContainerSize, minHeight: UIConstants.mediumContainerSize),
+                    child: Ink(
+                      decoration: const ShapeDecoration(shape: StadiumBorder()),
+                      child: InkWell(
+                        customBorder: const StadiumBorder(),
+                        onTap: () => Navigator.pop(context),
+                        child: Center(child: Text('Hủy', style: AppTextStyle.blackS14Medium)),
+                      ),
                     ),
                   ),
                   actions: [
-                    InkWell(
-                      onTap: () {},
-                      child: DecoratedBox(
-                        decoration: const BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: ColorConstants.divider,
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.all(
-                            UIConstants.smallPadding,
-                          ),
-                          child: SvgPicture.asset(Assets.svgsChecklist),
-                        ),
+                    Ink(
+                      decoration: const ShapeDecoration(color: ColorConstants.iconBackground, shape: CircleBorder()),
+                      child: InkWell(
+                        onTap: () {},
+                        customBorder: const CircleBorder(),
+                        child: Padding(padding: const EdgeInsets.all(UIConstants.smallPadding), child: SvgPicture.asset(Assets.svgsChecklist)),
                       ),
                     ),
                     const SizedBox(width: UIConstants.defaultPadding),
@@ -107,25 +112,20 @@ class _AddTransactionPageChildState extends State<AddTransactionPageChild>
                 ),
                 const TransactionTabBar(),
                 const SizedBox(height: UIConstants.defaultPadding),
-                // const Expanded(
-                //   child: ColoredBox(
-                //     color: ColorConstants.white,
-                //     child: Padding(
-                //       padding: EdgeInsets.all(UIConstants.smallPadding),
-                //       child: TransactionCategoryGrid(),
-                //     ),
-                //   ),
-                // ),
+                const Expanded(
+                  child: ColoredBox(
+                    color: ColorConstants.white,
+                    child: Padding(padding: EdgeInsets.all(UIConstants.smallPadding), child: TransactionCategoryGrid()),
+                  ),
+                ),
               ],
             ),
 
-            // Custom Keyboard Overlay
             BlocBuilder<AddTransactionBloc, AddTransactionState>(
               builder: (context, state) {
                 if (state.isKeyboardVisible != true) {
                   return const SizedBox();
                 }
-
                 return Positioned(
                   bottom: 0,
                   left: 0,
@@ -133,81 +133,47 @@ class _AddTransactionPageChildState extends State<AddTransactionPageChild>
                   child: AnimatedBuilder(
                     animation: _slideAnimation,
                     builder: (context, child) {
-                      final slideOffset = _slideAnimation.value * keyboardHeight * 0.3;
+                      final slideOffset = _slideAnimation.value * keyboardHeight * UIConstants.keyboardSlideRatio;
                       return Transform.translate(
                         offset: Offset(0, -slideOffset),
-                        child: Material(
-                          elevation: 8,
-                          child: Container(
-                            color: ColorConstants.grey,
+                        child: ColoredBox(
+                          color: ColorConstants.iconBackground,
+                          child: Padding(
+                            padding: const EdgeInsets.all(UIConstants.smallPadding),
                             child: Column(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                // Header với số tiền
-                                Container(
-                                  padding: const EdgeInsets.all(16),
-                                  color: ColorConstants.grey,
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      InkWell(
-                                        onTap: () {
-                                          context.read<AddTransactionBloc>().add(
-                                            const AddTransactionToggleKeyboardVisibility(),
-                                          );
-                                          _noteFocusNode.unfocus();
-                                        },
-                                        child: const Icon(Icons.keyboard_hide),
-                                      ),
-                                      Text("0", style: AppTextStyle.blackS20Bold),
-                                      const SizedBox(width: 24),
-                                    ],
-                                  ),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    SvgPicture.asset(Assets.svgsCccd, width: UIConstants.largeIconSize, height: UIConstants.largeIconSize),
+                                    Text('0', style: AppTextStyle.blackS20Bold),
+                                  ],
                                 ),
-
-                                // Note input section
+                                const SizedBox(height: UIConstants.smallPadding),
                                 Container(
-                                  color: ColorConstants.white,
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 16,
-                                      vertical: 12
-                                  ),
+                                  decoration: BoxDecoration(color: ColorConstants.white, borderRadius: BorderRadius.circular(4)),
+                                  padding: const EdgeInsets.symmetric(horizontal: 8),
                                   child: Row(
                                     children: [
                                       Text('Ghi chú: ', style: AppTextStyle.greyS14),
                                       Expanded(
-                                        child: AppTextField(
-                                          border: InputBorder.none,
-                                          borderBottomColor: Colors.transparent,
+                                        child: TextFormField(
                                           controller: _noteController,
                                           focusNode: _noteFocusNode,
-                                          hintText: "Ghi chu",
+                                          decoration: const InputDecoration(isDense: true, border: InputBorder.none, fillColor: Colors.transparent, filled: true, focusedBorder: InputBorder.none, enabledBorder: InputBorder.none, disabledBorder: InputBorder.none, contentPadding: EdgeInsets.symmetric(vertical: 10)),
                                         ),
                                       ),
-                                      InkWell(
-                                        onTap: () {
-                                          // Handle camera action
-                                        },
-                                        child: const Icon(Icons.camera_alt),
-                                      ),
+                                      InkWell(onTap: () {}, child: const Icon(Icons.camera_alt)),
                                     ],
                                   ),
                                 ),
-
-                                // Custom keyboard - System keyboard sẽ đè lên phần này
+                                const SizedBox(height: UIConstants.smallPadding),
                                 AnimatedOpacity(
-                                  duration: const Duration(milliseconds: 200),
-                                  opacity: isSystemKeyboardVisible ? 0.3 : 1.0,
-                                  child: CustomKeyboard(
-                                    onValueChanged: (value) {
-                                      print('Value changed: $value');
-                                    },
-                                    onConfirm: () {
-                                      _noteFocusNode.unfocus();
-                                      context.read<AddTransactionBloc>().add(
-                                        const AddTransactionToggleKeyboardVisibility(),
-                                      );
-                                    },
+                                  duration: const Duration(milliseconds: 150),
+                                  opacity: 1.0,
+                                  child: AppKeyboard(
+                                    onValueChanged: (value) {},
                                   ),
                                 ),
                               ],

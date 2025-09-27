@@ -77,18 +77,24 @@ class _SearchScreenState extends State<SearchScreen> {
               const SizedBox(height: 24),
 
               // Category filter
-              const Text("Danh mục", style: TextStyle(fontWeight: FontWeight.bold)),
+              const Text(
+                "Danh mục",
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
               const SizedBox(height: 8),
               Row(
                 children: [
                   ChoiceChip(
                     label: const Text('Tất cả'),
                     selected: selectedCategory == 'Tất cả',
-                    onSelected: (_) => setState(() => selectedCategory = 'Tất cả'),
+                    onSelected: (_) =>
+                        setState(() => selectedCategory = 'Tất cả'),
                     selectedColor: Colors.yellow[700],
                     backgroundColor: Colors.grey[200],
                     labelStyle: TextStyle(
-                      color: selectedCategory == 'Tất cả' ? Colors.black : Colors.black87,
+                      color: selectedCategory == 'Tất cả'
+                          ? Colors.black
+                          : Colors.black87,
                     ),
                   ),
                   const SizedBox(width: 8),
@@ -104,7 +110,7 @@ class _SearchScreenState extends State<SearchScreen> {
                       ),
                       child: const Icon(Icons.add, size: 20),
                     ),
-                  )
+                  ),
                 ],
               ),
 

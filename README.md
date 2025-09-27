@@ -1,6 +1,6 @@
 # KMonie - Flutter App
 
-A Flutter application for personal finance management with modern UI and clean architecture.
+A Flutter application for personal finance management with modern UI and clean architecture custom
 
 ## 📋 Prerequisites
 

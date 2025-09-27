@@ -29,4 +29,8 @@ class TextConstants {
   static const String accountReportTitle = 'Tài khoản';
   static const String monthIncomeTitle = 'Tháng';
   static const String yearIncomeTitle = 'Năm';
+  static const String confirm = 'Đồng ý';
+  static const String error = 'Lỗi';
+  static const String cancel = 'Huỷ';
+  static const String gotIt = 'Đã hiểu';
 }

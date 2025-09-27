@@ -14,16 +14,18 @@ class TransactionTabBar extends StatelessWidget {
       builder: (context, state) {
         final transactionTypes = ExTransactionType.transactionTypes;
         return Padding(
-          padding: const EdgeInsets.symmetric(horizontal:UIConstants.smallPadding),
+          padding: const EdgeInsets.symmetric(
+            horizontal: UIConstants.smallPadding,
+          ),
           child: AppTabView<TransactionType>(
             types: transactionTypes,
             selectedIndex: state.selectedIndex,
             getDisplayName: (t) => t.displayName,
             getTypeIndex: (t) => t.typeIndex,
             onTabSelected: (index) {
-              context
-                  .read<AddTransactionBloc>()
-                  .add(AddTransactionSwitchTab(index));
+              context.read<AddTransactionBloc>().add(
+                AddTransactionSwitchTab(index),
+              );
             },
           ),
         );

@@ -10,7 +10,9 @@ class LoggingInterceptor extends Interceptor {
     if (!kDebugMode) {
       return handler.next(options);
     }
-    final Map<String, dynamic> headers = Map<String,dynamic>.of(options.headers);
+    final Map<String, dynamic> headers = Map<String, dynamic>.of(
+      options.headers,
+    );
     if (headers.containsKey('Authorization')) {
       headers['Authorization'] = '***';
     }
@@ -18,13 +20,18 @@ class LoggingInterceptor extends Interceptor {
     debugPrint('Headers: $headers');
     if (options.data != null) {
       final String body = options.data.toString();
-      debugPrint('Body: ${body.length > maxBody ? '${body.substring(0, maxBody)}…' : body}');
+      debugPrint(
+        'Body: ${body.length > maxBody ? '${body.substring(0, maxBody)}…' : body}',
+      );
     }
     handler.next(options);
   }
 
   @override
-  void onResponse(Response<dynamic> response, ResponseInterceptorHandler handler) {
+  void onResponse(
+    Response<dynamic> response,
+    ResponseInterceptorHandler handler,
+  ) {
     if (!kDebugMode) {
       return handler.next(response);
     }
@@ -37,7 +44,9 @@ class LoggingInterceptor extends Interceptor {
     if (!kDebugMode) {
       return handler.next(err);
     }
-    debugPrint('❌ ${err.type} ${err.requestOptions.uri} ${err.response?.statusCode ?? ''}');
+    debugPrint(
+      '❌ ${err.type} ${err.requestOptions.uri} ${err.response?.statusCode ?? ''}',
+    );
     handler.next(err);
   }
 }

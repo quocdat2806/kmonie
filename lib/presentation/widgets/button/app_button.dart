@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 class AppButton extends StatelessWidget {
-
   const AppButton({
     super.key,
     required this.text,
@@ -75,8 +74,9 @@ class AppButton extends StatelessWidget {
 
   ButtonStyle _buildButtonStyle() {
     return ElevatedButton.styleFrom(
-      backgroundColor:
-          isDisable ? backgroundColor.withValues(alpha: 0.8) : backgroundColor,
+      backgroundColor: isDisable
+          ? backgroundColor.withValues(alpha: 0.8)
+          : backgroundColor,
       padding: padding,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(borderRadius),

@@ -24,7 +24,7 @@ class _SplashPageState extends State<SplashPage> {
   @override
   Widget build(BuildContext context) {
     return ColoredBox(
-      color: ColorConstants.yellow,
+      color: ColorConstants.primary,
       child: Image.asset(Assets.imagesLogo, fit: BoxFit.contain),
     );
   }

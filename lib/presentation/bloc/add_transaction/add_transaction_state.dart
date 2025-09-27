@@ -1,22 +1,22 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import '../../../core/enum/exports.dart';
+import '../../../entity/exports.dart';
 part 'add_transaction_state.freezed.dart';
 
 @freezed
 abstract class AddTransactionState with _$AddTransactionState {
   const AddTransactionState._();
-
   const factory AddTransactionState({
     @Default(0) int selectedIndex,
-    @Default(<TransactionType, String?>{})
-    Map<TransactionType, String?> selectedCategoriesByType,
+    @Default(<TransactionType, List<TransactionCategory>>{}) Map<TransactionType, List<TransactionCategory>> categoriesByType,
+    @Default(<TransactionType, int?>{}) Map<TransactionType, int?> selectedCategoryIdByType,
+    @Default(false) bool isLoading,
     String? message,
-    @Default(false) bool isKeyboardVisible
+    @Default(false) bool isKeyboardVisible,
   }) = _AddTransactionState;
 
-  TransactionType get currentTransactionType =>
-      TransactionType.fromIndex(selectedIndex);
+  TransactionType get currentType => TransactionType.fromIndex(selectedIndex);
+  List<TransactionCategory> categoriesFor(TransactionType t) => categoriesByType[t] ?? const [];
 
-  String? selectedCategoryForType(TransactionType type) =>
-      selectedCategoriesByType[type];
+  int? selectedCategoryIdFor(TransactionType t) => selectedCategoryIdByType[t];
 }

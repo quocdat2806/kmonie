@@ -40,8 +40,8 @@ class UIConstants {
   static const double defaultGridChildAspectRatio = 0.7;
   static const double defaultGridCrossAxisSpacing = 8.0;
   static const double defaultGridMainAxisSpacing = 8.0;
+  static const double smallGridSpacing = 4.0;
   static const double zeroInsets = 0.0;
-
 
   static const int defaultMaxLines = 2;
   static const int singleLine = 1;
@@ -49,6 +49,9 @@ class UIConstants {
   static const Duration shortAnimationDuration = Duration(milliseconds: 200);
   static const Duration defaultAnimationDuration = Duration(milliseconds: 300);
   static const Duration longAnimationDuration = Duration(milliseconds: 500);
+  static const double keyboardSlideRatio = 0.30;
+  static const double categoryItemSizeRatio = 0.55;
+  static const double categoryIconSizeRatio = 0.30;
 
   static const double bottomNavigationHeight = 60.0;
   static const double topAddButtonOffset = 30.0;

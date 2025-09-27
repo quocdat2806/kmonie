@@ -25,7 +25,7 @@ class MenuItem extends StatelessWidget {
               width: UIConstants.mediumIconSize,
               height: UIConstants.mediumIconSize,
               colorFilter: const ColorFilter.mode(
-                ColorConstants.yellow,
+                ColorConstants.primary,
                 BlendMode.srcIn,
               ),
             ),
