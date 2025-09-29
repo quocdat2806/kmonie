@@ -2,16 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/constant/exports.dart';
 import '../../../../core/enum/exports.dart';
-import '../../../bloc/add_transaction/add_transaction_export.dart';
-import '../../../widgets/tab_view/app_tab_view.dart';
+import '../../../bloc/exports.dart';
+import '../../../widgets/exports.dart';
 
 class TransactionTabBar extends StatelessWidget {
   const TransactionTabBar({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<AddTransactionBloc, AddTransactionState>(
-      builder: (context, state) {
+    return BlocSelector<AddTransactionBloc, AddTransactionState, int>(
+      selector: (state) => state.selectedIndex,
+      builder: (context, selectedIndex) {
         final transactionTypes = ExTransactionType.transactionTypes;
         return Padding(
           padding: const EdgeInsets.symmetric(
@@ -19,13 +20,11 @@ class TransactionTabBar extends StatelessWidget {
           ),
           child: AppTabView<TransactionType>(
             types: transactionTypes,
-            selectedIndex: state.selectedIndex,
+            selectedIndex: selectedIndex,
             getDisplayName: (t) => t.displayName,
             getTypeIndex: (t) => t.typeIndex,
             onTabSelected: (index) {
-              context.read<AddTransactionBloc>().add(
-                AddTransactionSwitchTab(index),
-              );
+              context.read<AddTransactionBloc>().add(SwitchTab(index));
             },
           ),
         );

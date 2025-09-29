@@ -24,7 +24,6 @@ class AppGrid extends StatelessWidget {
       builder: (context, constraints) {
         final itemWidth = constraints.maxWidth / crossAxisCount;
         final itemHeight = itemWidth * 1.2;
-
         return GridView.builder(
           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: crossAxisCount,
@@ -34,7 +33,6 @@ class AppGrid extends StatelessWidget {
           ),
           itemCount: itemCount,
           itemBuilder: itemBuilder,
-
         );
       },
     );

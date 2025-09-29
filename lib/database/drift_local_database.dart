@@ -21,6 +21,8 @@ class TransactionsTb extends Table {
   )();
 
   TextColumn get content => text().withDefault(const Constant(''))();
+
+  IntColumn get transactionType => integer().withDefault(const Constant(0))();
 }
 
 class TransactionCategoryTb extends Table {
@@ -34,6 +36,9 @@ class TransactionCategoryTb extends Table {
 
   BoolColumn get isCategoryDefaultSystem =>
       boolean().withDefault(const Constant(true))();
+
+  BoolColumn get isCreateNewCategory =>
+      boolean().withDefault(const Constant(false))();
 }
 
 @DriftDatabase(tables: [TransactionsTb, TransactionCategoryTb])
@@ -112,6 +117,7 @@ class KMonieDatabase extends _$KMonieDatabase {
             pathAsset: Value(cat.pathAsset),
             transactionType: Value(cat.transactionType.typeIndex),
             isCategoryDefaultSystem: const Value(true),
+            isCreateNewCategory: Value(cat.isCreateNewCategory),
           ),
           mode: InsertMode.insertOrIgnore,
         );

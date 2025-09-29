@@ -10,6 +10,7 @@ abstract class Transaction with _$Transaction {
     required DateTime date,
     required int transactionCategoryId,
     @Default('') String content,
+    @Default(0) int transactionType,
   }) = _Transaction;
 
   factory Transaction.fromJson(Map<String, dynamic> json) =>

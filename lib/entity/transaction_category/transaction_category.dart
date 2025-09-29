@@ -11,6 +11,7 @@ abstract class TransactionCategory with _$TransactionCategory {
     @Default('') String pathAsset,
     @Default(TransactionType.expense) TransactionType transactionType,
     @Default(true) bool isCategoryDefaultSystem,
+    @Default(false) bool isCreateNewCategory,
   }) = _TransactionCategory;
 
   factory TransactionCategory.fromJson(Map<String, dynamic> json) =>

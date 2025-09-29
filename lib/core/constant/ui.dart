@@ -10,6 +10,8 @@ class UIConstants {
   static const double smallMargin = 8.0;
   static const double largeMargin = 24.0;
 
+  static const double defaultBlurRadius = 8.0;
+
   static const double smallBorderRadius = 4.0;
   static const double defaultBorderRadius = 8.0;
   static const double largeBorderRadius = 12.0;
@@ -42,6 +44,9 @@ class UIConstants {
   static const double defaultGridMainAxisSpacing = 8.0;
   static const double smallGridSpacing = 4.0;
   static const double zeroInsets = 0.0;
+  static const double oneInsets = 1.0;
+
+  static const double oneOpacity = 1.0;
 
   static const int defaultMaxLines = 2;
   static const int singleLine = 1;
@@ -49,7 +54,7 @@ class UIConstants {
   static const Duration shortAnimationDuration = Duration(milliseconds: 200);
   static const Duration defaultAnimationDuration = Duration(milliseconds: 300);
   static const Duration longAnimationDuration = Duration(milliseconds: 500);
-  static const double keyboardSlideRatio = 0.30;
+  static const double keyboardSlideRatio = 0.35;
   static const double categoryItemSizeRatio = 0.55;
   static const double categoryIconSizeRatio = 0.30;
 

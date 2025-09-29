@@ -8,4 +8,5 @@ class RouterPath {
   static const String searchTransaction = '/search-transaction';
   static const String monthCalendar = '/month-calendar';
   static const String monthlySummary = '/monthly-summary';
+  static const String addTransactionCategory = '/add-transaction-category';
 }

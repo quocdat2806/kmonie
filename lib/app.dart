@@ -4,6 +4,7 @@ import 'application/auth/auth_bloc.dart';
 import 'core/config/app_config.dart';
 import 'core/theme/input_theme.dart';
 import 'core/navigation/app_router.dart';
+import 'core/service/exports.dart';
 
 class App extends StatelessWidget {
   const App({super.key, required this.authBloc, required this.appRouter});
@@ -15,6 +16,7 @@ class App extends StatelessWidget {
     return BlocProvider<AuthBloc>(
       create: (_) => authBloc,
       child: MaterialApp.router(
+        scaffoldMessengerKey: SnackBarService.scaffoldMessengerKey,
         theme: ThemeData(
           useMaterial3: true,
           inputDecorationTheme: AppInputTheme.defaultInput,

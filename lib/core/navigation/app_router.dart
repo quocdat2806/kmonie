@@ -3,14 +3,15 @@ import 'package:go_router/go_router.dart';
 import '../../application/auth/auth_export.dart';
 import '../navigation/exports.dart';
 import '../enum/exports.dart';
-import '../../presentation/exports.dart';
+import '../../presentation/pages/exports.dart';
 
 class AppRouter {
   AppRouter(this.authBloc);
 
   final AuthBloc authBloc;
-
+  final _rootNavigatorKey = GlobalKey<NavigatorState>();
   late final GoRouter router = GoRouter(
+    navigatorKey: _rootNavigatorKey,
     initialLocation: RouterPath.splash,
     refreshListenable: RouterRefresh(authBloc.stream),
     errorBuilder: (_, GoRouterState state) =>
@@ -36,6 +37,10 @@ class AppRouter {
         path: RouterPath.searchTransaction,
         builder: (_, _) => const SearchScreen(),
       ),
+      // GoRoute(
+      //   path: RouterPath.addTransactionCategory,
+      //   builder: (_, _) => const AddTransactionCategoryPage(),
+      // ),
 
       // GoRoute(
       //   path: RouterPath.monthCalendar,

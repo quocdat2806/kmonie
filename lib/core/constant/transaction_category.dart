@@ -12,7 +12,7 @@ class TransactionCategoryConstants {
     TransactionCategory(title: 'Điện thoại', pathAsset: Assets.svgsTelephone),
     TransactionCategory(title: 'Giải trí', pathAsset: Assets.svgsMicro),
     TransactionCategory(title: 'Giáo dục', pathAsset: Assets.svgsBook),
-    TransactionCategory(title: 'Sắc đẹp', pathAsset: Assets.svgsBook),
+    TransactionCategory(title: 'Sắc đẹp', pathAsset: Assets.svgsBeautiful),
     TransactionCategory(title: 'Thể thao', pathAsset: Assets.svgsSwimming),
     TransactionCategory(title: 'Xã hội', pathAsset: Assets.svgsGroup),
     TransactionCategory(title: 'Vận tải', pathAsset: Assets.svgsBus),
@@ -37,7 +37,11 @@ class TransactionCategoryConstants {
     TransactionCategory(title: 'Trẻ em', pathAsset: Assets.svgsAngel),
     TransactionCategory(title: 'Rau quả', pathAsset: Assets.svgsCarrot),
     TransactionCategory(title: 'Hoa quả', pathAsset: Assets.svgsGrape),
-    TransactionCategory(title: 'Cài đặt', pathAsset: Assets.svgsPlus),
+    TransactionCategory(
+      title: 'Cài đặt',
+      pathAsset: Assets.svgsPlus,
+      isCreateNewCategory: true,
+    ),
     TransactionCategory(
       title: 'Lương',
       pathAsset: Assets.svgsAtm,
@@ -67,6 +71,7 @@ class TransactionCategoryConstants {
       title: 'Cài đặt',
       pathAsset: Assets.svgsPlus,
       transactionType: TransactionType.income,
+      isCreateNewCategory: true,
     ),
   ];
 }

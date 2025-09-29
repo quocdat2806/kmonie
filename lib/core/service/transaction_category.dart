@@ -1,5 +1,4 @@
-import 'package:kmonie/core/exports.dart';
-
+import '../util/exports.dart';
 import '../../database/exports.dart';
 import '../../entity/exports.dart';
 import '../enum/exports.dart';
@@ -8,9 +7,14 @@ class TransactionCategoryService {
   final KMonieDatabase _db;
   TransactionCategoryService(this._db);
 
-
   TransactionCategory _mapRow(TransactionCategoryTbData r) {
-    return TransactionCategory(id: r.id, title: r.title, pathAsset: r.pathAsset, transactionType: TransactionType.fromIndex(r.transactionType));
+    return TransactionCategory(
+      id: r.id,
+      title: r.title,
+      pathAsset: r.pathAsset,
+      transactionType: TransactionType.fromIndex(r.transactionType),
+      isCreateNewCategory: r.isCreateNewCategory,
+    );
   }
 
   Future<List<TransactionCategory>> getAll() async {
@@ -50,15 +54,23 @@ class TransactionCategoryService {
           break;
       }
     }
-    return SeparatedCategories(expense: expense, income: income, transfer: transfer);
+    return SeparatedCategories(
+      expense: expense,
+      income: income,
+      transfer: transfer,
+    );
   }
 
   Stream<List<TransactionCategory>> watchAll() {
-    return _db.select(_db.transactionCategoryTb).watch().map((rows) => rows.map(_mapRow).toList());
+    return _db
+        .select(_db.transactionCategoryTb)
+        .watch()
+        .map((rows) => rows.map(_mapRow).toList());
   }
 
   Stream<List<TransactionCategory>> watchByType(TransactionType type) {
-    final q = _db.select(_db.transactionCategoryTb)..where((t) => t.transactionType.equals(type.typeIndex));
+    final q = _db.select(_db.transactionCategoryTb)
+      ..where((t) => t.transactionType.equals(type.typeIndex));
     return q.watch().map((rows) => rows.map(_mapRow).toList());
   }
 
@@ -81,7 +93,11 @@ class TransactionCategoryService {
             break;
         }
       }
-      return SeparatedCategories(expense: expense, income: income, transfer: transfer);
+      return SeparatedCategories(
+        expense: expense,
+        income: income,
+        transfer: transfer,
+      );
     });
   }
 }
@@ -91,5 +107,9 @@ class SeparatedCategories {
   final List<TransactionCategory> income;
   final List<TransactionCategory> transfer;
 
-  const SeparatedCategories({required this.expense, required this.income, required this.transfer});
+  const SeparatedCategories({
+    required this.expense,
+    required this.income,
+    required this.transfer,
+  });
 }

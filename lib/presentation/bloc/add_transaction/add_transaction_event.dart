@@ -5,17 +5,19 @@ part 'add_transaction_event.freezed.dart';
 
 @freezed
 class AddTransactionEvent with _$AddTransactionEvent {
-  const factory AddTransactionEvent.switchTab(int index) =
-  AddTransactionSwitchTab;
+  const factory AddTransactionEvent.switchTab(int index) = SwitchTab;
 
   const factory AddTransactionEvent.loadCategories(TransactionType type) =
-  AddTransactionLoadCategories;
+      LoadCategories;
 
   const factory AddTransactionEvent.categoryChanged({
     required TransactionType type,
     required int categoryId,
-  }) = AddTransactionCategoryChanged;
+  }) = CategoryChanged;
 
   const factory AddTransactionEvent.toggleKeyboardVisibility() =
-  AddTransactionToggleKeyboardVisibility;
+      ToggleKeyboardVisibility;
+  const factory AddTransactionEvent.amountChanged(String value) = AmountChanged;
+  const factory AddTransactionEvent.noteChanged(String value) = NoteChanged;
+  const factory AddTransactionEvent.saveTransaction() = SaveTransaction;
 }

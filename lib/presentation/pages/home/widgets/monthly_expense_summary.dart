@@ -1,88 +1,148 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
-import '../../../../core/text_style/exports.dart';
+import 'package:intl/intl.dart';
+import 'package:kmonie/core/cache/svg.dart';
+import '../../../../core/text_style/export.dart';
 import '../../../../core/constant/exports.dart';
 import '../../../../generated/assets.dart';
 import '../../../widgets/exports.dart';
+import '../../../bloc/exports.dart';
 
 class MonthlyExpenseSummary extends StatelessWidget {
-  final VoidCallback onSearchTap;
-  final VoidCallback onCalendarTap;
+  final Function(DateTime)? onDateChanged;
 
-  const MonthlyExpenseSummary({
-    super.key,
-    required this.onCalendarTap,
-    required this.onSearchTap,
-  });
+  const MonthlyExpenseSummary({super.key, this.onDateChanged});
 
   @override
   Widget build(BuildContext context) {
-    return ColoredBox(
-      color: ColorConstants.primary,
-      child: Padding(
-        padding: const EdgeInsets.all(UIConstants.defaultPadding),
-        child: Column(
-          children: <Widget>[
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    return BlocSelector<
+      HomeBloc,
+      HomeState,
+      ({
+        DateTime? selectedDate,
+        double totalExpense,
+        double totalIncome,
+        double totalBalance,
+      })
+    >(
+      selector: (state) => (
+        selectedDate: state.selectedDate,
+        totalExpense: state.totalExpense,
+        totalIncome: state.totalIncome,
+        totalBalance: state.totalBalance,
+      ),
+      builder: (context, data) {
+        final selectedDate = data.selectedDate ?? DateTime.now();
+        final year = selectedDate.year;
+        final month = selectedDate.month;
+        return ColoredBox(
+          color: ColorConstants.primary,
+          child: Padding(
+            padding: const EdgeInsets.all(UIConstants.defaultPadding),
+            child: Column(
               children: <Widget>[
-                SvgPicture.asset(Assets.svgsMenu),
-                Text('Sổ Thu Chi', style: AppTextStyle.blackS18Bold),
                 Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
-                    InkWell(
-                      onTap: onSearchTap,
-                      child: SvgPicture.asset(Assets.svgsSearch),
+                    SvgCacheManager().getSvg(
+                      Assets.svgsMenu,
+                      UIConstants.mediumIconSize,
+                      UIConstants.mediumIconSize,
                     ),
-                    const SizedBox(width: UIConstants.defaultSpacing),
-                    InkWell(
-                      onTap: onCalendarTap,
-                      child: SvgPicture.asset(Assets.svgsCalendar),
+                    Text('Sổ Thu Chi', style: AppTextStyle.blackS18Bold),
+                    Row(
+                      children: <Widget>[
+                        InkWell(
+                          onTap: () {},
+                          child: SvgCacheManager().getSvg(
+                            Assets.svgsSearch,
+                            UIConstants.mediumIconSize,
+                            UIConstants.mediumIconSize,
+                          ),
+                        ),
+                        const SizedBox(width: UIConstants.defaultSpacing),
+                        InkWell(
+                          onTap: () {},
+                          child: SvgCacheManager().getSvg(
+                            Assets.svgsCalendar,
+                            UIConstants.mediumIconSize,
+                            UIConstants.mediumIconSize,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+                const SizedBox(height: UIConstants.defaultSpacing),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    Expanded(
+                      child: InkWell(
+                        onTap: () async {
+                          final result = await showDialog<Map<String, int>>(
+                            context: context,
+                            builder: (context) => MonthPickerDialog(
+                              initialMonth: month,
+                              initialYear: year,
+                            ),
+                          );
+
+                          if (result != null && onDateChanged != null) {
+                            final selectedDate = DateTime(
+                              result['year']!,
+                              result['month']!,
+                            );
+                            onDateChanged!(selectedDate);
+                          }
+                        },
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            Text('$year', style: AppTextStyle.blackS14),
+                            Row(
+                              children: <Widget>[
+                                Text(
+                                  'Thg $month',
+                                  style: AppTextStyle.blackS14Medium,
+                                ),
+                                SvgCacheManager().getSvg(
+                                  Assets.svgsArrowDown,
+                                  UIConstants.mediumIconSize,
+                                  UIConstants.mediumIconSize,
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      child: _buildSummaryItem(
+                        'Chi tiêu',
+                        _formatAmount(data.totalExpense),
+                      ),
+                    ),
+                    Expanded(
+                      child: _buildSummaryItem(
+                        'Thu nhập',
+                        _formatAmount(data.totalIncome),
+                      ),
+                    ),
+                    Expanded(
+                      child: _buildSummaryItem(
+                        'Số dư',
+                        _formatAmount(data.totalBalance),
+                      ),
                     ),
                   ],
                 ),
               ],
             ),
-            const SizedBox(height: UIConstants.defaultSpacing),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Expanded(
-                  child: InkWell(
-                    onTap: () {
-                      showDialog<void>(
-                        context: context,
-                        builder: (context) => const MonthPickerDialog(
-                          initialMonth: 9,
-                          initialYear: 2025,
-                        ),
-                      );
-                    },
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        Text('2025', style: AppTextStyle.blackS14),
-                        Row(
-                          children: <Widget>[
-                            Text('Thg 9', style: AppTextStyle.blackS14Medium),
-                            const Icon(
-                              Icons.keyboard_arrow_down,
-                              color: ColorConstants.black,
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                Expanded(child: _buildSummaryItem('Chi tiêu', '0')),
-                Expanded(child: _buildSummaryItem('Thu nhập', '11.340.000')),
-                Expanded(child: _buildSummaryItem('Số dư', '11.340.000')),
-              ],
-            ),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 
@@ -92,11 +152,19 @@ class MonthlyExpenseSummary extends StatelessWidget {
         Text(label, style: AppTextStyle.blackS14),
         Text(
           value,
+          maxLines: UIConstants.singleLine,
           style: AppTextStyle.blackS14Medium.copyWith(
             overflow: TextOverflow.ellipsis,
           ),
         ),
       ],
     );
+  }
+
+  String _formatAmount(double amount) {
+    if (amount == 0) return '0';
+
+    final formatter = NumberFormat('#,###');
+    return formatter.format(amount.toInt());
   }
 }

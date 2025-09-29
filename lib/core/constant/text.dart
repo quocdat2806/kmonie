@@ -33,4 +33,6 @@ class TextConstants {
   static const String error = 'Lỗi';
   static const String cancel = 'Huỷ';
   static const String gotIt = 'Đã hiểu';
+  static const String noteLabel = 'Ghi chú: ';
+  static const String amountLabel = '0';
 }

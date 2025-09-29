@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 
@@ -9,7 +8,7 @@ class SvgCacheManager {
 
   final Map<String, SvgPicture> _cache = <String, SvgPicture>{};
   final Map<String, int> _usageCount = <String, int>{};
-  static const int _maxCacheSize = 100;
+  static const int _maxCacheSize = 200;
 
   String _generateKey(String path, double size) {
     return '${path}_${size.toStringAsFixed(1)}';
@@ -32,14 +31,7 @@ class SvgCacheManager {
       path,
       width: width,
       height: height,
-      placeholderBuilder: (context) => Container(
-        width: width,
-        height: height,
-        color: Colors.grey[200],
-        child: const Center(
-          child: CircularProgressIndicator(strokeWidth: 2),
-        ),
-      ),
+      placeholderBuilder: (context) => const SizedBox(),
     );
   }
 
@@ -76,7 +68,7 @@ class SvgCacheManager {
     return {
       'cacheSize': _cache.length,
       'maxSize': _maxCacheSize,
-      'usageStats': Map.from(_usageCount),
+      'usageStats': Map<String, int>.from(_usageCount),
     };
   }
 }

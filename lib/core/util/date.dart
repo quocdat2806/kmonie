@@ -1,5 +1,5 @@
 import 'package:intl/intl.dart';
-import '../config/exports.dart';
+import '../config/export.dart';
 import 'logger.dart';
 
 class DateUtils {

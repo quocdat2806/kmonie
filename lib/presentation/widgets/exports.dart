@@ -1,6 +1,6 @@
 export 'floating/add_transaction_button_floating.dart';
 export 'calendar/app_calendar_month.dart';
-export 'calendar/app_calendar_year_modal.dart';
+export 'dialog/exports.dart';
 export 'appBar/app_bar.dart';
 export 'button/app_button.dart';
 export 'chart/app_chart_cicular.dart';
@@ -13,3 +13,4 @@ export 'radio/app_radio.dart';
 export 'tab_view/app_tab_view.dart';
 export 'progress/progress.dart';
 export 'text_field/app_text_field.dart';
+export 'grid/app_grid.dart';
