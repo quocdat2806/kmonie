@@ -43,11 +43,13 @@ class TransactionCategoryTb extends Table {
 
 @DriftDatabase(tables: [TransactionsTb, TransactionCategoryTb])
 class KMonieDatabase extends _$KMonieDatabase {
-  KMonieDatabase._internal() : super(_openConnection());
+  static KMonieDatabase? _instance;
+  factory KMonieDatabase() {
+    _instance ??= KMonieDatabase._create();
+    return _instance!;
+  }
 
-  static final KMonieDatabase _instance = KMonieDatabase._internal();
-
-  factory KMonieDatabase() => _instance;
+  KMonieDatabase._create() : super(_openConnection());
 
   @override
   int get schemaVersion => 1;

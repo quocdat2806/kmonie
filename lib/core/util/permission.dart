@@ -1,8 +1,11 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:device_info_plus/device_info_plus.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:permission_handler/permission_handler.dart';
-
+import '../../presentation/widgets/exports.dart';
+import '../di/export.dart' show sl;
+import '../service/exports.dart';
 class PermissionUtils {
   PermissionUtils._();
   static Future<bool> requestPhotosPermission(BuildContext context) async {
@@ -45,6 +48,7 @@ class PermissionUtils {
     return false;
   }
 
+
   static Future<bool> requestCameraPermission(BuildContext context) async {
     if (await Permission.camera.isGranted) {
       return true;
@@ -60,32 +64,28 @@ class PermissionUtils {
     }
     return false;
   }
+  static Future<bool> requestNotificationService() async {
+    final flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+    final androidPlugin = flutterLocalNotificationsPlugin
+        .resolvePlatformSpecificImplementation<
+        AndroidFlutterLocalNotificationsPlugin>();
+
+    if (androidPlugin != null) {
+      final granted = await androidPlugin.requestNotificationsPermission();
+      if(granted==true){
+         sl<NotificationService>().scheduleDailyReminder();
+      }
+      return granted ?? false;
+    }
+
+    return false;
+  }
 
   static Future<void> showOpenAppSettingsDialog(BuildContext context) async {
     await showDialog<void>(
       context: context,
       builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Permission is Permanently Denied'),
-          content: const Text(
-            'The app needs permission access to function properly. \nPlease go to settings to grant permission.',
-          ),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text('Cancel'),
-            ),
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-                openAppSettings();
-              },
-              child: const Text('Open Settings'),
-            ),
-          ],
-        );
+        return const AppSettingDialog();
       },
     );
   }

@@ -10,7 +10,11 @@ abstract class HomeState with _$HomeState {
     @Default([]) List<Transaction> transactions,
     @Default({}) Map<String, List<Transaction>> groupedTransactions,
     @Default({}) Map<int, TransactionCategory> categoriesMap,
+    @Default(0) int pageIndex,
+    @Default(false) bool isLoadingMore,
+    int ? totalRecords,
     TransactionType? selectedType,
+
     DateTime? selectedDate,
   }) = _HomeState;
 

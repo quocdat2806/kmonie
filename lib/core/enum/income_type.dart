@@ -15,7 +15,6 @@ enum IncomeType {
       orElse: () => IncomeType.month,
     );
   }
-
   static const int totalTypes = 2;
 }
 

@@ -15,7 +15,7 @@ class AppRouter {
     initialLocation: RouterPath.splash,
     refreshListenable: RouterRefresh(authBloc.stream),
     errorBuilder: (_, GoRouterState state) =>
-        const Scaffold(body: Center(child: Text('Page not found'))),
+    const Scaffold(body: Center(child: Text('Page not found'))),
     routes: <RouteBase>[
       GoRoute(path: RouterPath.splash, builder: (_, _) => const SplashPage()),
       ShellRoute(
@@ -32,7 +32,7 @@ class AppRouter {
           ),
         ],
       ),
-      GoRoute(path: RouterPath.main, builder: (_, _) => const MainPage()),
+      GoRoute(name: RouterPath.main,path: RouterPath.main, builder: (_, _) => const MainPage()),
       GoRoute(
         path: RouterPath.searchTransaction,
         builder: (_, _) => const SearchScreen(),

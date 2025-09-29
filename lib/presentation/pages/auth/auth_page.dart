@@ -3,7 +3,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/constant/exports.dart';
 import '../../../../core/enum/exports.dart';
 import '../../../../core/text_style/export.dart';
-import '../../../presentation/exports.dart';
+import '../../../presentation/widgets/exports.dart';
 
 class AuthScreen extends StatefulWidget {
   const AuthScreen({super.key, required this.mode});

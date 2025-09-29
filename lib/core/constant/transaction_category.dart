@@ -1,6 +1,5 @@
-import 'package:kmonie/entity/exports.dart';
-import 'package:kmonie/generated/assets.dart';
-
+import '../../entity/exports.dart';
+import '../../generated/assets.dart';
 import '../enum/exports.dart';
 
 class TransactionCategoryConstants {

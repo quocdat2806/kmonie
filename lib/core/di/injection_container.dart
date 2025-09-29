@@ -31,6 +31,8 @@ Future<void> init() async {
       () => TransactionService(sl<KMonieDatabase>()),
     )
     ..registerLazySingleton<SnackBarService>(() => SnackBarService())
-    ..registerLazySingleton<AppStreamEvent>(() => AppStreamEvent());
+    ..registerLazySingleton<AppStreamEvent>(() => AppStreamEvent())
+    ..registerLazySingleton<NotificationService>(() => NotificationService.I);
   await sl<KMonieDatabase>().warmUp();
+  await sl<NotificationService>().init();
 }

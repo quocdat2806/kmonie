@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import '../enum/exports.dart';
 
 class AppStreamEvent {

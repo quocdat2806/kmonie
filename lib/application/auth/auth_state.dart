@@ -1,6 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import '../../core/enum/exports.dart';
-
 part 'auth_state.freezed.dart';
 
 @freezed

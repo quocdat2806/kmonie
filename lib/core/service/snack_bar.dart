@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../constant/exports.dart';
-import '../text_style/export.dart';
+// import '../text_style/export.dart';
 import '../enum/exports.dart';
 
 
@@ -33,18 +33,18 @@ class SnackBarService {
     scaffoldMessenger.showSnackBar(snackBar);
   }
 
-  static Color _getActionColor(SnackBarType type) {
-    switch (type) {
-      case SnackBarType.success:
-        return ColorConstants.green;
-      case SnackBarType.error:
-        return ColorConstants.red;
-      case SnackBarType.warning:
-        return ColorConstants.primary;
-      case SnackBarType.info:
-        return ColorConstants.secondary;
-    }
-  }
+  // static Color _getActionColor(SnackBarType type) {
+  //   switch (type) {
+  //     case SnackBarType.success:
+  //       return ColorConstants.green;
+  //     case SnackBarType.error:
+  //       return ColorConstants.red;
+  //     case SnackBarType.warning:
+  //       return ColorConstants.primary;
+  //     case SnackBarType.info:
+  //       return ColorConstants.secondary;
+  //   }
+  // }
 
   static void showSuccess(String message) {
     showSnackBar(message: message, type: SnackBarType.success);
@@ -103,68 +103,68 @@ class _SnackBarContent extends StatelessWidget {
     // );
   }
 
-  Color _getBackgroundColor() {
-    switch (type) {
-      case SnackBarType.success:
-        return ColorConstants.green.withAlpha(10);
-      case SnackBarType.error:
-        return ColorConstants.red.withAlpha(10);
-      case SnackBarType.warning:
-        return ColorConstants.primary.withAlpha(10);
-      case SnackBarType.info:
-        return ColorConstants.secondary.withAlpha(10);
-    }
-  }
-
-  Color _getBorderColor() {
-    switch (type) {
-      case SnackBarType.success:
-        return ColorConstants.green.withAlpha(30);
-      case SnackBarType.error:
-        return ColorConstants.red.withAlpha(30);
-      case SnackBarType.warning:
-        return ColorConstants.primary.withAlpha(30);
-      case SnackBarType.info:
-        return ColorConstants.secondary.withAlpha(30);
-    }
-  }
-
-  Color _getIconColor() {
-    switch (type) {
-      case SnackBarType.success:
-        return ColorConstants.green;
-      case SnackBarType.error:
-        return ColorConstants.red;
-      case SnackBarType.warning:
-        return ColorConstants.primary;
-      case SnackBarType.info:
-        return ColorConstants.secondary;
-    }
-  }
-
-  IconData _getIcon() {
-    switch (type) {
-      case SnackBarType.success:
-        return Icons.check_circle;
-      case SnackBarType.error:
-        return Icons.error;
-      case SnackBarType.warning:
-        return Icons.warning;
-      case SnackBarType.info:
-        return Icons.info;
-    }
-  }
-
-  TextStyle _getTextStyle() {
-    switch (type) {
-      case SnackBarType.success:
-        return AppTextStyle.greenS14Medium;
-      case SnackBarType.error:
-        return AppTextStyle.redS14Medium;
-      case SnackBarType.warning:
-        return AppTextStyle.yellowS14Medium;
-      case SnackBarType.info:
-        return AppTextStyle.secondaryS14Medium;
-    }
-  }
+  // Color _getBackgroundColor() {
+  //   switch (type) {
+  //     case SnackBarType.success:
+  //       return ColorConstants.green.withAlpha(10);
+  //     case SnackBarType.error:
+  //       return ColorConstants.red.withAlpha(10);
+  //     case SnackBarType.warning:
+  //       return ColorConstants.primary.withAlpha(10);
+  //     case SnackBarType.info:
+  //       return ColorConstants.secondary.withAlpha(10);
+  //   }
+  // }
+  //
+  // Color _getBorderColor() {
+  //   switch (type) {
+  //     case SnackBarType.success:
+  //       return ColorConstants.green.withAlpha(30);
+  //     case SnackBarType.error:
+  //       return ColorConstants.red.withAlpha(30);
+  //     case SnackBarType.warning:
+  //       return ColorConstants.primary.withAlpha(30);
+  //     case SnackBarType.info:
+  //       return ColorConstants.secondary.withAlpha(30);
+  //   }
+  // }
+  //
+  // Color _getIconColor() {
+  //   switch (type) {
+  //     case SnackBarType.success:
+  //       return ColorConstants.green;
+  //     case SnackBarType.error:
+  //       return ColorConstants.red;
+  //     case SnackBarType.warning:
+  //       return ColorConstants.primary;
+  //     case SnackBarType.info:
+  //       return ColorConstants.secondary;
+  //   }
+  // }
+  //
+  // IconData _getIcon() {
+  //   switch (type) {
+  //     case SnackBarType.success:
+  //       return Icons.check_circle;
+  //     case SnackBarType.error:
+  //       return Icons.error;
+  //     case SnackBarType.warning:
+  //       return Icons.warning;
+  //     case SnackBarType.info:
+  //       return Icons.info;
+  //   }
+  // }
+  //
+  // TextStyle _getTextStyle() {
+  //   switch (type) {
+  //     case SnackBarType.success:
+  //       return AppTextStyle.greenS14Medium;
+  //     case SnackBarType.error:
+  //       return AppTextStyle.redS14Medium;
+  //     case SnackBarType.warning:
+  //       return AppTextStyle.yellowS14Medium;
+  //     case SnackBarType.info:
+  //       return AppTextStyle.secondaryS14Medium;
+  //   }
+  // }
 }

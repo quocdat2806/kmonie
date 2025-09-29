@@ -1,8 +1,20 @@
 import 'package:drift/drift.dart';
-import '../../core/util/exports.dart';
+import '../config/export.dart';
+import '../util/exports.dart';
 import '../../database/exports.dart';
 import '../../entity/exports.dart';
 
+
+
+class PagedTransactionResult {
+  final List<Transaction> transactions;
+  final int totalRecords;
+
+  PagedTransactionResult({
+    required this.transactions,
+    required this.totalRecords,
+  });
+}
 class TransactionService {
   final KMonieDatabase _db;
 
@@ -79,19 +91,28 @@ class TransactionService {
     }
   }
 
-  Future<Transaction?> getLastTransaction() async {
+  Future<Transaction?> getLastTransactionInMonth(int year, int month) async {
     try {
+      final startDate = DateTime(year, month);
+      final endDate = DateTime(year, month + 1, 0, 23, 59, 59);
+
       final query = _db.select(_db.transactionsTb)
+        ..where(
+              (t) =>
+          t.date.isBiggerOrEqualValue(startDate) &
+          t.date.isSmallerOrEqualValue(endDate),
+        )
         ..orderBy([(t) => OrderingTerm.desc(t.date)])
         ..limit(1);
 
       final row = await query.getSingleOrNull();
       return row != null ? _mapRow(row) : null;
     } catch (e) {
-      logger.e('Error getting last transaction: $e');
+      logger.e('Error getting last transaction in month: $e');
       return null;
     }
   }
+
 
   Future<List<Transaction>> getTransactionsByCategory(int categoryId) async {
     try {
@@ -179,31 +200,50 @@ class TransactionService {
     );
   }
 
-  Future<List<Transaction>> getTransactionsByMonthYear({
+  Future<PagedTransactionResult> getTransactionsInMonth({
     required int year,
     required int month,
+    int pageSize = AppConfigs.defaultPageSize,
+    int pageIndex = AppConfigs.defaultPageIndex,
   }) async {
     try {
       final startDate = DateTime(year, month);
       final endDate = DateTime(year, month + 1, 0, 23, 59, 59);
 
+      final totalCountExp = _db.transactionsTb.id.count();
+      final totalCountQuery = _db.selectOnly(_db.transactionsTb)
+        ..where(
+          _db.transactionsTb.date.isBiggerOrEqualValue(startDate) &
+          _db.transactionsTb.date.isSmallerOrEqualValue(endDate),
+        )
+        ..addColumns([totalCountExp]);
+
+      final totalCountRow = await totalCountQuery.getSingle();
+      final totalRecords = totalCountRow.read(totalCountExp) ?? 0;
+
       final query = _db.select(_db.transactionsTb)
         ..where(
-          (t) =>
-              t.date.isBiggerOrEqualValue(startDate) &
-              t.date.isSmallerOrEqualValue(endDate),
+              (t) =>
+          t.date.isBiggerOrEqualValue(startDate) &
+          t.date.isSmallerOrEqualValue(endDate),
         )
-        ..orderBy([(t) => OrderingTerm.desc(t.date)]);
-
+        ..orderBy([(t) => OrderingTerm.desc(t.date)])
+        ..limit(pageSize, offset: pageIndex * pageSize);
       final rows = await query.get();
-      return rows.map(_mapRow).toList();
+
+      final transactions = rows.map(_mapRow).toList();
+
+      return PagedTransactionResult(
+        transactions: transactions,
+        totalRecords: totalRecords,
+      );
     } catch (e) {
-      logger.e('Error getting transactions by month/year: $e');
-      return [];
+      logger.e('Error getting paged transactions by month/year: $e');
+      return PagedTransactionResult(transactions: [], totalRecords: 0);
     }
   }
 
-  Future<List<Transaction>> getTransactionsByYear(int year) async {
+  Future<List<Transaction>> getTransactionsInYear(int year) async {
     try {
       final startDate = DateTime(year);
       final endDate = DateTime(year, 12, 31, 23, 59, 59);
@@ -224,8 +264,7 @@ class TransactionService {
     }
   }
 
-  /// Stream theo tháng và năm cụ thể
-  Stream<List<Transaction>> watchTransactionsByMonthYear({
+  Stream<List<Transaction>> watchTransactionsInMonth({
     required int year,
     required int month,
   }) {
@@ -245,8 +284,7 @@ class TransactionService {
     );
   }
 
-  /// Stream theo năm cụ thể
-  Stream<List<Transaction>> watchTransactionsByYear(int year) {
+  Stream<List<Transaction>> watchTransactionsInYear(int year) {
     final startDate = DateTime(year);
     final endDate = DateTime(year, 12, 31, 23, 59, 59);
 

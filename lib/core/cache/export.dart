@@ -1,1 +1,1 @@
-export 'svg.dart';
+export 'svg_cache.dart';

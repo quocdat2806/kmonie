@@ -10,16 +10,18 @@ import 'database/secure_storage.dart';
 import 'database/drift_local_database.dart';
 
 
-void main() async {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
   await di.init();
   final AuthBloc authBloc = AuthBloc(di.sl<SecureStorageService>())
     ..add(const AuthAppStarted());
   final AppRouter appRouter = AppRouter(authBloc);
-  final byteOfDb = await di.sl<KMonieDatabase>().dbPhysicalSizeBytes();
   if (kDebugMode) {
-    print('byte $byteOfDb');
+    final byteOfDb = await di.sl<KMonieDatabase>().dbPhysicalSizeBytes();
+    print('📦 DB size: $byteOfDb bytes');
   }
+
   runApp(App(authBloc: authBloc, appRouter: appRouter));
 }
+

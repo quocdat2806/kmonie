@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:kmonie/entity/transaction/transaction.dart';
-import 'package:kmonie/entity/transaction_category/transaction_category.dart';
+import '../../../core/util/exports.dart';
+import '../../../entity/exports.dart';
 import '../../../core/constant/exports.dart';
 import '../../../core/text_style/export.dart';
 import '../../../core/di/export.dart';
@@ -15,22 +15,39 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider<HomeBloc>(
-      create: (_) =>
-          HomeBloc(sl<TransactionService>(), sl<TransactionCategoryService>())
-            ..add(const HomeLoadTransactions()),
-      child: const HomePageChild(),
-    );
+    return BlocProvider<HomeBloc>(create: (_) => HomeBloc(sl<TransactionService>(), sl<TransactionCategoryService>()), child: const HomePageChild());
   }
 }
 
-class HomePageChild extends StatelessWidget {
+class HomePageChild extends StatefulWidget {
   const HomePageChild({super.key});
 
   @override
+  State<HomePageChild> createState() => _HomePageChildState();
+}
+
+class _HomePageChildState extends State<HomePageChild> {
+  final ScrollController _scrollController = ScrollController();
+ @override
+  void initState() {
+    super.initState();
+    PermissionUtils.requestNotificationService();
+    _scrollController.addListener(_onScroll);
+  }
+  void _onScroll() {
+    if (_scrollController.position.maxScrollExtent == 0) return;
+    final position = _scrollController.position;
+    final scrollPercent = position.pixels / position.maxScrollExtent;
+
+    if (scrollPercent >= 0.7  && !position.outOfRange) {
+      logger.i('load them');
+      context.read<HomeBloc>().add(const HomeEvent.loadMore());
+    }
+  }
+  @override
   Widget build(BuildContext context) {
     return ColoredBox(
-      color: Colors.white,
+      color: ColorConstants.white,
       child: Column(
         children: <Widget>[
           MonthlyExpenseSummary(
@@ -38,73 +55,56 @@ class HomePageChild extends StatelessWidget {
               context.read<HomeBloc>().add(HomeEvent.changeDate(selectedDate));
             },
           ),
+          ElevatedButton.icon(
+            icon: const Icon(Icons.notifications),
+            label: const Text('Hiện Notification'),
+            onPressed: () {
+              NotificationService().showInAppNotification(
+                id: 0,
+                title: "ge",
+                body: "zzz",
+
+              );
+            },
+          ),
           Expanded(
-            child:
-                BlocSelector<
-                  HomeBloc,
-                  HomeState,
-                  ({
-                    Map<String, List<Transaction>> groupedTransactions,
-                    Map<int, TransactionCategory> categoriesMap,
-                  })
-                >(
-                  selector: (state) => (
-                    groupedTransactions: state.groupedTransactions,
-                    categoriesMap: state.categoriesMap,
-                  ),
-                  builder: (context, data) {
-                    if (data.groupedTransactions.isEmpty) {
-                      return Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              'Chưa có giao dịch nào',
-                              style: AppTextStyle.greyS14,
-                            ),
-                            const SizedBox(height: UIConstants.smallPadding),
-                            Text(
-                              'Hãy thêm giao dịch đầu tiên của bạn',
-                              style: AppTextStyle.greyS12,
-                            ),
-                          ],
-                        ),
-                      );
-                    }
-
-                    return RefreshIndicator(
-                      onRefresh: () async {
-                        context.read<HomeBloc>().add(
-                          const HomeRefreshTransactions(),
-                        );
+            child: BlocSelector<HomeBloc, HomeState, ({Map<String, List<Transaction>> groupedTransactions,DateTime? selectedDate, Map<int, TransactionCategory> categoriesMap})>(
+              selector: (state) => (groupedTransactions: state.groupedTransactions, categoriesMap: state.categoriesMap,selectedDate: state.selectedDate),
+              builder: (context, data) {
+                if (data.groupedTransactions.isEmpty) {
+                  return _buildEmptyState();
+                }
+                return  CustomScrollView(
+                  slivers: [
+                    SliverList(
+                      delegate: SliverChildBuilderDelegate((context, index) {
+                        final dateKey = data.groupedTransactions.keys.elementAt(index);
+                        final transactions = data.groupedTransactions[dateKey]!;
+                        return TransactionDateGroup(dateKey: dateKey, transactions: transactions, categoriesMap: data.categoriesMap);
                       },
-                      child: CustomScrollView(
-                        slivers: [
-                          SliverList(
-                            delegate: SliverChildBuilderDelegate((
-                              context,
-                              index,
-                            ) {
-                              final dateKey = data.groupedTransactions.keys
-                                  .elementAt(index);
-                              final transactions =
-                                  data.groupedTransactions[dateKey]!;
-
-                              return TransactionDateGroup(
-                                dateKey: dateKey,
-                                transactions: transactions,
-                                categoriesMap: data.categoriesMap,
-                              );
-                            }, childCount: data.groupedTransactions.length),
-                          ),
-                        ],
-                      ),
-                    );
-                  },
-                ),
+                          childCount: data.groupedTransactions.length),
+                    ),
+                  ],
+                );
+              },
+            ),
           ),
         ],
       ),
     );
+  }
+
+  Widget _buildEmptyState() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text('Chưa có giao dịch nào', style: AppTextStyle.greyS14),
+          const SizedBox(height: UIConstants.smallPadding),
+          Text('Hãy thêm giao dịch đầu tiên của bạn', style: AppTextStyle.greyS12),
+        ],
+      ),
+    );
+
   }
 }

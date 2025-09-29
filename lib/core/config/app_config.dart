@@ -9,4 +9,7 @@ class AppConfigs {
   static const String dateTimeDisplayFormat = 'dd/MM/yyyy HH:mm';
   static const String dateTimeAPIFormat = 'YYYY-MM-DDThh:mm:ssTZD';
   static const String dateAPIFormat = 'dd/MM/yyyy';
+  static const int defaultPageSize = 20;
+  static const int defaultPageIndex = 0;
+
 }
