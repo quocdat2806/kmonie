@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-class CalendarScreen extends StatefulWidget {
-  const CalendarScreen({super.key});
+class CalendarMonthlyTransaction extends StatefulWidget {
+  const CalendarMonthlyTransaction({super.key});
 
   @override
-  State<CalendarScreen> createState() => _CalendarScreenState();
+  State<CalendarMonthlyTransaction> createState() => _CalendarMonthlyTransactionState();
 }
 
-class _CalendarScreenState extends State<CalendarScreen> {
+class _CalendarMonthlyTransactionState extends State<CalendarMonthlyTransaction> {
   int selectedMonth = DateTime.now().month;
   int selectedYear = DateTime.now().year;
 

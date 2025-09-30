@@ -1,105 +1,98 @@
 import 'package:flutter/material.dart';
+import 'package:kmonie/core/constant/color.dart';
 
 class AppButton extends StatelessWidget {
   const AppButton({
     super.key,
-    required this.text,
-    required this.backgroundColor,
-    required this.textColor,
-    this.borderColor,
-    this.height = 56.0,
-    this.borderRadius = 8.0,
+    this.text,
+    this.backgroundColor = ColorConstants.primary,
+    this.textColor = ColorConstants.black,
     required this.onPressed,
     this.icon,
+    this.iconWidget,
+    this.height = 44,
+    this.borderRadius = 8,
     this.width,
-    this.padding = const EdgeInsets.symmetric(horizontal: 16.0),
-    this.fontSize = 16.0,
-    this.fontWeight = FontWeight.bold,
-    this.hasShadow = true,
-    this.shadowColor = Colors.grey,
-    this.shadowOffset = const Offset(0, 4),
-    this.shadowBlurRadius = 4.0,
-    this.shadowSpreadRadius = 0.0,
-    this.isDisable = false,
+    this.fontSize = 14,
+    this.fontWeight = FontWeight.w400,
+    this.borderColor,
+    this.disabled = false,
   });
-  final String text;
+
+  final String? text;
   final Color backgroundColor;
   final Color textColor;
-  final Color? borderColor;
+  final VoidCallback onPressed;
+
+  final IconData? icon;
+
+  final Widget? iconWidget;
+
   final double height;
   final double borderRadius;
-  final VoidCallback? onPressed;
-  final IconData? icon;
   final double? width;
-  final EdgeInsets padding;
   final double fontSize;
   final FontWeight fontWeight;
-  final bool hasShadow;
-  final Color shadowColor;
-  final Offset shadowOffset;
-  final double shadowBlurRadius;
-  final double shadowSpreadRadius;
-  final bool isDisable;
+  final Color? borderColor;
+  final bool disabled;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: width ?? double.infinity,
+    return SizedBox(
+      width: width,
       height: height,
-      decoration: _buildShadow(),
       child: ElevatedButton(
-        onPressed: isDisable ? () {} : onPressed,
-        style: _buildButtonStyle(),
+        onPressed: disabled ? null : onPressed,
+        style: ElevatedButton.styleFrom(
+          backgroundColor:
+          disabled ? backgroundColor.withAlpha(60) : backgroundColor,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(borderRadius),
+            side: BorderSide(
+              color: borderColor ?? Colors.transparent,
+              width: borderColor != null ? 1 : 0,
+            ),
+          ),
+          elevation: 0,
+          padding: const EdgeInsets.symmetric(horizontal: 12),
+        ),
         child: _buildContent(),
       ),
     );
   }
 
-  BoxDecoration? _buildShadow() {
-    if (!hasShadow) {
-      return null;
-    }
-    return BoxDecoration(
-      borderRadius: BorderRadius.circular(borderRadius),
-      boxShadow: <BoxShadow>[
-        BoxShadow(
-          color: shadowColor,
-          offset: shadowOffset,
-          blurRadius: shadowBlurRadius,
-          spreadRadius: shadowSpreadRadius,
-        ),
-      ],
-    );
-  }
-
-  ButtonStyle _buildButtonStyle() {
-    return ElevatedButton.styleFrom(
-      backgroundColor: isDisable
-          ? backgroundColor.withValues(alpha: 0.8)
-          : backgroundColor,
-      padding: padding,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(borderRadius),
-        side: BorderSide(
-          color: borderColor ?? Colors.transparent,
-          width: borderColor != null ? 1.5 : 0,
-        ),
-      ),
-      elevation: 0,
-      overlayColor: isDisable ? Colors.transparent : null,
-    );
-  }
-
   Widget _buildContent() {
+    final hasText = text != null && text!.isNotEmpty;
+    final hasIcon = icon != null || iconWidget != null;
+
+    // 🟡 Trường hợp chỉ icon
+    if (hasIcon && !hasText) {
+      return iconWidget ??
+          Icon(icon, color: textColor, size: fontSize + 4);
+    }
+
+    // 🟢 Trường hợp chỉ text
+    if (!hasIcon && hasText) {
+      return Text(
+        text!,
+        style: TextStyle(
+          color: textColor,
+          fontSize: fontSize,
+          fontWeight: fontWeight,
+        ),
+      );
+    }
+
+    // 🔵 Trường hợp icon + text
     return Row(
+      mainAxisSize: MainAxisSize.min,
       mainAxisAlignment: MainAxisAlignment.center,
-      children: <Widget>[
-        if (icon != null) ...<Widget>[
-          Icon(icon, color: textColor),
-          const SizedBox(width: 8.0),
-        ],
+      children: [
+        iconWidget ??
+            Icon(icon, color: textColor, size: fontSize + 4),
+        const SizedBox(width: 6),
         Text(
-          text,
+          text!,
           style: TextStyle(
             color: textColor,
             fontSize: fontSize,

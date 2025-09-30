@@ -1,5 +1,5 @@
 export 'floating/add_transaction_button_floating.dart';
-export 'calendar/app_calendar_month.dart';
+export '../pages/calendar_monthly_transaction/calendar_monthly_transaction.dart';
 export 'dialog/exports.dart';
 export 'appBar/app_bar.dart';
 export 'button/app_button.dart';

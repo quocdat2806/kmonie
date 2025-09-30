@@ -15,7 +15,11 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider<HomeBloc>(create: (_) => HomeBloc(sl<TransactionService>(), sl<TransactionCategoryService>()), child: const HomePageChild());
+    return BlocProvider<HomeBloc>(
+      create: (_) =>
+          HomeBloc(sl<TransactionService>(), sl<TransactionCategoryService>()),
+      child: const HomePageChild(),
+    );
   }
 }
 
@@ -28,22 +32,25 @@ class HomePageChild extends StatefulWidget {
 
 class _HomePageChildState extends State<HomePageChild> {
   final ScrollController _scrollController = ScrollController();
- @override
+
+  @override
   void initState() {
     super.initState();
     PermissionUtils.requestNotificationService();
     _scrollController.addListener(_onScroll);
   }
+
   void _onScroll() {
     if (_scrollController.position.maxScrollExtent == 0) return;
     final position = _scrollController.position;
     final scrollPercent = position.pixels / position.maxScrollExtent;
 
-    if (scrollPercent >= 0.7  && !position.outOfRange) {
+    if (scrollPercent >= 0.7 && !position.outOfRange) {
       logger.i('load them');
       context.read<HomeBloc>().add(const HomeEvent.loadMore());
     }
   }
+
   @override
   Widget build(BuildContext context) {
     return ColoredBox(
@@ -55,39 +62,48 @@ class _HomePageChildState extends State<HomePageChild> {
               context.read<HomeBloc>().add(HomeEvent.changeDate(selectedDate));
             },
           ),
-          ElevatedButton.icon(
-            icon: const Icon(Icons.notifications),
-            label: const Text('Hiện Notification'),
-            onPressed: () {
-              NotificationService().showInAppNotification(
-                id: 0,
-                title: "ge",
-                body: "zzz",
-
-              );
-            },
-          ),
           Expanded(
-            child: BlocSelector<HomeBloc, HomeState, ({Map<String, List<Transaction>> groupedTransactions,DateTime? selectedDate, Map<int, TransactionCategory> categoriesMap})>(
-              selector: (state) => (groupedTransactions: state.groupedTransactions, categoriesMap: state.categoriesMap,selectedDate: state.selectedDate),
-              builder: (context, data) {
-                if (data.groupedTransactions.isEmpty) {
-                  return _buildEmptyState();
-                }
-                return  CustomScrollView(
-                  slivers: [
-                    SliverList(
-                      delegate: SliverChildBuilderDelegate((context, index) {
-                        final dateKey = data.groupedTransactions.keys.elementAt(index);
-                        final transactions = data.groupedTransactions[dateKey]!;
-                        return TransactionDateGroup(dateKey: dateKey, transactions: transactions, categoriesMap: data.categoriesMap);
-                      },
-                          childCount: data.groupedTransactions.length),
-                    ),
-                  ],
-                );
-              },
-            ),
+            child:
+                BlocSelector<
+                  HomeBloc,
+                  HomeState,
+                  ({
+                    Map<String, List<Transaction>> groupedTransactions,
+                    DateTime? selectedDate,
+                    Map<int, TransactionCategory> categoriesMap,
+                  })
+                >(
+                  selector: (state) => (
+                    groupedTransactions: state.groupedTransactions,
+                    categoriesMap: state.categoriesMap,
+                    selectedDate: state.selectedDate,
+                  ),
+                  builder: (context, data) {
+                    if (data.groupedTransactions.isEmpty) {
+                      return _buildEmptyState();
+                    }
+                    return CustomScrollView(
+                      slivers: [
+                        SliverList(
+                          delegate: SliverChildBuilderDelegate((
+                            context,
+                            index,
+                          ) {
+                            final dateKey = data.groupedTransactions.keys
+                                .elementAt(index);
+                            final transactions =
+                                data.groupedTransactions[dateKey]!;
+                            return TransactionDateGroup(
+                              dateKey: dateKey,
+                              transactions: transactions,
+                              categoriesMap: data.categoriesMap,
+                            );
+                          }, childCount: data.groupedTransactions.length),
+                        ),
+                      ],
+                    );
+                  },
+                ),
           ),
         ],
       ),
@@ -101,10 +117,12 @@ class _HomePageChildState extends State<HomePageChild> {
         children: [
           Text('Chưa có giao dịch nào', style: AppTextStyle.greyS14),
           const SizedBox(height: UIConstants.smallPadding),
-          Text('Hãy thêm giao dịch đầu tiên của bạn', style: AppTextStyle.greyS12),
+          Text(
+            'Hãy thêm giao dịch đầu tiên của bạn',
+            style: AppTextStyle.greyS12,
+          ),
         ],
       ),
     );
-
   }
 }

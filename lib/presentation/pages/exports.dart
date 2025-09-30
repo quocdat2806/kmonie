@@ -5,6 +5,6 @@ export 'home/home_page.dart';
 export 'main/main_page.dart';
 export 'profile/profile_page.dart';
 export 'report/report_page.dart';
-export 'search_transaction/search_transaction.dart';
+export 'search_transaction/search_transaction_page.dart';
 export 'splash/splash_page.dart';
 export 'statistics/statistics_page.dart';

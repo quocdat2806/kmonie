@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:kmonie/presentation/pages/calendar_monthly_transaction/calendar_monthly_transaction.dart';
 import '../../application/auth/auth_export.dart';
 import '../navigation/exports.dart';
 import '../enum/exports.dart';
@@ -42,10 +43,10 @@ class AppRouter {
       //   builder: (_, _) => const AddTransactionCategoryPage(),
       // ),
 
-      // GoRoute(
-      //   path: RouterPath.monthCalendar,
-      //   builder: (_, _) => const CalendarScreen(),
-      // ),
+      GoRoute(
+        path: RouterPath.calendarMonthlyTransaction,
+        builder: (_, _) => const CalendarMonthlyTransaction(),
+      ),
       GoRoute(
         path: RouterPath.addTransaction,
         builder: (_, _) => const AddTransactionPage(),

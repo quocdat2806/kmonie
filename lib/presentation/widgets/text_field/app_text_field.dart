@@ -30,6 +30,7 @@ class AppTextField extends StatelessWidget {
     this.inputFormatters,
     this.editAble = true,
     this.onClear,
+    this.filledColor=Colors.transparent
   });
 
   final TextEditingController controller;
@@ -57,6 +58,7 @@ class AppTextField extends StatelessWidget {
   final List<TextInputFormatter>? inputFormatters;
   final bool editAble;
   final VoidCallback? onClear;
+  final Color  filledColor;
 
   @override
   Widget build(BuildContext context) {
@@ -84,7 +86,7 @@ class AppTextField extends StatelessWidget {
       hintText: hintText,
       isDense: isDense ?? true,
       filled: true,
-      fillColor: Colors.transparent,
+      fillColor: filledColor,
       prefixIcon: prefixIcon == null
           ? null
           : Padding(

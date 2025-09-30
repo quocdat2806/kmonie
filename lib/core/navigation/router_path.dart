@@ -6,7 +6,7 @@ class RouterPath {
   static const String details = '/details';
   static const String settings = '/settings';
   static const String searchTransaction = '/search-transaction';
-  static const String monthCalendar = '/month-calendar';
+  static const String calendarMonthlyTransaction = '/calendar-monthly-transaction';
   static const String monthlySummary = '/monthly-summary';
   static const String addTransactionCategory = '/add-transaction-category';
 }
