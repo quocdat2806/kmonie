@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:kmonie/presentation/pages/calendar_monthly_transaction/test.dart';
+
+import '../../widgets/appBar/app_bar.dart';
 
 class CalendarMonthlyTransaction extends StatefulWidget {
   const CalendarMonthlyTransaction({super.key});
@@ -21,45 +24,28 @@ class _CalendarMonthlyTransactionState extends State<CalendarMonthlyTransaction>
 
   @override
   Widget build(BuildContext context) {
-    final firstDayOfMonth = DateTime(selectedYear, selectedMonth, 1);
-    final daysInMonth = DateUtils.getDaysInMonth(selectedYear, selectedMonth);
-    final int startWeekday = firstDayOfMonth.weekday % 7; // Make Sunday = 0
-
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.yellow[700],
-        title: const Text('Lịch'),
-        centerTitle: true,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => Navigator.pop(context),
-        ),
-        actions: [
-          TextButton.icon(
-            onPressed: _pickMonth,
-            icon: const Icon(Icons.arrow_drop_down, color: Colors.black),
-            label: Text(
-              'thg $selectedMonth $selectedYear',
-              style: const TextStyle(color: Colors.black),
-            ),
-          ),
-        ],
-      ),
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: Colors.yellow[700],
-        onPressed: () {
-          // Thêm giao dịch mới
-        },
-        child: const Icon(Icons.add, color: Colors.black),
-      ),
-      body: Column(
-        children: [
-          _buildWeekdaysHeader(),
-          const SizedBox(height: 8),
-          Expanded(child: _buildCalendarGrid(startWeekday, daysInMonth)),
-        ],
-      ),
-    );
+    return CalendarScreen();
+    // final firstDayOfMonth = DateTime(selectedYear, selectedMonth, 1);
+    // final daysInMonth = DateUtils.getDaysInMonth(selectedYear, selectedMonth);
+    // final int startWeekday = firstDayOfMonth.weekday % 7; // Make Sunday = 0
+    // return Scaffold(
+    //   appBar: const CustomAppBar(title: 'Lịch',actions: [
+    //
+    //   ],),
+    //   floatingActionButton: FloatingActionButton(
+    //     backgroundColor: Colors.yellow[700],
+    //     onPressed: () {
+    //     },
+    //     child: const Icon(Icons.add, color: Colors.black),
+    //   ),
+    //   body: Column(
+    //     children: [
+    //       _buildWeekdaysHeader(),
+    //       const SizedBox(height: 8),
+    //       Expanded(child: _buildCalendarGrid(startWeekday, daysInMonth)),
+    //     ],
+    //   ),
+    // );
   }
 
   Widget _buildWeekdaysHeader() {

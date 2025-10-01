@@ -1,22 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../../core/cache/export.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+
 import '../../../../core/constant/exports.dart';
 import '../../../../core/text_style/export.dart';
+import '../../../../generated/assets.dart';
 import '../../../bloc/exports.dart';
 import '../../../widgets/exports.dart';
-
-import '../../../../generated/assets.dart';
 
 class AddTransactionInputHeader extends StatelessWidget {
   final TextEditingController noteController;
   final FocusNode noteFocusNode;
 
-  const AddTransactionInputHeader({
-    super.key,
-    required this.noteController,
-    required this.noteFocusNode,
-  });
+  const AddTransactionInputHeader({super.key, required this.noteController, required this.noteFocusNode});
 
   @override
   Widget build(BuildContext context) {
@@ -29,25 +25,14 @@ class AddTransactionInputHeader extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                SvgCacheManager().getSvg(
-                  Assets.svgsCccd,
-                  UIConstants.largeIconSize,
-                  UIConstants.largeIconSize,
-                ),
+                SvgPicture.asset(Assets.svgsCccd, width: UIConstants.largeIconSize, height: UIConstants.largeIconSize),
                 Text(amount.toString(), style: AppTextStyle.blackS20Bold),
               ],
             ),
             const SizedBox(height: UIConstants.smallPadding),
             Container(
-              decoration: BoxDecoration(
-                color: ColorConstants.white,
-                borderRadius: BorderRadius.circular(
-                  UIConstants.smallBorderRadius,
-                ),
-              ),
-              padding: const EdgeInsets.symmetric(
-                horizontal: UIConstants.smallPadding,
-              ),
+              decoration: BoxDecoration(color: ColorConstants.white, borderRadius: BorderRadius.circular(UIConstants.smallBorderRadius)),
+              padding: const EdgeInsets.symmetric(horizontal: UIConstants.smallPadding),
               child: Row(
                 children: [
                   Text(TextConstants.noteLabel, style: AppTextStyle.greyS14),
@@ -55,9 +40,7 @@ class AddTransactionInputHeader extends StatelessWidget {
                     child: AppTextField(
                       controller: noteController,
                       focusNode: noteFocusNode,
-                      onChanged: (value) => context
-                          .read<AddTransactionBloc>()
-                          .add(NoteChanged(value)),
+                      onChanged: (value) => context.read<AddTransactionBloc>().add(NoteChanged(value)),
                       decoration: const InputDecoration(
                         isDense: true,
                         border: InputBorder.none,
@@ -66,20 +49,11 @@ class AddTransactionInputHeader extends StatelessWidget {
                         focusedBorder: InputBorder.none,
                         enabledBorder: InputBorder.none,
                         disabledBorder: InputBorder.none,
-                        contentPadding: EdgeInsets.symmetric(
-                          vertical: UIConstants.smallPadding,
-                        ),
+                        contentPadding: EdgeInsets.symmetric(vertical: UIConstants.smallPadding),
                       ),
                     ),
                   ),
-                  InkWell(
-                    onTap: () {},
-                    child: SvgCacheManager().getSvg(
-                      Assets.svgsCamera,
-                      UIConstants.smallIconSize,
-                      UIConstants.smallIconSize,
-                    ),
-                  ),
+                  Icon(Icons.camera_alt_outlined),
                 ],
               ),
             ),

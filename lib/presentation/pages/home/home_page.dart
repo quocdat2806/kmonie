@@ -1,25 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../core/util/exports.dart';
-import '../../../entity/exports.dart';
+
 import '../../../core/constant/exports.dart';
-import '../../../core/text_style/export.dart';
 import '../../../core/di/export.dart';
 import '../../../core/service/exports.dart';
+import '../../../core/text_style/export.dart';
+import '../../../core/util/exports.dart';
 import '../../bloc/exports.dart';
 import 'widgets/monthly_expense_summary.dart';
-import 'widgets/transaction_date_group.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider<HomeBloc>(
-      create: (_) =>
-          HomeBloc(sl<TransactionService>(), sl<TransactionCategoryService>()),
-      child: const HomePageChild(),
-    );
+    return BlocProvider<HomeBloc>(create: (_) => HomeBloc(sl<TransactionService>(), sl<TransactionCategoryService>()), child: const HomePageChild());
   }
 }
 
@@ -46,9 +41,14 @@ class _HomePageChildState extends State<HomePageChild> {
     final scrollPercent = position.pixels / position.maxScrollExtent;
 
     if (scrollPercent >= 0.7 && !position.outOfRange) {
-      logger.i('load them');
       context.read<HomeBloc>().add(const HomeEvent.loadMore());
     }
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
   }
 
   @override
@@ -62,49 +62,27 @@ class _HomePageChildState extends State<HomePageChild> {
               context.read<HomeBloc>().add(HomeEvent.changeDate(selectedDate));
             },
           ),
-          Expanded(
-            child:
-                BlocSelector<
-                  HomeBloc,
-                  HomeState,
-                  ({
-                    Map<String, List<Transaction>> groupedTransactions,
-                    DateTime? selectedDate,
-                    Map<int, TransactionCategory> categoriesMap,
-                  })
-                >(
-                  selector: (state) => (
-                    groupedTransactions: state.groupedTransactions,
-                    categoriesMap: state.categoriesMap,
-                    selectedDate: state.selectedDate,
-                  ),
-                  builder: (context, data) {
-                    if (data.groupedTransactions.isEmpty) {
-                      return _buildEmptyState();
-                    }
-                    return CustomScrollView(
-                      slivers: [
-                        SliverList(
-                          delegate: SliverChildBuilderDelegate((
-                            context,
-                            index,
-                          ) {
-                            final dateKey = data.groupedTransactions.keys
-                                .elementAt(index);
-                            final transactions =
-                                data.groupedTransactions[dateKey]!;
-                            return TransactionDateGroup(
-                              dateKey: dateKey,
-                              transactions: transactions,
-                              categoriesMap: data.categoriesMap,
-                            );
-                          }, childCount: data.groupedTransactions.length),
-                        ),
-                      ],
-                    );
-                  },
-                ),
-          ),
+          // Expanded(
+          //   child: BlocSelector<HomeBloc, HomeState, ({Map<String, List<Transaction>> groupedTransactions, DateTime? selectedDate, Map<int, TransactionCategory> categoriesMap})>(
+          //     selector: (state) => (groupedTransactions: state.groupedTransactions, categoriesMap: state.categoriesMap, selectedDate: state.selectedDate),
+          //     builder: (context, data) {
+          //       if (data.groupedTransactions.isEmpty) {
+          //         return _buildEmptyState();
+          //       }
+          //       return CustomScrollView(
+          //         slivers: [
+          //           SliverList(
+          //             delegate: SliverChildBuilderDelegate((context, index) {
+          //               final dateKey = data.groupedTransactions.keys.elementAt(index);
+          //               final transactions = data.groupedTransactions[dateKey]!;
+          //               return TransactionDateGroup(dateKey: dateKey, transactions: transactions, categoriesMap: data.categoriesMap);
+          //             }, childCount: data.groupedTransactions.length),
+          //           ),
+          //         ],
+          //       );
+          //     },
+          //   ),
+          // ),
         ],
       ),
     );
@@ -117,10 +95,7 @@ class _HomePageChildState extends State<HomePageChild> {
         children: [
           Text('Chưa có giao dịch nào', style: AppTextStyle.greyS14),
           const SizedBox(height: UIConstants.smallPadding),
-          Text(
-            'Hãy thêm giao dịch đầu tiên của bạn',
-            style: AppTextStyle.greyS12,
-          ),
+          Text('Hãy thêm giao dịch đầu tiên của bạn', style: AppTextStyle.greyS12),
         ],
       ),
     );

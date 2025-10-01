@@ -39,6 +39,19 @@ class DateUtils {
       return '';
     }
   }
+  static ({DateTime startUtc, DateTime endUtc}) monthRangeUtc(int year, int month) {
+    final localStart = DateTime(year, month);
+    final localNext  = (month == 12)
+        ? DateTime(year + 1)
+        : DateTime(year, month + 1);
+    return (startUtc: localStart.toUtc(), endUtc: localNext.toUtc());
+  }
+
+ static ({DateTime startUtc, DateTime endUtc}) yearRangeUtc(int year) {
+    final localStart = DateTime(year);
+    final localNext  = DateTime(year + 1);
+    return (startUtc: localStart.toUtc(), endUtc: localNext.toUtc());
+  }
 
   static String toDateTimeString(
     DateTime? dateTime, {

@@ -9,4 +9,6 @@ class RouterPath {
   static const String calendarMonthlyTransaction = '/calendar-monthly-transaction';
   static const String monthlySummary = '/monthly-summary';
   static const String addTransactionCategory = '/add-transaction-category';
+  static const String upgradeVip = '/vip-upgrade';
+
 }

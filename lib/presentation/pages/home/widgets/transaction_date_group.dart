@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+
 import '../../../../core/constant/exports.dart';
-import '../../../../core/text_style/export.dart';
 import '../../../../core/enum/exports.dart';
+import '../../../../core/text_style/export.dart';
 import '../../../../entity/exports.dart';
 import 'transaction_item.dart';
 
@@ -10,36 +11,22 @@ class TransactionDateGroup extends StatelessWidget {
   final List<Transaction> transactions;
   final Map<int, TransactionCategory> categoriesMap;
 
-  const TransactionDateGroup({
-    super.key,
-    required this.dateKey,
-    required this.transactions,
-    required this.categoriesMap,
-  });
+  const TransactionDateGroup({super.key, required this.dateKey, required this.transactions, required this.categoriesMap});
 
   @override
   Widget build(BuildContext context) {
     final totalIncome = _calculateTotalIncome();
     final totalExpense = _calculateTotalExpense();
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Date header
         Container(
-          margin: const EdgeInsets.symmetric(
-            horizontal: UIConstants.smallPadding,
-            vertical: UIConstants.smallPadding / 2,
-          ),
+          margin: const EdgeInsets.symmetric(horizontal: UIConstants.smallPadding, vertical: UIConstants.smallPadding / 2),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(dateKey, style: AppTextStyle.blackS16Bold),
-              if (totalIncome > 0 || totalExpense > 0)
-                Text(
-                  _formatTotalText(totalIncome, totalExpense),
-                  style: AppTextStyle.greyS12,
-                ),
+              if (totalIncome > 0 || totalExpense > 0) Text(_formatTotalText(totalIncome, totalExpense), style: AppTextStyle.greyS12),
             ],
           ),
         ),

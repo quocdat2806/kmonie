@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../constant/exports.dart';
 import '../text_style/export.dart';
 
@@ -13,10 +14,7 @@ class AppKeyboard extends StatelessWidget {
     _KeySpec.text('9'),
     _KeySpec.widget(
       value: 'TODAY',
-      child: const Icon(Icons.calendar_month,
-        color: ColorConstants.primary,
-        size: UIConstants.largeIconSize,
-      ),
+      child: const Icon(Icons.calendar_month, color: ColorConstants.primary, size: UIConstants.largeIconSize),
     ),
     _KeySpec.text('4'),
     _KeySpec.text('5'),
@@ -28,25 +26,16 @@ class AppKeyboard extends StatelessWidget {
     _KeySpec.text('-'),
     _KeySpec.text(','),
     _KeySpec.text('0'),
-    _KeySpec.widget(
-      value: 'CLEAR',
-      child: const Icon(Icons.backspace_outlined),
-    ),
-    _KeySpec.widget(
-      value: 'DONE',
-      child: const Icon(Icons.check),
-    ),
+    _KeySpec.widget(value: 'CLEAR', child: const Icon(Icons.backspace_outlined)),
+    _KeySpec.widget(value: 'DONE', child: const Icon(Icons.check)),
   ];
 
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        final totalSpacing =
-            UIConstants.smallGridSpacing *
-                (UIConstants.defaultGridCrossAxisCount - 1);
-        final itemWidth = (constraints.maxWidth - totalSpacing) /
-            UIConstants.defaultGridCrossAxisCount;
+        final totalSpacing = UIConstants.smallGridSpacing * (UIConstants.defaultGridCrossAxisCount - 1);
+        final itemWidth = (constraints.maxWidth - totalSpacing) / UIConstants.defaultGridCrossAxisCount;
         return GridView.count(
           crossAxisCount: UIConstants.defaultGridCrossAxisCount,
           shrinkWrap: true,
@@ -54,17 +43,20 @@ class AppKeyboard extends StatelessWidget {
           mainAxisSpacing: UIConstants.smallGridSpacing,
           crossAxisSpacing: UIConstants.smallGridSpacing,
           childAspectRatio: itemWidth / UIConstants.largeButtonHeight,
-          children: _items.map((spec) {
-            return InkWell(
-              onTap: () => onValueChanged?.call(spec.value),
-              child: _KeyButton(spec: spec),
-            );
-          }).toList(growable: false),
+          children: _items
+              .map((spec) {
+                return InkWell(
+                  onTap: () => onValueChanged?.call(spec.value),
+                  child: _KeyButton(spec: spec),
+                );
+              })
+              .toList(growable: false),
         );
       },
     );
   }
 }
+
 class _KeyButton extends StatelessWidget {
   final _KeySpec spec;
 
@@ -72,15 +64,10 @@ class _KeyButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bgColor = spec.value == 'DONE' ? Colors.grey : Colors.white;
+    final bgColor = spec.value == 'DONE' ? ColorConstants.grey : ColorConstants.white;
     return Container(
-      decoration: BoxDecoration(
-        color: bgColor,
-        borderRadius: const BorderRadius.all(Radius.circular(4)),
-      ),
-      child: Center(
-        child: spec.child ?? Text(spec.value, style: AppTextStyle.blackS20),
-      ),
+      decoration: BoxDecoration(color: bgColor, borderRadius: const BorderRadius.all(Radius.circular(4))),
+      child: Center(child: spec.child ?? Text(spec.value, style: AppTextStyle.blackS20)),
     );
   }
 }
@@ -93,6 +80,5 @@ class _KeySpec {
 
   factory _KeySpec.text(String value) => _KeySpec._(value: value);
 
-  factory _KeySpec.widget({required String value, required Widget child}) =>
-      _KeySpec._(value: value, child: child);
+  factory _KeySpec.widget({required String value, required Widget child}) => _KeySpec._(value: value, child: child);
 }

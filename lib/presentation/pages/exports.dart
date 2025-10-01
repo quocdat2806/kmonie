@@ -9,5 +9,5 @@ export 'search_transaction/search_transaction_page.dart';
 export 'splash/splash_page.dart';
 export 'statistics/statistics_page.dart';
 export 'calendar_monthly_transaction/calendar_monthly_transaction.dart';
-export 'vip_upgrade/vip_upgrade_page.dart';
+export 'upgrade_vip/upgrade_vip_page.dart';
 export 'add_transaction_category/add_transaction_category_page.dart';

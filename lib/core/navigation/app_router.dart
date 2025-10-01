@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+
 import '../../application/auth/auth_export.dart';
-import '../navigation/exports.dart';
-import '../enum/exports.dart';
 import '../../presentation/pages/exports.dart';
+import '../enum/exports.dart';
+import '../navigation/exports.dart';
 
 class AppRouter {
   AppRouter(this.authBloc);
@@ -14,13 +15,11 @@ class AppRouter {
     navigatorKey: _rootNavigatorKey,
     initialLocation: RouterPath.splash,
     refreshListenable: RouterRefresh(authBloc.stream),
-    errorBuilder: (_, GoRouterState state) =>
-    const Scaffold(body: Center(child: Text('Page not found'))),
+    errorBuilder: (_, GoRouterState state) => const Scaffold(body: Center(child: Text('Page not found'))),
     routes: <RouteBase>[
       GoRoute(path: RouterPath.splash, builder: (_, _) => const SplashPage()),
       ShellRoute(
-        builder: (BuildContext context, GoRouterState state, Widget child) =>
-            child,
+        builder: (BuildContext context, GoRouterState state, Widget child) => child,
         routes: <RouteBase>[
           GoRoute(
             path: '/auth/signin',
@@ -32,24 +31,16 @@ class AppRouter {
           ),
         ],
       ),
-      GoRoute(name: RouterPath.main,path: RouterPath.main, builder: (_, _) => const MainPage()),
-      GoRoute(
-        path: RouterPath.searchTransaction,
-        builder: (_, _) => const SearchScreen(),
-      ),
+      GoRoute(name: RouterPath.main, path: RouterPath.main, builder: (_, _) => const MainPage()),
+      GoRoute(path: RouterPath.searchTransaction, builder: (_, _) => const SearchTransactionPage()),
+      GoRoute(path: RouterPath.upgradeVip, builder: (_, _) => const VipUpgradePage()),
+
       // GoRoute(
       //   path: RouterPath.addTransactionCategory,
       //   builder: (_, _) => const AddTransactionCategoryPage(),
       // ),
-
-      GoRoute(
-        path: RouterPath.calendarMonthlyTransaction,
-        builder: (_, _) => const CalendarMonthlyTransaction(),
-      ),
-      GoRoute(
-        path: RouterPath.addTransaction,
-        builder: (_, _) => const AddTransactionPage(),
-      ),
+      GoRoute(path: RouterPath.calendarMonthlyTransaction, builder: (_, _) => const CalendarMonthlyTransaction()),
+      GoRoute(path: RouterPath.addTransaction, builder: (_, _) => const AddTransactionPage()),
     ],
     // redirect: (_, GoRouterState state) {
     //   final AuthState authState = authBloc.state;

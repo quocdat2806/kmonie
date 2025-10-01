@@ -14,13 +14,11 @@ class TextConstants {
   static const String otherText = 'Khác';
   static const String settingsText = 'Cài đặt';
   static const String selectText = 'Lựa chọn';
-  static const String invalidTransactionTypeError =
-      'Loại giao dịch không hợp lệ';
+  static const String invalidTransactionTypeError = 'Loại giao dịch không hợp lệ';
   static const String categoryNotFoundError = 'Không tìm thấy danh mục';
   static const String networkError = 'Lỗi kết nối mạng';
   static const String unknownError = 'Lỗi không xác định';
-  static const String transactionAddedSuccess =
-      'Giao dịch đã được thêm thành công';
+  static const String transactionAddedSuccess = 'Giao dịch đã được thêm thành công';
   static const String categorySelectedSuccess = 'Danh mục đã được chọn';
   static const String requiredFieldError = 'Trường này là bắt buộc';
   static const String invalidAmountError = 'Số tiền không hợp lệ';
@@ -35,4 +33,13 @@ class TextConstants {
   static const String gotIt = 'Đã hiểu';
   static const String noteLabel = 'Ghi chú: ';
   static const String amountLabel = '0';
+  static const unlockFeatureAndRemoveAds = 'Mở khoá mọi thứ và loại bỏ quảng cáo';
+  static const moreTopicAndCustomise = 'Nhiều chủ đề đẹp hơn và có thể tuỳ chỉnh';
+  static const makeLifeBeautiful = 'Làm cho cuôc sống bạn tốt hơn';
+  static const feeForYear = '199.000 đ / hàng năm . Huỷ bất cứ lúc nào';
+  static const continueRegister = 'Tiếp tục';
+  static const termPolicy = 'Bằng cách đăng nhập bạn đồng ý với Thoả thuận người dùng và CHính sách và quyền riêng tư';
+  static const termText = 'Điều khoản sử dung';
+  static const policyText = 'Chính sách bảo mật';
+  static const all = 'Tất cả';
 }

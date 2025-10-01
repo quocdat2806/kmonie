@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import '../constant/exports.dart';
 
 class SvgCacheManager {
   static final SvgCacheManager _instance = SvgCacheManager._internal();
@@ -14,15 +15,15 @@ class SvgCacheManager {
     return '${path}_${size.toStringAsFixed(1)}';
   }
 
-  SvgPicture getSvg(String path, double width, double height) {
+  SvgPicture getSvg(String path, double width, double height,{Color ? color}) {
     final key = _generateKey(path, width);
 
     _usageCount[key] = (_usageCount[key] ?? 0) + 1;
 
-    return _cache[key] ??= _createSvg(path, width, height, key);
+    return _cache[key] ??= _createSvg(path, width, height, key,color);
   }
 
-  SvgPicture _createSvg(String path, double width, double height, String key) {
+  SvgPicture _createSvg(String path, double width, double height, String key,Color?color) {
     if (_cache.length >= _maxCacheSize) {
       _evictLeastUsed();
     }
@@ -31,6 +32,7 @@ class SvgCacheManager {
       path,
       width: width,
       height: height,
+      colorFilter: ColorFilter.mode(color??ColorConstants.black, BlendMode.srcIn),
       placeholderBuilder: (context) => const SizedBox(),
     );
   }

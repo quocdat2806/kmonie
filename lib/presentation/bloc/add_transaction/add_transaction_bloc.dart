@@ -1,18 +1,18 @@
 import 'dart:async';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
+
 import '../../../core/enum/exports.dart';
 import '../../../core/service/exports.dart';
 import '../../../entity/exports.dart';
 import 'add_transaction_event.dart';
 import 'add_transaction_state.dart';
 
-class AddTransactionBloc
-    extends Bloc<AddTransactionEvent, AddTransactionState> {
+class AddTransactionBloc extends Bloc<AddTransactionEvent, AddTransactionState> {
   final TransactionCategoryService service;
   final TransactionService transactionService;
 
-  AddTransactionBloc(this.service, this.transactionService)
-    : super(const AddTransactionState()) {
+  AddTransactionBloc(this.service, this.transactionService) : super(const AddTransactionState()) {
     on<SwitchTab>(_onSwitchTab);
     on<LoadCategories>(_onLoadCategories);
     on<CategoryChanged>(_onCategoryChanged);
@@ -22,10 +22,7 @@ class AddTransactionBloc
     on<SaveTransaction>(_onSaveTransaction);
     add(LoadCategories(state.currentType));
   }
-  void _onKeyboardVisibilityChanged(
-    ToggleKeyboardVisibility e,
-    Emitter<AddTransactionState> emit,
-  ) {
+  void _onKeyboardVisibilityChanged(ToggleKeyboardVisibility e, Emitter<AddTransactionState> emit) {
     emit(state.copyWith(isKeyboardVisible: !state.isKeyboardVisible));
   }
 
@@ -68,10 +65,7 @@ class AddTransactionBloc
     emit(state.copyWith(note: e.value));
   }
 
-  Future<void> _onSwitchTab(
-    SwitchTab e,
-    Emitter<AddTransactionState> emit,
-  ) async {
+  Future<void> _onSwitchTab(SwitchTab e, Emitter<AddTransactionState> emit) async {
     if (e.index == state.selectedIndex) return;
 
     final newType = TransactionType.fromIndex(e.index);
@@ -82,27 +76,18 @@ class AddTransactionBloc
     }
   }
 
-  Future<void> _onLoadCategories(
-    LoadCategories e,
-    Emitter<AddTransactionState> emit,
-  ) async {
+  Future<void> _onLoadCategories(LoadCategories e, Emitter<AddTransactionState> emit) async {
     try {
       final list = await service.getByType(e.type);
-      final updated = Map<TransactionType, List<TransactionCategory>>.from(
-        state.categoriesByType,
-      )..[e.type] = list;
+      final updated = Map<TransactionType, List<TransactionCategory>>.from(state.categoriesByType)..[e.type] = list;
       emit(state.copyWith(categoriesByType: updated));
     } catch (error) {
       emit(state.copyWith(loadStatus: LoadStatus.error));
     }
   }
 
-  void _onCategoryChanged(
-    CategoryChanged e,
-    Emitter<AddTransactionState> emit,
-  ) {
-    final next = Map<TransactionType, int?>.from(state.selectedCategoryIdByType)
-      ..[e.type] = e.categoryId;
+  void _onCategoryChanged(CategoryChanged e, Emitter<AddTransactionState> emit) {
+    final next = Map<TransactionType, int?>.from(state.selectedCategoryIdByType)..[e.type] = e.categoryId;
 
     emit(state.copyWith(selectedCategoryIdByType: next));
 
@@ -111,10 +96,7 @@ class AddTransactionBloc
     }
   }
 
-  Future<void> _onSaveTransaction(
-    SaveTransaction e,
-    Emitter<AddTransactionState> emit,
-  ) async {
+  Future<void> _onSaveTransaction(SaveTransaction e, Emitter<AddTransactionState> emit) async {
     if (state.amount <= 0) {
       emit(state.copyWith(loadStatus: LoadStatus.error));
       return;
@@ -125,13 +107,7 @@ class AddTransactionBloc
       return;
     }
     try {
-      await transactionService.createTransaction(
-        amount: state.amount.toDouble(),
-        date: state.date ?? DateTime.now(),
-        transactionCategoryId: selectedCategoryId,
-        content: state.note,
-        transactionType: state.currentType.typeIndex,
-      );
+      await transactionService.createTransaction(amount: state.amount, date: state.date ?? DateTime.now(), transactionCategoryId: selectedCategoryId, content: state.note, transactionType: state.currentType.typeIndex);
       emit(state.copyWith(loadStatus: LoadStatus.success));
     } catch (error) {
       emit(state.copyWith(loadStatus: LoadStatus.error));

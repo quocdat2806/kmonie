@@ -53,7 +53,7 @@ class StatisticsList extends StatelessWidget {
   }
 
   Widget _buildDateGroup(String dateKey, List<Transaction> transactions) {
-    final totalAmount = transactions.fold(0.0, (sum, t) => sum + t.amount);
+    final totalAmount =  transactions.fold(0.0, (sum, t) => sum + t.amount);
 
     return Container(
       margin: const EdgeInsets.only(bottom: UIConstants.smallPadding),
@@ -85,7 +85,7 @@ class StatisticsList extends StatelessWidget {
               children: [
                 Text(dateKey, style: AppTextStyle.blackS14Bold),
                 Text(
-                  _formatAmount(totalAmount),
+                  _formatAmount(totalAmount.toInt()),
                   style: AppTextStyle.blackS14Bold.copyWith(
                     color: ColorConstants.primary,
                   ),
@@ -191,7 +191,7 @@ class StatisticsList extends StatelessWidget {
     return ColorConstants.primary;
   }
 
-  String _formatAmount(double amount) {
+  String _formatAmount(int amount) {
     if (amount >= 1000000) {
       return '${(amount / 1000000).toStringAsFixed(1)}Mđ';
     } else if (amount >= 1000) {

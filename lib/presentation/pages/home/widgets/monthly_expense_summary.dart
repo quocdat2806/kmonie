@@ -43,6 +43,9 @@ class _MonthlyExpenseSummaryState extends State<MonthlyExpenseSummary> {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: <Widget>[
         InkWell(
+          onTap: () {
+            AppNavigator(context: context).push(RouterPath.upgradeVip);
+          },
           child: SvgCacheManager().getSvg(
             Assets.svgsKing,
             UIConstants.mediumIconSize,
