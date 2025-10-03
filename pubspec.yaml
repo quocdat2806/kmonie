@@ -67,6 +67,8 @@ dependencies:
   workmanager: ^0.9.0+3
   timezone: ^0.10.1
   flutter_stripe: ^12.0.2
+  firebase_crashlytics: ^5.0.2
+  firebase_analytics: ^12.0.2
 
 dev_dependencies:
   flutter_test:
