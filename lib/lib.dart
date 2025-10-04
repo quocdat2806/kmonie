@@ -1,7 +1,7 @@
 export 'application/exports.dart';
 export 'core/exports.dart';
-export 'database/exports.dart';
-export 'entity/exports.dart';
+export 'database/export.dart';
+export 'entity/export.dart';
 export 'generated/assets.dart';
-export 'presentation/exports.dart';
-export 'repository/exports.dart';
+export 'presentation/export.dart';
+export 'repository/export.dart';

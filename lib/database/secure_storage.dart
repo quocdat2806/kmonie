@@ -1,4 +1,5 @@
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import '../../core/config/export.dart';
 
 class SecureStorageService {
   factory SecureStorageService() => _instance;
@@ -14,7 +15,7 @@ class SecureStorageService {
   Future<void> deleteAll() => _storage.deleteAll();
 
   Future<bool> isLoggedIn() async {
-    final String? token = await _storage.read(key: 'token');
+    final String? token = await _storage.read(key: AppConfigs.tokenKey);
     return token != null && token.isNotEmpty;
   }
 }

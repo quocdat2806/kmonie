@@ -1,9 +1,9 @@
-import '../constant/exports.dart';
+import '../constant/export.dart';
 
 enum TransactionType {
-  expense(0, TextConstants.expenseTabText),
-  income(1, TextConstants.incomeTabText),
-  transfer(2, TextConstants.transferTabText);
+  expense(0, TextConstants.expense),
+  income(1, TextConstants.income),
+  transfer(2, TextConstants.transfer);
 
   const TransactionType(this.typeIndex, this.displayName);
 

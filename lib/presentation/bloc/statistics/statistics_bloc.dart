@@ -1,7 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../core/service/exports.dart';
-import '../../../core/enum/exports.dart';
-import '../../../entity/exports.dart';
+import '../../../core/service/export.dart';
+import '../../../core/enum/export.dart';
+import '../../../entity/export.dart';
 import 'statistics_event.dart';
 import 'statistics_state.dart';
 

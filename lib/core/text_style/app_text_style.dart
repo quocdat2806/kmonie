@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../constant/exports.dart';
+import '../constant/export.dart';
 
 class AppTextStyle {
   AppTextStyle._();

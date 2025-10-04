@@ -1,9 +1,9 @@
 import 'package:get_it/get_it.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import '../stream/export.dart';
-import '../network/exports.dart';
-import '../../database/exports.dart';
-import '../service/exports.dart';
+import '../network/export.dart';
+import '../../database/export.dart';
+import '../service/export.dart';
 
 final GetIt sl = GetIt.instance;
 

@@ -1,25 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:intl/intl.dart';
-import '../../../../core/cache/export.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import '../../../../core/text_style/export.dart';
-import '../../../../core/constant/exports.dart';
-import '../../../../core/navigation/exports.dart';
-
+import '../../../../core/constant/export.dart';
+import '../../../../core/navigation/export.dart';
+import '../../../../core/util/export.dart';
 import '../../../../generated/assets.dart';
-import '../../../widgets/exports.dart';
-import '../../../bloc/exports.dart';
+import '../../../widgets/export.dart';
+import '../../../bloc/export.dart';
 
-class MonthlyExpenseSummary extends StatefulWidget {
+class MonthlyExpenseSummary extends StatelessWidget {
   final ValueChanged<DateTime>? onDateChanged;
 
   const MonthlyExpenseSummary({super.key, this.onDateChanged});
-
-  @override
-  State<MonthlyExpenseSummary> createState() => _MonthlyExpenseSummaryState();
-}
-
-class _MonthlyExpenseSummaryState extends State<MonthlyExpenseSummary> {
 
   @override
   Widget build(BuildContext context) {
@@ -28,11 +21,8 @@ class _MonthlyExpenseSummaryState extends State<MonthlyExpenseSummary> {
       child: Padding(
         padding: const EdgeInsets.all(UIConstants.defaultPadding),
         child: Column(
-          children: <Widget>[
-            _buildHeader(context),
-            const SizedBox(height: UIConstants.defaultSpacing),
-            _buildSummaryRow(),
-          ],
+          spacing: UIConstants.defaultSpacing,
+          children: <Widget>[_buildHeader(context), _buildSummary()],
         ),
       ),
     );
@@ -42,39 +32,27 @@ class _MonthlyExpenseSummaryState extends State<MonthlyExpenseSummary> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: <Widget>[
-        InkWell(
-          onTap: () {
-            AppNavigator(context: context).push(RouterPath.upgradeVip);
-          },
-          child: SvgCacheManager().getSvg(
-            Assets.svgsKing,
-            UIConstants.mediumIconSize,
-            UIConstants.mediumIconSize,
-          ),
+        _buildIcon(
+          context: context,
+          path: Assets.svgsKing,
+          routerPath: RouterPath.upgradeVip,
         ),
-        Text('Sổ Thu Chi', style: AppTextStyle.blackS18Bold),
+        Text(
+          TextConstants.incomeAndExpenditureBook,
+          style: AppTextStyle.blackS18Bold,
+        ),
         Row(
+          spacing: UIConstants.defaultSpacing,
           children: <Widget>[
-            InkWell(
-              onTap: () {
-                AppNavigator(context: context).push(RouterPath.searchTransaction);
-              },
-              child: SvgCacheManager().getSvg(
-                Assets.svgsSearch,
-                UIConstants.mediumIconSize,
-                UIConstants.mediumIconSize,
-              ),
+            _buildIcon(
+              context: context,
+              path: Assets.svgsSearch,
+              routerPath: RouterPath.searchTransaction,
             ),
-            const SizedBox(width: UIConstants.defaultSpacing),
-            InkWell(
-              onTap: () {
-                AppNavigator(context: context).push(RouterPath.calendarMonthlyTransaction);
-              },
-              child: SvgCacheManager().getSvg(
-                Assets.svgsCalendar,
-                UIConstants.mediumIconSize,
-                UIConstants.mediumIconSize,
-              ),
+            _buildIcon(
+              context: context,
+              path: Assets.svgsCalendar,
+              routerPath: RouterPath.calendarMonthlyTransaction,
             ),
           ],
         ),
@@ -82,7 +60,22 @@ class _MonthlyExpenseSummaryState extends State<MonthlyExpenseSummary> {
     );
   }
 
-  Widget _buildSummaryRow() {
+  Widget _buildIcon({
+    required BuildContext context,
+    required String path,
+    required String routerPath,
+  }) {
+    return InkWell(
+      onTap: () => AppNavigator(context: context).push(routerPath),
+      child: SvgPicture.asset(
+        path,
+        width: UIConstants.mediumIconSize,
+        height: UIConstants.mediumIconSize,
+      ),
+    );
+  }
+
+  Widget _buildSummary() {
     return BlocSelector<
       HomeBloc,
       HomeState,
@@ -103,38 +96,27 @@ class _MonthlyExpenseSummaryState extends State<MonthlyExpenseSummary> {
         final selectedDate = data.selectedDate ?? DateTime.now();
         final year = selectedDate.year;
         final month = selectedDate.month;
+
         return Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
             Expanded(
               child: InkWell(
-                onTap: () async {
-                  final result = await showDialog<Map<String, int>>(
-                    context: context,
-                    builder: (context) => MonthPickerDialog(
-                      initialMonth: month,
-                      initialYear: year,
-                    ),
-                  );
-                  if (result != null && widget.onDateChanged != null) {
-                    final selectedDate = DateTime(
-                      result['year']!,
-                      result['month']!,
-                    );
-                    widget.onDateChanged!(selectedDate);
-                  }
-                },
+                onTap: () => _onSelectDateTap(context, year, month),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     Text('$year', style: AppTextStyle.blackS14),
                     Row(
                       children: <Widget>[
-                        Text('Thg $month', style: AppTextStyle.blackS14Medium),
-                        SvgCacheManager().getSvg(
+                        Text(
+                          '${TextConstants.month} $month',
+                          style: AppTextStyle.blackS14Medium,
+                        ),
+                        SvgPicture.asset(
                           Assets.svgsArrowDown,
-                          UIConstants.mediumIconSize,
-                          UIConstants.mediumIconSize,
+                          width: UIConstants.mediumIconSize,
+                          height: UIConstants.mediumIconSize,
                         ),
                       ],
                     ),
@@ -144,20 +126,20 @@ class _MonthlyExpenseSummaryState extends State<MonthlyExpenseSummary> {
             ),
             Expanded(
               child: _buildSummaryItem(
-                'Chi tiêu',
-                _formatAmount(data.totalExpense),
+                TextConstants.expense,
+                FormatUtils.formatAmount(data.totalExpense),
               ),
             ),
             Expanded(
               child: _buildSummaryItem(
-                'Thu nhập',
-                _formatAmount(data.totalIncome),
+                TextConstants.income,
+                FormatUtils.formatAmount(data.totalIncome),
               ),
             ),
             Expanded(
               child: _buildSummaryItem(
-                'Số dư',
-                _formatAmount(data.totalBalance),
+                TextConstants.balance,
+                FormatUtils.formatAmount(data.totalBalance),
               ),
             ),
           ],
@@ -181,9 +163,20 @@ class _MonthlyExpenseSummaryState extends State<MonthlyExpenseSummary> {
     );
   }
 
-  String _formatAmount(double amount) {
-    if (amount == 0) return '0';
-    final formatter = NumberFormat('#,###');
-    return formatter.format(amount.toInt());
+  Future<void> _onSelectDateTap(
+    BuildContext context,
+    int year,
+    int month,
+  ) async {
+    final result = await showDialog<Map<String, int>>(
+      context: context,
+      builder: (context) =>
+          MonthPickerDialog(initialMonth: month, initialYear: year),
+    );
+
+    if (result != null && onDateChanged != null) {
+      final selectedDate = DateTime(result['year']!, result['month']!);
+      onDateChanged?.call(selectedDate);
+    }
   }
 }

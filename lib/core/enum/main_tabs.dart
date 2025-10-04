@@ -1,10 +1,10 @@
-import '../constant/exports.dart';
+import '../constant/export.dart';
 
 enum MainTabs {
-  home(0, TextConstants.homeLabel),
-  chart(1, TextConstants.chartLabel),
-  report(2, TextConstants.reportLabel),
-  profile(3, TextConstants.profileLabel);
+  home(0, TextConstants.home),
+  chart(1, TextConstants.chart),
+  report(2, TextConstants.report),
+  profile(3, TextConstants.profile);
 
   const MainTabs(this.tabIndex, this.label);
 

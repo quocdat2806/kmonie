@@ -4,8 +4,8 @@ import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
 import 'package:path_provider/path_provider.dart';
 
-import '../core/constant/exports.dart';
-import '../core/util/exports.dart';
+import '../core/constant/export.dart';
+import '../core/util/export.dart';
 
 part 'drift_local_database.g.dart';
 

@@ -1,11 +1,12 @@
 import 'package:dio/dio.dart';
-import '../../database/exports.dart';
+import '../config/export.dart';
+import '../../database/export.dart';
 
 class AuthHeaderInterceptor extends Interceptor {
   AuthHeaderInterceptor({required this.secure});
   final SecureStorageService secure;
 
-  static const String _key = 'token';
+  static const String _key = AppConfigs.tokenKey;
 
   @override
   Future<void> onRequest(

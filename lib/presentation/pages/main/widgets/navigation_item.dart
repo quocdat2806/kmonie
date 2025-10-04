@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import '../../../../core/constant/exports.dart';
+import '../../../../core/constant/export.dart';
 import '../../../../core/text_style/export.dart';
 
-class NavigationItem extends StatelessWidget {
+class MainNavigationItem extends StatelessWidget {
   final int index;
   final int currentIndex;
   final String iconPath;
   final String label;
   final VoidCallback? onTap;
 
-  const NavigationItem({
+  const MainNavigationItem({
     super.key,
     required this.index,
     required this.currentIndex,
@@ -22,7 +22,7 @@ class NavigationItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bool isActive = index == currentIndex;
-    final Color iconColor = isActive ? ColorConstants.primary : Colors.white;
+    final Color iconColor = isActive ? ColorConstants.primary : ColorConstants.white;
     final TextStyle textStyle = isActive
         ? AppTextStyle.yellowS10
         : AppTextStyle.whiteS10;
@@ -31,6 +31,7 @@ class NavigationItem extends StatelessWidget {
       child: InkWell(
         onTap: onTap,
         child: Column(
+          spacing:UIConstants.extraSmallSpacing,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             SvgPicture.asset(
@@ -39,8 +40,7 @@ class NavigationItem extends StatelessWidget {
               height: UIConstants.defaultIconSize,
               colorFilter: ColorFilter.mode(iconColor, BlendMode.srcIn),
             ),
-            const SizedBox(height: UIConstants.extraSmallSpacing),
-            Text(label, style: textStyle, textAlign: TextAlign.center),
+            Text(label, style: textStyle),
           ],
         ),
       ),

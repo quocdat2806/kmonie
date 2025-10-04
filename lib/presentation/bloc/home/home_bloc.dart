@@ -2,11 +2,11 @@ import 'dart:async';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../core/enum/exports.dart';
-import '../../../core/service/exports.dart';
+import '../../../core/enum/export.dart';
+import '../../../core/service/export.dart';
 import '../../../core/stream/export.dart';
-import '../../../core/util/exports.dart';
-import '../../../entity/exports.dart';
+import '../../../core/util/export.dart';
+import '../../../entity/export.dart';
 import 'home_event.dart';
 import 'home_state.dart';
 
@@ -86,6 +86,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       final result = await transactionService.getTransactionsInMonth(year: currentDate.year, month: currentDate.month);
       final groupedTransactions = _groupTransactionsByDate(result.transactions);
       final allCategories = await categoryService.getAll();
+      print("aaaa ${allCategories}");
       final categoriesMap = {for (final cat in allCategories) cat.id!: cat};
       return MonthTransactionData(totalRecords: result.totalRecords, transactions: result.transactions, groupedTransactions: groupedTransactions, categoriesMap: categoriesMap);
     } catch (error) {

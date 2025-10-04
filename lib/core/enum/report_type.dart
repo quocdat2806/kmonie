@@ -1,8 +1,8 @@
-import '../constant/exports.dart';
+import '../constant/export.dart';
 
 enum ReportType {
-  analysis(0, TextConstants.analysisReportTitle),
-  account(1, TextConstants.accountReportTitle);
+  analysis(0, TextConstants.analysis),
+  account(1, TextConstants.account);
 
   const ReportType(this.typeIndex, this.displayName);
 

@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:kmonie/core/exports.dart';
-import '../../../../core/constant/exports.dart';
-import '../../../presentation/pages/exports.dart';
-import '../../../presentation/bloc/exports.dart';
-import 'widgets/main_bottom_navigation_bar.dart';
+import '../../../../core/constant/export.dart';
+import '../../../presentation/pages/export.dart';
+import '../../../presentation/bloc/export.dart';
+import 'widgets/bottom_navigation_bar.dart';
 
 final List<Widget> pageList = const <Widget>[
   HomePage(),

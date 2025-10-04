@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import '../constant/exports.dart';
+import '../constant/export.dart';
 
 class SvgCacheManager {
   static final SvgCacheManager _instance = SvgCacheManager._internal();

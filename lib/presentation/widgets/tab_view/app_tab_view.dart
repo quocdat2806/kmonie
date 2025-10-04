@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../../core/constant/exports.dart';
-import '../../../core/enum/exports.dart';
+import '../../../core/constant/export.dart';
+import '../../../core/enum/export.dart';
 import '../../../core/text_style/export.dart';
 
 class AppTabView<T> extends StatelessWidget {

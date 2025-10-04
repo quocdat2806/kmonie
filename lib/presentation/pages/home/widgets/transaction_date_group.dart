@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-
-import '../../../../core/constant/exports.dart';
-import '../../../../core/enum/exports.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../../core/util/export.dart';
+import '../../../bloc/export.dart';
 import '../../../../core/text_style/export.dart';
-import '../../../../entity/exports.dart';
+import '../../../../entity/export.dart';
 import 'transaction_item.dart';
 
 class TransactionDateGroup extends StatelessWidget {
@@ -11,70 +11,55 @@ class TransactionDateGroup extends StatelessWidget {
   final List<Transaction> transactions;
   final Map<int, TransactionCategory> categoriesMap;
 
-  const TransactionDateGroup({super.key, required this.dateKey, required this.transactions, required this.categoriesMap});
+  const TransactionDateGroup({
+    super.key,
+    required this.dateKey,
+    required this.transactions,
+    required this.categoriesMap,
+  });
 
   @override
   Widget build(BuildContext context) {
-    final totalIncome = _calculateTotalIncome();
-    final totalExpense = _calculateTotalExpense();
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Container(
-          margin: const EdgeInsets.symmetric(horizontal: UIConstants.smallPadding, vertical: UIConstants.smallPadding / 2),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(dateKey, style: AppTextStyle.blackS16Bold),
-              if (totalIncome > 0 || totalExpense > 0) Text(_formatTotalText(totalIncome, totalExpense), style: AppTextStyle.greyS12),
-            ],
-          ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(dateKey, style: AppTextStyle.blackS16Bold),
+            BlocBuilder<HomeBloc, HomeState>(
+              buildWhen: (previous, current) =>
+                  previous.groupedTransactions != current.groupedTransactions||
+                  previous.categoriesMap != current.categoriesMap,
+              builder: (context, state) {
+                return (state.totalIncome > 0 || state.totalExpense > 0)
+                    ? Text(
+                        FormatUtils.formatTotalText(
+                          state.totalIncome,
+                          state.totalExpense,
+                        ),
+                        style: AppTextStyle.greyS12,
+                      )
+                    : SizedBox();
+              },
+            ),
+          ],
         ),
 
-        // Transaction items
-        ...transactions.map((transaction) {
-          final category = categoriesMap[transaction.transactionCategoryId];
-          return TransactionItem(transaction: transaction, category: category);
-        }).toList(),
+        ListView.builder(
+          physics: const NeverScrollableScrollPhysics(),
+          shrinkWrap: true,
+          itemCount: transactions.length,
+          itemBuilder: (context, index) {
+            final transaction = transactions[index];
+            final category = categoriesMap[transaction.transactionCategoryId];
+            return TransactionItem(
+              transaction: transaction,
+              category: category,
+            );
+          },
+        ),
       ],
     );
-  }
-
-  double _calculateTotalIncome() {
-    return transactions
-        .where((t) {
-          final category = categoriesMap[t.transactionCategoryId];
-          return category?.transactionType == TransactionType.income;
-        })
-        .fold(0.0, (sum, t) => sum + t.amount);
-  }
-
-  double _calculateTotalExpense() {
-    return transactions
-        .where((t) {
-          final category = categoriesMap[t.transactionCategoryId];
-          return category?.transactionType == TransactionType.expense;
-        })
-        .fold(0.0, (sum, t) => sum + t.amount);
-  }
-
-  String _formatTotalText(double income, double expense) {
-    if (income > 0 && expense > 0) {
-      return 'Thu: ${_formatAmount(income)} | Chi: ${_formatAmount(expense)}';
-    } else if (income > 0) {
-      return 'Thu: ${_formatAmount(income)}';
-    } else if (expense > 0) {
-      return 'Chi: ${_formatAmount(expense)}';
-    }
-    return '';
-  }
-
-  String _formatAmount(double amount) {
-    if (amount >= 1000000) {
-      return '${(amount / 1000000).toStringAsFixed(1)}M';
-    } else if (amount >= 1000) {
-      return '${(amount / 1000).toStringAsFixed(0)}K';
-    }
-    return amount.toStringAsFixed(0);
   }
 }

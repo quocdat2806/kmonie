@@ -1,17 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import '../../../core/constant/exports.dart';
-import '../../../core/navigation/exports.dart';
-import '../../../generated/assets.dart';
+import '../../../../core/constant/export.dart';
+import '../../../../core/navigation/export.dart';
+import '../../../../generated/assets.dart';
 
-class AddTransactionButtonFloating extends StatelessWidget {
-  final double topAddButtonOffset;
-  final double? rightAddButtonOffset;
+class MainNavigationAddTransactionButton extends StatelessWidget {
 
-  const AddTransactionButtonFloating({
+  const MainNavigationAddTransactionButton({
     super.key,
-    this.topAddButtonOffset = UIConstants.topAddButtonOffset,
-    this.rightAddButtonOffset,
   });
 
   @override
@@ -22,9 +18,8 @@ class AddTransactionButtonFloating extends StatelessWidget {
         clipBehavior: Clip.none,
         children: [
           Positioned(
-            right: rightAddButtonOffset,
-            top: -UIConstants.topAddButtonOffset,
-            child: GestureDetector(
+            top: -UIConstants.topAddTransactionButtonOffset,
+            child: InkWell(
               onTap: () => _navigateToAddTransactionPage(context),
               child: DecoratedBox(
                 decoration: const BoxDecoration(

@@ -1,6 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-import '../../../core/enum/exports.dart';
+import '../../../core/enum/export.dart';
 
 part 'search_event.freezed.dart';
 

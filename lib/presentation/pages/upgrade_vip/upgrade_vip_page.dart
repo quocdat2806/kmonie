@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
 import '../../../core/cache/export.dart';
-import '../../../core/constant/exports.dart';
+import '../../../core/constant/export.dart';
 import '../../../core/text_style/export.dart';
 import '../../../generated/assets.dart';
-import '../../widgets/exports.dart';
+import '../../widgets/export.dart';
 
 class VipUpgradePage extends StatelessWidget {
   const VipUpgradePage({super.key});
@@ -73,7 +73,7 @@ class VipUpgradePage extends StatelessWidget {
   }
 
   Widget _buildContinueButton() {
-    return AppButton(onPressed: () {}, text: TextConstants.continueRegister, width: double.infinity, fontWeight: FontWeight.bold);
+    return AppButton(onPressed: () {}, text: TextConstants.register, width: double.infinity, fontWeight: FontWeight.bold);
   }
 
   Widget _buildTermsSection() {
@@ -84,10 +84,10 @@ class VipUpgradePage extends StatelessWidget {
         Row(
           children: [
             Expanded(
-              child: Text(TextConstants.termText, style: AppTextStyle.yellowS12, textAlign: TextAlign.center),
+              child: Text(TextConstants.term, style: AppTextStyle.yellowS12, textAlign: TextAlign.center),
             ),
             Expanded(
-              child: Text(TextConstants.policyText, style: AppTextStyle.yellowS12, textAlign: TextAlign.center),
+              child: Text(TextConstants.policy, style: AppTextStyle.yellowS12, textAlign: TextAlign.center),
             ),
           ],
         ),

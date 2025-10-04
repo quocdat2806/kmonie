@@ -2,15 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../core/cache/export.dart';
-import '../../../core/constant/exports.dart';
+import '../../../core/constant/export.dart';
 import '../../../core/di/export.dart';
-import '../../../core/enum/exports.dart';
-import '../../../core/navigation/exports.dart';
-import '../../../core/service/exports.dart';
+import '../../../core/enum/export.dart';
+import '../../../core/navigation/export.dart';
+import '../../../core/service/export.dart';
 import '../../../core/text_style/export.dart';
 import '../../../generated/assets.dart';
-import '../../bloc/exports.dart';
-import '../../widgets/exports.dart';
+import '../../bloc/export.dart';
+import '../../widgets/export.dart';
 
 class SearchTransactionPage extends StatelessWidget {
   const SearchTransactionPage({super.key});
@@ -32,9 +32,9 @@ class _SearchTransactionPageChildState extends State<SearchTransactionPageChild>
   final TextEditingController _searchController = TextEditingController();
   final categories = <Map<String, dynamic>>[
     {'label': TextConstants.all, 'type': null},
-    {'label': TextConstants.incomeTabText, 'type': TransactionType.income},
-    {'label': TextConstants.expenseTabText, 'type': TransactionType.expense},
-    {'label': TextConstants.transferTabText, 'type': TransactionType.transfer},
+    {'label': TextConstants.income, 'type': TransactionType.income},
+    {'label': TextConstants.expense, 'type': TransactionType.expense},
+    {'label': TextConstants.transfer, 'type': TransactionType.transfer},
   ];
 
   @override

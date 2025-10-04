@@ -1,5 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import '../../../core/enum/exports.dart';
+import '../../../core/enum/export.dart';
 
 part 'add_transaction_event.freezed.dart';
 

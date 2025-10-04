@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import '../../../../core/constant/exports.dart';
-import '../../../../core/enum/exports.dart';
+import '../../../../core/constant/export.dart';
+import '../../../../core/enum/export.dart';
 import '../../../../generated/assets.dart';
-import '../../../widgets/exports.dart';
-import 'main_navigation_item.dart';
+import 'navigation_add_transaction_button.dart';
+import 'navigation_item.dart';
 
 class MainBottomNavigationBar extends StatelessWidget {
   final int currentIndex;
@@ -24,45 +24,40 @@ class MainBottomNavigationBar extends StatelessWidget {
           color: ColorConstants.bottomNavigationColor,
           child: Row(
             children: [
-              _buildNavItem(
+              MainNavigationItem(
+                currentIndex: currentIndex,
                 index: MainTabs.home.tabIndex,
                 iconPath: Assets.svgsNote,
                 label: MainTabs.home.label,
+                onTap: () => onTabSelected(MainTabs.home.tabIndex),
               ),
-              _buildNavItem(
+              MainNavigationItem(
+                currentIndex: currentIndex,
                 index: MainTabs.chart.tabIndex,
                 iconPath: Assets.svgsTime,
                 label: MainTabs.chart.label,
+                onTap: () => onTabSelected(MainTabs.chart.tabIndex),
               ),
-              const AddTransactionButtonFloating(),
-              _buildNavItem(
+
+              const MainNavigationAddTransactionButton(),
+              MainNavigationItem(
+                currentIndex: currentIndex,
                 index: MainTabs.report.index,
-                iconPath: Assets.svgsReport,
+                iconPath:  Assets.svgsReport,
                 label: MainTabs.report.label,
+                onTap: () => onTabSelected(MainTabs.report.tabIndex),
               ),
-              _buildNavItem(
+              MainNavigationItem(
+                currentIndex: currentIndex,
                 index: MainTabs.profile.index,
-                iconPath: Assets.svgsProfile,
+                iconPath:  Assets.svgsProfile,
                 label: MainTabs.profile.label,
+                onTap: () => onTabSelected(MainTabs.profile.tabIndex),
               ),
             ],
           ),
         ),
       ),
-    );
-  }
-
-  Widget _buildNavItem({
-    required int index,
-    required String iconPath,
-    required String label,
-  }) {
-    return NavigationItem(
-      index: index,
-      currentIndex: currentIndex,
-      iconPath: iconPath,
-      label: label,
-      onTap: () => onTabSelected(index),
     );
   }
 }

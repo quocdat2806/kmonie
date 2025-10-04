@@ -11,5 +11,6 @@ class AppConfigs {
   static const String dateAPIFormat = 'dd/MM/yyyy';
   static const int defaultPageSize = 20;
   static const int defaultPageIndex = 0;
-
+  static const String tokenKey = 'token';
+  static const double scrollThreshold = 0.7;
 }

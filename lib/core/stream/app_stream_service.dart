@@ -1,5 +1,5 @@
 import 'dart:async';
-import '../enum/exports.dart';
+import '../enum/export.dart';
 
 class AppStreamEvent {
   static final AppStreamEvent _instance = AppStreamEvent._internal();

@@ -1,6 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import '../../../entity/exports.dart';
-import '../../../core/enum/exports.dart';
+import '../../../entity/export.dart';
+import '../../../core/enum/export.dart';
 
 part 'home_state.freezed.dart';
 
@@ -28,6 +28,27 @@ abstract class HomeState with _$HomeState {
         )
         .fold(0.0, (sum, transaction) => sum + transaction.amount);
   }
+
+
+  double _calculateTotalIncome() {
+    return transactions
+        .where((t) {
+      final category = categoriesMap[t.transactionCategoryId];
+      return category?.transactionType == TransactionType.income;
+    })
+        .fold(0.0, (sum, t) => sum + t.amount);
+  }
+
+  double _calculateTotalExpense() {
+    return transactions
+        .where((t) {
+      final category = categoriesMap[t.transactionCategoryId];
+      return category?.transactionType == TransactionType.expense;
+    })
+        .fold(0.0, (sum, t) => sum + t.amount);
+  }
+
+
 
   double get totalExpense {
     return transactions

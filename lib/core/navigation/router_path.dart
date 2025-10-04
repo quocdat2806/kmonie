@@ -10,5 +10,8 @@ class RouterPath {
   static const String monthlySummary = '/monthly-summary';
   static const String addTransactionCategory = '/add-transaction-category';
   static const String upgradeVip = '/vip-upgrade';
+  static const String signIn = '/auth/signIn';
+  static const String signUp = '/auth/signUp';
+
 
 }

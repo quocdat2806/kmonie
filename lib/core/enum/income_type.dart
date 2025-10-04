@@ -1,8 +1,8 @@
-import '../constant/exports.dart';
+import '../constant/export.dart';
 
 enum IncomeType {
-  month(0, TextConstants.monthIncomeTitle),
-  year(1, TextConstants.yearIncomeTitle);
+  month(0, TextConstants.month),
+  year(1, TextConstants.year);
 
   const IncomeType(this.typeIndex, this.displayName);
 

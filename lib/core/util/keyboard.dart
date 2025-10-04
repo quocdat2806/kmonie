@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class KeyboardHelper {
-  KeyboardHelper._();
+class KeyboardUtils {
+  KeyboardUtils._();
 
   static void hideKeyboard(BuildContext context) {
     FocusScopeNode currentFocus = FocusScope.of(context);

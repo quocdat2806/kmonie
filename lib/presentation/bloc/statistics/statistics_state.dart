@@ -1,6 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import '../../../entity/exports.dart';
-import '../../../core/enum/exports.dart';
+import '../../../entity/export.dart';
+import '../../../core/enum/export.dart';
 
 part 'statistics_state.freezed.dart';
 

@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../application/auth/auth_export.dart';
-import '../../presentation/pages/exports.dart';
-import '../enum/exports.dart';
-import '../navigation/exports.dart';
+import '../../presentation/pages/export.dart';
+import '../enum/export.dart';
+import '../navigation/export.dart';
 
 class AppRouter {
   AppRouter(this.authBloc);
@@ -22,11 +22,11 @@ class AppRouter {
         builder: (BuildContext context, GoRouterState state, Widget child) => child,
         routes: <RouteBase>[
           GoRoute(
-            path: '/auth/signin',
+            path: RouterPath.signIn,
             builder: (_, _) => const AuthScreen(mode: AuthMode.signIn),
           ),
           GoRoute(
-            path: '/auth/signup',
+            path: RouterPath.signUp,
             builder: (_, _) => const AuthScreen(mode: AuthMode.signUp),
           ),
         ],

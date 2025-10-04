@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:kmonie/core/constant/color.dart';
+import '../../../core/constant/export.dart';
 
 class AppButton extends StatelessWidget {
   const AppButton({
@@ -10,8 +10,8 @@ class AppButton extends StatelessWidget {
     required this.onPressed,
     this.icon,
     this.iconWidget,
-    this.height = 44,
-    this.borderRadius = 8,
+    this.height = UIConstants.defaultButtonHeight,
+    this.borderRadius = UIConstants.defaultBorderRadius,
     this.width,
     this.fontSize = 14,
     this.fontWeight = FontWeight.w400,
@@ -44,8 +44,9 @@ class AppButton extends StatelessWidget {
       child: ElevatedButton(
         onPressed: disabled ? null : onPressed,
         style: ElevatedButton.styleFrom(
-          backgroundColor:
-          disabled ? backgroundColor.withAlpha(60) : backgroundColor,
+          backgroundColor: disabled
+              ? backgroundColor.withAlpha(60)
+              : backgroundColor,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(borderRadius),
             side: BorderSide(
@@ -54,7 +55,9 @@ class AppButton extends StatelessWidget {
             ),
           ),
           elevation: 0,
-          padding: const EdgeInsets.symmetric(horizontal: 12),
+          padding: const EdgeInsets.symmetric(
+            horizontal: UIConstants.smallPadding,
+          ),
         ),
         child: _buildContent(),
       ),
@@ -65,13 +68,10 @@ class AppButton extends StatelessWidget {
     final hasText = text != null && text!.isNotEmpty;
     final hasIcon = icon != null || iconWidget != null;
 
-    // 🟡 Trường hợp chỉ icon
     if (hasIcon && !hasText) {
-      return iconWidget ??
-          Icon(icon, color: textColor, size: fontSize + 4);
+      return iconWidget ?? Icon(icon, color: textColor, size: 18);
     }
 
-    // 🟢 Trường hợp chỉ text
     if (!hasIcon && hasText) {
       return Text(
         text!,
@@ -83,14 +83,12 @@ class AppButton extends StatelessWidget {
       );
     }
 
-    // 🔵 Trường hợp icon + text
     return Row(
       mainAxisSize: MainAxisSize.min,
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        iconWidget ??
-            Icon(icon, color: textColor, size: fontSize + 4),
-        const SizedBox(width: 6),
+        iconWidget ?? Icon(icon, color: textColor, size: 18),
+        const SizedBox(width: UIConstants.smallPadding),
         Text(
           text!,
           style: TextStyle(

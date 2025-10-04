@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../core/constant/exports.dart';
+import '../../../core/constant/export.dart';
 
 class AppGrid extends StatelessWidget {
   final int crossAxisCount;

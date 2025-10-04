@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../core/constant/exports.dart';
+import '../../../core/constant/export.dart';
+import '../../../core/config/export.dart';
 import '../../../core/di/export.dart';
-import '../../../core/service/exports.dart';
+import '../../../core/service/export.dart';
 import '../../../core/text_style/export.dart';
-import '../../../core/util/exports.dart';
-import '../../bloc/exports.dart';
+import '../../../core/util/export.dart';
+import '../../bloc/export.dart';
+import '../../../entity/export.dart';
 import 'widgets/monthly_expense_summary.dart';
+import 'widgets/transaction_date_group.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -40,7 +43,7 @@ class _HomePageChildState extends State<HomePageChild> {
     final position = _scrollController.position;
     final scrollPercent = position.pixels / position.maxScrollExtent;
 
-    if (scrollPercent >= 0.7 && !position.outOfRange) {
+    if (scrollPercent >= AppConfigs.scrollThreshold && !position.outOfRange) {
       context.read<HomeBloc>().add(const HomeEvent.loadMore());
     }
   }
@@ -62,27 +65,27 @@ class _HomePageChildState extends State<HomePageChild> {
               context.read<HomeBloc>().add(HomeEvent.changeDate(selectedDate));
             },
           ),
-          // Expanded(
-          //   child: BlocSelector<HomeBloc, HomeState, ({Map<String, List<Transaction>> groupedTransactions, DateTime? selectedDate, Map<int, TransactionCategory> categoriesMap})>(
-          //     selector: (state) => (groupedTransactions: state.groupedTransactions, categoriesMap: state.categoriesMap, selectedDate: state.selectedDate),
-          //     builder: (context, data) {
-          //       if (data.groupedTransactions.isEmpty) {
-          //         return _buildEmptyState();
-          //       }
-          //       return CustomScrollView(
-          //         slivers: [
-          //           SliverList(
-          //             delegate: SliverChildBuilderDelegate((context, index) {
-          //               final dateKey = data.groupedTransactions.keys.elementAt(index);
-          //               final transactions = data.groupedTransactions[dateKey]!;
-          //               return TransactionDateGroup(dateKey: dateKey, transactions: transactions, categoriesMap: data.categoriesMap);
-          //             }, childCount: data.groupedTransactions.length),
-          //           ),
-          //         ],
-          //       );
-          //     },
-          //   ),
-          // ),
+          Expanded(
+            child: BlocSelector<HomeBloc, HomeState, ({Map<String, List<Transaction>> groupedTransactions, Map<int, TransactionCategory> categoriesMap})>(
+              selector: (state) => (groupedTransactions: state.groupedTransactions, categoriesMap: state.categoriesMap),
+              builder: (context, data) {
+                if (data.groupedTransactions.isEmpty) {
+                  return _buildEmptyState();
+                }
+                return CustomScrollView(
+                  slivers: [
+                    SliverList(
+                      delegate: SliverChildBuilderDelegate((context, index) {
+                        final dateKey = data.groupedTransactions.keys.elementAt(index);
+                        final transactions = data.groupedTransactions[dateKey]!;
+                        return TransactionDateGroup(dateKey: dateKey, transactions: transactions, categoriesMap: data.categoriesMap);
+                      }, childCount: data.groupedTransactions.length),
+                    ),
+                  ],
+                );
+              },
+            ),
+          ),
         ],
       ),
     );
@@ -93,9 +96,9 @@ class _HomePageChildState extends State<HomePageChild> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text('Chưa có giao dịch nào', style: AppTextStyle.greyS14),
+          Text(TextConstants.emptyTransaction, style: AppTextStyle.greyS14),
           const SizedBox(height: UIConstants.smallPadding),
-          Text('Hãy thêm giao dịch đầu tiên của bạn', style: AppTextStyle.greyS12),
+          Text(TextConstants.addTransactionAdvice, style: AppTextStyle.greyS12),
         ],
       ),
     );

@@ -59,7 +59,7 @@ class UIConstants {
   static const double categoryIconSizeRatio = 0.30;
 
   static const double bottomNavigationHeight = 60.0;
-  static const double topAddButtonOffset = 30.0;
+  static const double topAddTransactionButtonOffset = 30.0;
 
   static const double appBarHeight = 56.0;
 

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../../../core/constant/exports.dart';
-import '../../../../entity/exports.dart';
+import '../../../../core/constant/export.dart';
+import '../../../../entity/export.dart';
 import '../../../../core/cache/export.dart';
 import '../../../../core/text_style/export.dart';
 

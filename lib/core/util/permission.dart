@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:permission_handler/permission_handler.dart';
-import '../../presentation/widgets/exports.dart';
+import '../../presentation/widgets/export.dart';
 import '../di/export.dart' show sl;
-import '../service/exports.dart';
+import '../service/export.dart';
 class PermissionUtils {
   PermissionUtils._();
   static Future<bool> requestPhotosPermission(BuildContext context) async {

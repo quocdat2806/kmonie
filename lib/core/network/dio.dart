@@ -1,7 +1,7 @@
 import 'package:dio/dio.dart';
-import '../../database/exports.dart';
+import '../../database/export.dart';
 import '../config/export.dart';
-import '../network/exports.dart';
+import '../network/export.dart';
 
 abstract class AppDio {
   Dio get dio;

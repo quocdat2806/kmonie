@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import '../../../../core/constant/exports.dart';
-import '../../../../core/enum/exports.dart';
+import '../../../../core/constant/export.dart';
+import '../../../../core/enum/export.dart';
 import '../../../../core/text_style/export.dart';
-import '../../../presentation/widgets/exports.dart';
+import '../../../presentation/widgets/export.dart';
 
 class AuthScreen extends StatefulWidget {
   const AuthScreen({super.key, required this.mode});

@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-
-import '../../../../core/constant/exports.dart';
-import '../../../../core/enum/exports.dart';
+import '../../../../core/enum/export.dart';
+import '../../../../core/util/export.dart';
+import '../../../../core/constant/export.dart';
 import '../../../../core/text_style/export.dart';
-import '../../../../core/tool/gradient.dart';
-import '../../../../entity/exports.dart';
-import '../../../../generated/assets.dart';
+import '../../../../core/tool/export.dart';
+import '../../../../entity/export.dart';
 
 class TransactionItem extends StatelessWidget {
   final Transaction transaction;
@@ -16,47 +15,43 @@ class TransactionItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: UIConstants.smallPadding, vertical: UIConstants.smallPadding / 2),
+    return Padding(
       padding: const EdgeInsets.all(UIConstants.smallPadding),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(UIConstants.smallBorderRadius),
-        gradient: GradientHelper.fromColorHexList(transaction.gradientColors),
-        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 4, offset: const Offset(0, 2))],
-      ),
       child: Row(
+        spacing: UIConstants.smallSpacing,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Container(
-            width: UIConstants.largeIconSize,
-            height: UIConstants.largeIconSize,
-            decoration: BoxDecoration(color: _getCategoryColor().withOpacity(0.1), borderRadius: BorderRadius.circular(UIConstants.smallBorderRadius)),
-            child: Center(
-              child: SvgPicture.asset(_getCategoryIcon(), width: UIConstants.defaultIconSize, height: UIConstants.defaultIconSize, colorFilter: ColorFilter.mode(_getCategoryColor(), BlendMode.srcIn)),
+          DecoratedBox(
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              gradient: GradientHelper.fromColorHexList(
+                transaction.gradientColors,
+              ),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(UIConstants.smallPadding),
+              child: SvgPicture.asset(
+                category!.pathAsset,
+                width: UIConstants.largeIconSize,
+                height: UIConstants.largeIconSize,
+              ),
             ),
           ),
-          const SizedBox(width: UIConstants.smallPadding),
-          Text(transaction.amount.toString(), style: AppTextStyle.blackS16Bold.copyWith(color: _getAmountColor())),
+          Expanded(
+            child: Text(
+              transaction.content.isNotEmpty
+                  ? transaction.content
+                  : category!.title,
+              style: AppTextStyle.blackS14,
+            ),
+          ),
+          Text(
+            transaction.transactionType==TransactionType.expense.typeIndex? '-${FormatUtils.formatAmount(transaction.amount.toDouble())}' :FormatUtils.formatAmount(transaction.amount.toDouble()),
+            style: AppTextStyle.blackS14,
+          ),
         ],
       ),
     );
-  }
-
-  String _getCategoryIcon() {
-    return category?.pathAsset.isNotEmpty == true ? category!.pathAsset : Assets.svgsNote;
-  }
-
-  Color _getCategoryColor() {
-    if (category?.transactionType == TransactionType.income) {
-      return ColorConstants.secondary;
-    }
-    return ColorConstants.primary;
-  }
-
-  Color _getAmountColor() {
-    if (category?.transactionType == TransactionType.income) {
-      return ColorConstants.secondary;
-    }
-    return ColorConstants.primary;
   }
 }

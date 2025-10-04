@@ -1,5 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../database/exports.dart';
+import '../../database/export.dart';
+import '../../core/config/export.dart';
+
 import 'auth_event.dart';
 import 'auth_state.dart';
 
@@ -11,7 +13,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   }
 
   final SecureStorageService secure;
-  static const String tokenKey = 'token';
+  static const String tokenKey = AppConfigs.tokenKey;
 
   Future<void> _onAppStarted(
     AuthAppStarted event,
