@@ -1,7 +1,7 @@
 import '../../entity/export.dart';
 import '../../generated/assets.dart';
-import '../enum/export.dart';
 import '../constant/export.dart';
+import '../enum/export.dart';
 
 class TransactionCategoryConstants {
   TransactionCategoryConstants._();
@@ -34,41 +34,12 @@ class TransactionCategoryConstants {
     TransactionCategory(title: TextConstants.children, pathAsset: Assets.svgsAngel),
     TransactionCategory(title: TextConstants.vegetable, pathAsset: Assets.svgsCarrot),
     TransactionCategory(title: TextConstants.fruit, pathAsset: Assets.svgsGrape),
-    TransactionCategory(
-      title: TextConstants.setting,
-      pathAsset: Assets.svgsPlus,
-      isCreateNewCategory: true,
-    ),
-    TransactionCategory(
-      title: TextConstants.salary,
-      pathAsset: Assets.svgsAtm,
-      transactionType: TransactionType.income,
-    ),
-    TransactionCategory(
-      title: TextConstants.bonus,
-      pathAsset: Assets.svgsInvest,
-      transactionType: TransactionType.income,
-    ),
-    TransactionCategory(
-      title: TextConstants.interest,
-      pathAsset: Assets.svgsOclock,
-      transactionType: TransactionType.income,
-    ),
-    TransactionCategory(
-      title: TextConstants.gift,
-      pathAsset: Assets.svgsAward,
-      transactionType: TransactionType.income,
-    ),
-    TransactionCategory(
-      title: TextConstants.other,
-      pathAsset: Assets.svgsCommand,
-      transactionType: TransactionType.income,
-    ),
-    TransactionCategory(
-      title: TextConstants.setting,
-      pathAsset: Assets.svgsPlus,
-      transactionType: TransactionType.income,
-      isCreateNewCategory: true,
-    ),
+    TransactionCategory(title: TextConstants.setting, pathAsset: Assets.svgsPlus, isCreateNewCategory: true),
+    TransactionCategory(title: TextConstants.salary, pathAsset: Assets.svgsCreditCard, transactionType: TransactionType.income),
+    TransactionCategory(title: TextConstants.bonus, pathAsset: Assets.svgsInvest, transactionType: TransactionType.income),
+    TransactionCategory(title: TextConstants.interest, pathAsset: Assets.svgsInterest, transactionType: TransactionType.income),
+    TransactionCategory(title: TextConstants.gift, pathAsset: Assets.svgsAward, transactionType: TransactionType.income),
+    TransactionCategory(title: TextConstants.other, pathAsset: Assets.svgsCommand, transactionType: TransactionType.income),
+    TransactionCategory(title: TextConstants.setting, pathAsset: Assets.svgsPlus, transactionType: TransactionType.income, isCreateNewCategory: true),
   ];
 }

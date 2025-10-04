@@ -133,31 +133,6 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     }
   }
 
-  // Future<void> _onRefreshTransactions(RefreshTransactions event, Emitter<HomeState> emit) async {
-  //   try {
-  //     final lastTransaction = await transactionService.getLastTransaction();
-  //
-  //     if (lastTransaction != null) {
-  //       final existingTransaction = state.transactions.firstWhere((t) => t.id == lastTransaction.id, orElse: () => Transaction(id: -1, amount: 0, date: DateTime.now(), transactionCategoryId: 0));
-  //
-  //       logger.d('HomeBloc: Existing transaction found: ${existingTransaction.id}');
-  //
-  //       if (existingTransaction.id == -1) {
-  //         logger.d('HomeBloc: Adding new transaction to list');
-  //         final updatedTransactions = [lastTransaction, ...state.transactions];
-  //         final groupedTransactions = _groupTransactionsByDate(updatedTransactions);
-  //
-  //         emit(state.copyWith(transactions: updatedTransactions, groupedTransactions: groupedTransactions));
-  //         return;
-  //       }
-  //       logger.d('HomeBloc: Transaction already exists, no update needed');
-  //     }
-  //   } catch (error) {
-  //     logger.e('HomeBloc: Error in refresh: $error');
-  //     add(const LoadTransactions());
-  //   }
-  // }
-
   Future<void> _onChangeDate(ChangeDate event, Emitter<HomeState> emit) async {
     final selectedDate = event.date;
 

@@ -31,25 +31,21 @@ class TextConstants {
   static const String cancelRequestError = 'Lỗi yêu cầu bị hủy';
   static const String badCertificateError = 'Lỗi chứng chỉ không hợp lệ';
 
-  static const String transactionAddedSuccess =
-      'Giao dịch đã được thêm thành công';
+  static const String transactionAddedSuccess = 'Giao dịch đã được thêm thành công';
   static const String categorySelectedSuccess = 'Danh mục đã được chọn';
   static const String requiredField = 'Trường này là bắt buộc';
   static const String invalidAmount = 'Số tiền không hợp lệ';
   static const String invalidDate = 'Ngày không hợp lệ';
-  static const String emptyTransaction  ='Chưa có giao dịch nào';
-  static const String addTransactionAdvice  ='Hãy thêm giao dịch đầu tiên của bạn';
+  static const String emptyTransaction = 'Chưa có giao dịch nào';
+  static const String addTransactionAdvice = 'Hãy thêm giao dịch đầu tiên của bạn';
 
-
-  static const String unlockFeatureAndRemoveAds =
-      'Mở khoá mọi thứ và loại bỏ quảng cáo';
-  static const String moreTopicAndCustomise =
-      'Nhiều chủ đề đẹp hơn và có thể tuỳ chỉnh';
+  static const String changeToVipPackage = 'Chuyển sang gói Premium';
+  static const String unlockFeatureAndRemoveAds = 'Mở khoá mọi thứ và loại bỏ quảng cáo';
+  static const String moreTopicAndCustomise = 'Nhiều chủ đề đẹp hơn và có thể tuỳ chỉnh';
   static const String makeLifeBeautiful = 'Làm cho cuôc sống bạn tốt hơn';
   static const String feeForYear = '199.000 đ / hàng năm Huỷ bất cứ lúc nào';
   static const String register = 'Đăng ký';
-  static const String termPolicy =
-      'Bằng cách đăng nhập bạn đồng ý với Thoả thuận người dùng và CHính sách và quyền riêng tư';
+  static const String termPolicy = 'Bằng cách đăng nhập bạn đồng ý với Thoả thuận người dùng và CHính sách và quyền riêng tư';
   static const String term = 'Điều khoản sử dung';
   static const String policy = 'Chính sách bảo mật';
   static const String all = 'Tất cả';

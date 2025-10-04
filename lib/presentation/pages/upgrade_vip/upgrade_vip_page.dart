@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
-import '../../../core/cache/export.dart';
 import '../../../core/constant/export.dart';
 import '../../../core/text_style/export.dart';
 import '../../../generated/assets.dart';
@@ -23,9 +23,9 @@ class VipUpgradePage extends StatelessWidget {
               const SizedBox(height: UIConstants.largePadding),
               _buildFeatureList(),
               const SizedBox(height: UIConstants.largePadding),
-              _buildPricingSection(),
+              Text(TextConstants.feeForYear, style: AppTextStyle.blackS14, textAlign: TextAlign.center),
               const SizedBox(height: UIConstants.largePadding),
-              _buildContinueButton(),
+              AppButton(onPressed: () {}, text: TextConstants.register, width: double.infinity, fontWeight: FontWeight.bold),
               const SizedBox(height: UIConstants.largePadding),
               _buildTermsSection(),
             ],
@@ -37,11 +37,11 @@ class VipUpgradePage extends StatelessWidget {
 
   Widget _buildHeader() {
     return Column(
+      spacing: UIConstants.defaultSpacing,
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        SvgCacheManager().getSvg(Assets.svgsKing, UIConstants.extraLargeIconSize, UIConstants.extraLargeIconSize, color: ColorConstants.primary),
-        const SizedBox(height: UIConstants.defaultPadding),
-        Text('Chuyển lên Premium', style: AppTextStyle.blackS24Bold),
+        SvgPicture.asset(Assets.svgsKing, width: UIConstants.extraLargeIconSize, colorFilter: ColorFilter.mode(ColorConstants.primary, BlendMode.srcIn), height: UIConstants.extraLargeIconSize),
+        Text(TextConstants.changeToVipPackage, style: AppTextStyle.blackS24Bold),
       ],
     );
   }
@@ -60,7 +60,7 @@ class VipUpgradePage extends StatelessWidget {
       padding: const EdgeInsets.only(bottom: UIConstants.largePadding),
       child: Row(
         children: [
-          SvgCacheManager().getSvg(Assets.svgsCheck, UIConstants.mediumIconSize, UIConstants.mediumIconSize, color: ColorConstants.primary),
+          Icon(Icons.check, color: ColorConstants.primary),
           const SizedBox(width: UIConstants.smallPadding),
           Expanded(child: Text(text, style: AppTextStyle.blackS14Medium)),
         ],
@@ -68,19 +68,11 @@ class VipUpgradePage extends StatelessWidget {
     );
   }
 
-  Widget _buildPricingSection() {
-    return Text(TextConstants.feeForYear, style: AppTextStyle.blackS14Medium, textAlign: TextAlign.center);
-  }
-
-  Widget _buildContinueButton() {
-    return AppButton(onPressed: () {}, text: TextConstants.register, width: double.infinity, fontWeight: FontWeight.bold);
-  }
-
   Widget _buildTermsSection() {
     return Column(
+      spacing: UIConstants.smallSpacing,
       children: [
-        const Text(TextConstants.termPolicy, textAlign: TextAlign.justify),
-        const SizedBox(height: UIConstants.smallPadding),
+        Text(TextConstants.termPolicy, textAlign: TextAlign.justify, style: AppTextStyle.blackS14),
         Row(
           children: [
             Expanded(
