@@ -8,7 +8,7 @@ class TransactionCategoryConstants {
 
   static const List<TransactionCategory> transactionCategorySystem = [
     TransactionCategory(title: TextConstants.shopping, pathAsset: Assets.svgsShopping),
-    TransactionCategory(title: TextConstants.food, pathAsset: Assets.svgsChickend),
+    TransactionCategory(title: TextConstants.food, pathAsset: Assets.svgsChicken),
     TransactionCategory(title: TextConstants.telephone, pathAsset: Assets.svgsTelephone),
     TransactionCategory(title: TextConstants.entertainment, pathAsset: Assets.svgsMicro),
     TransactionCategory(title: TextConstants.education, pathAsset: Assets.svgsBook),

@@ -1,16 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
 import '../../../../core/constant/export.dart';
-import '../../../presentation/pages/export.dart';
 import '../../../presentation/bloc/export.dart';
+import '../../../presentation/pages/export.dart';
 import 'widgets/bottom_navigation_bar.dart';
 
-final List<Widget> pageList = const <Widget>[
-  HomePage(),
-  ChartPage(),
-  ReportPage(),
-  ProfilePage(),
-];
+final List<Widget> pageList = const <Widget>[HomePage(), ChartPage(), ReportPage(), ProfilePage()];
 
 class MainPage extends StatelessWidget {
   const MainPage({super.key});
@@ -28,7 +24,9 @@ class MainPage extends StatelessWidget {
           final int currentIndex = state.selectedIndex;
           return Scaffold(
             backgroundColor: ColorConstants.primary,
-            body: SafeArea(child: pageList[currentIndex]),
+            body: SafeArea(
+              child: IndexedStack(index: currentIndex, children: pageList),
+            ),
             bottomNavigationBar: MainBottomNavigationBar(
               currentIndex: currentIndex,
               onTabSelected: (i) => _onTabSelected(context: context, index: i),

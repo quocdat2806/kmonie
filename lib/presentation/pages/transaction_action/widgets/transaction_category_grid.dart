@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
 import '../../../../core/constant/export.dart';
 import '../../../../core/enum/export.dart';
 import '../../../../entity/export.dart';
@@ -12,25 +13,12 @@ class TransactionCategoryGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocSelector<
-      AddTransactionBloc,
-      AddTransactionState,
-      ({
-        TransactionType type,
-        List<TransactionCategory> categories,
-        int? selectedId,
-      })
-    >(
-      selector: (state) => (
-        type: state.currentType,
-        categories: state.categoriesFor(state.currentType),
-        selectedId: state.selectedCategoryIdFor(state.currentType),
-      ),
+    return BlocSelector<TransactionActionsBloc, TransactionActionsState, ({TransactionType type, List<TransactionCategory> categories, int? selectedId})>(
+      selector: (state) => (type: state.currentType, categories: state.categoriesFor(state.currentType), selectedId: state.selectedCategoryIdFor(state.currentType)),
       builder: (context, data) {
         return LayoutBuilder(
           builder: (context, constraints) {
-            final itemWidth =
-                constraints.maxWidth / UIConstants.defaultGridCrossAxisCount;
+            final itemWidth = constraints.maxWidth / UIConstants.defaultGridCrossAxisCount;
             return AppGrid(
               mainAxisSpacing: UIConstants.zeroInsets,
               crossAxisSpacing: UIConstants.zeroInsets,
@@ -50,12 +38,7 @@ class TransactionCategoryGrid extends StatelessWidget {
                       // ).push(RouterPath.addTransactionCategory);
                       return;
                     }
-                    context.read<AddTransactionBloc>().add(
-                      CategoryChanged(
-                        type: data.type,
-                        categoryId: category.id!,
-                      ),
-                    );
+                    context.read<TransactionActionsBloc>().add(CategoryChanged(type: data.type, categoryId: category.id!));
                   },
                 );
               },

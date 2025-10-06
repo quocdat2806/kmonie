@@ -4,7 +4,8 @@ import 'package:go_router/go_router.dart';
 import '../../application/auth/auth_export.dart';
 import '../../presentation/pages/export.dart';
 import '../enum/export.dart';
-import '../navigation/export.dart';
+import './router_path.dart';
+import './router_refresh.dart';
 
 class AppRouter {
   AppRouter(this.authBloc);
@@ -34,19 +35,14 @@ class AppRouter {
       GoRoute(name: RouterPath.main, path: RouterPath.main, builder: (_, _) => const MainPage()),
       GoRoute(path: RouterPath.searchTransaction, builder: (_, _) => const SearchTransactionPage()),
       GoRoute(path: RouterPath.upgradeVip, builder: (_, _) => const VipUpgradePage()),
-
-      // GoRoute(
-      //   path: RouterPath.addTransactionCategory,
-      //   builder: (_, _) => const AddTransactionCategoryPage(),
-      // ),
       GoRoute(path: RouterPath.calendarMonthlyTransaction, builder: (_, _) => const CalendarMonthlyTransaction()),
-      GoRoute(path: RouterPath.addTransaction, builder: (_, state) {
-        final args = state.extra as TransactionActionsPageArgs?;
-        return TransactionActionsPage(
-          args: args,
-        );
-
-      }),
+      GoRoute(
+        path: RouterPath.transaction_actions,
+        builder: (_, state) {
+          final args = state.extra as TransactionActionsPageArgs?;
+          return TransactionActionsPage(args: args);
+        },
+      ),
     ],
     // redirect: (_, GoRouterState state) {
     //   final AuthState authState = authBloc.state;

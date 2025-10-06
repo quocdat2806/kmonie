@@ -1,1 +1,1 @@
-enum AppEvent { loadItemLatestTransaction,updateExistItemTransaction }
+enum AppEvent { insertTransaction, updateTransaction, deleteTransaction }

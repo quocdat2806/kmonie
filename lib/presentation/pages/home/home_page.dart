@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:kmonie/presentation/widgets/transaction/transaction_list.dart';
 
-import '../../../core/constant/export.dart';
 import '../../../core/config/export.dart';
+import '../../../core/constant/export.dart';
 import '../../../core/di/export.dart';
 import '../../../core/service/export.dart';
 import '../../../core/text_style/export.dart';
 import '../../../core/util/export.dart';
-import '../../bloc/export.dart';
 import '../../../entity/export.dart';
+import '../../bloc/export.dart';
+import '../../widgets/export.dart';
 import 'widgets/monthly_expense_summary.dart';
 
 class HomePage extends StatelessWidget {
@@ -17,11 +17,7 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider<HomeBloc>(
-      create: (_) =>
-          HomeBloc(sl<TransactionService>(), sl<TransactionCategoryService>()),
-      child: const HomePageChild(),
-    );
+    return BlocProvider<HomeBloc>(create: (_) => HomeBloc(sl<TransactionService>(), sl<TransactionCategoryService>()), child: const HomePageChild());
   }
 }
 
@@ -70,40 +66,21 @@ class _HomePageChildState extends State<HomePageChild> {
             },
           ),
           Expanded(
-            child:
-                BlocSelector<
-                  HomeBloc,
-                  HomeState,
-                  ({
-                    Map<String, List<Transaction>> groupedTransactions,
-                    Map<int, TransactionCategory> categoriesMap,
-                    Map<String, DailyTransactionTotal> dailyTotals,
-                  })
-                >(
-                  selector: (state) => (
-                    groupedTransactions: state.groupedTransactions,
-                    categoriesMap: state.categoriesMap,
-                    dailyTotals: state.dailyTotals,
-                  ),
-                  builder: (context, data) {
-                    return TransactionList(
-                      dailyTotalWidgetBuilder: (dateKey) {
-                        final daily = data.dailyTotals[dateKey];
-                        if (daily == null) return const SizedBox();
-                        return Text(
-                          FormatUtils.formatTotalText(
-                            daily.income,
-                            daily.expense,
-                            daily.transfer,
-                          ),
-                        );
-                      },
-                      emptyWidget: _buildEmptyState(),
-                      groupedTransactions: data.groupedTransactions,
-                      categoriesMap: data.categoriesMap,
-                    );
+            child: BlocSelector<HomeBloc, HomeState, ({Map<String, List<Transaction>> groupedTransactions, Map<int, TransactionCategory> categoriesMap, Map<String, DailyTransactionTotal> dailyTotals})>(
+              selector: (state) => (groupedTransactions: state.groupedTransactions, categoriesMap: state.categoriesMap, dailyTotals: state.dailyTotals),
+              builder: (context, data) {
+                return TransactionList(
+                  dailyTotalWidgetBuilder: (dateKey) {
+                    final daily = data.dailyTotals[dateKey];
+                    if (daily == null) return const SizedBox();
+                    return Text(FormatUtils.formatTotalText(daily.income, daily.expense, daily.transfer), style: AppTextStyle.blackS12);
                   },
-                ),
+                  emptyWidget: _buildEmptyState(),
+                  groupedTransactions: data.groupedTransactions,
+                  categoriesMap: data.categoriesMap,
+                );
+              },
+            ),
           ),
         ],
       ),
@@ -114,9 +91,9 @@ class _HomePageChildState extends State<HomePageChild> {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
+        spacing: UIConstants.smallSpacing,
         children: [
           Text(TextConstants.emptyTransaction, style: AppTextStyle.greyS14),
-          const SizedBox(height: UIConstants.smallPadding),
           Text(TextConstants.addTransactionAdvice, style: AppTextStyle.greyS12),
         ],
       ),

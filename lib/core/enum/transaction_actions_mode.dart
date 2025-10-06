@@ -1,0 +1,1 @@
+enum TransactionActionsMode { add, edit }

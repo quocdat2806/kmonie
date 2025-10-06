@@ -16,7 +16,7 @@ class TransactionActionsInputHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocSelector<AddTransactionBloc, AddTransactionState, int>(
+    return BlocSelector<TransactionActionsBloc, TransactionActionsState, int>(
       selector: (state) => state.amount,
       builder: (context, amount) {
         return Column(
@@ -41,7 +41,7 @@ class TransactionActionsInputHeader extends StatelessWidget {
                       textInputAction: TextInputAction.done,
                       controller: noteController,
                       focusNode: noteFocusNode,
-                      onChanged: (value) => context.read<AddTransactionBloc>().add(NoteChanged(value)),
+                      onChanged: (value) => context.read<TransactionActionsBloc>().add(NoteChanged(value)),
                       decoration: const InputDecoration(
                         isDense: true,
                         border: InputBorder.none,

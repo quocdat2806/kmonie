@@ -1,4 +1,6 @@
 import 'dart:async';
+
+import '../../entity/export.dart';
 import '../enum/export.dart';
 
 class AppStreamData {
@@ -7,13 +9,13 @@ class AppStreamData {
 
   AppStreamData(this.event, {this.payload});
 }
+
 class AppStreamEvent {
   static final AppStreamEvent _instance = AppStreamEvent._internal();
   factory AppStreamEvent() => _instance;
   AppStreamEvent._internal();
 
-  final StreamController<AppStreamData> _eventController =
-  StreamController<AppStreamData>.broadcast();
+  final StreamController<AppStreamData> _eventController = StreamController<AppStreamData>.broadcast();
 
   Stream<AppStreamData> get eventStream => _eventController.stream;
 
@@ -21,24 +23,32 @@ class AppStreamEvent {
     _eventController.add(AppStreamData(event, payload: payload));
   }
 
-  void insertLatestTransactionIntoList() {
-    triggerEvent(AppEvent.loadItemLatestTransaction);
+  void insertTransaction(Transaction tx) {
+    triggerEvent(AppEvent.insertTransaction, payload: tx);
   }
 
-  void updateTransaction(int transactionId) {
-    triggerEvent(AppEvent.updateExistItemTransaction, payload: transactionId);
+  void updateTransaction(Transaction tx) {
+    triggerEvent(AppEvent.updateTransaction, payload: tx);
+  }
+
+  void deleteTransaction(int id) {
+    triggerEvent(AppEvent.deleteTransaction, payload: id);
   }
 
   void dispose() {
     _eventController.close();
   }
 
-  static void insertLatestTransactionIntoListStatic() {
-    _instance.insertLatestTransactionIntoList();
+  static void insertTransactionStatic(Transaction tx) {
+    _instance.insertTransaction(tx);
   }
 
-  static void updateTransactionStatic(int transactionId) {
-    _instance.updateTransaction(transactionId);
+  static void updateTransactionStatic(Transaction tx) {
+    _instance.updateTransaction(tx);
+  }
+
+  static void deleteTransactionStatic(int id) {
+    _instance.deleteTransaction(id);
   }
 
   static Stream<AppStreamData> get eventStreamStatic => _instance.eventStream;

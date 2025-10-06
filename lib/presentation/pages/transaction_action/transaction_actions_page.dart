@@ -2,11 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../core/constant/export.dart';
-import '../../../core/di/injection_container.dart';
+import '../../../core/di/export.dart';
 import '../../../core/enum/export.dart';
 import '../../../core/navigation/export.dart';
 import '../../../core/service/export.dart';
-import '../../../core/stream/export.dart';
 import '../../../core/text_style/export.dart';
 import '../../../entity/export.dart';
 import '../../bloc/export.dart';
@@ -15,16 +14,11 @@ import 'widgets/transaction_actions_input_header.dart';
 import 'widgets/transaction_category_grid.dart';
 import 'widgets/transaction_tab_bar.dart';
 
-enum TransactionActionsMode { add, edit }
-
 class TransactionActionsPageArgs {
   final TransactionActionsMode mode;
   final Transaction? transaction;
 
-  TransactionActionsPageArgs({
-    this.mode = TransactionActionsMode.add,
-    this.transaction,
-  });
+  TransactionActionsPageArgs({this.mode = TransactionActionsMode.add, this.transaction});
 }
 
 class TransactionActionsPage extends StatelessWidget {
@@ -34,31 +28,23 @@ class TransactionActionsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider<AddTransactionBloc>(
-      create: (_) => AddTransactionBloc(
-        sl<TransactionCategoryService>(),
-        sl<TransactionService>(),
-        args
-      ),
-      child:  AddTransactionPageChild(
-        args: args,
-      ),
+    return BlocProvider<TransactionActionsBloc>(
+      create: (_) => TransactionActionsBloc(sl<TransactionCategoryService>(), sl<TransactionService>(), args),
+      child: TransactionActionsPageChild(args: args),
     );
   }
 }
 
-class AddTransactionPageChild extends StatefulWidget {
+class TransactionActionsPageChild extends StatefulWidget {
   final TransactionActionsPageArgs? args;
 
-  const AddTransactionPageChild({super.key,this.args});
+  const TransactionActionsPageChild({super.key, this.args});
 
   @override
-  State<AddTransactionPageChild> createState() =>
-      _AddTransactionPageChildState();
+  State<TransactionActionsPageChild> createState() => _TransactionActionsPageChildState();
 }
 
-class _AddTransactionPageChildState extends State<AddTransactionPageChild>
-    with SingleTickerProviderStateMixin, WidgetsBindingObserver {
+class _TransactionActionsPageChildState extends State<TransactionActionsPageChild> with SingleTickerProviderStateMixin, WidgetsBindingObserver {
   final TextEditingController _noteController = TextEditingController();
   final FocusNode _noteFocusNode = FocusNode();
   late AnimationController _animationController;
@@ -68,14 +54,9 @@ class _AddTransactionPageChildState extends State<AddTransactionPageChild>
   @override
   void initState() {
     super.initState();
-    _noteController.text = widget.args?.transaction?.content ??"";
-    _animationController = AnimationController(
-      duration: UIConstants.shortAnimationDuration,
-      vsync: this,
-    );
-    _slideAnimation = Tween<double>(begin: 0, end: 1).animate(
-      CurvedAnimation(parent: _animationController, curve: Curves.easeOutQuart),
-    );
+    _noteController.text = widget.args?.transaction?.content ?? "";
+    _animationController = AnimationController(duration: UIConstants.shortAnimationDuration, vsync: this);
+    _slideAnimation = Tween<double>(begin: 0, end: 1).animate(CurvedAnimation(parent: _animationController, curve: Curves.easeOutQuart));
     WidgetsBinding.instance.addObserver(this);
   }
 
@@ -109,15 +90,9 @@ class _AddTransactionPageChildState extends State<AddTransactionPageChild>
   @override
   Widget build(BuildContext context) {
     final keyboardHeight = MediaQuery.of(context).viewInsets.bottom;
-    return BlocListener<AddTransactionBloc, AddTransactionState>(
+    return BlocListener<TransactionActionsBloc, TransactionActionsState>(
       listener: (context, state) {
         if (state.loadStatus == LoadStatus.success) {
-          if(widget.args!=null && widget.args!.mode == TransactionActionsMode.edit){
-            AppStreamEvent.updateTransactionStatic(widget.args!.transaction!.id!);
-            AppNavigator(context: context).pop();
-            return;
-          }
-          AppStreamEvent.insertLatestTransactionIntoListStatic();
           AppNavigator(context: context).pop();
         }
       },
@@ -133,55 +108,44 @@ class _AddTransactionPageChildState extends State<AddTransactionPageChild>
                   child: Column(
                     children: [
                       _buildAppBar(),
-                      const TransactionTabBar(),
+                      const TransactionActionsTabBar(),
                       const SizedBox(height: UIConstants.defaultPadding),
                       const Expanded(
                         child: ColoredBox(
                           color: ColorConstants.white,
-                          child: Padding(
-                            padding: EdgeInsets.all(UIConstants.smallPadding),
-                            child: TransactionCategoryGrid(),
-                          ),
+                          child: Padding(padding: EdgeInsets.all(UIConstants.smallPadding), child: TransactionCategoryGrid()),
                         ),
                       ),
                     ],
                   ),
                 ),
-                BlocSelector<AddTransactionBloc, AddTransactionState, bool>(
+                BlocSelector<TransactionActionsBloc, TransactionActionsState, bool>(
                   selector: (state) => state.isKeyboardVisible,
                   builder: (context, isKeyboardVisible) {
                     if (!isKeyboardVisible) return const SizedBox.shrink();
                     return AnimatedBuilder(
                       animation: _slideAnimation,
                       builder: (context, child) {
-                        final slideOffset =
-                            _slideAnimation.value *
-                            keyboardHeight *
-                            UIConstants.keyboardSlideRatio;
-                        return Transform.translate(
-                          offset: Offset(0, -slideOffset),
-                          child: child,
-                        );
+                        final slideOffset = _slideAnimation.value * keyboardHeight * UIConstants.keyboardSlideRatio;
+                        return Transform.translate(offset: Offset(0, -slideOffset), child: child);
                       },
                       child: RepaintBoundary(
                         child: ColoredBox(
-                          color: ColorConstants.iconBackground,
+                          color: ColorConstants.greyWhite,
                           child: Padding(
-                            padding: const EdgeInsets.all(
-                              UIConstants.smallPadding,
-                            ),
+                            padding: const EdgeInsets.all(UIConstants.smallPadding),
                             child: Column(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                TransactionActionsInputHeader(
-                                  noteController: _noteController,
-                                  noteFocusNode: _noteFocusNode,
-                                ),
+                                TransactionActionsInputHeader(noteController: _noteController, noteFocusNode: _noteFocusNode),
                                 AppKeyboard(
                                   onValueChanged: (value) {
-                                    context.read<AddTransactionBloc>().add(
-                                      AmountChanged(value),
-                                    );
+                                    final bloc = context.read<TransactionActionsBloc>();
+                                    if (value == 'DONE') {
+                                      bloc.add(const SubmitTransaction());
+                                    } else {
+                                      bloc.add(AmountChanged(value));
+                                    }
                                   },
                                 ),
                               ],
@@ -204,21 +168,18 @@ class _AddTransactionPageChildState extends State<AddTransactionPageChild>
     return CustomAppBar(
       title: TextConstants.add,
       leading: ConstrainedBox(
-        constraints: const BoxConstraints(
-          minWidth: UIConstants.mediumContainerSize,
-          minHeight: UIConstants.mediumContainerSize,
-        ),
+        constraints: const BoxConstraints(minWidth: UIConstants.mediumContainerSize, minHeight: UIConstants.mediumContainerSize),
         child: Ink(
           decoration: const ShapeDecoration(shape: StadiumBorder()),
           child: InkWell(
             customBorder: const StadiumBorder(),
-            onTap: () => AppNavigator(context: context).pop(),
-            child: Center(
-              child: Text(
-                TextConstants.cancel,
-                style: AppTextStyle.blackS14Medium,
-              ),
-            ),
+            onTap: () {
+              context.read<TransactionActionsBloc>().add(const ToggleKeyboardVisibility());
+              Future.delayed(const Duration(milliseconds: 850), () {
+                AppNavigator(context: context).pop();
+              });
+            },
+            child: Center(child: Text(TextConstants.cancel, style: AppTextStyle.blackS14Medium)),
           ),
         ),
       ),

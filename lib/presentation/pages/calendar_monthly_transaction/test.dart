@@ -1,14 +1,12 @@
 // models/transaction.dart
 import 'package:flutter/material.dart';
 import 'package:kmonie/core/constant/color.dart';
+
 class Transaction {
   final double income;
   final double expense;
 
-  const Transaction({
-    this.income = 0,
-    this.expense = 0,
-  });
+  const Transaction({this.income = 0, this.expense = 0});
 
   bool get hasData => income > 0 || expense > 0;
 }
@@ -18,21 +16,9 @@ class CalendarData {
   final DateTime selectedDate;
   final Map<int, Transaction> transactions;
 
-  const CalendarData({
-    required this.selectedDate,
-    required this.transactions,
-  });
+  const CalendarData({required this.selectedDate, required this.transactions});
 
-  static CalendarData get sample => CalendarData(
-    selectedDate: DateTime(2025, 9, 20),
-    transactions: {
-      2: const Transaction(income: 90000),
-      13: const Transaction(income: 40000),
-      15: const Transaction(income: 11300),
-      20: const Transaction(income: 500000000, expense: 3000),
-      29: const Transaction(income: 6666),
-    },
-  );
+  static CalendarData get sample => CalendarData(selectedDate: DateTime(2025, 9, 20), transactions: {2: const Transaction(income: 90000), 13: const Transaction(income: 40000), 15: const Transaction(income: 11300), 20: const Transaction(income: 500000000, expense: 3000), 29: const Transaction(income: 6666)});
 }
 
 // screens/calendar_screen.dart
@@ -54,19 +40,13 @@ class _CalendarScreenState extends State<CalendarScreen> {
 
   void _onDateSelected(DateTime date) {
     setState(() {
-      _calendarData = CalendarData(
-        selectedDate: date,
-        transactions: _calendarData.transactions,
-      );
+      _calendarData = CalendarData(selectedDate: date, transactions: _calendarData.transactions);
     });
   }
 
   void _onMonthChanged(DateTime date) {
     setState(() {
-      _calendarData = CalendarData(
-        selectedDate: date,
-        transactions: _calendarData.transactions,
-      );
+      _calendarData = CalendarData(selectedDate: date, transactions: _calendarData.transactions);
     });
   }
 
@@ -74,14 +54,8 @@ class _CalendarScreenState extends State<CalendarScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: CalendarAppBar(
-        selectedDate: _calendarData.selectedDate,
-        onMonthChanged: _onMonthChanged,
-      ),
-      body: CalendarView(
-        calendarData: _calendarData,
-        onDateSelected: _onDateSelected,
-      ),
+      appBar: CalendarAppBar(selectedDate: _calendarData.selectedDate, onMonthChanged: _onMonthChanged),
+      body: CalendarView(calendarData: _calendarData, onDateSelected: _onDateSelected),
       floatingActionButton: const AddTransactionButton(),
     );
   }
@@ -92,31 +66,13 @@ class CalendarAppBar extends StatelessWidget implements PreferredSizeWidget {
   final DateTime selectedDate;
   final ValueChanged<DateTime> onMonthChanged;
 
-  const CalendarAppBar({
-    super.key,
-    required this.selectedDate,
-    required this.onMonthChanged,
-  });
+  const CalendarAppBar({super.key, required this.selectedDate, required this.onMonthChanged});
 
   @override
   Size get preferredSize => const Size.fromHeight(56);
 
   String _getMonthYearText() {
-    const months = [
-      '',
-      'thg 1',
-      'thg 2',
-      'thg 3',
-      'thg 4',
-      'thg 5',
-      'thg 6',
-      'thg 7',
-      'thg 8',
-      'thg 9',
-      'thg 10',
-      'thg 11',
-      'thg 12'
-    ];
+    const months = ['', 'thg 1', 'thg 2', 'thg 3', 'thg 4', 'thg 5', 'thg 6', 'thg 7', 'thg 8', 'thg 9', 'thg 10', 'thg 11', 'thg 12'];
     return '${months[selectedDate.month]} ${selectedDate.year}';
   }
 
@@ -131,11 +87,7 @@ class CalendarAppBar extends StatelessWidget implements PreferredSizeWidget {
       ),
       title: const Text(
         'Lịch',
-        style: TextStyle(
-          color: Colors.black87,
-          fontSize: 20,
-          fontWeight: FontWeight.w500,
-        ),
+        style: TextStyle(color: Colors.black87, fontSize: 20, fontWeight: FontWeight.w500),
       ),
       actions: [
         Padding(
@@ -148,17 +100,10 @@ class CalendarAppBar extends StatelessWidget implements PreferredSizeWidget {
               children: [
                 Text(
                   _getMonthYearText(),
-                  style: const TextStyle(
-                    color: Colors.black87,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
-                  ),
+                  style: const TextStyle(color: Colors.black87, fontSize: 16, fontWeight: FontWeight.w500),
                 ),
                 const SizedBox(width: 4),
-                const Icon(
-                  Icons.arrow_drop_down,
-                  color: Colors.black87,
-                ),
+                const Icon(Icons.arrow_drop_down, color: Colors.black87),
               ],
             ),
           ),
@@ -173,11 +118,7 @@ class CalendarView extends StatelessWidget {
   final CalendarData calendarData;
   final ValueChanged<DateTime> onDateSelected;
 
-  const CalendarView({
-    super.key,
-    required this.calendarData,
-    required this.onDateSelected,
-  });
+  const CalendarView({super.key, required this.calendarData, required this.onDateSelected});
 
   @override
   Widget build(BuildContext context) {
@@ -185,10 +126,7 @@ class CalendarView extends StatelessWidget {
       children: [
         const WeekdayHeader(),
         Expanded(
-          child: CalendarGrid(
-            calendarData: calendarData,
-            onDateSelected: onDateSelected,
-          ),
+          child: CalendarGrid(calendarData: calendarData, onDateSelected: onDateSelected),
         ),
       ],
     );
@@ -207,16 +145,11 @@ class WeekdayHeader extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 12),
       child: Row(
         children: _weekdays
-            .map((day) => Expanded(
-          child: Center(
-            child: Text(
-              day,
-              style: const TextStyle(
-                fontSize: 12,
+            .map(
+              (day) => Expanded(
+                child: Center(child: Text(day, style: const TextStyle(fontSize: 12))),
               ),
-            ),
-          ),
-        ))
+            )
             .toList(),
       ),
     );
@@ -228,23 +161,11 @@ class CalendarGrid extends StatelessWidget {
   final CalendarData calendarData;
   final ValueChanged<DateTime> onDateSelected;
 
-  const CalendarGrid({
-    super.key,
-    required this.calendarData,
-    required this.onDateSelected,
-  });
+  const CalendarGrid({super.key, required this.calendarData, required this.onDateSelected});
 
   List<DateTime?> _generateCalendarDays() {
-    final firstDay = DateTime(
-      calendarData.selectedDate.year,
-      calendarData.selectedDate.month,
-      1,
-    );
-    final lastDay = DateTime(
-      calendarData.selectedDate.year,
-      calendarData.selectedDate.month + 1,
-      0,
-    );
+    final firstDay = DateTime(calendarData.selectedDate.year, calendarData.selectedDate.month, 1);
+    final lastDay = DateTime(calendarData.selectedDate.year, calendarData.selectedDate.month + 1, 0);
 
     final List<DateTime?> days = [];
 
@@ -267,24 +188,14 @@ class CalendarGrid extends StatelessWidget {
 
     return GridView.builder(
       padding: const EdgeInsets.symmetric(horizontal: 4),
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 7,
-        childAspectRatio: 0.75,
-      ),
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 7, childAspectRatio: 0.75),
       itemCount: days.length,
       itemBuilder: (context, index) {
         final date = days[index];
         if (date == null) return const SizedBox();
         final transaction = calendarData.transactions[date.day];
-        final isSelected = date.day == calendarData.selectedDate.day &&
-            date.month == calendarData.selectedDate.month &&
-            date.year == calendarData.selectedDate.year;
-        return CalendarDayCell(
-          date: date,
-          transaction: transaction,
-          isSelected: isSelected,
-          onTap: () => onDateSelected(date),
-        );
+        final isSelected = date.day == calendarData.selectedDate.day && date.month == calendarData.selectedDate.month && date.year == calendarData.selectedDate.year;
+        return CalendarDayCell(date: date, transaction: transaction, isSelected: isSelected, onTap: () => onDateSelected(date));
       },
     );
   }
@@ -297,13 +208,7 @@ class CalendarDayCell extends StatelessWidget {
   final bool isSelected;
   final VoidCallback onTap;
 
-  const CalendarDayCell({
-    super.key,
-    required this.date,
-    this.transaction,
-    required this.isSelected,
-    required this.onTap,
-  });
+  const CalendarDayCell({super.key, required this.date, this.transaction, required this.isSelected, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -311,34 +216,15 @@ class CalendarDayCell extends StatelessWidget {
       onTap: onTap,
       child: Container(
         margin: const EdgeInsets.all(2),
-        decoration: BoxDecoration(
-          color: isSelected ? Colors.green.shade100 : ColorConstants.iconBackground,
-          borderRadius: BorderRadius.circular(4),
-        ),
+        decoration: BoxDecoration(color: isSelected ? Colors.green.shade100 : ColorConstants.greyWhite, borderRadius: BorderRadius.circular(4)),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
               '${date.day}',
-              style: const TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
-                color: Colors.black87,
-              ),
+              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: Colors.black87),
             ),
-            if (transaction?.hasData ?? false) ...[
-              const SizedBox(height: 4),
-              if (transaction!.income > 0)
-                TransactionText(
-                  amount: transaction!.income,
-                  isIncome: true,
-                ),
-              if (transaction!.expense > 0)
-                TransactionText(
-                  amount: transaction!.expense,
-                  isIncome: false,
-                ),
-            ],
+            if (transaction?.hasData ?? false) ...[const SizedBox(height: 4), if (transaction!.income > 0) TransactionText(amount: transaction!.income, isIncome: true), if (transaction!.expense > 0) TransactionText(amount: transaction!.expense, isIncome: false)],
           ],
         ),
       ),
@@ -351,18 +237,12 @@ class TransactionText extends StatelessWidget {
   final double amount;
   final bool isIncome;
 
-  const TransactionText({
-    super.key,
-    required this.amount,
-    required this.isIncome,
-  });
+  const TransactionText({super.key, required this.amount, required this.isIncome});
 
   String _formatAmount(double amount) {
     if (amount >= 1000) {
       final formatted = (amount / 1000).toStringAsFixed(3);
-      return formatted.endsWith('000')
-          ? formatted.substring(0, formatted.length - 4)
-          : formatted.replaceAll(RegExp(r'0+$'), '').replaceAll(RegExp(r'\.$'), '');
+      return formatted.endsWith('000') ? formatted.substring(0, formatted.length - 4) : formatted.replaceAll(RegExp(r'0+$'), '').replaceAll(RegExp(r'\.$'), '');
     }
     return amount.toStringAsFixed(0);
   }
@@ -374,11 +254,7 @@ class TransactionText extends StatelessWidget {
       child: Text(
         '${(amount)}',
         textAlign: TextAlign.center,
-        style: TextStyle(
-          fontSize: 10,
-          color: isIncome ? Colors.green.shade600 : Colors.red.shade600,
-          fontWeight: FontWeight.w500,
-        ),
+        style: TextStyle(fontSize: 10, color: isIncome ? Colors.green.shade600 : Colors.red.shade600, fontWeight: FontWeight.w500),
         overflow: TextOverflow.ellipsis,
       ),
     );
@@ -396,11 +272,7 @@ class AddTransactionButton extends StatelessWidget {
       onPressed: () {
         // Handle add transaction
       },
-      child: const Icon(
-        Icons.add,
-        color: Colors.black87,
-        size: 32,
-      ),
+      child: const Icon(Icons.add, color: Colors.black87, size: 32),
     );
   }
 }

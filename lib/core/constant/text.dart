@@ -2,6 +2,9 @@ class TextConstants {
   TextConstants._();
 
   static const String add = 'Thêm';
+  static const String edit = 'Sửa';
+  static const String delete = 'Xoá';
+  static const String confirmDeleteTitle = 'Bạn có chắc muốn xoá giao dịch này không';
   static const String setting = 'Cài đặt';
   static const String expense = 'Chi tiêu';
   static const String income = 'Thu nhập';
