@@ -1,31 +1,45 @@
 import 'dart:async';
 import '../enum/export.dart';
 
+class AppStreamData {
+  final AppEvent event;
+  final dynamic payload;
+
+  AppStreamData(this.event, {this.payload});
+}
 class AppStreamEvent {
   static final AppStreamEvent _instance = AppStreamEvent._internal();
   factory AppStreamEvent() => _instance;
   AppStreamEvent._internal();
 
-  final StreamController<AppEvent> _eventController =
-      StreamController<AppEvent>.broadcast();
+  final StreamController<AppStreamData> _eventController =
+  StreamController<AppStreamData>.broadcast();
 
-  Stream<AppEvent> get eventStream => _eventController.stream;
+  Stream<AppStreamData> get eventStream => _eventController.stream;
 
-  void triggerEvent(AppEvent event) {
-    _eventController.add(event);
+  void triggerEvent(AppEvent event, {dynamic payload}) {
+    _eventController.add(AppStreamData(event, payload: payload));
   }
 
-  void refreshHomeData() {
-    triggerEvent(AppEvent.refreshHomeData);
+  void insertLatestTransactionIntoList() {
+    triggerEvent(AppEvent.loadItemLatestTransaction);
+  }
+
+  void updateTransaction(int transactionId) {
+    triggerEvent(AppEvent.updateExistItemTransaction, payload: transactionId);
   }
 
   void dispose() {
     _eventController.close();
   }
 
-  static void refreshHomeDataStatic() {
-    _instance.refreshHomeData();
+  static void insertLatestTransactionIntoListStatic() {
+    _instance.insertLatestTransactionIntoList();
   }
 
-  static Stream<AppEvent> get eventStreamStatic => _instance.eventStream;
+  static void updateTransactionStatic(int transactionId) {
+    _instance.updateTransaction(transactionId);
+  }
+
+  static Stream<AppStreamData> get eventStreamStatic => _instance.eventStream;
 }

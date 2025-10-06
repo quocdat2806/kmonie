@@ -40,7 +40,13 @@ class AppRouter {
       //   builder: (_, _) => const AddTransactionCategoryPage(),
       // ),
       GoRoute(path: RouterPath.calendarMonthlyTransaction, builder: (_, _) => const CalendarMonthlyTransaction()),
-      GoRoute(path: RouterPath.addTransaction, builder: (_, _) => const AddTransactionPage()),
+      GoRoute(path: RouterPath.addTransaction, builder: (_, state) {
+        final args = state.extra as TransactionActionsPageArgs?;
+        return TransactionActionsPage(
+          args: args,
+        );
+
+      }),
     ],
     // redirect: (_, GoRouterState state) {
     //   final AuthState authState = authBloc.state;

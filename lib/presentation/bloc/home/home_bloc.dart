@@ -22,32 +22,130 @@ class MonthTransactionData {
 class HomeBloc extends Bloc<HomeEvent, HomeState> {
   final TransactionService transactionService;
   final TransactionCategoryService categoryService;
-  StreamSubscription<AppEvent>? _refreshSubscription;
+  StreamSubscription<AppStreamData>? _refreshSubscription;
 
   HomeBloc(this.transactionService, this.categoryService) : super(const HomeState()) {
     on<LoadTransactions>(_onLoadTransactions);
     on<RefreshTransactions>(_onRefreshTransactions);
     on<ChangeDate>(_onChangeDate);
     on<LoadMore>(_onLoadMore);
-    _refreshSubscription = AppStreamEvent.eventStreamStatic.listen((event) {
-      if (event == AppEvent.refreshHomeData) {
+    on<DeleteTransaction>(_onDeleteTransaction);
+    on<UpdateTransaction>(_onUpdateTransaction);
+
+    _refreshSubscription = AppStreamEvent.eventStreamStatic.listen((data) {
+      if (data.event == AppEvent.loadItemLatestTransaction) {
         add(const RefreshTransactions());
+      }
+      if (data.event == AppEvent.updateExistItemTransaction) {
+        final int transactionId = data.payload as int;
+        add(UpdateTransaction(transactionId));
+
       }
     });
     add(const LoadTransactions());
   }
+  Future<void> _onUpdateTransaction(UpdateTransaction event, Emitter<HomeState> emit) async {
+    try {
+      final updatedTx = await transactionService.getTransactionById(event.transactionId);
+      if (updatedTx == null) return;
+
+      // ✅ Tìm và thay thế transaction cũ trong danh sách
+      final updatedTransactions = state.transactions.map((tx) {
+        return tx.id == updatedTx.id ? updatedTx : tx;
+      }).toList();
+
+      // ✅ Group lại và tính lại daily totals
+      final updatedGrouped = transactionService.groupByDate(updatedTransactions);
+      final updatedDailyTotals = _calculateDailyTotals(updatedGrouped, state.categoriesMap);
+
+      emit(state.copyWith(
+        transactions: updatedTransactions,
+        groupedTransactions: updatedGrouped,
+        dailyTotals: updatedDailyTotals,
+      ));
+    } catch (e) {
+      logger.e('HomeBloc: Error in update transaction: $e');
+    }
+  }
+  Map<String, DailyTransactionTotal> _calculateDailyTotals(
+      Map<String, List<Transaction>> grouped,
+      Map<int, TransactionCategory> categoriesMap,
+      ) {
+    final Map<String, DailyTransactionTotal> dailyTotals = {};
+
+    grouped.forEach((dateKey, txList) {
+      double income = 0;
+      double expense = 0;
+      double transfer = 0;
+
+      for (final tx in txList) {
+        final cat = categoriesMap[tx.transactionCategoryId];
+        switch (cat?.transactionType) {
+          case TransactionType.income:
+            income += tx.amount;
+            break;
+          case TransactionType.expense:
+            expense += tx.amount;
+            break;
+          case TransactionType.transfer:
+            transfer += tx.amount;
+            break;
+          default:
+            break;
+        }
+      }
+
+      dailyTotals[dateKey] = DailyTransactionTotal(
+        income: income,
+        expense: expense,
+        transfer: transfer,
+      );
+    });
+
+    return dailyTotals;
+  }
+
+
+  Future<void> _onDeleteTransaction(DeleteTransaction event, Emitter<HomeState> emit) async {
+    try {
+      // Gọi service xóa trên DB (hoặc API)
+      final success = await transactionService.deleteTransaction(event.transactionId);
+      if (!success) return;
+
+      // ✅ Cập nhật state dựa trên state hiện tại, không cần gọi lại service
+      final updatedTransactions = state.transactions
+          .where((t) => t.id != event.transactionId)
+          .toList();
+
+      final updatedGrouped = transactionService.groupByDate(updatedTransactions);
+      final updatedDailyTotals = _calculateDailyTotals(updatedGrouped, state.categoriesMap);
+
+      emit(state.copyWith(
+        transactions: updatedTransactions,
+        groupedTransactions: updatedGrouped,
+        dailyTotals: updatedDailyTotals,
+        totalRecords: (state.totalRecords ?? 1) - 1,
+      ));
+    } catch (e) {
+      logger.e('HomeBloc: Error deleting transaction: $e');
+    }
+  }
+
   Future<void> _onLoadMore(LoadMore event, Emitter<HomeState> emit) async {
     if (state.totalRecords == null || state.totalRecords == 0) return;
-
     if (state.transactions.length >= state.totalRecords!) return;
     if (state.isLoadingMore) return;
+
     final nextPage = state.pageIndex + 1;
     emit(state.copyWith(isLoadingMore: true, pageIndex: nextPage));
 
     try {
       final currentDate = state.selectedDate ?? DateTime.now();
-
-      final data = await transactionService.getTransactionsInMonth(year: currentDate.year, month: currentDate.month, pageIndex: nextPage);
+      final data = await transactionService.getTransactionsInMonth(
+        year: currentDate.year,
+        month: currentDate.month,
+        pageIndex: nextPage,
+      );
 
       final newTransactions = [...state.transactions];
       for (final tx in data.transactions) {
@@ -57,23 +155,21 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       }
 
       final updatedGrouped = Map<String, List<Transaction>>.from(state.groupedTransactions);
-      final newGrouped = _groupTransactionsByDate(data.transactions);
+      final newGrouped = transactionService.groupByDate(data.transactions);
 
       for (final entry in newGrouped.entries) {
-        if (updatedGrouped.containsKey(entry.key)) {
-          final existing = updatedGrouped[entry.key]!;
-          for (final tx in entry.value) {
-            if (!existing.any((e) => e.id == tx.id)) {
-              existing.add(tx);
-            }
-          }
-          existing.sort((a, b) => b.date.compareTo(a.date));
-        } else {
-          updatedGrouped[entry.key] = entry.value;
-        }
+        updatedGrouped.putIfAbsent(entry.key, () => []).addAll(entry.value);
+        updatedGrouped[entry.key]!.sort((a, b) => b.date.compareTo(a.date));
       }
 
-      emit(state.copyWith(transactions: newTransactions, groupedTransactions: updatedGrouped, isLoadingMore: false));
+      final dailyTotals = _calculateDailyTotals(updatedGrouped, state.categoriesMap);
+
+      emit(state.copyWith(
+        transactions: newTransactions,
+        groupedTransactions: updatedGrouped,
+        dailyTotals: dailyTotals,
+        isLoadingMore: false,
+      ));
     } catch (e) {
       logger.e('HomeBloc: Error in load more: $e');
       emit(state.copyWith(isLoadingMore: false));
@@ -84,9 +180,8 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     try {
       final currentDate = state.selectedDate ?? DateTime.now();
       final result = await transactionService.getTransactionsInMonth(year: currentDate.year, month: currentDate.month);
-      final groupedTransactions = _groupTransactionsByDate(result.transactions);
+      final groupedTransactions = transactionService.groupByDate(result.transactions);
       final allCategories = await categoryService.getAll();
-      print("aaaa ${allCategories}");
       final categoriesMap = {for (final cat in allCategories) cat.id!: cat};
       return MonthTransactionData(totalRecords: result.totalRecords, transactions: result.transactions, groupedTransactions: groupedTransactions, categoriesMap: categoriesMap);
     } catch (error) {
@@ -99,7 +194,14 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     try {
       final currentDate = state.selectedDate ?? DateTime.now();
       final data = await getTransactionInMonth(year: currentDate.year, month: currentDate.month);
-      emit(state.copyWith(totalRecords: data.totalRecords, groupedTransactions: data.groupedTransactions, transactions: data.transactions, categoriesMap: data.categoriesMap));
+      final dailyTotals = _calculateDailyTotals(data.groupedTransactions, data.categoriesMap);
+      emit(state.copyWith(
+        totalRecords: data.totalRecords,
+        transactions: data.transactions,
+        groupedTransactions: data.groupedTransactions,
+        categoriesMap: data.categoriesMap,
+        dailyTotals: dailyTotals,
+      ));
     } catch (error) {
       logger.e('HomeBloc: Error in load transactions: $error');
       emit(state.copyWith(groupedTransactions: {}, transactions: []));
@@ -109,23 +211,23 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   Future<void> _onRefreshTransactions(RefreshTransactions event, Emitter<HomeState> emit) async {
     try {
       final selectedDate = state.selectedDate ?? DateTime.now();
+      final lastTransaction = await transactionService.getLastTransactionInMonth(
+        selectedDate.year,
+        selectedDate.month,
+      );
 
-      final lastTransaction = await transactionService.getLastTransactionInMonth(selectedDate.year, selectedDate.month);
+      if (lastTransaction != null &&
+          !state.transactions.any((t) => t.id == lastTransaction.id)) {
+        final updatedTransactions = [lastTransaction, ...state.transactions];
+        final updatedGrouped = transactionService.groupByDate(updatedTransactions);
+        final dailyTotals = _calculateDailyTotals(updatedGrouped, state.categoriesMap);
 
-      if (lastTransaction != null) {
-        final existingTransaction = state.transactions.firstWhere((t) => t.id == lastTransaction.id, orElse: () => Transaction(id: -1, amount: 0, date: DateTime.now(), transactionCategoryId: 0));
-
-        if (existingTransaction.id == -1) {
-          logger.d('HomeBloc: Adding new transaction to list');
-          final updatedTransactions = [lastTransaction, ...state.transactions];
-          final groupedTransactions = _groupTransactionsByDate(updatedTransactions);
-
-          emit(state.copyWith(transactions: updatedTransactions, groupedTransactions: groupedTransactions, totalRecords: (state.totalRecords ?? 0) + 1));
-        } else {
-          logger.d('HomeBloc: Transaction already exists, no update needed');
-        }
-      } else {
-        logger.d('HomeBloc: No new transaction found in this month, skipping refresh');
+        emit(state.copyWith(
+          transactions: updatedTransactions,
+          groupedTransactions: updatedGrouped,
+          dailyTotals: dailyTotals,
+          totalRecords: (state.totalRecords ?? 0) + 1,
+        ));
       }
     } catch (error) {
       logger.e('HomeBloc: Error in refresh: $error');
@@ -133,43 +235,40 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     }
   }
 
-  Future<void> _onChangeDate(ChangeDate event, Emitter<HomeState> emit) async {
-    final selectedDate = event.date;
 
-    // 🧹 Reset state về mặc định trước khi load tháng mới
-    emit(state.copyWith(selectedDate: selectedDate, transactions: [], groupedTransactions: {}, totalRecords: 0, pageIndex: 0, isLoadingMore: false));
+  Future<void> _onChangeDate(ChangeDate event, Emitter<HomeState> emit) async {
+    emit(state.copyWith(
+      selectedDate: event.date,
+      transactions: [],
+      groupedTransactions: {},
+      dailyTotals: {},
+      totalRecords: 0,
+      pageIndex: 0,
+      isLoadingMore: false,
+    ));
 
     try {
-      // 🔸 Load page đầu tiên của tháng mới
-      final data = await getTransactionInMonth(year: selectedDate.year, month: selectedDate.month, pageIndex: 0);
+      final data = await getTransactionInMonth(
+        year: event.date.year,
+        month: event.date.month,
+      );
 
-      emit(state.copyWith(selectedDate: selectedDate, totalRecords: data.totalRecords, transactions: data.transactions, groupedTransactions: data.groupedTransactions, categoriesMap: data.categoriesMap, pageIndex: 0, isLoadingMore: false));
+      final dailyTotals = _calculateDailyTotals(data.groupedTransactions, data.categoriesMap);
+
+      emit(state.copyWith(
+        selectedDate: event.date,
+        transactions: data.transactions,
+        groupedTransactions: data.groupedTransactions,
+        categoriesMap: data.categoriesMap,
+        dailyTotals: dailyTotals,
+        totalRecords: data.totalRecords,
+        pageIndex: 0,
+        isLoadingMore: false,
+      ));
     } catch (error) {
       logger.e('HomeBloc: Error in change date: $error');
-      emit(state.copyWith(groupedTransactions: {}, transactions: [], totalRecords: 0, isLoadingMore: false));
     }
   }
-
-  Map<String, List<Transaction>> _groupTransactionsByDate(List<Transaction> transactions) {
-    final Map<String, List<Transaction>> grouped = {};
-
-    for (final transaction in transactions) {
-      final dateKey = _formatDateKey(transaction.date);
-      grouped.putIfAbsent(dateKey, () => []).add(transaction);
-    }
-    final sortedKeys = grouped.keys.toList()..sort((a, b) => b.compareTo(a));
-    final Map<String, List<Transaction>> sortedGrouped = {};
-    for (final key in sortedKeys) {
-      sortedGrouped[key] = grouped[key]!;
-    }
-
-    return sortedGrouped;
-  }
-
-  String _formatDateKey(DateTime date) {
-    return '${date.day}/${date.month}/${date.year}';
-  }
-
   @override
   Future<void> close() {
     _refreshSubscription?.cancel();

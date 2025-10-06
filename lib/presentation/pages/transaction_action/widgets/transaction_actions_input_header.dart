@@ -8,11 +8,11 @@ import '../../../../generated/assets.dart';
 import '../../../bloc/export.dart';
 import '../../../widgets/export.dart';
 
-class AddTransactionInputHeader extends StatelessWidget {
+class TransactionActionsInputHeader extends StatelessWidget {
   final TextEditingController noteController;
   final FocusNode noteFocusNode;
 
-  const AddTransactionInputHeader({super.key, required this.noteController, required this.noteFocusNode});
+  const TransactionActionsInputHeader({super.key, required this.noteController, required this.noteFocusNode});
 
   @override
   Widget build(BuildContext context) {
@@ -38,6 +38,7 @@ class AddTransactionInputHeader extends StatelessWidget {
                   Text(TextConstants.note, style: AppTextStyle.greyS14),
                   Expanded(
                     child: AppTextField(
+                      textInputAction: TextInputAction.done,
                       controller: noteController,
                       focusNode: noteFocusNode,
                       onChanged: (value) => context.read<AddTransactionBloc>().add(NoteChanged(value)),

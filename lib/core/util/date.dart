@@ -1,32 +1,12 @@
 import 'package:intl/intl.dart';
 import '../config/export.dart';
-import 'logger.dart';
 
 class DateUtils {
   DateUtils._();
 
-  static DateTime? fromString(String date, {String? format}) {
-    if ((format ?? '').isNotEmpty) {
-      try {
-        return DateFormat(format).parse(date);
-      } catch (e) {
-        logger.e(e);
-      }
-    }
-    try {
-      return DateTime.parse(date);
-    } catch (e) {
-      logger.e(e);
-    }
-
-    try {
-      return DateFormat('yyyy/MM/dd').parse(date);
-    } catch (e) {
-      logger.e(e);
-    }
-    return null;
+  static String formatDateKey(DateTime date) {
+    return DateFormat(AppConfigs.dateDisplayFormat).format(date);
   }
-
   static String toDateString(
     DateTime? dateTime, {
     String format = AppConfigs.dateDisplayFormat,

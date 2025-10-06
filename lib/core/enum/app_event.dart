@@ -1,1 +1,1 @@
-enum AppEvent { refreshHomeData }
+enum AppEvent { loadItemLatestTransaction,updateExistItemTransaction }

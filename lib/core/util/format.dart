@@ -16,13 +16,15 @@ static  String _formatAmount(double amount) {
     }
     return amount.toStringAsFixed(0);
   }
-static  String formatTotalText(double income, double expense) {
+static  String formatTotalText(double income, double expense,double? transfer) {
     if (income > 0 && expense > 0) {
       return 'Thu: ${_formatAmount(income)} | Chi: ${_formatAmount(expense)}';
     } else if (income > 0) {
       return 'Thu: ${_formatAmount(income)}';
     } else if (expense > 0) {
       return 'Chi: ${_formatAmount(expense)}';
+    }else if (transfer != null && transfer > 0) {
+      return 'CK: ${_formatAmount(transfer)}';
     }
     return '';
   }

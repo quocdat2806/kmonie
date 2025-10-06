@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_svg/svg.dart';
+import 'package:kmonie/presentation/widgets/transaction/transaction_list.dart';
 
-import '../../../core/cache/export.dart';
 import '../../../core/constant/export.dart';
 import '../../../core/di/export.dart';
 import '../../../core/enum/export.dart';
@@ -9,15 +10,18 @@ import '../../../core/navigation/export.dart';
 import '../../../core/service/export.dart';
 import '../../../core/text_style/export.dart';
 import '../../../generated/assets.dart';
+import '../../../entity/export.dart';
 import '../../bloc/export.dart';
 import '../../widgets/export.dart';
-
 class SearchTransactionPage extends StatelessWidget {
   const SearchTransactionPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider<SearchBloc>(create: (_) => SearchBloc(sl<TransactionService>()), child: const SearchTransactionPageChild());
+    return BlocProvider<SearchBloc>(
+      create: (_) => SearchBloc(sl<TransactionService>(),sl<TransactionCategoryService>()),
+      child: const SearchTransactionPageChild(),
+    );
   }
 }
 
@@ -25,10 +29,12 @@ class SearchTransactionPageChild extends StatefulWidget {
   const SearchTransactionPageChild({super.key});
 
   @override
-  State<SearchTransactionPageChild> createState() => _SearchTransactionPageChildState();
+  State<SearchTransactionPageChild> createState() =>
+      _SearchTransactionPageChildState();
 }
 
-class _SearchTransactionPageChildState extends State<SearchTransactionPageChild> {
+class _SearchTransactionPageChildState
+    extends State<SearchTransactionPageChild> {
   final TextEditingController _searchController = TextEditingController();
   final categories = <Map<String, dynamic>>[
     {'label': TextConstants.all, 'type': null},
@@ -49,37 +55,47 @@ class _SearchTransactionPageChildState extends State<SearchTransactionPageChild>
       body: SafeArea(
         child: ColoredBox(
           color: ColorConstants.white,
-          child: Column(children: [_buildSearchHeader(), _buildSearchCategoryButtons(), _buildActionButton(), _buildSearchList()]),
+          child: Column(
+            children: [
+              _buildSearchHeader(),
+              _buildSearchCategoryButtons(),
+              _buildActionButton(),
+              _buildSearchList(),
+            ],
+          ),
         ),
       ),
     );
   }
 
   Widget _buildSearchHeader() {
-    return BlocBuilder<SearchBloc, SearchState>(
-      buildWhen: (previous, current) => previous.query != current.query,
-      builder: (context, state) {
-        return ColoredBox(
-          color: ColorConstants.primary,
-          child: Padding(
-            padding: const EdgeInsets.all(UIConstants.defaultPadding),
-            child: Column(
-              spacing: UIConstants.defaultPadding,
-              children: [
-                Row(
-                  children: <Widget>[
-                    InkWell(
-                      child: const Icon(Icons.arrow_back),
-                      onTap: () {
-                        AppNavigator(context: context).maybePop();
-                      },
-                    ),
-                    Expanded(
-                      child: Center(child: Text('Tìm kiếm', style: AppTextStyle.blackS18Bold)),
-                    ),
-                  ],
+    return ColoredBox(
+      color: ColorConstants.primary,
+      child: Padding(
+        padding: const EdgeInsets.all(UIConstants.defaultPadding),
+        child: Column(
+          spacing: UIConstants.defaultPadding,
+          children: [
+            Row(
+              children: <Widget>[
+                InkWell(
+                  child: const Icon(Icons.arrow_back),
+                  onTap: () => AppNavigator(context: context).maybePop(),
                 ),
-                AppTextField(
+                Expanded(
+                  child: Center(
+                    child: Text(
+                      TextConstants.search,
+                      style: AppTextStyle.blackS18Bold,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            BlocBuilder<SearchBloc, SearchState>(
+              buildWhen: (previous, current) => previous.query != current.query,
+              builder: (context, state) {
+                return AppTextField(
                   controller: _searchController,
                   filledColor: ColorConstants.white,
                   decoration: InputDecoration(
@@ -87,34 +103,51 @@ class _SearchTransactionPageChildState extends State<SearchTransactionPageChild>
                     disabledBorder: InputBorder.none,
                     enabledBorder: InputBorder.none,
                     errorBorder: InputBorder.none,
-                    contentPadding: const EdgeInsets.all(UIConstants.smallPadding),
+                    contentPadding: const EdgeInsets.all(
+                      UIConstants.smallPadding,
+                    ),
                     suffixIcon: state.query.isNotEmpty
                         ? InkWell(
                             onTap: () {
-                              context.read<SearchBloc>().add(const SearchEvent.reset());
+                              context.read<SearchBloc>().add(
+                                const SearchEvent.reset(),
+                              );
                               _searchController.clear();
                             },
                             child: const Padding(
-                              padding: EdgeInsets.only(right: UIConstants.smallPadding),
-                              child: Icon(Icons.close, size: UIConstants.mediumIconSize),
+                              padding: EdgeInsets.only(
+                                right: UIConstants.smallPadding,
+                              ),
+                              child: Icon(
+                                Icons.close,
+                                size: UIConstants.mediumIconSize,
+                              ),
                             ),
                           )
                         : Padding(
-                            padding: const EdgeInsets.only(right: UIConstants.smallPadding),
-                            child: SvgCacheManager().getSvg(Assets.svgsSearch, UIConstants.mediumIconSize, UIConstants.mediumIconSize),
+                            padding: const EdgeInsets.only(
+                              right: UIConstants.smallPadding,
+                            ),
+                            child: SvgPicture.asset(
+                              Assets.svgsSearch,
+                              width: UIConstants.mediumIconSize,
+                              height: UIConstants.mediumIconSize,
+                            ),
                           ),
                     suffixIconConstraints: const BoxConstraints(),
                   ),
-                  onChanged: (value) => context.read<SearchBloc>().add(SearchEvent.queryChanged(value)),
+                  onChanged: (value) => context.read<SearchBloc>().add(
+                    SearchEvent.queryChanged(value),
+                  ),
                   onFieldSubmitted: (value) {
                     context.read<SearchBloc>().add(const SearchEvent.apply());
                   },
-                ),
-              ],
+                );
+              },
             ),
-          ),
-        );
-      },
+          ],
+        ),
+      ),
     );
   }
 
@@ -124,7 +157,8 @@ class _SearchTransactionPageChildState extends State<SearchTransactionPageChild>
       child: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
         child: BlocBuilder<SearchBloc, SearchState>(
-          buildWhen: (previous, current) => previous.selectedType != current.selectedType,
+          buildWhen: (previous, current) =>
+              previous.selectedType != current.selectedType,
           builder: (context, state) {
             return Row(
               children: [
@@ -133,13 +167,21 @@ class _SearchTransactionPageChildState extends State<SearchTransactionPageChild>
                 ...categories.map((item) {
                   final bool isSelected = state.selectedType == item['type'];
                   return Padding(
-                    padding: const EdgeInsets.only(right: UIConstants.smallPadding),
+                    padding: const EdgeInsets.only(
+                      right: UIConstants.smallPadding,
+                    ),
                     child: AppButton(
                       text: item['label'] as String,
-                      backgroundColor: isSelected ? ColorConstants.primary : Colors.grey.shade300,
-                      textColor: isSelected ? ColorConstants.white : ColorConstants.black,
+                      backgroundColor: isSelected
+                          ? ColorConstants.primary
+                          : ColorConstants.grey.withAlpha(50),
+                      textColor: isSelected
+                          ? ColorConstants.white
+                          : ColorConstants.black,
                       onPressed: () {
-                        context.read<SearchBloc>().add(SearchEvent.typeChanged(item['type']));
+                        context.read<SearchBloc>().add(
+                          SearchEvent.typeChanged(item['type']),
+                        );
                       },
                     ),
                   );
@@ -154,23 +196,25 @@ class _SearchTransactionPageChildState extends State<SearchTransactionPageChild>
 
   Widget _buildSearchList() {
     return Expanded(
-      child: BlocBuilder<SearchBloc, SearchState>(
-        buildWhen: (previous, current) => previous.results != current.results,
-        builder: (context, state) {
-          if (state.results.isEmpty) {
-            return Center(child: Text('Không có kết quả', style: AppTextStyle.blackS14));
-          }
-          return ListView.builder(
-            itemCount: state.results.length,
-            itemBuilder: (context, index) {
-              final item = state.results[index];
-              return ListTile(title: Text(item.content), subtitle: Text(item.amount.toString()));
-            },
-          );
+      child: BlocSelector<SearchBloc, SearchState,
+          ({Map<String, List<Transaction>> groupedResults, Map<int, TransactionCategory> categoriesMap})>(
+        selector: (state) => (
+        groupedResults: state.groupedResults,
+        categoriesMap: state.categoriesMap,
+        ),
+        builder: (context, data) {
+          return TransactionList(
+              emptyWidget: _buildEmptyResult(),
+          groupedTransactions: data.groupedResults, categoriesMap: data.categoriesMap);
         },
       ),
     );
   }
+ Widget _buildEmptyResult(){
+   return Center(
+     child: Text('Không có kết quả', style: AppTextStyle.blackS14),
+   );
+ }
 
   Widget _buildActionButton() {
     return Padding(
@@ -181,7 +225,11 @@ class _SearchTransactionPageChildState extends State<SearchTransactionPageChild>
           Expanded(
             child: AppButton(
               backgroundColor: ColorConstants.iconBackground,
-              iconWidget: SvgCacheManager().getSvg(Assets.svgsReplay, UIConstants.mediumIconSize, UIConstants.mediumIconSize),
+              iconWidget: SvgPicture.asset(
+                Assets.svgsReplay,
+                width: UIConstants.mediumIconSize,
+                height: UIConstants.mediumIconSize,
+              ),
               onPressed: () {
                 context.read<SearchBloc>().add(const SearchEvent.reset());
                 _searchController.clear();
@@ -190,7 +238,11 @@ class _SearchTransactionPageChildState extends State<SearchTransactionPageChild>
           ),
           Expanded(
             child: AppButton(
-              iconWidget: SvgCacheManager().getSvg(Assets.svgsCheck, UIConstants.mediumIconSize, UIConstants.mediumIconSize),
+              iconWidget: SvgPicture.asset(
+                Assets.svgsCheck,
+                width: UIConstants.mediumIconSize,
+                height: UIConstants.mediumIconSize,
+              ),
               onPressed: () {
                 context.read<SearchBloc>().add(const SearchEvent.apply());
               },

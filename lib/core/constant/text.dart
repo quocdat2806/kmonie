@@ -45,10 +45,11 @@ class TextConstants {
   static const String makeLifeBeautiful = 'Làm cho cuôc sống bạn tốt hơn';
   static const String feeForYear = '199.000 đ / hàng năm Huỷ bất cứ lúc nào';
   static const String register = 'Đăng ký';
-  static const String termPolicy = 'Bằng cách đăng nhập bạn đồng ý với Thoả thuận người dùng và CHính sách và quyền riêng tư';
+  static const String termPolicy = 'Bằng cách đăng nhập bạn đồng ý với chính sách và quyền riêng tư';
   static const String term = 'Điều khoản sử dung';
   static const String policy = 'Chính sách bảo mật';
   static const String all = 'Tất cả';
+  static const String search = 'Tìm kiếm';
 
   static const String shopping = 'Mua sắm';
   static const String food = 'Đồ ăn';

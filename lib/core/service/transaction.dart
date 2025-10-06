@@ -20,7 +20,6 @@ class TransactionService {
   final KMonieDatabase _db;
 
   TransactionService(this._db);
-
   Transaction _mapRow(TransactionsTbData row) {
     return Transaction(
       id: row.id,
@@ -34,7 +33,59 @@ class TransactionService {
       transactionType: row.transactionType,
     );
   }
+  Future<Transaction> createTransaction({
+    required int amount,
+    required DateTime date,
+    required int transactionCategoryId,
+    String content = '',
+    required int transactionType,
+  }) async {
+    try {
+      final gradientColors = GradientHelper.generateSmartGradientColors();
+      final utc = date.toUtc();
+      final id = await _db
+          .into(_db.transactionsTb)
+          .insert(
+        TransactionsTbCompanion.insert(
+          gradientColorsJson: Value(jsonEncode(gradientColors)),
+          amount: amount,
+          date: date.toUtc(),
+          transactionCategoryId: transactionCategoryId,
+          content: Value(content),
+          transactionType: Value(transactionType),
+        ),
+      );
+      return Transaction(
+        id: id,
+        amount: amount,
+        gradientColors: gradientColors,
+        date: utc.toLocal(),
+        transactionCategoryId: transactionCategoryId,
+        content: content,
+        transactionType: transactionType,
+      );
+    } catch (e) {
+      logger.e('Error creating transaction: $e');
+      rethrow;
+    }
+  }
 
+  Map<String, List<Transaction>> groupByDate(List<Transaction> transactions) {
+    final Map<String, List<Transaction>> grouped = {};
+
+    for (final transaction in transactions) {
+      final dateKey = DateUtils.formatDateKey(transaction.date);
+      grouped.putIfAbsent(dateKey, () => []).add(transaction);
+    }
+
+    final sortedKeys = grouped.keys.toList()..sort((a, b) => b.compareTo(a));
+    final Map<String, List<Transaction>> sortedGrouped = {};
+    for (final key in sortedKeys) {
+      sortedGrouped[key] = grouped[key]!;
+    }
+
+    return sortedGrouped;
+  }
   Future<PagedTransactionResult> searchByContent({
     String? keyword,
     int? transactionType,
@@ -74,7 +125,6 @@ class TransactionService {
 
       final rows = await q.get();
       final items = rows.map(_mapRow).toList();
-
       return PagedTransactionResult(transactions: items, totalRecords: total);
     } catch (e) {
       logger.e('Error searchByContent: $e');
@@ -82,42 +132,7 @@ class TransactionService {
     }
   }
 
-  Future<Transaction> createTransaction({
-    required int amount,
-    required DateTime date,
-    required int transactionCategoryId,
-    String content = '',
-    required int transactionType,
-  }) async {
-    try {
-      final gradientColors = GradientHelper.generateSmartGradientColors();
-      final utc = date.toUtc();
-      final id = await _db
-          .into(_db.transactionsTb)
-          .insert(
-            TransactionsTbCompanion.insert(
-              gradientColorsJson: Value(jsonEncode(gradientColors)),
-              amount: amount,
-              date: date.toUtc(),
-              transactionCategoryId: transactionCategoryId,
-              content: Value(content),
-              transactionType: Value(transactionType),
-            ),
-          );
-      return Transaction(
-        id: id,
-        amount: amount,
-        gradientColors: gradientColors,
-        date: utc.toLocal(),
-        transactionCategoryId: transactionCategoryId,
-        content: content,
-        transactionType: transactionType,
-      );
-    } catch (e) {
-      logger.e('Error creating transaction: $e');
-      rethrow;
-    }
-  }
+
 
   Future<Transaction?> getTransactionById(int id) async {
     try {

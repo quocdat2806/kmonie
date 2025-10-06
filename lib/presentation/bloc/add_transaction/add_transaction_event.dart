@@ -20,4 +20,5 @@ class AddTransactionEvent with _$AddTransactionEvent {
   const factory AddTransactionEvent.amountChanged(String value) = AmountChanged;
   const factory AddTransactionEvent.noteChanged(String value) = NoteChanged;
   const factory AddTransactionEvent.saveTransaction() = SaveTransaction;
+
 }

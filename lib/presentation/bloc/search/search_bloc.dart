@@ -8,8 +8,9 @@ import 'search_state.dart';
 
 class SearchBloc extends Bloc<SearchEvent, SearchState> {
   final TransactionService transactionService;
+  final TransactionCategoryService categoryService;
 
-  SearchBloc(this.transactionService) : super(const SearchState()) {
+  SearchBloc(this.transactionService, this.categoryService) : super(const SearchState()) {
     on<QueryChanged>(_onQueryChanged);
     on<TypeChanged>(_onTypeChanged);
     on<Reset>(_onReset);
@@ -27,17 +28,49 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
 
   void _onReset(Reset event, Emitter<SearchState> emit) {
     if (state.query.isEmpty) return;
-    emit(state.copyWith(query: '', selectedType: null, results: []));
+    emit(state.copyWith(
+      query: '',
+      selectedType: null,
+      results: [],
+      groupedResults: {},
+      categoriesMap: {},
+    ));
   }
 
-  void _onApply(Apply event, Emitter<SearchState> emit) async {
+  Future<void> _onApply(Apply event, Emitter<SearchState> emit) async {
     if (state.query.isEmpty) return;
-    final List<Transaction> data = await _filter(content: state.query, transactionType: state.selectedType);
-    emit(state.copyWith(results: data));
+
+    try {
+      final List<Transaction> data = await _filter(
+        content: state.query,
+        transactionType: state.selectedType,
+      );
+
+      final grouped = transactionService.groupByDate(data);
+
+      final allCategories = await categoryService.getAll();
+      final categoriesMap = {
+        for (final cat in allCategories) cat.id!: cat,
+      };
+
+      emit(state.copyWith(
+        results: data,
+        groupedResults: grouped,
+        categoriesMap: categoriesMap,
+      ));
+    } catch (e) {
+      emit(state.copyWith(results: [], groupedResults: {}, categoriesMap: {}));
+    }
   }
 
-  Future<List<Transaction>> _filter({String? content, TransactionType? transactionType}) async {
-    final PagedTransactionResult data = await transactionService.searchByContent(keyword: content, transactionType: transactionType?.typeIndex ?? null);
+  Future<List<Transaction>> _filter({
+    String? content,
+    TransactionType? transactionType,
+  }) async {
+    final PagedTransactionResult data = await transactionService.searchByContent(
+      keyword: content,
+      transactionType: transactionType?.typeIndex,
+    );
     return data.transactions;
   }
 }

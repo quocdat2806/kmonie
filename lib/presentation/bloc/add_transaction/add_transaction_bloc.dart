@@ -4,15 +4,18 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../core/enum/export.dart';
 import '../../../core/service/export.dart';
+import '../../../core/stream/app_stream_service.dart';
 import '../../../entity/export.dart';
+import '../../pages/transaction_action/transaction_actions_page.dart';
 import 'add_transaction_event.dart';
 import 'add_transaction_state.dart';
 
 class AddTransactionBloc extends Bloc<AddTransactionEvent, AddTransactionState> {
   final TransactionCategoryService service;
   final TransactionService transactionService;
+  final TransactionActionsPageArgs?args;
 
-  AddTransactionBloc(this.service, this.transactionService) : super(const AddTransactionState()) {
+  AddTransactionBloc(this.service, this.transactionService,this.args) : super(const AddTransactionState()) {
     on<SwitchTab>(_onSwitchTab);
     on<LoadCategories>(_onLoadCategories);
     on<CategoryChanged>(_onCategoryChanged);
@@ -20,6 +23,19 @@ class AddTransactionBloc extends Bloc<AddTransactionEvent, AddTransactionState> 
     on<AmountChanged>(_onAmountChanged);
     on<NoteChanged>(_onNoteChanged);
     on<SaveTransaction>(_onSaveTransaction);
+    if(args!=null &&args!.mode == TransactionActionsMode.edit){
+      add(LoadCategories(TransactionType.fromIndex(args!.transaction!.transactionType)));
+      add(SwitchTab(
+          args!.transaction!.transactionType
+      ));
+      add(CategoryChanged(
+        type: TransactionType.fromIndex(args!.transaction!.transactionType),
+        categoryId: args!.transaction!.transactionCategoryId
+      ));
+      add(AmountChanged(args!.transaction!.amount.toString()));
+      add(NoteChanged(args!.transaction!.content.toString()));
+      return;
+    }
     add(LoadCategories(state.currentType));
   }
   void _onKeyboardVisibilityChanged(ToggleKeyboardVisibility e, Emitter<AddTransactionState> emit) {
@@ -30,6 +46,12 @@ class AddTransactionBloc extends Bloc<AddTransactionEvent, AddTransactionState> 
     final String value = e.value;
 
     if (value == 'DONE') {
+      if(args!=null &&args!.mode == TransactionActionsMode.edit){
+        add(const ToggleKeyboardVisibility());
+        _updateExistingTransaction();
+        emit(state.copyWith(loadStatus: LoadStatus.success));
+        return;
+      }
       add(const ToggleKeyboardVisibility());
       add(const SaveTransaction());
       return;
@@ -59,6 +81,19 @@ class AddTransactionBloc extends Bloc<AddTransactionEvent, AddTransactionState> 
     final newAmountStr = currentAmountStr + value;
     newAmount = int.parse(newAmountStr);
     emit(state.copyWith(amount: newAmount));
+  }
+
+  Future<void> _updateExistingTransaction() async {
+    final transaction = args!.transaction!;
+   await transactionService.updateTransaction(
+      id: transaction.id!,
+      amount: state.amount,
+      content: state.note,
+      date: transaction.date,
+      transactionCategoryId: state.selectedCategoryIdFor(state.currentType),
+    );
+
+
   }
 
   void _onNoteChanged(NoteChanged e, Emitter<AddTransactionState> emit) {

@@ -7,6 +7,8 @@ class ColorConstants {
   static const Color secondary = Color(0xFF1E8AE7);
   static const Color red = Color(0xFFFF0033);
   static const Color green = Color(0xFF06C755);
+  static const Color orange = Color(0xFFFFBF00);
+
   static const Color blue = Color(0xFF4285F4);
   static const Color black = Color(0xFF050708);
   static const Color primary = Color(0xFFFFDA3E);
