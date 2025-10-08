@@ -1,4 +1,5 @@
 import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 import '../../../core/constant/export.dart';
@@ -16,10 +17,7 @@ class DetailTransactionArgs {
   final Transaction transaction;
   final TransactionCategory category;
 
-  DetailTransactionArgs({
-    required this.transaction,
-    required this.category,
-  });
+  DetailTransactionArgs({required this.transaction, required this.category});
 }
 
 class DetailTransactionPage extends StatefulWidget {
@@ -41,7 +39,6 @@ class _DetailTransactionPageState extends State<DetailTransactionPage> {
     super.initState();
     _transaction = widget.args.transaction;
     _category = widget.args.category;
-
 
     _sub = AppStreamEvent.eventStreamStatic.listen((event) {
       if (event.event == AppEvent.updateTransaction) {
@@ -67,7 +64,7 @@ class _DetailTransactionPageState extends State<DetailTransactionPage> {
 
   @override
   Widget build(BuildContext context) {
-   final String typeLabel =_category.transactionType.displayName;
+    final String typeLabel = _category.transactionType.displayName;
     return Scaffold(
       appBar: const CustomAppBar(title: 'Chi tiết giao dịch', centerTitle: true),
       body: SafeArea(
@@ -79,15 +76,9 @@ class _DetailTransactionPageState extends State<DetailTransactionPage> {
               _buildHeader(_category, _transaction),
               const SizedBox(height: UIConstants.defaultSpacing),
               _buildRow('Kiểu', typeLabel),
-              _buildRow(
-                'Số tiền',
-                FormatUtils.formatAmount(_transaction.amount)
-              ),
+              _buildRow('Số tiền', FormatUtils.formatAmount(_transaction.amount)),
               _buildDateRow('Ngày', _transaction.date.toLocal()),
-              _buildRow(
-                'Ghi chú',
-                _transaction.content.isEmpty ? '(Trống)' : _transaction.content,
-              ),
+              _buildRow('Ghi chú', _transaction.content.isEmpty ? '(Trống)' : _transaction.content),
             ],
           ),
         ),
@@ -102,20 +93,11 @@ class _DetailTransactionPageState extends State<DetailTransactionPage> {
           child: Row(
             children: [
               Expanded(
-                child: AppButton(
-                  text: TextConstants.edit,
-                  backgroundColor: Colors.transparent,
-                  onPressed: _onEditPressed,
-                ),
+                child: AppButton(text: TextConstants.edit, backgroundColor: Colors.transparent, onPressed: _onEditPressed),
               ),
               Container(width: 1, color: Colors.grey.shade300),
               Expanded(
-                child: AppButton(
-                  backgroundColor: Colors.transparent,
-                  onPressed: _onDeletePressed,
-                  text: TextConstants.delete,
-                  height: 56,
-                ),
+                child: AppButton(backgroundColor: Colors.transparent, onPressed: _onDeletePressed, text: TextConstants.delete, height: 56),
               ),
             ],
           ),
@@ -127,10 +109,7 @@ class _DetailTransactionPageState extends State<DetailTransactionPage> {
   void _onEditPressed() {
     AppNavigator(context: context).push(
       RouterPath.transactionActions,
-      extra: TransactionActionsPageArgs(
-        mode: TransactionActionsMode.edit,
-        transaction: _transaction,
-      ),
+      extra: TransactionActionsPageArgs(mode: TransactionActionsMode.edit, transaction: _transaction),
     );
   }
 
@@ -152,25 +131,15 @@ class _DetailTransactionPageState extends State<DetailTransactionPage> {
     return Row(
       children: [
         DecoratedBox(
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            gradient: GradientHelper.fromColorHexList(transaction.gradientColors),
-          ),
+          decoration: BoxDecoration(shape: BoxShape.circle, gradient: GradientHelper.fromColorHexList(transaction.gradientColors)),
           child: Padding(
             padding: const EdgeInsets.all(UIConstants.smallPadding),
-            child: SvgConstants.icon(
-              assetPath: category.pathAsset,
-              size: SvgSizeType.medium,
-            ),
+            child: SvgConstants.icon(assetPath: category.pathAsset, size: SvgSizeType.medium),
           ),
         ),
         const SizedBox(width: 16),
         Expanded(
-          child: Text(
-            category.title,
-            style: AppTextStyle.blackS16Medium,
-            overflow: TextOverflow.ellipsis,
-          ),
+          child: Text(category.title, style: AppTextStyle.blackS16Medium, overflow: TextOverflow.ellipsis),
         ),
       ],
     );
@@ -184,11 +153,7 @@ class _DetailTransactionPageState extends State<DetailTransactionPage> {
         children: [
           SizedBox(width: 80, child: Text(label, style: AppTextStyle.greyS14)),
           Expanded(
-            child: Text(
-              value,
-              style: AppTextStyle.blackS14Medium,
-              overflow: TextOverflow.ellipsis,
-            ),
+            child: Text(value, style: AppTextStyle.blackS14Medium, overflow: TextOverflow.ellipsis),
           ),
         ],
       ),
@@ -206,16 +171,10 @@ class _DetailTransactionPageState extends State<DetailTransactionPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             spacing: UIConstants.smallSpacing,
             children: [
-              Text(
-                AppDateUtils.formatDate(date),
-                style: AppTextStyle.blackS14Medium,
-              ),
-              Text(
-                '(Thêm ${AppDateUtils.formatFullDate(date)})',
-                style: AppTextStyle.greyS12,
-              ),
+              Text(AppDateUtils.formatDate(date), style: AppTextStyle.blackS14Medium),
+              Text('(Thêm ${AppDateUtils.formatFullDate(date)})', style: AppTextStyle.greyS12),
             ],
-          )
+          ),
         ],
       ),
     );

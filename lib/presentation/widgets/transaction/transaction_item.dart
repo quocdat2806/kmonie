@@ -1,14 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
-
-import '../../../core/constant/export.dart';
-import '../../../core/enum/export.dart';
-import '../../../core/navigation/export.dart';
-import '../../../core/text_style/export.dart';
-import '../../../core/tool/export.dart';
-import '../../../core/util/export.dart';
-import '../../../entity/export.dart';
-import '../../widgets/dialog/exports.dart';
+import 'package:kmonie/lib.dart';
 
 class TransactionItem extends StatelessWidget {
   final Transaction transaction;
@@ -18,13 +10,7 @@ class TransactionItem extends StatelessWidget {
 
   final VoidCallback? onConfirmDelete;
 
-  const TransactionItem({
-    super.key,
-    required this.transaction,
-    this.category,
-    this.onEdit,
-    this.onConfirmDelete,
-  });
+  const TransactionItem({super.key, required this.transaction, this.category, this.onEdit, this.onConfirmDelete});
 
   @override
   Widget build(BuildContext context) {
@@ -68,34 +54,14 @@ class TransactionItem extends StatelessWidget {
           spacing: UIConstants.smallSpacing,
           children: [
             DecoratedBox(
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: GradientHelper.fromColorHexList(
-                  transaction.gradientColors,
-                ),
-              ),
+              decoration: BoxDecoration(shape: BoxShape.circle, gradient: GradientHelper.fromColorHexList(transaction.gradientColors)),
               child: Padding(
                 padding: const EdgeInsets.all(UIConstants.smallPadding),
-                child: SvgConstants.icon(
-                  assetPath: category!.pathAsset,
-                  size: SvgSizeType.medium,
-                ),
+                child: SvgConstants.icon(assetPath: category!.pathAsset, size: SvgSizeType.medium),
               ),
             ),
-            Expanded(
-              child: Text(
-                transaction.content.isNotEmpty
-                    ? transaction.content
-                    : category!.title,
-                style: AppTextStyle.blackS14,
-              ),
-            ),
-            Text(
-              transaction.transactionType == TransactionType.expense.typeIndex
-                  ? '-${FormatUtils.formatAmount(transaction.amount)}'
-                  : FormatUtils.formatAmount(transaction.amount),
-              style: AppTextStyle.blackS14,
-            ),
+            Expanded(child: Text(transaction.content.isNotEmpty ? transaction.content : category!.title, style: AppTextStyle.blackS14)),
+            Text(transaction.transactionType == TransactionType.expense.typeIndex ? '-${FormatUtils.formatAmount(transaction.amount)}' : FormatUtils.formatAmount(transaction.amount), style: AppTextStyle.blackS14),
             SizedBox(width: UIConstants.smallSpacing),
           ],
         ),

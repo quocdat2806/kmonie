@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../chart/app_chart_cicular.dart';
+import '../chart/app_chart.dart';
 
 class ExpenseItem {
   final String name;
@@ -9,48 +9,13 @@ class ExpenseItem {
   final Color color;
   final IconData icon;
 
-  ExpenseItem({
-    required this.name,
-    required this.percent,
-    required this.amount,
-    required this.color,
-    required this.icon,
-  });
+  ExpenseItem({required this.name, required this.percent, required this.amount, required this.color, required this.icon});
 }
 
 class ExpenseChartPage extends StatelessWidget {
   ExpenseChartPage({super.key});
 
-  final List<ExpenseItem> items = [
-    ExpenseItem(
-      name: "Nhà ở",
-      percent: 66.66,
-      amount: 2000000,
-      color: Colors.yellow,
-      icon: Icons.format_paint,
-    ),
-    ExpenseItem(
-      name: "Đồ ăn",
-      percent: 16.66,
-      amount: 500000,
-      color: Colors.pinkAccent,
-      icon: Icons.restaurant,
-    ),
-    ExpenseItem(
-      name: "Mua sắm",
-      percent: 10,
-      amount: 300000,
-      color: Colors.cyan,
-      icon: Icons.shopping_cart,
-    ),
-    ExpenseItem(
-      name: "Xe hơi",
-      percent: 6.66,
-      amount: 200000,
-      color: Colors.green,
-      icon: Icons.directions_car,
-    ),
-  ];
+  final List<ExpenseItem> items = [ExpenseItem(name: "Nhà ở", percent: 66.66, amount: 2000000, color: Colors.yellow, icon: Icons.format_paint), ExpenseItem(name: "Đồ ăn", percent: 16.66, amount: 500000, color: Colors.pinkAccent, icon: Icons.restaurant), ExpenseItem(name: "Mua sắm", percent: 10, amount: 300000, color: Colors.cyan, icon: Icons.shopping_cart), ExpenseItem(name: "Xe hơi", percent: 6.66, amount: 200000, color: Colors.green, icon: Icons.directions_car)];
 
   String formatCurrency(double value) {
     return "${value.toStringAsFixed(0).replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => "${m[1]}.")}";
@@ -58,9 +23,7 @@ class ExpenseChartPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final chartData = items
-        .map((e) => ChartData(e.name, e.percent, e.color))
-        .toList();
+    final chartData = items.map((e) => ChartData(e.name, e.percent, e.color)).toList();
 
     return Scaffold(
       appBar: AppBar(title: const Text("Thống kê chi tiêu")),
@@ -72,7 +35,7 @@ class ExpenseChartPage extends StatelessWidget {
             Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                DonutChart(data: chartData, size: 150, strokeWidth: 30),
+                AppChart(data: chartData, size: 150, strokeWidth: 30),
                 const SizedBox(width: 16),
                 Expanded(
                   child: Column(
@@ -86,18 +49,10 @@ class ExpenseChartPage extends StatelessWidget {
                                 Container(
                                   width: 12,
                                   height: 12,
-                                  decoration: BoxDecoration(
-                                    color: e.color,
-                                    shape: BoxShape.circle,
-                                  ),
+                                  decoration: BoxDecoration(color: e.color, shape: BoxShape.circle),
                                 ),
                                 const SizedBox(width: 8),
-                                Expanded(
-                                  child: Text(
-                                    "${e.name} ${e.percent.toStringAsFixed(2)}%",
-                                    style: const TextStyle(fontSize: 14),
-                                  ),
-                                ),
+                                Expanded(child: Text("${e.name} ${e.percent.toStringAsFixed(2)}%", style: const TextStyle(fontSize: 14))),
                               ],
                             ),
                           ),
@@ -122,10 +77,7 @@ class ExpenseChartPage extends StatelessWidget {
                       Container(
                         width: 40,
                         height: 40,
-                        decoration: BoxDecoration(
-                          color: e.color.withOpacity(0.2),
-                          shape: BoxShape.circle,
-                        ),
+                        decoration: BoxDecoration(color: e.color.withOpacity(0.2), shape: BoxShape.circle),
                         child: Icon(e.icon, color: e.color, size: 20),
                       ),
                       const SizedBox(width: 12),
@@ -138,30 +90,15 @@ class ExpenseChartPage extends StatelessWidget {
                             Row(
                               children: [
                                 Expanded(
-                                  child: Text(
-                                    "${e.name} ${e.percent.toStringAsFixed(2)}%",
-                                    style: const TextStyle(
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
+                                  child: Text("${e.name} ${e.percent.toStringAsFixed(2)}%", style: const TextStyle(fontWeight: FontWeight.w600)),
                                 ),
-                                Text(
-                                  formatCurrency(e.amount),
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
+                                Text(formatCurrency(e.amount), style: const TextStyle(fontWeight: FontWeight.bold)),
                               ],
                             ),
                             const SizedBox(height: 6),
                             ClipRRect(
                               borderRadius: BorderRadius.circular(6),
-                              child: LinearProgressIndicator(
-                                value: e.percent / 100,
-                                backgroundColor: Colors.grey.shade200,
-                                color: e.color,
-                                minHeight: 6,
-                              ),
+                              child: LinearProgressIndicator(value: e.percent / 100, backgroundColor: Colors.grey.shade200, color: e.color, minHeight: 6),
                             ),
                           ],
                         ),

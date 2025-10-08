@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'app_cached_network_image.dart';
+
 import '../../../core/constant/export.dart';
+import 'app_cached_network_image.dart';
 
 class AppCircleImage extends StatelessWidget {
   final String? imageUrl;
@@ -8,13 +9,7 @@ class AppCircleImage extends StatelessWidget {
   final Color backgroundColor;
   final Widget? fallbackIcon;
 
-  const AppCircleImage({
-    super.key,
-    required this.imageUrl,
-    this.size = 56,
-    this.backgroundColor = Colors.white,
-    this.fallbackIcon,
-  });
+  const AppCircleImage({super.key, required this.imageUrl, this.size = 56, this.backgroundColor = ColorConstants.white, this.fallbackIcon});
 
   @override
   Widget build(BuildContext context) {
@@ -36,10 +31,6 @@ class AppCircleImage extends StatelessWidget {
     if (imageUrl == null || imageUrl!.isEmpty) {
       return Center(child: fallbackIcon ?? const Icon(Icons.person));
     }
-    return AppCachedNetworkImage(
-      imageUrl: imageUrl!,
-      width: size,
-      height: size,
-    );
+    return AppCachedNetworkImage(imageUrl: imageUrl!, width: size, height: size);
   }
 }

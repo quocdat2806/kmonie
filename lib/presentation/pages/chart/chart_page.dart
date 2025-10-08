@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../core/constant/export.dart';
+
 import '../../../core/enum/income_type.dart';
 import '../../widgets/export.dart';
 
@@ -76,7 +76,7 @@ class _ChartPageState extends State<ChartPage> {
   }
 
   void _showDropdown() {
-    CustomDropdownOverlay.show<String>(
+    AppDropdown.show<String>(
       context: context,
       targetKey: _dropdownKey,
       items: options,
@@ -96,8 +96,7 @@ class _ChartPageState extends State<ChartPage> {
       child: ListView.separated(
         controller: _scrollController,
         scrollDirection: Axis.horizontal,
-        reverse:
-            true, // ✅ Đảo ngược ListView để tháng mới nhất hiển thị đầu tiên
+        reverse: true, // ✅ Đảo ngược ListView để tháng mới nhất hiển thị đầu tiên
         padding: const EdgeInsets.symmetric(horizontal: 12),
         itemCount: _months.length + 1, // +1 để thêm nút Load More
         cacheExtent: 40,
@@ -108,14 +107,8 @@ class _ChartPageState extends State<ChartPage> {
             return GestureDetector(
               onTap: _loadMoreMonths,
               child: Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 8,
-                ),
-                decoration: BoxDecoration(
-                  color: Colors.blue,
-                  borderRadius: BorderRadius.circular(20),
-                ),
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                decoration: BoxDecoration(color: Colors.blue, borderRadius: BorderRadius.circular(20)),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: const [
@@ -123,11 +116,7 @@ class _ChartPageState extends State<ChartPage> {
                     SizedBox(width: 4),
                     Text(
                       'Xem thêm',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 12,
-                      ),
+                      style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12),
                     ),
                   ],
                 ),
@@ -146,16 +135,10 @@ class _ChartPageState extends State<ChartPage> {
             },
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-              decoration: BoxDecoration(
-                color: isSelected ? Colors.black : Colors.grey.shade200,
-                borderRadius: BorderRadius.circular(20),
-              ),
+              decoration: BoxDecoration(color: isSelected ? Colors.black : Colors.grey.shade200, borderRadius: BorderRadius.circular(20)),
               child: Text(
                 _formatMonthLabel(month),
-                style: TextStyle(
-                  color: isSelected ? Colors.white : Colors.black,
-                  fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                ),
+                style: TextStyle(color: isSelected ? Colors.white : Colors.black, fontWeight: isSelected ? FontWeight.bold : FontWeight.normal),
               ),
             ),
           );

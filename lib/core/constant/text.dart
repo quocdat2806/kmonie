@@ -4,7 +4,7 @@ class TextConstants {
   static const String add = 'Thêm';
   static const String edit = 'Sửa';
   static const String delete = 'Xoá';
-  static const String confirmDeleteTitle = 'Bạn có chắc muốn xoá giao dịch này không';
+  static const String confirmDeleteTitle = 'Bạn có chắc muốn xoá không?';
   static const String setting = 'Cài đặt';
   static const String expense = 'Chi tiêu';
   static const String income = 'Thu nhập';
@@ -16,6 +16,8 @@ class TextConstants {
   static const String other = 'Khác';
   static const String select = 'Lựa chọn';
   static const String confirm = 'Đồng ý';
+  static const String openSetting = 'Mở cài đặt';
+
   static const String error = 'Lỗi';
   static const String cancel = 'Huỷ';
   static const String gotIt = 'Đã hiểu';

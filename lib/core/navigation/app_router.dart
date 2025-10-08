@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:kmonie/presentation/pages/daily_transactions/daily_transaction_page.dart';
-import 'package:kmonie/presentation/pages/detail_transaction/detail_transaction_page.dart';
 
 import '../../application/auth/auth_export.dart';
 import '../../presentation/pages/export.dart';
@@ -56,7 +54,7 @@ class AppRouter {
         path: RouterPath.dailyTransactions,
         builder: (_, state) {
           final args = state.extra as DailyTransactionPageArgs;
-          return DailyTransactionPage(args: args,);
+          return DailyTransactionPage(args: args);
         },
       ),
     ],

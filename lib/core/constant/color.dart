@@ -16,5 +16,10 @@ class ColorConstants {
   static const Color white = Color(0xFFFFFFFF);
   static const Color divider = Color(0xFFD8D8D8);
   static const Color textGray = Color(0xFF808080);
+  static const Color hintInput = Color(0xFF9AA6B2);
+  static const Color borderInput = Color(0xFFE6EBF0);
+  static const Color focusInput = Color(0xFFCBD5E1);
+  static const Color fillInput = Color(0xFFF8FAFC);
+
   static const Color bottomNavigationColor = Color(0xFF272525);
 }

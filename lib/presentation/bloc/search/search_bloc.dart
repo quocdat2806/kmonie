@@ -1,4 +1,5 @@
 import 'dart:async';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../core/enum/export.dart';
@@ -14,8 +15,7 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
   final TransactionCategoryService categoryService;
   StreamSubscription<AppStreamData>? _subscription;
 
-  SearchBloc(this.transactionService, this.categoryService)
-      : super(const SearchState()) {
+  SearchBloc(this.transactionService, this.categoryService) : super(const SearchState()) {
     on<QueryChanged>(_onQueryChanged);
     on<TypeChanged>(_onTypeChanged);
     on<Reset>(_onReset);
@@ -49,55 +49,33 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
   }
 
   void _onReset(Reset event, Emitter<SearchState> emit) {
-    emit(state.copyWith(
-      query: '',
-      selectedType: null,
-      results: [],
-      groupedResults: {},
-      categoriesMap: {},
-    ));
+    emit(state.copyWith(query: '', selectedType: null, results: [], groupedResults: {}, categoriesMap: {}));
   }
 
   Future<void> _onApply(Apply event, Emitter<SearchState> emit) async {
     if (state.query.isEmpty) return;
 
     try {
-      final List<Transaction> data = await _filter(
-        content: state.query,
-        transactionType: state.selectedType,
-      );
+      final List<Transaction> data = await _filter(content: state.query, transactionType: state.selectedType);
 
       final grouped = transactionService.groupByDate(data);
       final allCategories = await categoryService.getAll();
-      final categoriesMap = {
-        for (final cat in allCategories) cat.id!: cat,
-      };
+      final categoriesMap = {for (final cat in allCategories) cat.id!: cat};
 
-      emit(state.copyWith(
-        results: data,
-        groupedResults: grouped,
-        categoriesMap: categoriesMap,
-      ));
+      emit(state.copyWith(results: data, groupedResults: grouped, categoriesMap: categoriesMap));
     } catch (e) {
       logger.e('SearchBloc: error when applying search: $e');
       emit(state.copyWith(results: [], groupedResults: {}, categoriesMap: {}));
     }
   }
 
-  Future<List<Transaction>> _filter({
-    String? content,
-    TransactionType? transactionType,
-  }) async {
-    final PagedTransactionResult data = await transactionService.searchByContent(
-      keyword: content,
-      transactionType: transactionType?.typeIndex,
-    );
-    return data.transactions;
+  Future<List<Transaction>> _filter({String? content, TransactionType? transactionType}) async {
+    final List<Transaction> transactions = await transactionService.searchByContent(keyword: content, transactionType: transactionType?.typeIndex);
+    return transactions;
   }
 
   /// ✏️ Khi update transaction từ nơi khác
-  void _onUpdateTransaction(
-      UpdateTransactionItem event, Emitter<SearchState> emit) {
+  void _onUpdateTransaction(UpdateTransactionItem event, Emitter<SearchState> emit) {
     final updated = state.results.map((t) {
       return t.id == event.transaction.id ? event.transaction : t;
     }).toList();
