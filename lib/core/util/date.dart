@@ -2,12 +2,20 @@ import 'package:intl/intl.dart';
 
 import '../config/export.dart';
 
-class DateUtils {
-  DateUtils._();
+class AppDateUtils {
+  AppDateUtils._();
 
   static String formatDateKey(DateTime date) {
     return DateFormat(AppConfigs.dateDisplayFormat).format(date);
   }
+  static String formatDate(DateTime date) {
+    return DateFormat('d MMM yyyy', 'vi_VN').format(date);
+  }
+
+  static String formatFullDate(DateTime date) {
+    return DateFormat('d MMM yyyy HH:mm:ss', 'vi_VN').format(date);
+  }
+
 
   static String toDateString(DateTime? dateTime, {String format = AppConfigs.dateDisplayFormat}) {
     try {

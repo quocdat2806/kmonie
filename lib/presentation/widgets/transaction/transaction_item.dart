@@ -18,7 +18,13 @@ class TransactionItem extends StatelessWidget {
 
   final VoidCallback? onConfirmDelete;
 
-  const TransactionItem({super.key, required this.transaction, this.category, this.onEdit, this.onConfirmDelete});
+  const TransactionItem({
+    super.key,
+    required this.transaction,
+    this.category,
+    this.onEdit,
+    this.onConfirmDelete,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -60,18 +66,36 @@ class TransactionItem extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: UIConstants.smallPadding),
         child: Row(
           spacing: UIConstants.smallSpacing,
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             DecoratedBox(
-              decoration: BoxDecoration(shape: BoxShape.circle, gradient: GradientHelper.fromColorHexList(transaction.gradientColors)),
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: GradientHelper.fromColorHexList(
+                  transaction.gradientColors,
+                ),
+              ),
               child: Padding(
                 padding: const EdgeInsets.all(UIConstants.smallPadding),
-                child: SvgConstants.icon(assetPath: category!.pathAsset, size: SvgSizeType.medium),
+                child: SvgConstants.icon(
+                  assetPath: category!.pathAsset,
+                  size: SvgSizeType.medium,
+                ),
               ),
             ),
-            Expanded(child: Text(transaction.content.isNotEmpty ? transaction.content : category!.title, style: AppTextStyle.blackS14)),
-            Text(transaction.transactionType == TransactionType.expense.typeIndex ? '-${FormatUtils.formatAmount(transaction.amount.toDouble())}' : FormatUtils.formatAmount(transaction.amount.toDouble()), style: AppTextStyle.blackS14),
+            Expanded(
+              child: Text(
+                transaction.content.isNotEmpty
+                    ? transaction.content
+                    : category!.title,
+                style: AppTextStyle.blackS14,
+              ),
+            ),
+            Text(
+              transaction.transactionType == TransactionType.expense.typeIndex
+                  ? '-${FormatUtils.formatAmount(transaction.amount)}'
+                  : FormatUtils.formatAmount(transaction.amount),
+              style: AppTextStyle.blackS14,
+            ),
             SizedBox(width: UIConstants.smallSpacing),
           ],
         ),

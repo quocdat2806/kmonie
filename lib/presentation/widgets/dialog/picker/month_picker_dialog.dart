@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
-
-import '../../../../../generated/assets.dart';
-import '../../../../core/cache/export.dart';
 import '../../../../core/constant/export.dart';
 import '../../../../core/text_style/export.dart';
+import '../../../../presentation/widgets/export.dart';
 
 class MonthPickerDialog extends StatefulWidget {
   final int initialMonth;
   final int initialYear;
 
-  const MonthPickerDialog({super.key, required this.initialMonth, required this.initialYear});
+  const MonthPickerDialog({
+    super.key,
+    required this.initialMonth,
+    required this.initialYear,
+  });
 
   @override
   State<MonthPickerDialog> createState() => _MonthPickerDialogState();
@@ -27,6 +29,7 @@ class _MonthPickerDialogState extends State<MonthPickerDialog> {
   }
 
   void _changeYear(int delta) {
+    if (selectedYear == DateTime.now().year) return;
     setState(() {
       selectedYear += delta;
     });
@@ -35,29 +38,51 @@ class _MonthPickerDialogState extends State<MonthPickerDialog> {
   @override
   Widget build(BuildContext context) {
     return Dialog(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(UIConstants.defaultBorderRadius)),
+      insetPadding: EdgeInsets.all(UIConstants.smallPadding),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(UIConstants.defaultBorderRadius),
+      ),
       child: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(UIConstants.defaultPadding),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              // Header với nút điều hướng năm
+              Text(
+                "Tháng ${selectedMonth} năm ${selectedYear}",
+                style: AppTextStyle.blackS18Bold,
+              ),
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
-                  IconButton(onPressed: () => _changeYear(-1), icon: SvgCacheManager().getSvg(Assets.svgsArrowBack, UIConstants.mediumIconSize, UIConstants.mediumIconSize)),
-                  Text('$selectedYear', style: AppTextStyle.blackS18Bold),
-                  IconButton(onPressed: () => _changeYear(1), icon: SvgCacheManager().getSvg(Assets.svgsArrowBack, UIConstants.mediumIconSize, UIConstants.mediumIconSize)),
+                  Text('$selectedYear', style: AppTextStyle.blackS14Medium),
+                  Row(
+                    children: [
+                      IconButton(
+                        onPressed: () => _changeYear(-1),
+                        icon: Icon(
+                          Icons.arrow_back_ios,
+                          size: UIConstants.smallIconSize,
+                        ),
+                      ),
+                      IconButton(
+                        onPressed: () => _changeYear(1),
+                        icon: Icon(
+                          Icons.arrow_forward_ios,
+                          size: UIConstants.smallIconSize,
+                        ),
+                      ),
+                    ],
+                  ),
                 ],
               ),
-              const SizedBox(height: UIConstants.defaultSpacing),
-
-              // Grid tháng
               GridView.builder(
                 physics: const NeverScrollableScrollPhysics(),
                 itemCount: 12,
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 4, mainAxisSpacing: UIConstants.smallSpacing, crossAxisSpacing: UIConstants.smallSpacing, childAspectRatio: 2.2),
+                gridDelegate:  SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: UIConstants.defaultGridCrossAxisCount,
+                  childAspectRatio: 1.5,
+                ),
                 shrinkWrap: true,
                 itemBuilder: (context, index) {
                   final month = index + 1;
@@ -67,35 +92,38 @@ class _MonthPickerDialogState extends State<MonthPickerDialog> {
                     child: Container(
                       alignment: Alignment.center,
                       decoration: BoxDecoration(
-                        color: isSelected ? ColorConstants.primary : ColorConstants.greyWhite,
-                        borderRadius: BorderRadius.circular(UIConstants.defaultBorderRadius),
-                        border: isSelected ? Border.all(color: ColorConstants.black, width: 2) : null,
+                        color: isSelected
+                            ? ColorConstants.primary
+                            : Colors.transparent,
+                        borderRadius: BorderRadius.circular(
+                          UIConstants.maxBorderRadius,
+                        ),
                       ),
-                      child: Text('Thg $month', style: isSelected ? AppTextStyle.whiteS12Medium : AppTextStyle.blackS12Medium),
+                      child: Text('Thg $month', style: AppTextStyle.blackS14Medium),
                     ),
                   );
                 },
               ),
-              const SizedBox(height: UIConstants.largePadding),
-
-              // Nút hành động
+              const SizedBox(height: UIConstants.defaultPadding),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
-                  TextButton(
+                  AppButton(
                     onPressed: () => Navigator.pop(context),
-                    child: Text('Hủy', style: AppTextStyle.greyS14Medium),
+                    textColor: ColorConstants.orange,
+                    text: TextConstants.cancel,
+                    backgroundColor: Colors.transparent,
                   ),
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: ColorConstants.primary,
-                      foregroundColor: ColorConstants.white,
-                      padding: const EdgeInsets.symmetric(horizontal: UIConstants.defaultPadding, vertical: UIConstants.smallPadding),
-                    ),
+                  AppButton(
                     onPressed: () {
-                      Navigator.pop(context, {'month': selectedMonth, 'year': selectedYear});
+                      Navigator.pop(context, {
+                        'month': selectedMonth,
+                        'year': selectedYear,
+                      });
                     },
-                    child: Text('Xác nhận', style: AppTextStyle.whiteS14Medium),
+                    textColor: ColorConstants.orange,
+                    text: TextConstants.confirm,
+                    backgroundColor: Colors.transparent,
                   ),
                 ],
               ),

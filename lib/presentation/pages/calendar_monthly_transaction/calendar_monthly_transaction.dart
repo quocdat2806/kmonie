@@ -1,123 +1,103 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
-import 'package:kmonie/presentation/pages/calendar_monthly_transaction/test.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../core/di/injection_container.dart';
+import '../../../core/navigation/app_navigation.dart';
+import '../../../core/navigation/router_path.dart';
+import '../../../core/text_style/export.dart';
+import '../../../core/service/export.dart';
+import '../../../entity/transaction/transaction.dart';
+import '../../bloc/calendar_monthly_transaction/calendar_monthly_transaction_bloc.dart';
+import '../../bloc/calendar_monthly_transaction/calendar_monthly_transaction_event.dart';
+import '../../bloc/calendar_monthly_transaction/calendar_monthly_transaction_state.dart';
+import '../../widgets/export.dart';
 
-import '../../widgets/appBar/app_bar.dart';
+import '../daily_transactions/daily_transaction_page.dart';
+import 'widgets/weekday_header.dart';
+import 'widgets/calendar_monthly_transaction_grid.dart';
+import 'widgets/add_transaction_button.dart';
 
-class CalendarMonthlyTransaction extends StatefulWidget {
+class CalendarMonthlyTransaction extends StatelessWidget {
   const CalendarMonthlyTransaction({super.key});
 
   @override
-  State<CalendarMonthlyTransaction> createState() => _CalendarMonthlyTransactionState();
-}
-
-class _CalendarMonthlyTransactionState extends State<CalendarMonthlyTransaction> {
-  int selectedMonth = DateTime.now().month;
-  int selectedYear = DateTime.now().year;
-
-  // mock data
-  Map<int, Map<String, int>> dataByDay = {
-    13: {'income': 40000, 'expense': 0},
-    15: {'income': 11300000, 'expense': 0},
-    20: {'income': 50000, 'expense': 3000},
-  };
-
-  @override
   Widget build(BuildContext context) {
-    return CalendarScreen();
-    // final firstDayOfMonth = DateTime(selectedYear, selectedMonth, 1);
-    // final daysInMonth = DateUtils.getDaysInMonth(selectedYear, selectedMonth);
-    // final int startWeekday = firstDayOfMonth.weekday % 7; // Make Sunday = 0
-    // return Scaffold(
-    //   appBar: const CustomAppBar(title: 'Lịch',actions: [
-    //
-    //   ],),
-    //   floatingActionButton: FloatingActionButton(
-    //     backgroundColor: Colors.yellow[700],
-    //     onPressed: () {
-    //     },
-    //     child: const Icon(Icons.add, color: Colors.black),
-    //   ),
-    //   body: Column(
-    //     children: [
-    //       _buildWeekdaysHeader(),
-    //       const SizedBox(height: 8),
-    //       Expanded(child: _buildCalendarGrid(startWeekday, daysInMonth)),
-    //     ],
-    //   ),
-    // );
-  }
+    return BlocProvider(
+      create: (_) => CalendarMonthlyTransactionBloc(sl<TransactionService>(),sl<TransactionCategoryService>()),
+      child: BlocBuilder<CalendarMonthlyTransactionBloc, CalendarMonthTransactionState>(
+        builder: (context, state) {
+          final selectedDate = state.selectedDate;
+          return Scaffold(
+            appBar: CustomAppBar(
+              title: 'Lịch',
+              centerTitle: false,
+              actions: [
+                GestureDetector(
+                  onTap: () {},
+                  child: Row(
+                    children: [
+                      Text(
+                        "Tháng ${selectedDate.month} ${selectedDate.year}",
+                        style: AppTextStyle.blackS14Medium,
+                      ),
+                      const Icon(Icons.keyboard_arrow_down),
+                      const SizedBox(width: 8),
+                    ],
+                  ),
+                )
+              ],
+            ),
+            body: SafeArea(
+              child: Column(
+                children: [
+                  const WeekdayHeader(),
+                  if (state.isLoading)
+                    const Expanded(
+                      child: Center(child: CircularProgressIndicator()),
+                    )
+                  else
+                    Expanded(
+                      child: CalendarGrid(
+                        selectedDate: selectedDate,
+                        dailyTotals: state.dailyTotals,
+                        onDateSelected: (date) {
+                          final state = context.read<CalendarMonthlyTransactionBloc>().state;
 
-  Widget _buildWeekdaysHeader() {
-    const days = ['CN', 'Th 2', 'Th 3', 'Th 4', 'Th 5', 'Th 6', 'Th 7'];
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceAround,
-      children: days
-          .map((d) => Expanded(child: Center(child: Text(d))))
-          .toList(),
-    );
-  }
+                          final dateKey =
+                              '${date.day.toString().padLeft(2, '0')}/'
+                              '${date.month.toString().padLeft(2, '0')}/'
+                              '${date.year.toString()}';
 
-  Widget _buildCalendarGrid(int startWeekday, int daysInMonth) {
-    final totalSlots = startWeekday + daysInMonth;
-    return GridView.builder(
-      itemCount: totalSlots,
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 7,
-        mainAxisSpacing: 4,
-        crossAxisSpacing: 4,
+                          print("🔑 dateKey: $dateKey");
+                          print("🧭 grouped: ${state.groupedTransactions.keys}");
+
+                          final transactions = state.groupedTransactions[dateKey] ?? [];
+                          AppNavigator(context: context).push(
+                            RouterPath.dailyTransactions,
+                            extra: DailyTransactionPageArgs(
+                              selectedDate: date,
+                              groupedTransactions: {dateKey: transactions},
+                              categoriesMap: state.categoriesMap,
+                              dailyTotalBuilder: (_) {
+                                final total = state.dailyTotals[date.day];
+                                if (total == null) return const SizedBox.shrink();
+                                return Text(
+                                  '+${total.income.toStringAsFixed(0)} / -${total.expense.toStringAsFixed(0)}',
+                                  style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
+                                );
+                              },
+                            ),
+                          );
+                        },
+
+                      ),
+                    ),
+                ],
+              ),
+            ),
+            floatingActionButton: const AddTransactionButton(),
+          );
+        },
       ),
-      padding: const EdgeInsets.all(8),
-      itemBuilder: (context, index) {
-        if (index < startWeekday) return const SizedBox.shrink(); // empty slot
-
-        final day = index - startWeekday + 1;
-        final data = dataByDay[day];
-
-        final isHighlighted = data != null;
-        return Container(
-          decoration: BoxDecoration(
-            color: isHighlighted ? Colors.green.shade50 : Colors.grey.shade100,
-            borderRadius: BorderRadius.circular(6),
-          ),
-          padding: const EdgeInsets.all(4),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text('$day'),
-              if (data != null && data['income']! > 0)
-                Text(
-                  NumberFormat.decimalPattern().format(data['income']),
-                  style: const TextStyle(color: Colors.green, fontSize: 12),
-                ),
-              if (data != null && data['expense']! > 0)
-                Text(
-                  NumberFormat.decimalPattern().format(data['expense']),
-                  style: const TextStyle(color: Colors.red, fontSize: 12),
-                ),
-            ],
-          ),
-        );
-      },
     );
-  }
-
-  void _pickMonth() async {
-    final now = DateTime.now();
-    final result = await showDatePicker(
-      context: context,
-      initialDate: DateTime(selectedYear, selectedMonth),
-      firstDate: DateTime(2020),
-      lastDate: DateTime(2030),
-      initialDatePickerMode: DatePickerMode.year,
-      locale: const Locale('vi', 'VN'),
-    );
-
-    if (result != null) {
-      setState(() {
-        selectedMonth = result.month;
-        selectedYear = result.year;
-      });
-    }
   }
 }

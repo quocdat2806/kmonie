@@ -17,7 +17,11 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider<HomeBloc>(create: (_) => HomeBloc(sl<TransactionService>(), sl<TransactionCategoryService>()), child: const HomePageChild());
+    return BlocProvider<HomeBloc>(
+      create: (_) =>
+          HomeBloc(sl<TransactionService>(), sl<TransactionCategoryService>()),
+      child: const HomePageChild(),
+    );
   }
 }
 
@@ -42,7 +46,6 @@ class _HomePageChildState extends State<HomePageChild> {
     if (_scrollController.position.maxScrollExtent == 0) return;
     final position = _scrollController.position;
     final scrollPercent = position.pixels / position.maxScrollExtent;
-
     if (scrollPercent >= AppConfigs.scrollThreshold && !position.outOfRange) {
       context.read<HomeBloc>().add(const HomeEvent.loadMore());
     }
@@ -66,21 +69,41 @@ class _HomePageChildState extends State<HomePageChild> {
             },
           ),
           Expanded(
-            child: BlocSelector<HomeBloc, HomeState, ({Map<String, List<Transaction>> groupedTransactions, Map<int, TransactionCategory> categoriesMap, Map<String, DailyTransactionTotal> dailyTotals})>(
-              selector: (state) => (groupedTransactions: state.groupedTransactions, categoriesMap: state.categoriesMap, dailyTotals: state.dailyTotals),
-              builder: (context, data) {
-                return TransactionList(
-                  dailyTotalWidgetBuilder: (dateKey) {
-                    final daily = data.dailyTotals[dateKey];
-                    if (daily == null) return const SizedBox();
-                    return Text(FormatUtils.formatTotalText(daily.income, daily.expense, daily.transfer), style: AppTextStyle.blackS12);
+            child:
+                BlocSelector<
+                  HomeBloc,
+                  HomeState,
+                  ({
+                    Map<String, List<Transaction>> groupedTransactions,
+                    Map<int, TransactionCategory> categoriesMap,
+                    Map<String, DailyTransactionTotal> dailyTotals,
+                  })
+                >(
+                  selector: (state) => (
+                    groupedTransactions: state.groupedTransactions,
+                    categoriesMap: state.categoriesMap,
+                    dailyTotals: state.dailyTotals,
+                  ),
+                  builder: (context, data) {
+                    return TransactionList(
+                      dailyTotalWidgetBuilder: (dateKey) {
+                        final daily = data.dailyTotals[dateKey];
+                        if (daily == null) return const SizedBox();
+                        return Text(
+                          FormatUtils.formatTotalText(
+                            daily.income,
+                            daily.expense,
+                            daily.transfer,
+                          ),
+                          style: AppTextStyle.blackS12,
+                        );
+                      },
+                      emptyWidget: _buildEmptyState(),
+                      groupedTransactions: data.groupedTransactions,
+                      categoriesMap: data.categoriesMap,
+                    );
                   },
-                  emptyWidget: _buildEmptyState(),
-                  groupedTransactions: data.groupedTransactions,
-                  categoriesMap: data.categoriesMap,
-                );
-              },
-            ),
+                ),
           ),
         ],
       ),

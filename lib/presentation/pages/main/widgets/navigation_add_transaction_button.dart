@@ -34,6 +34,6 @@ class MainNavigationAddTransactionButton extends StatelessWidget {
   }
 
   void _navigateToAddTransactionPage(BuildContext context) {
-    AppNavigator(context: context).push(RouterPath.transaction_actions);
+    AppNavigator(context: context).push(RouterPath.transactionActions);
   }
 }

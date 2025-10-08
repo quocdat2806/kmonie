@@ -3,11 +3,14 @@ import 'package:intl/intl.dart';
 
 class FormatUtils {
   FormatUtils._();
-  static String formatAmount(double amount) {
+  static String formatAmount(int amount) {
     if (amount == 0) return '0';
-    final formatter = NumberFormat('#,###');
-    return formatter.format(amount);
+  return  NumberFormat.currency(locale: 'vi_VN', symbol: '')
+        .format(amount);
+    // final formatter = NumberFormat('#,###');
+    // return formatter.format(amount);
   }
+
 static  String _formatAmount(double amount) {
     if (amount >= 1000000) {
       return '${(amount / 1000000).toStringAsFixed(1)}M';

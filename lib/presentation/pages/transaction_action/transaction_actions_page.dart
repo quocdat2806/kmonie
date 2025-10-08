@@ -174,10 +174,16 @@ class _TransactionActionsPageChildState extends State<TransactionActionsPageChil
           child: InkWell(
             customBorder: const StadiumBorder(),
             onTap: () {
-              context.read<TransactionActionsBloc>().add(const ToggleKeyboardVisibility());
-              Future.delayed(const Duration(milliseconds: 850), () {
-                AppNavigator(context: context).pop();
-              });
+              if(context.read<TransactionActionsBloc>().state.isKeyboardVisible){
+                context.read<TransactionActionsBloc>().add(const ToggleKeyboardVisibility());
+                Future.delayed(const Duration(milliseconds: 850), () {
+                  AppNavigator(context: context).pop();
+                });
+                return;
+              }
+              AppNavigator(context: context).pop();
+
+
             },
             child: Center(child: Text(TextConstants.cancel, style: AppTextStyle.blackS14Medium)),
           ),

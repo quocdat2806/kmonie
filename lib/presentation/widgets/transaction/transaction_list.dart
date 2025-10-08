@@ -13,18 +13,22 @@ import 'transaction_item.dart';
 class TransactionList extends StatelessWidget {
   final Map<String, List<Transaction>> groupedTransactions;
   final Map<int, TransactionCategory> categoriesMap;
-  final bool showTotal;
   final Widget? emptyWidget;
   final Widget Function(String dateKey)? dailyTotalWidgetBuilder;
 
-  const TransactionList({super.key, required this.groupedTransactions, required this.categoriesMap, this.showTotal = true, this.emptyWidget, this.dailyTotalWidgetBuilder});
+  const TransactionList({
+    super.key,
+    required this.groupedTransactions,
+    required this.categoriesMap,
+    this.emptyWidget,
+    this.dailyTotalWidgetBuilder,
+  });
 
   @override
   Widget build(BuildContext context) {
     if (groupedTransactions.isEmpty) {
       return emptyWidget ?? SizedBox();
     }
-
     return CustomScrollView(
       slivers: [
         SliverList(
@@ -39,10 +43,11 @@ class TransactionList extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(dateKey, style: AppTextStyle.blackS12),
-                      if (dailyTotalWidgetBuilder != null) dailyTotalWidgetBuilder!(dateKey),
+                      if (dailyTotalWidgetBuilder != null)
+                        dailyTotalWidgetBuilder!(dateKey),
                     ],
                   ),
-                  SizedBox(height: UIConstants.smallPadding),
+                  SizedBox(height: UIConstants.smallSpacing),
                   AppDivider(),
                   ListView.separated(
                     physics: const NeverScrollableScrollPhysics(),
@@ -50,19 +55,31 @@ class TransactionList extends StatelessWidget {
                     itemCount: transactions.length,
                     itemBuilder: (context, index) {
                       final transaction = transactions[index];
-                      final category = categoriesMap[transaction.transactionCategoryId];
-                      return TransactionItem(
-                        onConfirmDelete: () {
-                          AppStreamEvent.deleteTransactionStatic(transaction.id!);
-                        },
-                        onEdit: () {
-                          AppNavigator(context: context).push(
-                            RouterPath.transaction_actions,
-                            extra: TransactionActionsPageArgs(mode: TransactionActionsMode.edit, transaction: transaction),
-                          );
-                        },
-                        transaction: transaction,
-                        category: category,
+                      final category =
+                          categoriesMap[transaction.transactionCategoryId];
+                      return InkWell(
+                        onTap: () => AppNavigator(context: context).push(
+                          RouterPath.detailTransaction,
+                          extra: DetailTransactionArgs(
+                            transaction: transaction,
+                            category: category!,
+                          ),
+                        ),
+                        child: TransactionItem(
+                          onConfirmDelete: () =>
+                              AppStreamEvent.deleteTransactionStatic(
+                                transaction.id!,
+                              ),
+                          onEdit: () => AppNavigator(context: context).push(
+                            RouterPath.transactionActions,
+                            extra: TransactionActionsPageArgs(
+                              mode: TransactionActionsMode.edit,
+                              transaction: transaction,
+                            ),
+                          ),
+                          transaction: transaction,
+                          category: category,
+                        ),
                       );
                     },
                     separatorBuilder: (context, index) => AppDivider(),

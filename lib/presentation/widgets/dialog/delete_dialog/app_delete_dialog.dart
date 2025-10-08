@@ -19,7 +19,7 @@ class AppDeleteDialog extends StatelessWidget {
           spacing: UIConstants.smallSpacing,
           children: [
             Expanded(
-              child: AppButton(onPressed: () => Navigator.of(context).pop(), text: TextConstants.confirm, backgroundColor: Colors.transparent),
+              child: AppButton(onPressed: () => Navigator.of(context).pop(), text: TextConstants.cancel, backgroundColor: Colors.transparent),
             ),
             Expanded(
               child: AppButton(onPressed: onConfirm ?? () {}, text: TextConstants.confirm, backgroundColor: Colors.transparent),

@@ -1,7 +1,10 @@
+import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../core/enum/export.dart';
 import '../../../core/service/export.dart';
+import '../../../core/stream/export.dart';
+import '../../../core/util/export.dart';
 import '../../../entity/export.dart';
 import 'search_event.dart';
 import 'search_state.dart';
@@ -9,12 +12,31 @@ import 'search_state.dart';
 class SearchBloc extends Bloc<SearchEvent, SearchState> {
   final TransactionService transactionService;
   final TransactionCategoryService categoryService;
+  StreamSubscription<AppStreamData>? _subscription;
 
-  SearchBloc(this.transactionService, this.categoryService) : super(const SearchState()) {
+  SearchBloc(this.transactionService, this.categoryService)
+      : super(const SearchState()) {
     on<QueryChanged>(_onQueryChanged);
     on<TypeChanged>(_onTypeChanged);
     on<Reset>(_onReset);
     on<Apply>(_onApply);
+    on<UpdateTransactionItem>(_onUpdateTransaction);
+    on<DeleteTransationItem>(_onDeleteTransaction);
+
+    _subscription = AppStreamEvent.eventStreamStatic.listen((data) {
+      switch (data.event) {
+        case AppEvent.updateTransaction:
+          final tx = data.payload as Transaction;
+          add(UpdateTransactionItem(tx));
+          break;
+        case AppEvent.deleteTransaction:
+          final id = data.payload as int;
+          add(DeleteTransationItem(id));
+          break;
+        default:
+          break;
+      }
+    });
   }
 
   void _onQueryChanged(QueryChanged event, Emitter<SearchState> emit) {
@@ -27,7 +49,6 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
   }
 
   void _onReset(Reset event, Emitter<SearchState> emit) {
-    if (state.query.isEmpty) return;
     emit(state.copyWith(
       query: '',
       selectedType: null,
@@ -47,7 +68,6 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
       );
 
       final grouped = transactionService.groupByDate(data);
-
       final allCategories = await categoryService.getAll();
       final categoriesMap = {
         for (final cat in allCategories) cat.id!: cat,
@@ -59,6 +79,7 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
         categoriesMap: categoriesMap,
       ));
     } catch (e) {
+      logger.e('SearchBloc: error when applying search: $e');
       emit(state.copyWith(results: [], groupedResults: {}, categoriesMap: {}));
     }
   }
@@ -72,5 +93,29 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
       transactionType: transactionType?.typeIndex,
     );
     return data.transactions;
+  }
+
+  /// ✏️ Khi update transaction từ nơi khác
+  void _onUpdateTransaction(
+      UpdateTransactionItem event, Emitter<SearchState> emit) {
+    final updated = state.results.map((t) {
+      return t.id == event.transaction.id ? event.transaction : t;
+    }).toList();
+
+    final grouped = transactionService.groupByDate(updated);
+    emit(state.copyWith(results: updated, groupedResults: grouped));
+  }
+
+  /// 🗑 Khi xoá transaction từ nơi khác
+  void _onDeleteTransaction(DeleteTransationItem event, Emitter<SearchState> emit) {
+    final updated = state.results.where((t) => t.id != event.id).toList();
+    final grouped = transactionService.groupByDate(updated);
+    emit(state.copyWith(results: updated, groupedResults: grouped));
+  }
+
+  @override
+  Future<void> close() {
+    _subscription?.cancel();
+    return super.close();
   }
 }

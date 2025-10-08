@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:kmonie/presentation/widgets/transaction/transaction_list.dart';
 
 import '../../../core/constant/export.dart';
 import '../../../core/di/export.dart';

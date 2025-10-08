@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
+import 'package:intl/date_symbol_data_local.dart';
 
 import 'app.dart';
 import 'application/auth/auth_bloc.dart';
@@ -21,6 +22,7 @@ Future<void> main() async {
   return runZonedGuarded(
     () async {
       WidgetsFlutterBinding.ensureInitialized();
+      await initializeDateFormatting('vi_VN', null);
       await Firebase.initializeApp();
       await dotenv.load(fileName: ".env");
       FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterFatalError;
