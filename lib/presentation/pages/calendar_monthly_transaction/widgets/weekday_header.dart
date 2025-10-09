@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../core/text_style/export.dart';
 
 class WeekdayHeader extends StatelessWidget {
   const WeekdayHeader({super.key});
@@ -7,13 +8,13 @@ class WeekdayHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return Padding(
       padding: const EdgeInsets.symmetric(vertical: 12),
       child: Row(
         children: _weekdays
             .map(
               (day) => Expanded(
-            child: Center(child: Text(day, style: const TextStyle(fontSize: 12))),
+            child: Center(child: Text(day, style: AppTextStyle.blackS12)),
           ),
         )
             .toList(),

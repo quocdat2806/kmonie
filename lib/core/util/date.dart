@@ -9,6 +9,10 @@ class AppDateUtils {
     return DateFormat(AppConfigs.dateDisplayFormat).format(date);
   }
 
+  static DateTime parseDateKey(String dateKey) {
+    return DateFormat('dd/MM/yyyy').parse(dateKey);
+  }
+
   static String formatDate(DateTime date) {
     return DateFormat('d MMM yyyy', 'vi_VN').format(date);
   }

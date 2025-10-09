@@ -10,19 +10,7 @@ import '../../../entity/export.dart';
 import 'home_event.dart';
 import 'home_state.dart';
 
-class MonthTransactionData {
-  final List<Transaction> transactions;
-  final Map<String, List<Transaction>> groupedTransactions;
-  final Map<int, TransactionCategory> categoriesMap;
-  final int totalRecords;
 
-  const MonthTransactionData({
-    required this.transactions,
-    required this.groupedTransactions,
-    required this.categoriesMap,
-    this.totalRecords = 0,
-  });
-}
 
 class HomeBloc extends Bloc<HomeEvent, HomeState> {
   final TransactionService transactionService;
@@ -31,30 +19,30 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
 
   HomeBloc(this.transactionService, this.categoryService)
     : super(const HomeState()) {
-    on<LoadTransactions>(_onLoadTransactions);
-    on<ChangeDate>(_onChangeDate);
-    on<LoadMore>(_onLoadMore);
-    on<DeleteTransaction>(_onDeleteTransaction);
-    on<InsertTransaction>(_onInsertTransaction);
-    on<UpdateTransaction>(_onUpdateTransaction);
+    on<HomeLoadTransactions>(_onLoadTransactions);
+    on<HomeChangeDate>(_onChangeDate);
+    on<HomeLoadMore>(_onLoadMore);
+    on<HomeDeleteTransaction>(_onDeleteTransaction);
+    on<HomeInsertTransaction>(_onInsertTransaction);
+    on<HomeUpdateTransaction>(_onUpdateTransaction);
 
     _refreshSubscription = AppStreamEvent.eventStreamStatic.listen((data) {
       switch (data.event) {
         case AppEvent.updateTransaction:
           final tx = data.payload as Transaction;
-          add(UpdateTransaction(tx));
+          add(HomeUpdateTransaction(tx));
           break;
         case AppEvent.insertTransaction:
           final tx = data.payload as Transaction;
-          add(InsertTransaction(tx));
+          add(HomeInsertTransaction(tx));
           break;
         case AppEvent.deleteTransaction:
           final id = data.payload as int;
-          add(DeleteTransaction(id));
+          add(HomeDeleteTransaction(id));
           break;
       }
     });
-    add(const LoadTransactions());
+    add(const HomeLoadTransactions());
   }
 
   Map<String, DailyTransactionTotal> _calculateDailyTotals(
@@ -96,7 +84,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   }
 
   Future<void> _onInsertTransaction(
-    InsertTransaction event,
+    HomeInsertTransaction event,
     Emitter<HomeState> emit,
   ) async {
     final updated = [event.transaction, ...state.transactions];
@@ -114,7 +102,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   }
 
   Future<void> _onUpdateTransaction(
-    UpdateTransaction event,
+    HomeUpdateTransaction event,
     Emitter<HomeState> emit,
   ) async {
     final updated = state.transactions
@@ -132,7 +120,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   }
 
   Future<void> _onLoadTransactions(
-    LoadTransactions event,
+    HomeLoadTransactions event,
     Emitter<HomeState> emit,
   ) async {
     try {
@@ -144,7 +132,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
 
       final grouped = transactionService.groupByDate(result.transactions);
       final categories = await categoryService.getAll();
-      final categoriesMap = {for (var c in categories) c.id!: c};
+      final categoriesMap = {for (final c in categories) c.id!: c};
       final dailyTotals = _calculateDailyTotals(grouped, categoriesMap);
 
       emit(
@@ -162,7 +150,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     }
   }
 
-  Future<void> _onChangeDate(ChangeDate event, Emitter<HomeState> emit) async {
+  Future<void> _onChangeDate(HomeChangeDate event, Emitter<HomeState> emit) async {
     emit(
       state.copyWith(
         selectedDate: event.date,
@@ -174,14 +162,15 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         isLoadingMore: false,
       ),
     );
-    add(const LoadTransactions());
+    add(const HomeLoadTransactions());
   }
 
-  Future<void> _onLoadMore(LoadMore event, Emitter<HomeState> emit) async {
+  Future<void> _onLoadMore(HomeLoadMore event, Emitter<HomeState> emit) async {
     if (state.isLoadingMore) return;
     if (state.totalRecords == null ||
-        state.transactions.length >= state.totalRecords!)
+        state.transactions.length >= state.totalRecords!) {
       return;
+    }
 
     emit(state.copyWith(isLoadingMore: true));
     final nextPage = state.pageIndex + 1;
@@ -220,7 +209,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   }
 
   Future<void> _onDeleteTransaction(
-    DeleteTransaction event,
+    HomeDeleteTransaction event,
     Emitter<HomeState> emit,
   ) async {
     try {

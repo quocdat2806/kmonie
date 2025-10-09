@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../../core/constant/export.dart';
 import '../../../core/text_style/export.dart';
-import '../../../generated/assets.dart';
+import '../../../generated/export.dart';
+import '../../../core/enum/export.dart';
 import '../../widgets/export.dart';
 
 class VipUpgradePage extends StatelessWidget {
@@ -19,27 +19,22 @@ class VipUpgradePage extends StatelessWidget {
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(UIConstants.smallPadding),
-          child: ListView(
+          child: Column(
+            spacing: UIConstants.defaultSpacing,
             children: [
-              const SizedBox(height: UIConstants.largeSpacing),
               _buildHeader(),
-              const SizedBox(height: UIConstants.largeSpacing),
               _buildFeatureList(),
-              const SizedBox(height: UIConstants.largeSpacing),
               Text(
                 TextConstants.feeForYear,
                 style: AppTextStyle.blackS14,
                 textAlign: TextAlign.center,
               ),
-              const SizedBox(height: UIConstants.largeSpacing),
               AppButton(
                 onPressed: () {},
                 text: TextConstants.register,
                 width: double.infinity,
                 fontWeight: FontWeight.bold,
               ),
-              const SizedBox(height: UIConstants.largeSpacing),
-              _buildTermsSection(),
             ],
           ),
         ),
@@ -52,15 +47,7 @@ class VipUpgradePage extends StatelessWidget {
       spacing: UIConstants.defaultSpacing,
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        SvgPicture.asset(
-          Assets.svgsKing,
-          width: UIConstants.extraLargeIconSize,
-          colorFilter: ColorFilter.mode(
-            ColorConstants.primary,
-            BlendMode.srcIn,
-          ),
-          height: UIConstants.extraLargeIconSize,
-        ),
+        SvgConstants.icon(assetPath: Assets.svgsKing,color: ColorConstants.primary, size: SvgSizeType.large),
         Text(
           TextConstants.changeToVipPackage,
           style: AppTextStyle.blackS24Bold,
@@ -72,7 +59,7 @@ class VipUpgradePage extends StatelessWidget {
   Widget _buildFeatureList() {
     final features = [
       TextConstants.unlockFeatureAndRemoveAds,
-      TextConstants.moreTopicAndCustomise,
+      TextConstants.moreTopicAndCustomize,
       TextConstants.makeLifeBeautiful,
     ];
 
@@ -90,43 +77,13 @@ class VipUpgradePage extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(bottom: UIConstants.largePadding),
       child: Row(
+        spacing: UIConstants.smallSpacing,
         children: [
-          Icon(Icons.check, color: ColorConstants.primary),
-          const SizedBox(width: UIConstants.smallSpacing),
+          const Icon(Icons.check, color: ColorConstants.primary),
           Expanded(child: Text(text, style: AppTextStyle.blackS14Medium)),
         ],
       ),
     );
   }
 
-  Widget _buildTermsSection() {
-    return Column(
-      spacing: UIConstants.smallSpacing,
-      children: [
-        Text(
-          TextConstants.termPolicy,
-          textAlign: TextAlign.justify,
-          style: AppTextStyle.blackS14,
-        ),
-        Row(
-          children: [
-            Expanded(
-              child: Text(
-                TextConstants.term,
-                style: AppTextStyle.yellowS12,
-                textAlign: TextAlign.center,
-              ),
-            ),
-            Expanded(
-              child: Text(
-                TextConstants.policy,
-                style: AppTextStyle.yellowS12,
-                textAlign: TextAlign.center,
-              ),
-            ),
-          ],
-        ),
-      ],
-    );
-  }
 }

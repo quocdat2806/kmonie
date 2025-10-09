@@ -27,7 +27,7 @@ class TransactionList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (groupedTransactions.isEmpty) {
-      return emptyWidget ?? SizedBox();
+      return emptyWidget ?? const SizedBox();
     }
     return CustomScrollView(
       slivers: [
@@ -47,8 +47,8 @@ class TransactionList extends StatelessWidget {
                         dailyTotalWidgetBuilder!(dateKey),
                     ],
                   ),
-                  SizedBox(height: UIConstants.smallSpacing),
-                  AppDivider(),
+                  const SizedBox(height: UIConstants.smallSpacing),
+                  const AppDivider(),
                   ListView.separated(
                     physics: const NeverScrollableScrollPhysics(),
                     shrinkWrap: true,
@@ -82,7 +82,7 @@ class TransactionList extends StatelessWidget {
                         ),
                       );
                     },
-                    separatorBuilder: (context, index) => AppDivider(),
+                    separatorBuilder: (context, index) => const AppDivider(),
                   ),
                 ],
               ),

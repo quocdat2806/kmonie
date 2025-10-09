@@ -46,7 +46,7 @@ class TextConstants {
 
   static const String changeToVipPackage = 'Chuyển sang gói Premium';
   static const String unlockFeatureAndRemoveAds = 'Mở khoá mọi thứ và loại bỏ quảng cáo';
-  static const String moreTopicAndCustomise = 'Nhiều chủ đề đẹp hơn và có thể tuỳ chỉnh';
+  static const String moreTopicAndCustomize = 'Nhiều chủ đề đẹp hơn và có thể tuỳ chỉnh';
   static const String makeLifeBeautiful = 'Làm cho cuôc sống bạn tốt hơn';
   static const String feeForYear = '199.000 đ / hàng năm Huỷ bất cứ lúc nào';
   static const String register = 'Đăng ký';

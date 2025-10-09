@@ -1,6 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
-import 'package:kmonie/lib.dart';
+
+import '../../../../core/constant/export.dart';
+import '../../../../core/text_style/export.dart';
+import '../../../../core/enum/export.dart';
+import '../../../../core/tool/export.dart';
+import '../../../../core/util/export.dart';
+
+
+import '../../../../core/navigation/export.dart';
+import '../../../../entity/export.dart';
+import '../dialog/app_delete_dialog/app_delete_dialog.dart';
 
 class TransactionItem extends StatelessWidget {
   final Transaction transaction;
@@ -62,7 +72,6 @@ class TransactionItem extends StatelessWidget {
             ),
             Expanded(child: Text(transaction.content.isNotEmpty ? transaction.content : category!.title, style: AppTextStyle.blackS14)),
             Text(transaction.transactionType == TransactionType.expense.typeIndex ? '-${FormatUtils.formatAmount(transaction.amount)}' : FormatUtils.formatAmount(transaction.amount), style: AppTextStyle.blackS14),
-            SizedBox(width: UIConstants.smallSpacing),
           ],
         ),
       ),

@@ -6,10 +6,10 @@ part 'home_event.freezed.dart';
 
 @freezed
 class HomeEvent with _$HomeEvent {
-  const factory HomeEvent.loadTransactions() = LoadTransactions;
-  const factory HomeEvent.changeDate(DateTime date) = ChangeDate;
-  const factory HomeEvent.loadMore() = LoadMore;
-  const factory HomeEvent.deleteTransaction(int transactionId) = DeleteTransaction;
-  const factory HomeEvent.insertTransaction(Transaction transaction) = InsertTransaction;
-  const factory HomeEvent.updateTransaction(Transaction transaction) = UpdateTransaction;
+  const factory HomeEvent.loadTransactions() = HomeLoadTransactions;
+  const factory HomeEvent.changeDate(DateTime date) = HomeChangeDate;
+  const factory HomeEvent.loadMore() = HomeLoadMore;
+  const factory HomeEvent.deleteTransaction(int transactionId) = HomeDeleteTransaction;
+  const factory HomeEvent.insertTransaction(Transaction transaction) = HomeInsertTransaction;
+  const factory HomeEvent.updateTransaction(Transaction transaction) = HomeUpdateTransaction;
 }

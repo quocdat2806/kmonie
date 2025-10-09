@@ -33,6 +33,7 @@ class UIConstants {
   static const double largeContainerSize = 60.0;
   static const double extraLargeContainerSize = 80.0;
 
+  static const double extraSmallSpacingMin = 2.0;
   static const double extraSmallSpacing = 4.0;
   static const double smallSpacing = 8.0;
   static const double defaultSpacing = 16.0;

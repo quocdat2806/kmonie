@@ -1,13 +1,13 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 
-import '../../../core/enum/app_event.dart';
-import '../../../core/navigation/export.dart';
+import '../../../core/enum/export.dart';
 import '../../../core/stream/export.dart';
 import '../../../core/util/date.dart';
+import '../../../core/constant/export.dart';
+import '../../../core/text_style/export.dart';
 import '../../../entity/export.dart';
-import '../../widgets/transaction/transaction_list.dart';
-import '../transaction_action/transaction_actions_page.dart';
+import '../../widgets/export.dart';
 
 class DailyTransactionPageArgs {
   final DateTime selectedDate;
@@ -66,7 +66,6 @@ class _DailyTransactionPageState extends State<DailyTransactionPage> {
   void _handleUpdate(Transaction tx) {
     final isSameDay = _isSameDate(tx.date, widget.args.selectedDate);
 
-    // 📝 Nếu ngày mới KHÔNG phải ngày hiện tại => xoá giao dịch cũ khỏi danh sách này
     if (!isSameDay) {
       setState(() {
         for (final key in _groupedTransactions.keys) {
@@ -78,8 +77,7 @@ class _DailyTransactionPageState extends State<DailyTransactionPage> {
       return;
     }
 
-    // 📝 Nếu cùng ngày => update trong list hiện tại
-    final key = _formatDateKey(tx.date);
+    final key = AppDateUtils.formatDateKey(tx.date);
     setState(() {
       final list = _groupedTransactions[key];
       if (list == null) return;
@@ -102,12 +100,10 @@ class _DailyTransactionPageState extends State<DailyTransactionPage> {
         final newList = list.where((e) => e.id != id).toList();
         _groupedTransactions[key] = newList;
       }
-      // Xóa key nào mà list rỗng để tránh map rỗng treo
       _groupedTransactions.removeWhere((_, list) => list.isEmpty);
     });
   }
 
-  String _formatDateKey(DateTime date) => '${date.year.toString().padLeft(4, '0')}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
 
   @override
   void dispose() {
@@ -117,33 +113,29 @@ class _DailyTransactionPageState extends State<DailyTransactionPage> {
 
   @override
   Widget build(BuildContext context) {
-    final dateStr = '${widget.args.selectedDate.day.toString().padLeft(2, '0')}/${widget.args.selectedDate.month.toString().padLeft(2, '0')}/${widget.args.selectedDate.year}';
+    final dateStr = AppDateUtils.formatDate(widget.args.selectedDate);
 
     final bool isEmpty = _groupedTransactions.isEmpty || _groupedTransactions.values.every((list) => list.isEmpty);
 
     return Scaffold(
-      appBar: AppBar(title: Text('Giao dịch $dateStr'), centerTitle: true),
+      appBar: CustomAppBar(title: 'Giao dịch $dateStr'),
       body: SafeArea(
         child: isEmpty ? _buildEmptyState(context) : TransactionList(groupedTransactions: _groupedTransactions, categoriesMap: _categoriesMap, dailyTotalWidgetBuilder: widget.args.dailyTotalBuilder),
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {
-          AppNavigator(context: context).push(RouterPath.transactionActions, extra: TransactionActionsPageArgs(selectedDate: widget.args.selectedDate));
-        },
-        icon: const Icon(Icons.add),
-        label: const Text('Thêm giao dịch'),
+      floatingActionButton:  AddTransactionButton(
+        initialDate: widget.args.selectedDate,
       ),
     );
   }
 
   Widget _buildEmptyState(BuildContext context) {
-    return const Center(
+    return  Center(
       child: Column(
+        spacing: UIConstants.defaultSpacing,
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(Icons.receipt_long, size: 48, color: Colors.grey),
-          SizedBox(height: 12),
-          Text('Chưa có giao dịch trong ngày này', style: TextStyle(fontSize: 16, color: Colors.grey)),
+          const Icon(Icons.receipt_long, size: UIConstants.largeIconSize, color: ColorConstants.grey),
+          Text('Chưa có giao dịch trong ngày này', style: AppTextStyle.greyS12),
         ],
       ),
     );

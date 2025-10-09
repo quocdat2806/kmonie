@@ -66,7 +66,7 @@ class _DetailTransactionPageState extends State<DetailTransactionPage> {
   Widget build(BuildContext context) {
     final String typeLabel = _category.transactionType.displayName;
     return Scaffold(
-      appBar: const CustomAppBar(title: 'Chi tiết giao dịch', centerTitle: true),
+      appBar: const CustomAppBar(title: 'Chi tiết giao dịch'),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(UIConstants.defaultPadding),
@@ -77,7 +77,7 @@ class _DetailTransactionPageState extends State<DetailTransactionPage> {
               const SizedBox(height: UIConstants.defaultSpacing),
               _buildRow('Kiểu', typeLabel),
               _buildRow('Số tiền', FormatUtils.formatAmount(_transaction.amount)),
-              _buildDateRow('Ngày', _transaction.date.toLocal()),
+              _buildDateRow('Ngày', _transaction.date),
               _buildRow('Ghi chú', _transaction.content.isEmpty ? '(Trống)' : _transaction.content),
             ],
           ),
@@ -85,19 +85,19 @@ class _DetailTransactionPageState extends State<DetailTransactionPage> {
       ),
       bottomNavigationBar: SafeArea(
         child: Container(
-          height: 56,
-          decoration: BoxDecoration(
-            border: Border(top: BorderSide(color: Colors.grey.shade300)),
-            color: Colors.white,
+          height: UIConstants.defaultButtonHeight,
+          decoration: const BoxDecoration(
+            border: Border(top: BorderSide(color: ColorConstants.greyWhite)),
+            color: ColorConstants.white,
           ),
           child: Row(
             children: [
               Expanded(
                 child: AppButton(text: TextConstants.edit, backgroundColor: Colors.transparent, onPressed: _onEditPressed),
               ),
-              Container(width: 1, color: Colors.grey.shade300),
+              Container(width: 1, color: ColorConstants.greyWhite),
               Expanded(
-                child: AppButton(backgroundColor: Colors.transparent, onPressed: _onDeletePressed, text: TextConstants.delete, height: 56),
+                child: AppButton(backgroundColor: Colors.transparent, onPressed: _onDeletePressed, text: TextConstants.delete),
               ),
             ],
           ),
@@ -129,6 +129,7 @@ class _DetailTransactionPageState extends State<DetailTransactionPage> {
 
   Widget _buildHeader(TransactionCategory category, Transaction transaction) {
     return Row(
+      spacing: UIConstants.defaultSpacing,
       children: [
         DecoratedBox(
           decoration: BoxDecoration(shape: BoxShape.circle, gradient: GradientHelper.fromColorHexList(transaction.gradientColors)),
@@ -137,7 +138,6 @@ class _DetailTransactionPageState extends State<DetailTransactionPage> {
             child: SvgConstants.icon(assetPath: category.pathAsset, size: SvgSizeType.medium),
           ),
         ),
-        const SizedBox(width: 16),
         Expanded(
           child: Text(category.title, style: AppTextStyle.blackS16Medium, overflow: TextOverflow.ellipsis),
         ),
@@ -149,9 +149,8 @@ class _DetailTransactionPageState extends State<DetailTransactionPage> {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: UIConstants.smallPadding),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          SizedBox(width: 80, child: Text(label, style: AppTextStyle.greyS14)),
+          SizedBox(width: 100, child: Text(label, style: AppTextStyle.greyS14)),
           Expanded(
             child: Text(value, style: AppTextStyle.blackS14Medium, overflow: TextOverflow.ellipsis),
           ),
@@ -162,11 +161,11 @@ class _DetailTransactionPageState extends State<DetailTransactionPage> {
 
   Widget _buildDateRow(String label, DateTime date) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
+      padding: const EdgeInsets.symmetric(vertical: UIConstants.smallPadding),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SizedBox(width: 80, child: Text(label, style: AppTextStyle.greyS14)),
+          SizedBox(width: 100, child: Text(label, style: AppTextStyle.greyS14)),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             spacing: UIConstants.smallSpacing,

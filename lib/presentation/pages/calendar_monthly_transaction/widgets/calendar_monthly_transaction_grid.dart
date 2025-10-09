@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../../core/constant/export.dart';
 import '../../../../core/text_style/export.dart';
+import '../../../../core/util/export.dart';
 import '../../../../entity/export.dart';
 class CalendarGrid extends StatelessWidget {
   final DateTime selectedDate;
@@ -16,7 +17,7 @@ class CalendarGrid extends StatelessWidget {
   });
 
   List<DateTime?> _generateCalendarDays() {
-    final firstDay = DateTime(selectedDate.year, selectedDate.month, 1);
+    final firstDay = DateTime(selectedDate.year, selectedDate.month);
     final lastDay = DateTime(selectedDate.year, selectedDate.month + 1, 0);
 
     final List<DateTime?> days = [];
@@ -36,7 +37,6 @@ class CalendarGrid extends StatelessWidget {
   Widget build(BuildContext context) {
     final days = _generateCalendarDays();
     return GridView.builder(
-      padding: const EdgeInsets.symmetric(horizontal: 4),
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 7,
         childAspectRatio: 0.70,
@@ -76,29 +76,19 @@ class CalendarDayCell extends StatelessWidget {
     required this.onTap,
   });
 
-  String _formatAmount(double amount) {
-    if (amount >= 1000000) {
-      return '${(amount / 1000000).toStringAsFixed(1)}tr';
-    } else if (amount >= 1000) {
-      return '${(amount / 1000).toStringAsFixed(0)}k';
-    }
-    return amount.toStringAsFixed(0);
-  }
-
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
+    return InkWell(
       onTap: onTap,
       child: Container(
-        margin: const EdgeInsets.all(2),
+        margin: const EdgeInsets.all(UIConstants.extraSmallSpacingMin),
         decoration: BoxDecoration(
-          color: isSelected ? Colors.green.shade100 : ColorConstants.greyWhite.withAlpha(60),
-          borderRadius: BorderRadius.circular(4),
+          color: isSelected ? ColorConstants.green.withAlpha(60) : ColorConstants.greyWhite.withAlpha(60),
+          borderRadius: BorderRadius.circular(UIConstants.smallBorderRadius),
         ),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            SizedBox(height: UIConstants.smallSpacing,),
+            const SizedBox(height: UIConstants.smallSpacing),
             Text(
               '${date.day}',
               style: AppTextStyle.blackS14,
@@ -106,13 +96,13 @@ class CalendarDayCell extends StatelessWidget {
             if (total != null && (total!.income > 0 || total!.expense > 0)) ...[
               if (total!.income > 0)
                 Text(
-                  '+${_formatAmount(total!.income)}',
+                  FormatUtils.formatAmount(total!.income.toInt()),
                   style: AppTextStyle.greenS12,
                   overflow: TextOverflow.ellipsis,
                 ),
               if (total!.expense > 0)
                 Text(
-                  '-${_formatAmount(total!.expense)}',
+                  FormatUtils.formatAmount(total!.expense.toInt()),
                   style: AppTextStyle.redS12,
                   overflow: TextOverflow.ellipsis,
                 ),

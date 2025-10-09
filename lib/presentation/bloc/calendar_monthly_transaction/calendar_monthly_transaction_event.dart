@@ -5,7 +5,7 @@ part 'calendar_monthly_transaction_event.freezed.dart';
 
 @freezed
 abstract class CalendarMonthlyTransactionEvent with _$CalendarMonthlyTransactionEvent {
-  const factory CalendarMonthlyTransactionEvent.loadMonthData({required int year, required int month}) = LoadMonthData;
+  const factory CalendarMonthlyTransactionEvent.loadMonthData({int? year, int? month}) = LoadMonthData;
 
   const factory CalendarMonthlyTransactionEvent.changeSelectedDate(DateTime date) = ChangeSelectedDate;
 
@@ -15,5 +15,5 @@ abstract class CalendarMonthlyTransactionEvent with _$CalendarMonthlyTransaction
 
   const factory CalendarMonthlyTransactionEvent.deleteTransaction(int id) = CalendarMonthlyTransactionDeleteTransaction;
 
-  const factory CalendarMonthlyTransactionEvent.changeMonthYear({required int year, required int month}) = ChangeMonthYear;
+  const factory CalendarMonthlyTransactionEvent.changeMonthYear({int? year, int? month}) = ChangeMonthYear;
 }
