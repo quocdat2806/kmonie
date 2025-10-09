@@ -38,7 +38,14 @@ class TransactionCategoryTb extends Table {
   BoolColumn get isCreateNewCategory => boolean().withDefault(const Constant(false))();
 }
 
-@DriftDatabase(tables: [TransactionsTb, TransactionCategoryTb])
+class BudgetsTb extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  DateTimeColumn get dateBudget => dateTime()();
+  IntColumn get transactionCategoryId => integer().references(TransactionCategoryTb, #id, onDelete: KeyAction.cascade)();
+  IntColumn get amount => integer().withDefault(const Constant(0))();
+}
+
+@DriftDatabase(tables: [TransactionsTb, TransactionCategoryTb, BudgetsTb])
 class KMonieDatabase extends _$KMonieDatabase {
   static KMonieDatabase? _instance;
   static const _walBytesThreshold = 16 * 1024 * 1024;
@@ -67,6 +74,7 @@ class KMonieDatabase extends _$KMonieDatabase {
       await customStatement('CREATE INDEX IF NOT EXISTS idx_transactions_category ON transactions_tb (transaction_category_id)');
       await customStatement('CREATE INDEX IF NOT EXISTS idx_category_type ON transaction_category_tb (transaction_type)');
       await customStatement('CREATE INDEX IF NOT EXISTS idx_transaction_type_date ON transactions_tb (transaction_type, date DESC)');
+      await customStatement('CREATE UNIQUE INDEX IF NOT EXISTS idx_budget_unique_date_budget ON budgets_tb (date_budget, transaction_category_id)');
       await _seedSystemCategoriesIfEmpty();
     },
     onUpgrade: (migrator, from, to) async {},

@@ -1,5 +1,5 @@
 import '../../entity/export.dart';
-import '../../generated/assets.dart';
+import '../../generated/export.dart';
 import '../constant/export.dart';
 import '../enum/export.dart';
 

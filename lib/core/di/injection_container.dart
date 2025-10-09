@@ -10,29 +10,18 @@ final GetIt sl = GetIt.instance;
 Future<void> init() async {
   sl
     ..registerLazySingleton<Connectivity>(() => Connectivity())
-    ..registerLazySingleton<NetworkInfo>(
-      () => NetworkInfoImpl(sl<Connectivity>()),
-    )
+    ..registerLazySingleton<NetworkInfo>(() => NetworkInfoImpl(sl<Connectivity>()))
     ..registerLazySingleton<SecureStorageService>(() => SecureStorageService())
     ..registerLazySingleton<KMonieDatabase>(() => KMonieDatabase())
     ..registerLazySingleton<LoggingInterceptor>(() => LoggingInterceptor())
-    ..registerLazySingleton<AppDio>(
-      () => TranslationDio(
-        networkInfo: sl<NetworkInfo>(),
-        secure: sl<SecureStorageService>(),
-        logging: sl<LoggingInterceptor>(),
-      ),
-    )
+    ..registerLazySingleton<AppDio>(() => TranslationDio(networkInfo: sl<NetworkInfo>(), secure: sl<SecureStorageService>(), logging: sl<LoggingInterceptor>()))
     ..registerLazySingleton<ApiClient>(() => ApiClient(sl<AppDio>().dio))
-    ..registerLazySingleton<TransactionCategoryService>(
-      () => TransactionCategoryService(sl<KMonieDatabase>()),
-    )
-    ..registerLazySingleton<TransactionService>(
-      () => TransactionService(sl<KMonieDatabase>()),
-    )
+    ..registerLazySingleton<TransactionCategoryService>(() => TransactionCategoryService(sl<KMonieDatabase>()))
+    ..registerLazySingleton<TransactionService>(() => TransactionService(sl<KMonieDatabase>()))
+    ..registerLazySingleton<BudgetService>(() => BudgetService(sl<KMonieDatabase>()))
     ..registerLazySingleton<SnackBarService>(() => SnackBarService())
-    ..registerLazySingleton<AppStreamEvent>(() => AppStreamEvent())
-    ..registerLazySingleton<NotificationService>(() => NotificationService.I);
+    ..registerLazySingleton<NotificationService>(() => NotificationService.I)
+    ..registerLazySingleton<AppStreamEvent>(() => AppStreamEvent());
   await sl<KMonieDatabase>().warmUp();
   await sl<NotificationService>().init();
 }

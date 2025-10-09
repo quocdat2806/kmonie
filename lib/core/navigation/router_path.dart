@@ -13,4 +13,5 @@ class RouterPath {
   static const String dailyTransactions = '/daily-transactions';
 
 
+  static const String budget = '/budget';
 }

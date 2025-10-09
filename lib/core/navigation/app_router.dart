@@ -57,6 +57,7 @@ class AppRouter {
           return DailyTransactionPage(args: args);
         },
       ),
+      GoRoute(path: RouterPath.budget, builder: (_, state) => const BudgetPage()),
     ],
     // redirect: (_, GoRouterState state) {
     //   final AuthState authState = authBloc.state;

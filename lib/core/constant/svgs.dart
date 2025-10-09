@@ -16,6 +16,6 @@ class SvgConstants {
       _ => UIConstants.defaultIconSize,
     };
 
-    return SvgPicture.asset(assetPath, width: iconSize, height: iconSize, colorFilter: color != null ? ColorFilter.mode(color, BlendMode.srcIn) : ColorFilter.mode(ColorConstants.black, BlendMode.srcIn));
+    return SvgPicture.asset(assetPath, width: iconSize, height: iconSize, colorFilter: color != null ? ColorFilter.mode(color, BlendMode.srcIn) : const ColorFilter.mode(ColorConstants.black, BlendMode.srcIn));
   }
 }

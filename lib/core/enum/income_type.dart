@@ -10,16 +10,13 @@ enum IncomeType {
   final String displayName;
 
   static IncomeType fromIndex(int index) {
-    return IncomeType.values.firstWhere(
-      (type) => type.typeIndex == index,
-      orElse: () => IncomeType.month,
-    );
+    return IncomeType.values.firstWhere((type) => type.typeIndex == index, orElse: () => IncomeType.month);
   }
+
   static const int totalTypes = 2;
 }
 
 extension ExIncomeType on IncomeType {
-  static List<String> toList = IncomeType.values
-      .map((e) => e.displayName)
-      .toList();
+  static List<IncomeType> incomeTypes = IncomeType.values;
+  static List<String> incomeTypeNames = incomeTypes.map((e) => e.displayName).toList();
 }
