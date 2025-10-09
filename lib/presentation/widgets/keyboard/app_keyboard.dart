@@ -2,36 +2,45 @@ import 'package:flutter/material.dart';
 
 import '../../../core/constant/export.dart';
 import '../../../core/text_style/export.dart';
+import '../../../core/util/export.dart';
+
 
 class AppKeyboard extends StatelessWidget {
   final void Function(String value)? onValueChanged;
+  final  DateTime? selectDate;
 
-  const AppKeyboard({super.key, this.onValueChanged});
+  const AppKeyboard({super.key, this.onValueChanged,this.selectDate});
 
-  static final List<_KeySpec> _items = [
-    _KeySpec.text('7'),
-    _KeySpec.text('8'),
-    _KeySpec.text('9'),
-    _KeySpec.widget(
-      value: 'TODAY',
-      child: const Icon(Icons.calendar_month, color: ColorConstants.primary, size: UIConstants.largeIconSize),
-    ),
-    _KeySpec.text('4'),
-    _KeySpec.text('5'),
-    _KeySpec.text('6'),
-    _KeySpec.text('+'),
-    _KeySpec.text('1'),
-    _KeySpec.text('2'),
-    _KeySpec.text('3'),
-    _KeySpec.text('-'),
-    _KeySpec.text(','),
-    _KeySpec.text('0'),
-    _KeySpec.widget(value: 'CLEAR', child: const Icon(Icons.backspace_outlined)),
-    _KeySpec.widget(value: 'DONE', child: const Icon(Icons.check)),
-  ];
 
   @override
   Widget build(BuildContext context) {
+    final List<_KeySpec> _items = [
+      _KeySpec.text('7'),
+      _KeySpec.text('8'),
+      _KeySpec.text('9'),
+      _KeySpec.widget(
+        value: 'SELECT_DATE',
+        child:Wrap(
+          children: [
+            const Icon(Icons.calendar_month, color: ColorConstants.primary, size: UIConstants.smallIconSize),
+            Text(AppDateUtils.formatDateMonthAndDay(selectDate??DateTime.now()), style: AppTextStyle.blackS12Medium.copyWith(color: ColorConstants.primary))
+          ],
+        ),
+      ),
+      _KeySpec.text('4'),
+      _KeySpec.text('5'),
+      _KeySpec.text('6'),
+      _KeySpec.text('+'),
+      _KeySpec.text('1'),
+      _KeySpec.text('2'),
+      _KeySpec.text('3'),
+      _KeySpec.text('-'),
+      _KeySpec.text(','),
+      _KeySpec.text('0'),
+      _KeySpec.widget(value: 'CLEAR', child: const Icon(Icons.backspace_outlined)),
+      _KeySpec.widget(value: 'DONE', child: const Icon(Icons.check)),
+    ];
+
     return LayoutBuilder(
       builder: (context, constraints) {
         final totalSpacing = UIConstants.smallGridSpacing * (UIConstants.defaultGridCrossAxisCount - 1);

@@ -12,6 +12,9 @@ class AppDateUtils {
   static String formatDate(DateTime date) {
     return DateFormat('d MMM yyyy', 'vi_VN').format(date);
   }
+  static String formatDateMonthAndDay(DateTime date) {
+    return DateFormat('d MMM', 'vi_VN').format(date);
+  }
 
   static String formatFullDate(DateTime date) {
     return DateFormat('d MMM yyyy HH:mm:ss', 'vi_VN').format(date);

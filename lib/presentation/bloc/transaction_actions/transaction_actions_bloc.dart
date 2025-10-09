@@ -29,11 +29,15 @@ class TransactionActionsBloc
     on<AmountChanged>(_onAmountChanged);
     on<NoteChanged>(_onNoteChanged);
     on<SubmitTransaction>(_onSubmitTransaction);
-    // on<SaveTransaction>(_onSaveTransaction);
-
+    on<SelectDateChange>(_onSelectDateChange);
     add(const Initialize());
   }
-
+ void _onSelectDateChange(
+     SelectDateChange e,
+     Emitter<TransactionActionsState> emit,
+     ){
+    emit(state.copyWith(date: e.date));
+ }
   Future<void> _onInitialize(
     Initialize e,
     Emitter<TransactionActionsState> emit,

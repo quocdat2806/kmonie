@@ -18,7 +18,10 @@ class TransactionActionsPageArgs {
   final TransactionActionsMode mode;
   final Transaction? transaction;
 
-  TransactionActionsPageArgs({this.mode = TransactionActionsMode.add, this.transaction});
+  TransactionActionsPageArgs({
+    this.mode = TransactionActionsMode.add,
+    this.transaction,
+  });
 }
 
 class TransactionActionsPage extends StatelessWidget {
@@ -29,7 +32,11 @@ class TransactionActionsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider<TransactionActionsBloc>(
-      create: (_) => TransactionActionsBloc(sl<TransactionCategoryService>(), sl<TransactionService>(), args),
+      create: (_) => TransactionActionsBloc(
+        sl<TransactionCategoryService>(),
+        sl<TransactionService>(),
+        args,
+      ),
       child: TransactionActionsPageChild(args: args),
     );
   }
@@ -41,10 +48,13 @@ class TransactionActionsPageChild extends StatefulWidget {
   const TransactionActionsPageChild({super.key, this.args});
 
   @override
-  State<TransactionActionsPageChild> createState() => _TransactionActionsPageChildState();
+  State<TransactionActionsPageChild> createState() =>
+      _TransactionActionsPageChildState();
 }
 
-class _TransactionActionsPageChildState extends State<TransactionActionsPageChild> with SingleTickerProviderStateMixin, WidgetsBindingObserver {
+class _TransactionActionsPageChildState
+    extends State<TransactionActionsPageChild>
+    with SingleTickerProviderStateMixin, WidgetsBindingObserver {
   final TextEditingController _noteController = TextEditingController();
   final FocusNode _noteFocusNode = FocusNode();
   late AnimationController _animationController;
@@ -55,8 +65,13 @@ class _TransactionActionsPageChildState extends State<TransactionActionsPageChil
   void initState() {
     super.initState();
     _noteController.text = widget.args?.transaction?.content ?? "";
-    _animationController = AnimationController(duration: UIConstants.shortAnimationDuration, vsync: this);
-    _slideAnimation = Tween<double>(begin: 0, end: 1).animate(CurvedAnimation(parent: _animationController, curve: Curves.easeOutQuart));
+    _animationController = AnimationController(
+      duration: UIConstants.shortAnimationDuration,
+      vsync: this,
+    );
+    _slideAnimation = Tween<double>(begin: 0, end: 1).animate(
+      CurvedAnimation(parent: _animationController, curve: Curves.easeOutQuart),
+    );
     WidgetsBinding.instance.addObserver(this);
   }
 
@@ -113,39 +128,80 @@ class _TransactionActionsPageChildState extends State<TransactionActionsPageChil
                       const Expanded(
                         child: ColoredBox(
                           color: ColorConstants.white,
-                          child: Padding(padding: EdgeInsets.all(UIConstants.smallPadding), child: TransactionCategoryGrid()),
+                          child: Padding(
+                            padding: EdgeInsets.all(UIConstants.smallPadding),
+                            child: TransactionCategoryGrid(),
+                          ),
                         ),
                       ),
                     ],
                   ),
                 ),
-                BlocSelector<TransactionActionsBloc, TransactionActionsState, bool>(
+                BlocSelector<
+                  TransactionActionsBloc,
+                  TransactionActionsState,
+                  bool
+                >(
                   selector: (state) => state.isKeyboardVisible,
                   builder: (context, isKeyboardVisible) {
                     if (!isKeyboardVisible) return const SizedBox.shrink();
                     return AnimatedBuilder(
                       animation: _slideAnimation,
                       builder: (context, child) {
-                        final slideOffset = _slideAnimation.value * keyboardHeight * UIConstants.keyboardSlideRatio;
-                        return Transform.translate(offset: Offset(0, -slideOffset), child: child);
+                        final slideOffset =
+                            _slideAnimation.value *
+                            keyboardHeight *
+                            UIConstants.keyboardSlideRatio;
+                        return Transform.translate(
+                          offset: Offset(0, -slideOffset),
+                          child: child,
+                        );
                       },
                       child: RepaintBoundary(
                         child: ColoredBox(
                           color: ColorConstants.greyWhite,
                           child: Padding(
-                            padding: const EdgeInsets.all(UIConstants.smallPadding),
+                            padding: const EdgeInsets.all(
+                              UIConstants.smallPadding,
+                            ),
                             child: Column(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                TransactionActionsInputHeader(noteController: _noteController, noteFocusNode: _noteFocusNode),
-                                AppKeyboard(
-                                  onValueChanged: (value) {
-                                    final bloc = context.read<TransactionActionsBloc>();
-                                    if (value == 'DONE') {
-                                      bloc.add(const SubmitTransaction());
-                                    } else {
-                                      bloc.add(AmountChanged(value));
-                                    }
+                                TransactionActionsInputHeader(
+                                  noteController: _noteController,
+                                  noteFocusNode: _noteFocusNode,
+                                ),
+                                BlocBuilder<
+                                  TransactionActionsBloc,
+                                  TransactionActionsState
+                                >(
+                                  buildWhen: (pre, curr) =>
+                                      pre.date != curr.date,
+                                  builder: (context, state) {
+                                    return AppKeyboard(
+                                      selectDate: state.date,
+                                      onValueChanged: (value) async {
+                                        final bloc = context
+                                            .read<TransactionActionsBloc>();
+                                        if (value == 'SELECT_DATE') {
+                                          final picked =
+                                              await showDialog<DateTime>(
+                                                context: context,
+                                                builder: (context) =>
+                                                    DatePickerScreen(initialDate: state.date,),
+                                              );
+                                          if (picked != null) {
+                                            bloc.add(SelectDateChange(picked));
+                                          }
+                                          return;
+                                        }
+                                        if (value == 'DONE') {
+                                          bloc.add(const SubmitTransaction());
+                                          return;
+                                        }
+                                        bloc.add(AmountChanged(value));
+                                      },
+                                    );
                                   },
                                 ),
                               ],
@@ -168,24 +224,35 @@ class _TransactionActionsPageChildState extends State<TransactionActionsPageChil
     return CustomAppBar(
       title: TextConstants.add,
       leading: ConstrainedBox(
-        constraints: const BoxConstraints(minWidth: UIConstants.mediumContainerSize, minHeight: UIConstants.mediumContainerSize),
+        constraints: const BoxConstraints(
+          minWidth: UIConstants.mediumContainerSize,
+          minHeight: UIConstants.mediumContainerSize,
+        ),
         child: Ink(
           decoration: const ShapeDecoration(shape: StadiumBorder()),
           child: InkWell(
             customBorder: const StadiumBorder(),
             onTap: () {
-              if(context.read<TransactionActionsBloc>().state.isKeyboardVisible){
-                context.read<TransactionActionsBloc>().add(const ToggleKeyboardVisibility());
+              if (context
+                  .read<TransactionActionsBloc>()
+                  .state
+                  .isKeyboardVisible) {
+                context.read<TransactionActionsBloc>().add(
+                  const ToggleKeyboardVisibility(),
+                );
                 Future.delayed(const Duration(milliseconds: 850), () {
                   AppNavigator(context: context).pop();
                 });
                 return;
               }
               AppNavigator(context: context).pop();
-
-
             },
-            child: Center(child: Text(TextConstants.cancel, style: AppTextStyle.blackS14Medium)),
+            child: Center(
+              child: Text(
+                TextConstants.cancel,
+                style: AppTextStyle.blackS14Medium,
+              ),
+            ),
           ),
         ),
       ),

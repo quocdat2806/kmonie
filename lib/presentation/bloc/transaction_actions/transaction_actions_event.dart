@@ -17,5 +17,6 @@ class TransactionActionsEvent with _$TransactionActionsEvent {
   const factory TransactionActionsEvent.noteChanged(String value) = NoteChanged;
   const factory TransactionActionsEvent.saveTransaction() = SaveTransaction;
   const factory TransactionActionsEvent.submitTransaction() = SubmitTransaction;
+  const factory TransactionActionsEvent.selectDateChange(DateTime date)= SelectDateChange;
   const factory TransactionActionsEvent.initialize() = Initialize;
 }
