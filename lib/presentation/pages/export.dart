@@ -13,3 +13,4 @@ export 'upgrade_vip/upgrade_vip_page.dart';
 export 'add_transaction_category/add_transaction_category_page.dart';
 export 'detail_transaction/detail_transaction_page.dart';
 export 'daily_transactions/daily_transaction_page.dart';
+export 'budget/budget_page.dart';

@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-
 import '../../../../core/constant/export.dart';
 import '../../../../core/enum/export.dart';
 import '../../../../core/navigation/export.dart';
-import '../../../../generated/assets.dart';
+import '../../../../generated/export.dart';
 
 class MainNavigationAddTransactionButton extends StatelessWidget {
   const MainNavigationAddTransactionButton({super.key});

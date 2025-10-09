@@ -2,7 +2,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 
 import '../../../core/enum/app_event.dart';
-import '../../../core/enum/transaction_actions_mode.dart';
 import '../../../core/navigation/export.dart';
 import '../../../core/stream/export.dart';
 import '../../../core/util/date.dart';
@@ -16,12 +15,7 @@ class DailyTransactionPageArgs {
   final Map<int, TransactionCategory> categoriesMap;
   final Widget Function(String dateKey)? dailyTotalBuilder;
 
-  const DailyTransactionPageArgs({
-    required this.selectedDate,
-    required this.groupedTransactions,
-    required this.categoriesMap,
-    this.dailyTotalBuilder,
-  });
+  const DailyTransactionPageArgs({required this.selectedDate, required this.groupedTransactions, required this.categoriesMap, this.dailyTotalBuilder});
 }
 
 class DailyTransactionPage extends StatefulWidget {
@@ -77,8 +71,7 @@ class _DailyTransactionPageState extends State<DailyTransactionPage> {
       setState(() {
         for (final key in _groupedTransactions.keys) {
           final list = _groupedTransactions[key]!;
-          _groupedTransactions[key] =
-              list.where((e) => e.id != tx.id).toList();
+          _groupedTransactions[key] = list.where((e) => e.id != tx.id).toList();
         }
         _groupedTransactions.removeWhere((_, list) => list.isEmpty);
       });
@@ -114,8 +107,7 @@ class _DailyTransactionPageState extends State<DailyTransactionPage> {
     });
   }
 
-  String _formatDateKey(DateTime date) =>
-      '${date.year.toString().padLeft(4, '0')}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
+  String _formatDateKey(DateTime date) => '${date.year.toString().padLeft(4, '0')}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
 
   @override
   void dispose() {
@@ -125,31 +117,18 @@ class _DailyTransactionPageState extends State<DailyTransactionPage> {
 
   @override
   Widget build(BuildContext context) {
-    final dateStr =
-        '${widget.args.selectedDate.day.toString().padLeft(2, '0')}/${widget.args.selectedDate.month.toString().padLeft(2, '0')}/${widget.args.selectedDate.year}';
+    final dateStr = '${widget.args.selectedDate.day.toString().padLeft(2, '0')}/${widget.args.selectedDate.month.toString().padLeft(2, '0')}/${widget.args.selectedDate.year}';
 
-    final bool isEmpty = _groupedTransactions.isEmpty ||
-        _groupedTransactions.values.every((list) => list.isEmpty);
+    final bool isEmpty = _groupedTransactions.isEmpty || _groupedTransactions.values.every((list) => list.isEmpty);
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Giao dịch $dateStr'),
-        centerTitle: true,
-      ),
+      appBar: AppBar(title: Text('Giao dịch $dateStr'), centerTitle: true),
       body: SafeArea(
-        child: isEmpty
-            ? _buildEmptyState(context)
-            : TransactionList(
-          groupedTransactions: _groupedTransactions,
-          categoriesMap: _categoriesMap,
-          dailyTotalWidgetBuilder: widget.args.dailyTotalBuilder,
-        ),
+        child: isEmpty ? _buildEmptyState(context) : TransactionList(groupedTransactions: _groupedTransactions, categoriesMap: _categoriesMap, dailyTotalWidgetBuilder: widget.args.dailyTotalBuilder),
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
-          AppNavigator(context: context).push(
-            RouterPath.transactionActions,
-          );
+          AppNavigator(context: context).push(RouterPath.transactionActions, extra: TransactionActionsPageArgs(selectedDate: widget.args.selectedDate));
         },
         icon: const Icon(Icons.add),
         label: const Text('Thêm giao dịch'),
@@ -158,16 +137,13 @@ class _DailyTransactionPageState extends State<DailyTransactionPage> {
   }
 
   Widget _buildEmptyState(BuildContext context) {
-    return Center(
+    return const Center(
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Icon(Icons.receipt_long, size: 48, color: Colors.grey),
-          const SizedBox(height: 12),
-          const Text(
-            'Chưa có giao dịch trong ngày này',
-            style: TextStyle(fontSize: 16, color: Colors.grey),
-          ),
+          Icon(Icons.receipt_long, size: 48, color: Colors.grey),
+          SizedBox(height: 12),
+          Text('Chưa có giao dịch trong ngày này', style: TextStyle(fontSize: 16, color: Colors.grey)),
         ],
       ),
     );

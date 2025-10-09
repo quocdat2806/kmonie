@@ -6,6 +6,8 @@ import '../../../core/di/export.dart';
 import '../../../core/enum/export.dart';
 import '../../../core/navigation/export.dart';
 import '../../../core/service/export.dart';
+import '../../../core/service/budget.dart';
+import '../../../core/util/export.dart';
 import '../../../core/text_style/export.dart';
 import '../../../entity/export.dart';
 import '../../bloc/export.dart';
@@ -17,11 +19,9 @@ import 'widgets/transaction_tab_bar.dart';
 class TransactionActionsPageArgs {
   final TransactionActionsMode mode;
   final Transaction? transaction;
+  final DateTime? selectedDate;
 
-  TransactionActionsPageArgs({
-    this.mode = TransactionActionsMode.add,
-    this.transaction,
-  });
+  TransactionActionsPageArgs({this.mode = TransactionActionsMode.add, this.transaction, this.selectedDate});
 }
 
 class TransactionActionsPage extends StatelessWidget {
@@ -32,11 +32,7 @@ class TransactionActionsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider<TransactionActionsBloc>(
-      create: (_) => TransactionActionsBloc(
-        sl<TransactionCategoryService>(),
-        sl<TransactionService>(),
-        args,
-      ),
+      create: (_) => TransactionActionsBloc(sl<TransactionCategoryService>(), sl<TransactionService>(), args),
       child: TransactionActionsPageChild(args: args),
     );
   }
@@ -48,13 +44,10 @@ class TransactionActionsPageChild extends StatefulWidget {
   const TransactionActionsPageChild({super.key, this.args});
 
   @override
-  State<TransactionActionsPageChild> createState() =>
-      _TransactionActionsPageChildState();
+  State<TransactionActionsPageChild> createState() => _TransactionActionsPageChildState();
 }
 
-class _TransactionActionsPageChildState
-    extends State<TransactionActionsPageChild>
-    with SingleTickerProviderStateMixin, WidgetsBindingObserver {
+class _TransactionActionsPageChildState extends State<TransactionActionsPageChild> with SingleTickerProviderStateMixin, WidgetsBindingObserver {
   final TextEditingController _noteController = TextEditingController();
   final FocusNode _noteFocusNode = FocusNode();
   late AnimationController _animationController;
@@ -64,14 +57,9 @@ class _TransactionActionsPageChildState
   @override
   void initState() {
     super.initState();
-    _noteController.text = widget.args?.transaction?.content ?? "";
-    _animationController = AnimationController(
-      duration: UIConstants.shortAnimationDuration,
-      vsync: this,
-    );
-    _slideAnimation = Tween<double>(begin: 0, end: 1).animate(
-      CurvedAnimation(parent: _animationController, curve: Curves.easeOutQuart),
-    );
+    _noteController.text = widget.args?.transaction?.content ?? '';
+    _animationController = AnimationController(duration: UIConstants.shortAnimationDuration, vsync: this);
+    _slideAnimation = Tween<double>(begin: 0, end: 1).animate(CurvedAnimation(parent: _animationController, curve: Curves.easeOutQuart));
     WidgetsBinding.instance.addObserver(this);
   }
 
@@ -128,76 +116,103 @@ class _TransactionActionsPageChildState
                       const Expanded(
                         child: ColoredBox(
                           color: ColorConstants.white,
-                          child: Padding(
-                            padding: EdgeInsets.all(UIConstants.smallPadding),
-                            child: TransactionCategoryGrid(),
-                          ),
+                          child: Padding(padding: EdgeInsets.all(UIConstants.smallPadding), child: TransactionCategoryGrid()),
                         ),
                       ),
                     ],
                   ),
                 ),
-                BlocSelector<
-                  TransactionActionsBloc,
-                  TransactionActionsState,
-                  bool
-                >(
+                BlocSelector<TransactionActionsBloc, TransactionActionsState, bool>(
                   selector: (state) => state.isKeyboardVisible,
                   builder: (context, isKeyboardVisible) {
                     if (!isKeyboardVisible) return const SizedBox.shrink();
                     return AnimatedBuilder(
                       animation: _slideAnimation,
                       builder: (context, child) {
-                        final slideOffset =
-                            _slideAnimation.value *
-                            keyboardHeight *
-                            UIConstants.keyboardSlideRatio;
-                        return Transform.translate(
-                          offset: Offset(0, -slideOffset),
-                          child: child,
-                        );
+                        final slideOffset = _slideAnimation.value * keyboardHeight * UIConstants.keyboardSlideRatio;
+                        return Transform.translate(offset: Offset(0, -slideOffset), child: child);
                       },
                       child: RepaintBoundary(
                         child: ColoredBox(
                           color: ColorConstants.greyWhite,
                           child: Padding(
-                            padding: const EdgeInsets.all(
-                              UIConstants.smallPadding,
-                            ),
+                            padding: const EdgeInsets.all(UIConstants.smallPadding),
                             child: Column(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                TransactionActionsInputHeader(
-                                  noteController: _noteController,
-                                  noteFocusNode: _noteFocusNode,
-                                ),
-                                BlocBuilder<
-                                  TransactionActionsBloc,
-                                  TransactionActionsState
-                                >(
-                                  buildWhen: (pre, curr) =>
-                                      pre.date != curr.date,
+                                TransactionActionsInputHeader(noteController: _noteController, noteFocusNode: _noteFocusNode),
+                                BlocBuilder<TransactionActionsBloc, TransactionActionsState>(
+                                  buildWhen: (pre, curr) => pre.date != curr.date,
                                   builder: (context, state) {
                                     return AppKeyboard(
                                       selectDate: state.date,
                                       onValueChanged: (value) async {
-                                        final bloc = context
-                                            .read<TransactionActionsBloc>();
+                                        final bloc = context.read<TransactionActionsBloc>();
                                         if (value == 'SELECT_DATE') {
-                                          final picked =
-                                              await showDialog<DateTime>(
-                                                context: context,
-                                                builder: (context) =>
-                                                    DatePickerScreen(initialDate: state.date,),
-                                              );
+                                          final picked = await showDialog<DateTime>(
+                                            context: context,
+                                            builder: (context) => DatePickerScreen(initialDate: state.date),
+                                          );
                                           if (picked != null) {
                                             bloc.add(SelectDateChange(picked));
                                           }
                                           return;
                                         }
                                         if (value == 'DONE') {
-                                          bloc.add(const SubmitTransaction());
-                                          return;
+                                          // Budget check before submit with safe fallbacks
+                                          final s = bloc.state;
+                                          final type = s.currentType;
+                                          final int amount = s.amount;
+                                          final int? categoryId = s.selectedCategoryIdFor(type);
+                                          final DateTime date = s.date ?? DateTime.now();
+
+                                          // If not an expense or invalid data, submit immediately
+                                          if (type != TransactionType.expense || amount <= 0 || categoryId == null) {
+                                            bloc.add(const SubmitTransaction());
+                                            return;
+                                          }
+
+                                          try {
+                                            final year = date.year;
+                                            final month = date.month;
+                                            final amount = await sl<BudgetService>().getBudgetForCategory(year: year, month: month, categoryId: categoryId);
+                                            if (amount <= 0) {
+                                              bloc.add(const SubmitTransaction());
+                                              return;
+                                            }
+
+                                            final range = AppDateUtils.monthRangeUtc(year, month);
+                                            final all = await sl<TransactionService>().getAllTransactions();
+                                            final startLocal = range.startUtc.toLocal();
+                                            final endLocal = range.endUtc.toLocal();
+                                            final spentSoFar = all.where((t) => t.transactionCategoryId == categoryId && t.transactionType == TransactionType.expense.typeIndex && !t.date.isBefore(startLocal) && t.date.isBefore(endLocal)).fold<int>(0, (p, t) => p + t.amount);
+                                            final proposed = spentSoFar + amount;
+                                            if (proposed > amount) {
+                                              final proceed = await showDialog<bool>(
+                                                context: context,
+                                                builder: (ctx) => AlertDialog(
+                                                  title: const Text('Vượt ngân sách'),
+                                                  content: const Text('Khoản này sẽ vượt ngân sách tháng cho danh mục. Tiếp tục?'),
+                                                  actions: [
+                                                    TextButton(onPressed: () => Navigator.of(ctx).pop(false), child: const Text('Huỷ')),
+                                                    TextButton(onPressed: () => Navigator.of(ctx).pop(true), child: const Text('Tiếp tục')),
+                                                  ],
+                                                ),
+                                              );
+                                              if (proceed == true) {
+                                                bloc.add(const SubmitTransaction());
+                                              }
+                                              return;
+                                            }
+
+                                            // Under budget -> proceed
+                                            bloc.add(const SubmitTransaction());
+                                            return;
+                                          } catch (_) {
+                                            // On any error, do not block submitting
+                                            bloc.add(const SubmitTransaction());
+                                            return;
+                                          }
                                         }
                                         bloc.add(AmountChanged(value));
                                       },
@@ -224,22 +239,14 @@ class _TransactionActionsPageChildState
     return CustomAppBar(
       title: TextConstants.add,
       leading: ConstrainedBox(
-        constraints: const BoxConstraints(
-          minWidth: UIConstants.mediumContainerSize,
-          minHeight: UIConstants.mediumContainerSize,
-        ),
+        constraints: const BoxConstraints(minWidth: UIConstants.mediumContainerSize, minHeight: UIConstants.mediumContainerSize),
         child: Ink(
           decoration: const ShapeDecoration(shape: StadiumBorder()),
           child: InkWell(
             customBorder: const StadiumBorder(),
             onTap: () {
-              if (context
-                  .read<TransactionActionsBloc>()
-                  .state
-                  .isKeyboardVisible) {
-                context.read<TransactionActionsBloc>().add(
-                  const ToggleKeyboardVisibility(),
-                );
+              if (context.read<TransactionActionsBloc>().state.isKeyboardVisible) {
+                context.read<TransactionActionsBloc>().add(const ToggleKeyboardVisibility());
                 Future.delayed(const Duration(milliseconds: 850), () {
                   AppNavigator(context: context).pop();
                 });
@@ -247,12 +254,7 @@ class _TransactionActionsPageChildState
               }
               AppNavigator(context: context).pop();
             },
-            child: Center(
-              child: Text(
-                TextConstants.cancel,
-                style: AppTextStyle.blackS14Medium,
-              ),
-            ),
+            child: Center(child: Text(TextConstants.cancel, style: AppTextStyle.blackS14Medium)),
           ),
         ),
       ),

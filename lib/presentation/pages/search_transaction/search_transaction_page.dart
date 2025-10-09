@@ -138,7 +138,7 @@ class _SearchTransactionPageChildState extends State<SearchTransactionPageChild>
                       backgroundColor: isSelected ? ColorConstants.primary : ColorConstants.grey.withAlpha(50),
                       textColor: isSelected ? ColorConstants.white : ColorConstants.black,
                       onPressed: () {
-                        context.read<SearchBloc>().add(SearchEvent.typeChanged(item['type']));
+                        context.read<SearchBloc>().add(SearchEvent.typeChanged(item['type'] as TransactionType?));
                       },
                     ),
                   );
