@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import '../../../core/enum/export.dart';
 import '../../../core/stream/export.dart';
 import '../../../core/util/date.dart';
+import '../../../core/util/format.dart';
 import '../../../core/constant/export.dart';
 import '../../../core/text_style/export.dart';
 import '../../../entity/export.dart';
@@ -13,9 +14,8 @@ class DailyTransactionPageArgs {
   final DateTime selectedDate;
   final Map<String, List<Transaction>> groupedTransactions;
   final Map<int, TransactionCategory> categoriesMap;
-  final Widget Function(String dateKey)? dailyTotalBuilder;
 
-  const DailyTransactionPageArgs({required this.selectedDate, required this.groupedTransactions, required this.categoriesMap, this.dailyTotalBuilder});
+  const DailyTransactionPageArgs({required this.selectedDate, required this.groupedTransactions, required this.categoriesMap});
 }
 
 class DailyTransactionPage extends StatefulWidget {
@@ -104,11 +104,37 @@ class _DailyTransactionPageState extends State<DailyTransactionPage> {
     });
   }
 
-
   @override
   void dispose() {
     _streamSub?.cancel();
     super.dispose();
+  }
+
+  Widget Function(String dateKey) _buildDailyTotalBuilder() {
+    return (String dateKey) {
+      final transactions = _groupedTransactions[dateKey] ?? [];
+      if (transactions.isEmpty) return const SizedBox();
+
+      int income = 0;
+      int expense = 0;
+      int transfer = 0;
+
+      for (final transaction in transactions) {
+        switch (TransactionType.fromIndex(transaction.transactionType)) {
+          case TransactionType.income:
+            income += transaction.amount;
+            break;
+          case TransactionType.expense:
+            expense += transaction.amount;
+            break;
+          case TransactionType.transfer:
+            transfer += transaction.amount;
+            break;
+        }
+      }
+
+      return Text(FormatUtils.formatTotalText(income.toDouble(), expense.toDouble(), transfer.toDouble()), style: AppTextStyle.blackS12);
+    };
   }
 
   @override
@@ -120,16 +146,14 @@ class _DailyTransactionPageState extends State<DailyTransactionPage> {
     return Scaffold(
       appBar: CustomAppBar(title: 'Giao dịch $dateStr'),
       body: SafeArea(
-        child: isEmpty ? _buildEmptyState(context) : TransactionList(groupedTransactions: _groupedTransactions, categoriesMap: _categoriesMap, dailyTotalWidgetBuilder: widget.args.dailyTotalBuilder),
+        child: isEmpty ? _buildEmptyState(context) : TransactionList(groupedTransactions: _groupedTransactions, categoriesMap: _categoriesMap, dailyTotalWidgetBuilder: _buildDailyTotalBuilder()),
       ),
-      floatingActionButton:  AddTransactionButton(
-        initialDate: widget.args.selectedDate,
-      ),
+      floatingActionButton: AddTransactionButton(initialDate: widget.args.selectedDate),
     );
   }
 
   Widget _buildEmptyState(BuildContext context) {
-    return  Center(
+    return Center(
       child: Column(
         spacing: UIConstants.defaultSpacing,
         mainAxisSize: MainAxisSize.min,

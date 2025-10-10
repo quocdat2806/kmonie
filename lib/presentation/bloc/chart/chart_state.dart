@@ -16,14 +16,11 @@ abstract class ChartState with _$ChartState {
     @Default(0) int selectedMonthIndex,
     @Default(0) int selectedYearIndex,
     @Default([]) List<ChartData> chartData,
-    // Category ids aligned with chartData indices for UI mapping
     @Default([]) List<int> chartCategoryIds,
-    // Gradient colors per category id (hex strings)
     @Default({}) Map<int, List<String>> categoryGradients,
     @Default([]) List<TransactionCategory> categories,
     @Default({}) Map<int, TransactionCategory> categoriesMap,
     @Default(false) bool isLoading,
-    String? errorMessage,
   }) = _ChartState;
 
   const ChartState._();

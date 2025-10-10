@@ -70,8 +70,8 @@ class SearchTransactionBloc extends Bloc<SearchTransactionEvent, SearchTransacti
   }
 
   Future<List<Transaction>> _filter({String? content, TransactionType? transactionType}) async {
-    final List<Transaction> transactions = await transactionService.searchByContent(keyword: content, transactionType: transactionType?.typeIndex);
-    return transactions;
+    final PagedTransactionResult transactionsRs = await transactionService.searchByContent(keyword: content, transactionType: transactionType?.typeIndex);
+    return transactionsRs.transactions;
   }
 
   void _onUpdateTransaction(SearchTransactionUpdateTransaction event, Emitter<SearchTransactionState> emit) {

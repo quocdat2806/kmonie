@@ -7,6 +7,8 @@ import '../../../core/enum/export.dart';
 import '../../../core/service/export.dart';
 import '../../../core/stream/export.dart';
 import '../../../entity/export.dart';
+import '../../../core/util/export.dart';
+import '../../../core/tool/export.dart';
 import '../../widgets/chart/app_chart.dart';
 import 'chart_event.dart';
 import 'chart_state.dart';
@@ -26,7 +28,6 @@ class ChartBloc extends Bloc<ChartEvent, ChartState> {
     on<LoadMoreYears>(_onLoadMoreYears);
     on<RefreshChart>(_onRefreshChart);
 
-    // Listen to transaction changes
     _subscription = AppStreamEvent.eventStreamStatic.listen((data) {
       switch (data.event) {
         case AppEvent.insertTransaction:
@@ -37,7 +38,6 @@ class ChartBloc extends Bloc<ChartEvent, ChartState> {
       }
     });
 
-    // Load initial data
     add(const LoadInitialData());
   }
 
@@ -51,30 +51,16 @@ class ChartBloc extends Bloc<ChartEvent, ChartState> {
     emit(state.copyWith(isLoading: true));
 
     try {
-      // Generate months and years
-      final months = _generateMonths();
-      final years = _generateYears();
+      final months = DateRangeUtils.generateRecentMonths();
+      final years = DateRangeUtils.generateRecentYears();
 
-      // Load categories
       final categories = await categoryService.getAll();
       final categoriesMap = {for (final cat in categories) cat.id!: cat};
 
-      emit(
-        state.copyWith(
-          months: months,
-          years: years,
-          selectedMonthIndex: months.length - 1, // Current month
-          selectedYearIndex: years.length - 1, // Current year
-          categories: categories,
-          categoriesMap: categoriesMap,
-          isLoading: false,
-        ),
-      );
-
-      // Load chart data
+      emit(state.copyWith(months: months, years: years, selectedMonthIndex: months.length - 1, selectedYearIndex: years.length - 1, categories: categories, categoriesMap: categoriesMap, isLoading: false));
       add(const RefreshChart());
     } catch (e) {
-      emit(state.copyWith(isLoading: false, errorMessage: 'Lỗi tải dữ liệu: $e'));
+      logger.e('❤️ ERROR: ChartBloc error: $e');
     }
   }
 
@@ -114,7 +100,6 @@ class ChartBloc extends Bloc<ChartEvent, ChartState> {
 
   Future<void> _onRefreshChart(RefreshChart event, Emitter<ChartState> emit) async {
     if (state.isLoading) return;
-
     emit(state.copyWith(isLoading: true));
 
     try {
@@ -156,75 +141,25 @@ class ChartBloc extends Bloc<ChartEvent, ChartState> {
       }
 
       // Sort both lists by percentage desc
-      final indices = List<int>.generate(chartData.length, (i) => i);
-      indices.sort((a, b) => chartData[b].value.compareTo(chartData[a].value));
+      final indices = List<int>.generate(chartData.length, (i) => i)..sort((a, b) => chartData[b].value.compareTo(chartData[a].value));
       final sortedData = [for (final i in indices) chartData[i]];
       final sortedCatIds = [for (final i in indices) chartCategoryIds[i]];
 
-      emit(state.copyWith(chartData: sortedData, chartCategoryIds: sortedCatIds, categoryGradients: categoryGradients, isLoading: false, errorMessage: null));
+      emit(state.copyWith(chartData: sortedData, chartCategoryIds: sortedCatIds, categoryGradients: categoryGradients, isLoading: false));
     } catch (e) {
-      emit(state.copyWith(chartData: [], isLoading: false, errorMessage: 'Lỗi tải dữ liệu biểu đồ: $e'));
+      logger.e('❤️ ERROR: ChartBloc error: $e');
     }
-  }
-
-  List<DateTime> _generateMonths() {
-    final DateTime now = DateTime.now();
-    const int initialMonthCount = 12;
-    final List<DateTime> months = [];
-
-    for (int i = initialMonthCount - 1; i >= 0; i--) {
-      final month = DateTime(now.year, now.month - i);
-      months.add(month);
-    }
-    return months;
-  }
-
-  List<int> _generateYears() {
-    final DateTime now = DateTime.now();
-    final List<int> years = [];
-
-    // Generate years from 5 years ago to current year
-    for (int i = 5; i >= 0; i--) {
-      years.add(now.year - i);
-    }
-    return years;
   }
 
   List<DateTime> _generateMoreMonths(List<DateTime> currentMonths) {
-    final List<DateTime> newMonths = [];
-    final DateTime oldestMonth = currentMonths.first;
-
-    for (int i = 12; i >= 1; i--) {
-      final month = DateTime(oldestMonth.year, oldestMonth.month - i);
-      newMonths.add(month);
-    }
-
-    return [...newMonths, ...currentMonths];
+    return DateRangeUtils.generateMoreMonths(currentMonths);
   }
 
   List<int> _generateMoreYears(List<int> currentYears) {
-    final List<int> newYears = [];
-    final int oldestYear = currentYears.first;
-
-    for (int i = 5; i >= 1; i--) {
-      newYears.add(oldestYear - i);
-    }
-
-    return [...newYears, ...currentYears];
+    return DateRangeUtils.generateMoreYears(currentYears);
   }
 
   Color _getCategoryColor(int categoryId) {
-    // Generate consistent colors based on category ID
-    final colors = [
-      const Color(0xFF4CAF50), // Green
-      const Color(0xFFFFC107), // Yellow
-      const Color(0xFFFF5722), // Red
-      const Color(0xFF2196F3), // Blue
-      const Color(0xFF9C27B0), // Purple
-      const Color(0xFFFF9800), // Orange
-      const Color(0xFF795548), // Brown
-      const Color(0xFF607D8B), // Blue Grey
-    ];
-    return colors[categoryId % colors.length];
+    return GradientHelper.generateCategoryColor(categoryId);
   }
 }

@@ -1,7 +1,5 @@
 import 'dart:convert';
-
 import 'package:drift/drift.dart';
-
 import '../../database/export.dart';
 import '../../entity/export.dart';
 import '../config/export.dart';
@@ -18,12 +16,12 @@ class PagedTransactionResult {
 class TransactionService {
   final KMonieDatabase _db;
 
-  Transaction? _cachedTransaction;
-  int? _cachedTransactionId;
+  // ✅ FIX: LRU cache với size limit
+  final _LRUCache<String, Map<String, List<Transaction>>> _groupCache = _LRUCache(maxSize: 10); // Chỉ giữ 10 tháng gần nhất
 
-  final Map<String, Map<String, List<Transaction>>> _groupCache = {};
-
+  // ✅ FIX: Year cache + invalidation tracking
   final Map<int, List<Transaction>> _yearCache = {};
+  final Set<int> _dirtyYears = {}; // Track years cần refresh
 
   TransactionService(this._db);
 
@@ -35,11 +33,28 @@ class TransactionService {
     return dateCol.isBiggerOrEqualValue(start) & dateCol.isSmallerThanValue(end);
   }
 
+  // ✅ Helper: Invalidate all caches
+  void _invalidateAllCaches([int? transactionYear]) {
+    _groupCache.clear();
+
+    if (transactionYear != null) {
+      _yearCache.remove(transactionYear);
+      _dirtyYears.add(transactionYear);
+    } else {
+      _yearCache.clear();
+      _dirtyYears.clear();
+    }
+  }
+
   Future<Transaction> createTransaction({required int amount, required DateTime date, required int transactionCategoryId, String content = '', required int transactionType}) async {
     try {
       final gradientColors = GradientHelper.generateSmartGradientColors();
       final utc = date.toUtc();
+
       final id = await _db.into(_db.transactionsTb).insert(TransactionsTbCompanion.insert(gradientColorsJson: Value(jsonEncode(gradientColors)), amount: amount, date: utc, transactionCategoryId: transactionCategoryId, content: Value(content), transactionType: Value(transactionType)));
+
+      // ✅ FIX: Invalidate cache after create
+      _invalidateAllCaches(date.year);
 
       return Transaction(id: id, amount: amount, gradientColors: gradientColors, date: utc.toLocal(), transactionCategoryId: transactionCategoryId, content: content, transactionType: transactionType);
     } catch (e) {
@@ -52,8 +67,9 @@ class TransactionService {
 
   Map<String, List<Transaction>> groupByDate(List<Transaction> transactions) {
     final key = _buildCacheKey(transactions);
-    final cached = _groupCache[key];
+    final cached = _groupCache.get(key);
     if (cached != null) return cached;
+
     final Map<String, List<Transaction>> grouped = {};
     for (final tx in transactions) {
       final dateKey = AppDateUtils.formatDateKey(tx.date);
@@ -61,18 +77,18 @@ class TransactionService {
     }
 
     final sortedKeys = grouped.keys.toList()..sort((a, b) => b.compareTo(a));
-    final sortedGrouped = {for (var k in sortedKeys) k: grouped[k]!};
+    final sortedGrouped = {for (final k in sortedKeys) k: grouped[k]!};
 
-    _groupCache[key] = sortedGrouped;
+    _groupCache.put(key, sortedGrouped); // ✅ LRU auto-evicts oldest
     return sortedGrouped;
   }
 
-  void invalidateGroupCacheForTransaction(int id) {
-    _groupCache.removeWhere((_, grouped) => grouped.values.expand((e) => e).any((tx) => tx.id == id));
-  }
+  // ✅ REMOVED: invalidateGroupCacheForTransaction (không cần nữa)
 
-  Future<List<Transaction>> searchByContent({String? keyword, int? transactionType}) async {
+  // ✅ FIX: Add pagination
+  Future<PagedTransactionResult> searchByContent({String? keyword, int? transactionType, int pageSize = AppConfigs.defaultPageSize, int pageIndex = AppConfigs.defaultPageIndex}) async {
     try {
+      // Count query
       final countExp = _db.transactionsTb.id.count();
       final countQ = _db.selectOnly(_db.transactionsTb)..addColumns([countExp]);
 
@@ -84,6 +100,9 @@ class TransactionService {
         countQ.where(_db.transactionsTb.transactionType.equals(transactionType));
       }
 
+      final totalRecords = (await countQ.getSingle()).read(countExp) ?? 0;
+
+      // Data query with pagination
       final q = _db.select(_db.transactionsTb);
       if (keyword?.trim().isNotEmpty == true) {
         final like = '%${keyword!.trim()}%';
@@ -92,38 +111,47 @@ class TransactionService {
       if (transactionType != null) {
         q.where((t) => t.transactionType.equals(transactionType));
       }
-      q..orderBy([(t) => OrderingTerm.desc(t.date)]);
+
+      q
+        ..orderBy([(t) => OrderingTerm.desc(t.date)])
+        ..limit(pageSize, offset: pageIndex * pageSize);
+
       final rows = await q.get();
       final items = rows.map(_mapRow).toList();
-      return items;
+
+      return PagedTransactionResult(transactions: items, totalRecords: totalRecords);
     } catch (e) {
       logger.e('Error searchByContent: $e');
-      return [];
+      return PagedTransactionResult(transactions: [], totalRecords: 0);
     }
   }
 
-  Future<Transaction?> getTransactionById(int id, {bool forceRefresh = false}) async {
-    if (!forceRefresh && _cachedTransactionId == id && _cachedTransaction != null) {
-      return _cachedTransaction;
-    }
-
+  // ✅ FIX: Remove single-item cache, SQLite handles this
+  Future<Transaction?> getTransactionById(int id) async {
     final row = await (_db.select(_db.transactionsTb)..where((t) => t.id.equals(id))).getSingleOrNull();
 
-    if (row != null) {
-      _cachedTransaction = _mapRow(row);
-      _cachedTransactionId = id;
-    }
-    return _cachedTransaction;
+    return row != null ? _mapRow(row) : null;
   }
 
   Future<Transaction?> updateTransaction({required int id, int? amount, DateTime? date, int? transactionCategoryId, String? content}) async {
     try {
+      // ✅ Get old transaction to know which year to invalidate
+      final oldTx = await getTransactionById(id);
+
       final companion = TransactionsTbCompanion(amount: amount != null ? Value(amount) : const Value.absent(), date: date != null ? Value(date.toUtc()) : const Value.absent(), transactionCategoryId: transactionCategoryId != null ? Value(transactionCategoryId) : const Value.absent(), content: content != null ? Value(content) : const Value.absent());
 
       await (_db.update(_db.transactionsTb)..where((t) => t.id.equals(id))).write(companion);
 
-      invalidateGroupCacheForTransaction(id);
-      return await getTransactionById(id, forceRefresh: true);
+      // ✅ Invalidate caches for affected years
+      final affectedYears = <int>{};
+      if (oldTx != null) affectedYears.add(oldTx.date.year);
+      if (date != null) affectedYears.add(date.year);
+
+      for (final year in affectedYears) {
+        _invalidateAllCaches(year);
+      }
+
+      return await getTransactionById(id);
     } catch (e) {
       logger.e('Error updating transaction: $e');
       return null;
@@ -132,14 +160,13 @@ class TransactionService {
 
   Future<bool> deleteTransaction(int id) async {
     try {
+      // ✅ Get transaction to know which year to invalidate
+      final tx = await getTransactionById(id);
+
       final deletedRows = await (_db.delete(_db.transactionsTb)..where((t) => t.id.equals(id))).go();
 
-      if (deletedRows > 0) {
-        if (_cachedTransactionId == id) {
-          _cachedTransaction = null;
-          _cachedTransactionId = null;
-        }
-        invalidateGroupCacheForTransaction(id);
+      if (deletedRows > 0 && tx != null) {
+        _invalidateAllCaches(tx.date.year);
       }
 
       return deletedRows > 0;
@@ -162,14 +189,16 @@ class TransactionService {
   Future<PagedTransactionResult> getTransactionsInMonth({required int year, required int month, int pageSize = AppConfigs.defaultPageSize, int pageIndex = AppConfigs.defaultPageIndex}) async {
     try {
       final r = AppDateUtils.monthRangeUtc(year, month);
-      final totalCountExp = _db.transactionsTb.id.count();
 
+      // Count
+      final totalCountExp = _db.transactionsTb.id.count();
       final totalCountQuery = _db.selectOnly(_db.transactionsTb)
         ..where(_db.transactionsTb.date.isBiggerOrEqualValue(r.startUtc) & _db.transactionsTb.date.isSmallerThanValue(r.endUtc))
         ..addColumns([totalCountExp]);
 
       final totalRecords = (await totalCountQuery.getSingle()).read(totalCountExp) ?? 0;
 
+      // Data
       final query = _db.select(_db.transactionsTb)
         ..where((t) => _dateInRange(t.date, r.startUtc, r.endUtc))
         ..orderBy([(t) => OrderingTerm.desc(t.date)])
@@ -186,6 +215,13 @@ class TransactionService {
   }
 
   Future<List<Transaction>> getTransactionsInYear(int year, {bool forceRefresh = false}) async {
+    // ✅ Check if year is dirty
+    if (_dirtyYears.contains(year)) {
+      _yearCache.remove(year);
+      _dirtyYears.remove(year);
+      forceRefresh = true;
+    }
+
     if (!forceRefresh && _yearCache.containsKey(year)) {
       return _yearCache[year]!;
     }
@@ -219,15 +255,47 @@ class TransactionService {
     _groupCache.clear();
   }
 
-  void clearGroupCacheForList(List<Transaction> list) {
-    _groupCache.remove(_buildCacheKey(list));
-  }
-
   Stream<List<Transaction>> watchTransactions() {
     return _db.select(_db.transactionsTb).watch().map((rows) => rows.map(_mapRow).toList());
   }
 
   Stream<List<Transaction>> watchTransactionsByCategory(int categoryId) {
     return (_db.select(_db.transactionsTb)..where((t) => t.transactionCategoryId.equals(categoryId))).watch().map((rows) => rows.map(_mapRow).toList());
+  }
+}
+
+// ✅ Simple LRU Cache implementation
+class _LRUCache<K, V> {
+  final int maxSize;
+  final Map<K, V> _cache = {};
+  final List<K> _accessOrder = [];
+
+  _LRUCache({required this.maxSize});
+
+  V? get(K key) {
+    if (!_cache.containsKey(key)) return null;
+
+    // Move to end (most recently used)
+    _accessOrder.remove(key);
+    _accessOrder.add(key);
+    return _cache[key];
+  }
+
+  void put(K key, V value) {
+    if (_cache.containsKey(key)) {
+      _accessOrder.remove(key);
+    } else if (_cache.length >= maxSize) {
+      // Remove least recently used
+      final oldest = _accessOrder.removeAt(0);
+      _cache.remove(oldest);
+    }
+
+    _cache[key] = value;
+    _accessOrder.add(key);
+  }
+
+  void clear() {
+    _cache.clear();
+    _accessOrder.clear();
   }
 }

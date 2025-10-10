@@ -40,7 +40,8 @@ class TransactionCategoryTb extends Table {
 
 class BudgetsTb extends Table {
   IntColumn get id => integer().autoIncrement()();
-  DateTimeColumn get dateBudget => dateTime()();
+  IntColumn get year => integer()();
+  IntColumn get month => integer()();
   IntColumn get transactionCategoryId => integer().references(TransactionCategoryTb, #id, onDelete: KeyAction.cascade)();
   IntColumn get amount => integer().withDefault(const Constant(0))();
 }
@@ -68,13 +69,18 @@ class KMonieDatabase extends _$KMonieDatabase {
       await customStatement('PRAGMA page_size=4096');
       await customStatement('PRAGMA auto_vacuum=INCREMENTAL');
       await migrator.createAll();
+      await customStatement(
+        'CREATE INDEX IF NOT EXISTS idx_budgets_year_month '
+        'ON budgets_tb (year, month)',
+      );
+
       await customStatement('CREATE INDEX IF NOT EXISTS idx_transaction_content ON transactions_tb(content)');
       await customStatement('CREATE INDEX IF NOT EXISTS idx_transaction_type ON transactions_tb(transaction_type)');
       await customStatement('CREATE INDEX IF NOT EXISTS idx_transactions_date ON transactions_tb (date)');
       await customStatement('CREATE INDEX IF NOT EXISTS idx_transactions_category ON transactions_tb (transaction_category_id)');
       await customStatement('CREATE INDEX IF NOT EXISTS idx_category_type ON transaction_category_tb (transaction_type)');
       await customStatement('CREATE INDEX IF NOT EXISTS idx_transaction_type_date ON transactions_tb (transaction_type, date DESC)');
-      await customStatement('CREATE UNIQUE INDEX IF NOT EXISTS idx_budget_unique_date_budget ON budgets_tb (date_budget, transaction_category_id)');
+      await customStatement('CREATE UNIQUE INDEX IF NOT EXISTS idx_budget_unique_year_month ON budgets_tb (year, month, transaction_category_id)');
       await _seedSystemCategoriesIfEmpty();
     },
     onUpgrade: (migrator, from, to) async {},
@@ -152,7 +158,7 @@ class KMonieDatabase extends _$KMonieDatabase {
       if (freePages > 0) {
         await customStatement('PRAGMA incremental_vacuum($freePages);');
       }
-      if (walSize > 64 * 1024 * 1024 || (needByTime && now.difference(last ?? now).inDays >= 30)) {
+      if (walSize > 64 * 1024 * 1024 || (needByTime && now.difference(last ?? now).inDays >= 90)) {
         await customStatement('VACUUM;');
         await customStatement('PRAGMA wal_checkpoint(TRUNCATE);');
       }
@@ -186,15 +192,19 @@ class KMonieDatabase extends _$KMonieDatabase {
     final c = (countRow.data['c'] as int?) ?? 0;
     if (c > 0) return;
     final all = TransactionCategoryConstants.transactionCategorySystem;
-    await batch((b) {
-      for (final cat in all) {
-        b.insert(
-          transactionCategoryTb,
-          TransactionCategoryTbCompanion.insert(title: cat.title, pathAsset: Value(cat.pathAsset), transactionType: Value(cat.transactionType.typeIndex), isCategoryDefaultSystem: const Value(true), isCreateNewCategory: Value(cat.isCreateNewCategory)),
-          mode: InsertMode.insertOrIgnore,
-        );
-      }
-    });
+    try {
+      await batch((b) {
+        for (final cat in all) {
+          b.insert(
+            transactionCategoryTb,
+            TransactionCategoryTbCompanion.insert(title: cat.title, pathAsset: Value(cat.pathAsset), transactionType: Value(cat.transactionType.typeIndex), isCategoryDefaultSystem: const Value(true), isCreateNewCategory: Value(cat.isCreateNewCategory)),
+            mode: InsertMode.insertOrIgnore,
+          );
+        }
+      });
+    } catch (e) {
+      logger.e('Error seeding system categories: $e');
+    }
   }
 }
 

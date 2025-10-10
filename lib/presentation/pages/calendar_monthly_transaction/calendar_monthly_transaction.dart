@@ -17,125 +17,77 @@ class CalendarMonthlyTransaction extends StatefulWidget {
   const CalendarMonthlyTransaction({super.key});
 
   @override
-  State<CalendarMonthlyTransaction> createState() =>
-      _CalendarMonthlyTransactionState();
+  State<CalendarMonthlyTransaction> createState() => _CalendarMonthlyTransactionState();
 }
 
-class _CalendarMonthlyTransactionState
-    extends State<CalendarMonthlyTransaction> {
+class _CalendarMonthlyTransactionState extends State<CalendarMonthlyTransaction> {
   void _showMonthPicker(BuildContext context, DateTime currentDate) async {
     final bloc = context.read<CalendarMonthlyTransactionBloc>();
     final result = await showDialog<Map<String, int>>(
       context: context,
-      builder: (context) => MonthPickerDialog(
-        initialMonth: currentDate.month,
-        initialYear: currentDate.year,
-      ),
+      builder: (context) => MonthPickerDialog(initialMonth: currentDate.month, initialYear: currentDate.year),
     );
 
     if (result != null && mounted) {
-      bloc.add(
-        CalendarMonthlyTransactionEvent.changeMonthYear(
-          year: result['year']!,
-          month: result['month']!,
-        ),
-      );
+      bloc.add(CalendarMonthlyTransactionEvent.changeMonthYear(year: result['year']!, month: result['month']!));
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => CalendarMonthlyTransactionBloc(
-        sl<TransactionService>(),
-        sl<TransactionCategoryService>(),
-      ),
-      child:
-          BlocBuilder<
-            CalendarMonthlyTransactionBloc,
-            CalendarMonthTransactionState
-          >(
-            builder: (context, state) {
-              final selectedDate = state.selectedDate ?? DateTime.now();
-              return Scaffold(
-                appBar: CustomAppBar(
-                  title: 'Lịch',
-                  centerTitle: false,
-                  actions: [
-                    InkWell(
-                      onTap: () => _showMonthPicker(context, selectedDate),
-                      child: Row(
-                        children: [
-                          Text(
-                            'Tháng ${selectedDate.month} ${selectedDate.year}',
-                            style: AppTextStyle.blackS14Medium,
-                          ),
-                          const Icon(Icons.keyboard_arrow_down),
-                          const SizedBox(width: UIConstants.smallSpacing),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-                body: SafeArea(
-                  child: Column(
+      create: (_) => CalendarMonthlyTransactionBloc(sl<TransactionService>(), sl<TransactionCategoryService>()),
+      child: BlocBuilder<CalendarMonthlyTransactionBloc, CalendarMonthTransactionState>(
+        builder: (context, state) {
+          final selectedDate = state.selectedDate ?? DateTime.now();
+          return Scaffold(
+            appBar: CustomAppBar(
+              title: 'Lịch',
+              centerTitle: false,
+              actions: [
+                InkWell(
+                  onTap: () => _showMonthPicker(context, selectedDate),
+                  child: Row(
                     children: [
-                      const WeekdayHeader(),
-                      if (state.isLoading)
-                        const Expanded(
-                          child: Center(child: CircularProgressIndicator()),
-                        )
-                      else
-                        Expanded(
-                          child: CalendarGrid(
-                            selectedDate: selectedDate,
-                            dailyTotals: state.dailyTotals,
-                            onDateSelected: (date) {
-                              final bloc = context
-                                  .read<CalendarMonthlyTransactionBloc>();
-                              final state = bloc.state;
-                              bloc.add(
-                                CalendarMonthlyTransactionEvent.changeSelectedDate(
-                                  date,
-                                ),
-                              );
-                              final dateKey = AppDateUtils.formatDateKey(date);
-                              final transactions =
-                                  state.groupedTransactions[dateKey] ?? [];
-                              AppNavigator(context: context).push(
-                                RouterPath.dailyTransactions,
-                                extra: DailyTransactionPageArgs(
-                                  selectedDate: date,
-                                  groupedTransactions: {dateKey: transactions},
-                                  categoriesMap: state.categoriesMap,
-                                  dailyTotalBuilder: (_) {
-                                    final total = state.dailyTotals[date.day];
-                                    if (total == null) {
-                                      return const SizedBox.shrink();
-                                    }
-                                    return Text(
-                                      FormatUtils.formatTotalText(
-                                        total.income,
-                                        total.expense,
-                                        total.transfer,
-                                      ),
-                                      style: AppTextStyle.blackS12,
-                                    );
-                                  },
-                                ),
-                              );
-                            },
-                          ),
-                        ),
+                      Text('Tháng ${selectedDate.month} ${selectedDate.year}', style: AppTextStyle.blackS14Medium),
+                      const Icon(Icons.keyboard_arrow_down),
+                      const SizedBox(width: UIConstants.smallSpacing),
                     ],
                   ),
                 ),
-                floatingActionButton:  AddTransactionButton(
-                  initialDate: selectedDate,
-                ),
-              );
-            },
-          ),
+              ],
+            ),
+            body: SafeArea(
+              child: Column(
+                children: [
+                  const WeekdayHeader(),
+                  if (state.isLoading)
+                    const Expanded(child: Center(child: CircularProgressIndicator()))
+                  else
+                    Expanded(
+                      child: CalendarGrid(
+                        selectedDate: selectedDate,
+                        dailyTotals: state.dailyTotals,
+                        onDateSelected: (date) {
+                          final bloc = context.read<CalendarMonthlyTransactionBloc>();
+                          final state = bloc.state;
+                          bloc.add(CalendarMonthlyTransactionEvent.changeSelectedDate(date));
+                          final dateKey = AppDateUtils.formatDateKey(date);
+                          final transactions = state.groupedTransactions[dateKey] ?? [];
+                          AppNavigator(context: context).push(
+                            RouterPath.dailyTransactions,
+                            extra: DailyTransactionPageArgs(selectedDate: date, groupedTransactions: {dateKey: transactions}, categoriesMap: state.categoriesMap),
+                          );
+                        },
+                      ),
+                    ),
+                ],
+              ),
+            ),
+            floatingActionButton: AddTransactionButton(initialDate: selectedDate),
+          );
+        },
+      ),
     );
   }
 }

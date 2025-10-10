@@ -7,8 +7,7 @@ class BudgetService {
   BudgetService(this._db);
 
   Future<Map<int, int>> getBudgetsForMonth(int year, int month) async {
-    final periodUtc = DateTime.utc(year, month);
-    final q = _db.select(_db.budgetsTb)..where((t) => t.dateBudget.equals(periodUtc));
+    final q = _db.select(_db.budgetsTb)..where((t) => t.year.equals(year) & t.month.equals(month));
     final rows = await q.get();
     final Map<int, int> result = {};
     for (final r in rows) {
@@ -18,22 +17,19 @@ class BudgetService {
   }
 
   Future<int> getBudgetForCategory({required int year, required int month, required int categoryId}) async {
-    final periodUtc = DateTime.utc(year, month);
-
-    final q = _db.select(_db.budgetsTb)..where((t) => t.dateBudget.equals(periodUtc) & t.transactionCategoryId.equals(categoryId));
+    final q = _db.select(_db.budgetsTb)..where((t) => t.year.equals(year) & t.month.equals(month) & t.transactionCategoryId.equals(categoryId));
 
     final row = await q.getSingleOrNull();
     return row?.amount ?? 0;
   }
 
   Future<void> setBudgetForCategory({required int year, required int month, required int categoryId, required int amount}) async {
-    final periodUtc = DateTime.utc(year, month);
     if (amount <= 0) {
-      await (_db.delete(_db.budgetsTb)..where((t) => t.dateBudget.equals(periodUtc) & t.transactionCategoryId.equals(categoryId))).go();
+      await (_db.delete(_db.budgetsTb)..where((t) => t.year.equals(year) & t.month.equals(month) & t.transactionCategoryId.equals(categoryId))).go();
       return;
     }
 
-    final companion = BudgetsTbCompanion(dateBudget: Value(periodUtc), transactionCategoryId: Value(categoryId), amount: Value(amount));
+    final companion = BudgetsTbCompanion(year: Value(year), month: Value(month), transactionCategoryId: Value(categoryId), amount: Value(amount));
 
     await _db.into(_db.budgetsTb).insertOnConflictUpdate(companion);
   }

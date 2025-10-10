@@ -65,4 +65,27 @@ class UIConstants {
   static const double appBarHeight = 56.0;
 
   static const double screenHeightPercentage = 0.85;
+
+  // Chart specific constants
+  static const double chartSelectorHeight = 40.0;
+  static const double chartSelectorPadding = 12.0;
+  static const double chartSelectorBorderRadius = 20.0;
+  static const double chartSelectorTextSize = 12.0;
+  static const double chartSelectorIconSpacing = 4.0;
+
+  static const double chartContentVerticalSpacing = 4.0;
+  static const double chartContentTextSize = 14.0;
+  static const double chartContentErrorTextSize = 16.0;
+
+  static const double chartPieSize = 150.0;
+  static const double chartPieStrokeWidth = 30.0;
+  static const double chartLegendDotSize = 12.0;
+
+  static const double chartCategoryIconSize = 40.0;
+  static const double chartCategorySpacing = 12.0;
+  static const double chartCategoryTextSpacing = 6.0;
+  static const double chartCategoryProgressHeight = 6.0;
+  static const double chartCategoryProgressRadius = 6.0;
+
+  static const double chartDropdownPadding = 12.0;
 }

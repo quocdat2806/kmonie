@@ -25,6 +25,15 @@ class GradientHelper {
     return [_colorToHex(baseColor), _colorToHex(secondColor)];
   }
 
+  // Deterministically generate a representative color per category id
+  static Color generateCategoryColor(int categoryId) {
+    // Use a seeded hue to keep color stable across sessions
+    final double hue = (categoryId * 37) % 360.0;
+    const double saturation = 0.65;
+    const double lightness = 0.55;
+    return HSLColor.fromAHSL(1.0, hue, saturation, lightness).toColor();
+  }
+
   static Color _colorFromHex(String hex) {
     final buffer = StringBuffer();
     if (hex.length == 6 || hex.length == 7) buffer.write('ff');
