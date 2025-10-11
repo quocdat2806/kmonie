@@ -25,6 +25,12 @@ class AppDateUtils {
     return DateFormat('d MMM yyyy HH:mm:ss', 'vi_VN').format(date);
   }
 
+  static String formatHeaderDate(DateTime date) {
+    const weekdays = ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'];
+    final weekdayName = weekdays[date.weekday % 7];
+    return '$weekdayName, ${date.day} thg ${date.month}, ${date.year}';
+  }
+
   static List<DateTime> generateRecentMonths({int initialMonthCount = 12}) {
     final DateTime now = DateTime.now();
     final List<DateTime> months = [];
@@ -43,10 +49,7 @@ class AppDateUtils {
     return years;
   }
 
-  static List<DateTime> generateMoreMonths(
-    List<DateTime> currentMonths, {
-    int addCount = 12,
-  }) {
+  static List<DateTime> generateMoreMonths(List<DateTime> currentMonths, {int addCount = 12}) {
     if (currentMonths.isEmpty) return currentMonths;
     final List<DateTime> newMonths = [];
     final DateTime oldestMonth = currentMonths.first;
@@ -56,10 +59,7 @@ class AppDateUtils {
     return [...newMonths, ...currentMonths];
   }
 
-  static List<int> generateMoreYears(
-    List<int> currentYears, {
-    int rangeBack = 5,
-  }) {
+  static List<int> generateMoreYears(List<int> currentYears, {int rangeBack = 5}) {
     if (currentYears.isEmpty) return currentYears;
     final List<int> newYears = [];
     final int oldestYear = currentYears.first;
@@ -69,14 +69,9 @@ class AppDateUtils {
     return [...newYears, ...currentYears];
   }
 
-  static ({DateTime startUtc, DateTime endUtc}) monthRangeUtc(
-    int year,
-    int month,
-  ) {
+  static ({DateTime startUtc, DateTime endUtc}) monthRangeUtc(int year, int month) {
     final localStart = DateTime(year, month);
-    final localNext = (month == 12)
-        ? DateTime(year + 1)
-        : DateTime(year, month + 1);
+    final localNext = (month == 12) ? DateTime(year + 1) : DateTime(year, month + 1);
     return (startUtc: localStart.toUtc(), endUtc: localNext.toUtc());
   }
 

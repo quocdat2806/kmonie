@@ -10,6 +10,7 @@ class AppColorConstants {
   static const Color orange = Color(0xFFFFBF00);
   static const Color blue = Color(0xFF4285F4);
   static const Color black = Color(0xFF050708);
+  static const Color blackSemiTransparent = Color(0x80000000);
   static const Color primary = Color(0xFFFFDA3E);
   static const Color grey = Color(0xFF737273);
   static const Color greyWhite = Color(0xffDCDCDC);

@@ -40,7 +40,6 @@ class AddBudgetBloc extends Bloc<AddBudgetEvent, AddBudgetState> {
 
       emit(state.copyWith(budgets: {...state.budgets, event.itemTitle: event.amount}));
     } catch (e) {
-      // Handle error if needed
       emit(state);
     }
   }
