@@ -14,8 +14,7 @@ class ChartTransactionTypeDropdown extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<ChartBloc, ChartState>(
-      buildWhen: (previous, current) =>
-          previous.selectedTransactionType != current.selectedTransactionType,
+      buildWhen: (previous, current) => previous.selectedTransactionType != current.selectedTransactionType,
       builder: (context, state) {
         return InkWell(
           key: dropdownKey,
@@ -24,15 +23,8 @@ class ChartTransactionTypeDropdown extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             spacing: AppUIConstants.smallSpacing,
             children: [
-              Text(
-                state.selectedTransactionType.displayName,
-                style: AppTextStyle.blackS16Bold,
-              ),
-              const Icon(
-                Icons.arrow_drop_down,
-                color: AppColorConstants.black,
-                size: AppUIConstants.mediumIconSize,
-              ),
+              Text(state.selectedTransactionType.displayName, style: AppTextStyle.blackS18Bold),
+              const Icon(Icons.arrow_drop_down, color: AppColorConstants.black, size: AppUIConstants.mediumIconSize),
             ],
           ),
         );
@@ -53,10 +45,7 @@ class ChartTransactionTypeDropdown extends StatelessWidget {
         child: Text(item, style: AppTextStyle.blackS14Medium),
       ),
       onItemSelected: (value) {
-        final selectedType = allowedTypes.firstWhere(
-          (t) => t.displayName == value,
-          orElse: () => TransactionType.expense,
-        );
+        final selectedType = allowedTypes.firstWhere((t) => t.displayName == value, orElse: () => TransactionType.expense);
         context.read<ChartBloc>().add(ChangeTransactionType(selectedType));
       },
     );

@@ -5,7 +5,6 @@ import 'package:kmonie/application/auth/auth.dart';
 import 'package:kmonie/core/config/config.dart';
 import 'package:kmonie/core/navigation/navigation.dart';
 import 'package:kmonie/core/services/services.dart';
-import 'package:kmonie/core/theme/theme.dart';
 import 'package:kmonie/core/utils/utils.dart';
 
 class App extends StatelessWidget {
@@ -21,11 +20,7 @@ class App extends StatelessWidget {
         onTap: () => KeyboardUtils.hideKeyboard(context),
         child: MaterialApp.router(
           scaffoldMessengerKey: SnackBarService.scaffoldMessengerKey,
-          theme: ThemeData(
-            useMaterial3: true,
-            inputDecorationTheme: AppInputTheme.defaultInput,
-            fontFamily: AppConfigs.fontFamily,
-          ),
+          theme: ThemeData(useMaterial3: true, fontFamily: AppConfigs.fontFamily),
           routerConfig: appRouter.router,
         ),
       ),

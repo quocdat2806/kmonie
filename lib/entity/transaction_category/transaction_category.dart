@@ -5,15 +5,7 @@ part 'transaction_category.g.dart';
 
 @freezed
 abstract class TransactionCategory with _$TransactionCategory {
-  const factory TransactionCategory({
-    int? id,
-    required String title,
-    @Default('') String pathAsset,
-    @Default(TransactionType.expense) TransactionType transactionType,
-    @Default(true) bool isCategoryDefaultSystem,
-    @Default(false) bool isCreateNewCategory,
-  }) = _TransactionCategory;
+  const factory TransactionCategory({int? id, required String title, @Default('') String pathAsset, @Default(TransactionType.expense) TransactionType transactionType, @Default(true) bool isCategoryDefaultSystem, @Default(false) bool isCreateNewCategory, @Default([]) List<String> gradientColors}) = _TransactionCategory;
 
-  factory TransactionCategory.fromJson(Map<String, dynamic> json) =>
-      _$TransactionCategoryFromJson(json);
+  factory TransactionCategory.fromJson(Map<String, dynamic> json) => _$TransactionCategoryFromJson(json);
 }

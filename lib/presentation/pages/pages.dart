@@ -14,3 +14,5 @@ export 'add_transaction_category/add_transaction_category_page.dart';
 export 'detail_transaction/detail_transaction_page.dart';
 export 'daily_transactions/daily_transaction_page.dart';
 export 'budget/budget_page.dart';
+export 'add_budget/add_budget_page.dart';
+export 'add_account/add_account_page.dart';

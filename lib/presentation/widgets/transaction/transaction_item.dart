@@ -18,13 +18,7 @@ class TransactionItem extends StatelessWidget {
 
   final VoidCallback? onConfirmDelete;
 
-  const TransactionItem({
-    super.key,
-    required this.transaction,
-    this.category,
-    this.onEdit,
-    this.onConfirmDelete,
-  });
+  const TransactionItem({super.key, required this.transaction, this.category, this.onEdit, this.onConfirmDelete});
 
   @override
   Widget build(BuildContext context) {
@@ -63,41 +57,19 @@ class TransactionItem extends StatelessWidget {
         ],
       ),
       child: Padding(
-        padding: const EdgeInsets.symmetric(
-          vertical: AppUIConstants.smallPadding,
-        ),
+        padding: const EdgeInsets.symmetric(vertical: AppUIConstants.smallPadding),
         child: Row(
           spacing: AppUIConstants.smallSpacing,
           children: [
             DecoratedBox(
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: GradientHelper.fromColorHexList(
-                  transaction.gradientColors,
-                ),
-              ),
+              decoration: BoxDecoration(shape: BoxShape.circle, gradient: GradientHelper.fromColorHexList(category!.gradientColors)),
               child: Padding(
                 padding: const EdgeInsets.all(AppUIConstants.smallPadding),
-                child: SvgUtils.icon(
-                  assetPath: category!.pathAsset,
-                  size: SvgSizeType.medium,
-                ),
+                child: SvgUtils.icon(assetPath: category!.pathAsset, size: SvgSizeType.medium),
               ),
             ),
-            Expanded(
-              child: Text(
-                transaction.content.isNotEmpty
-                    ? transaction.content
-                    : category!.title,
-                style: AppTextStyle.blackS14,
-              ),
-            ),
-            Text(
-              transaction.transactionType == TransactionType.expense.typeIndex
-                  ? '-${FormatUtils.formatCurrency(transaction.amount)}'
-                  : FormatUtils.formatCurrency(transaction.amount),
-              style: AppTextStyle.blackS14,
-            ),
+            Expanded(child: Text(transaction.content.isNotEmpty ? transaction.content : category!.title, style: AppTextStyle.blackS14)),
+            Text(transaction.transactionType == TransactionType.expense.typeIndex ? '-${FormatUtils.formatCurrency(transaction.amount)}' : FormatUtils.formatCurrency(transaction.amount), style: AppTextStyle.blackS14),
           ],
         ),
       ),

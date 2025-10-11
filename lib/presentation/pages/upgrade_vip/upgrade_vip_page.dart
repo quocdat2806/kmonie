@@ -3,7 +3,7 @@ import 'package:kmonie/core/utils/utils.dart';
 
 import 'package:kmonie/core/constants/constants.dart';
 import 'package:kmonie/core/text_style/text_style.dart';
-import 'package:kmonie/generated/export.dart';
+import 'package:kmonie/generated/generated.dart';
 import 'package:kmonie/core/enums/enums.dart';
 import 'package:kmonie/presentation/widgets/widgets.dart';
 
@@ -13,10 +13,7 @@ class VipUpgradePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const CustomAppBar(
-        title: AppTextConstants.cancel,
-        centerTitle: false,
-      ),
+      appBar: const CustomAppBar(title: AppTextConstants.cancel, centerTitle: false),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(AppUIConstants.smallPadding),
@@ -25,17 +22,8 @@ class VipUpgradePage extends StatelessWidget {
             children: [
               _buildHeader(),
               _buildFeatureList(),
-              Text(
-                AppTextConstants.feeForYear,
-                style: AppTextStyle.blackS14,
-                textAlign: TextAlign.center,
-              ),
-              AppButton(
-                onPressed: () {},
-                text: AppTextConstants.register,
-                width: double.infinity,
-                fontWeight: FontWeight.bold,
-              ),
+              Text(AppTextConstants.feeForYear, style: AppTextStyle.blackS14, textAlign: TextAlign.center),
+              AppButton(onPressed: () {}, text: AppTextConstants.register, width: double.infinity, fontWeight: FontWeight.bold),
             ],
           ),
         ),
@@ -48,33 +36,18 @@ class VipUpgradePage extends StatelessWidget {
       spacing: AppUIConstants.defaultSpacing,
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        SvgUtils.icon(
-          assetPath: Assets.svgsKing,
-          color: AppColorConstants.primary,
-          size: SvgSizeType.large,
-        ),
-        Text(
-          AppTextConstants.changeToVipPackage,
-          style: AppTextStyle.blackS24Bold,
-        ),
+        SvgUtils.icon(assetPath: Assets.svgsKing, color: AppColorConstants.primary, size: SvgSizeType.large),
+        Text(AppTextConstants.changeToVipPackage, style: AppTextStyle.blackS24Bold),
       ],
     );
   }
 
   Widget _buildFeatureList() {
-    final features = [
-      AppTextConstants.unlockFeatureAndRemoveAds,
-      AppTextConstants.moreTopicAndCustomize,
-      AppTextConstants.makeLifeBeautiful,
-    ];
+    final features = [AppTextConstants.unlockFeatureAndRemoveAds, AppTextConstants.moreTopicAndCustomize, AppTextConstants.makeLifeBeautiful];
 
     return Padding(
-      padding: const EdgeInsets.symmetric(
-        horizontal: AppUIConstants.defaultPadding,
-      ),
-      child: Column(
-        children: features.map((text) => _buildFeatureItem(text)).toList(),
-      ),
+      padding: const EdgeInsets.symmetric(horizontal: AppUIConstants.defaultPadding),
+      child: Column(children: features.map((text) => _buildFeatureItem(text)).toList()),
     );
   }
 

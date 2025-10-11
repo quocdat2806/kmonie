@@ -50,8 +50,7 @@ class _DetailTransactionPageState extends State<DetailTransactionPage> {
         }
       }
 
-      if (event.event == AppEvent.deleteTransaction &&
-          event.payload == _transaction.id) {
+      if (event.event == AppEvent.deleteTransaction && event.payload == _transaction.id) {
         if (mounted) Navigator.of(context).pop();
       }
     });
@@ -77,15 +76,9 @@ class _DetailTransactionPageState extends State<DetailTransactionPage> {
               _buildHeader(_category, _transaction),
               const SizedBox(height: AppUIConstants.defaultSpacing),
               _buildRow('Kiểu', typeLabel),
-              _buildRow(
-                'Số tiền',
-                FormatUtils.formatCurrency(_transaction.amount),
-              ),
+              _buildRow('Số tiền', FormatUtils.formatCurrency(_transaction.amount)),
               _buildDateRow('Ngày', _transaction.date),
-              _buildRow(
-                'Ghi chú',
-                _transaction.content.isEmpty ? '(Trống)' : _transaction.content,
-              ),
+              _buildRow('Ghi chú', _transaction.content.isEmpty ? '(Trống)' : _transaction.content),
             ],
           ),
         ),
@@ -100,19 +93,11 @@ class _DetailTransactionPageState extends State<DetailTransactionPage> {
           child: Row(
             children: [
               Expanded(
-                child: AppButton(
-                  text: AppTextConstants.edit,
-                  backgroundColor: Colors.transparent,
-                  onPressed: _onEditPressed,
-                ),
+                child: AppButton(text: AppTextConstants.edit, backgroundColor: Colors.transparent, onPressed: _onEditPressed),
               ),
               Container(width: 1, color: AppColorConstants.greyWhite),
               Expanded(
-                child: AppButton(
-                  backgroundColor: Colors.transparent,
-                  onPressed: _onDeletePressed,
-                  text: AppTextConstants.delete,
-                ),
+                child: AppButton(backgroundColor: Colors.transparent, onPressed: _onDeletePressed, text: AppTextConstants.delete),
               ),
             ],
           ),
@@ -124,10 +109,7 @@ class _DetailTransactionPageState extends State<DetailTransactionPage> {
   void _onEditPressed() {
     AppNavigator(context: context).push(
       RouterPath.transactionActions,
-      extra: TransactionActionsPageArgs(
-        mode: TransactionActionsMode.edit,
-        transaction: _transaction,
-      ),
+      extra: TransactionActionsPageArgs(mode: TransactionActionsMode.edit, transaction: _transaction),
     );
   }
 
@@ -150,26 +132,14 @@ class _DetailTransactionPageState extends State<DetailTransactionPage> {
       spacing: AppUIConstants.defaultSpacing,
       children: [
         DecoratedBox(
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            gradient: GradientHelper.fromColorHexList(
-              transaction.gradientColors,
-            ),
-          ),
+          decoration: BoxDecoration(shape: BoxShape.circle, gradient: GradientHelper.fromColorHexList(category.gradientColors)),
           child: Padding(
             padding: const EdgeInsets.all(AppUIConstants.smallPadding),
-            child: SvgUtils.icon(
-              assetPath: category.pathAsset,
-              size: SvgSizeType.medium,
-            ),
+            child: SvgUtils.icon(assetPath: category.pathAsset, size: SvgSizeType.medium),
           ),
         ),
         Expanded(
-          child: Text(
-            category.title,
-            style: AppTextStyle.blackS16Medium,
-            overflow: TextOverflow.ellipsis,
-          ),
+          child: Text(category.title, style: AppTextStyle.blackS16Medium, overflow: TextOverflow.ellipsis),
         ),
       ],
     );
@@ -177,18 +147,12 @@ class _DetailTransactionPageState extends State<DetailTransactionPage> {
 
   Widget _buildRow(String label, String value) {
     return Padding(
-      padding: const EdgeInsets.symmetric(
-        vertical: AppUIConstants.smallPadding,
-      ),
+      padding: const EdgeInsets.symmetric(vertical: AppUIConstants.smallPadding),
       child: Row(
         children: [
           SizedBox(width: 100, child: Text(label, style: AppTextStyle.greyS14)),
           Expanded(
-            child: Text(
-              value,
-              style: AppTextStyle.blackS14Medium,
-              overflow: TextOverflow.ellipsis,
-            ),
+            child: Text(value, style: AppTextStyle.blackS14Medium, overflow: TextOverflow.ellipsis),
           ),
         ],
       ),
@@ -197,9 +161,7 @@ class _DetailTransactionPageState extends State<DetailTransactionPage> {
 
   Widget _buildDateRow(String label, DateTime date) {
     return Padding(
-      padding: const EdgeInsets.symmetric(
-        vertical: AppUIConstants.smallPadding,
-      ),
+      padding: const EdgeInsets.symmetric(vertical: AppUIConstants.smallPadding),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -208,14 +170,8 @@ class _DetailTransactionPageState extends State<DetailTransactionPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             spacing: AppUIConstants.smallSpacing,
             children: [
-              Text(
-                AppDateUtils.formatDate(date),
-                style: AppTextStyle.blackS14Medium,
-              ),
-              Text(
-                '(Thêm ${AppDateUtils.formatFullDate(date)})',
-                style: AppTextStyle.greyS12,
-              ),
+              Text(AppDateUtils.formatDate(date), style: AppTextStyle.blackS14Medium),
+              Text('(Thêm ${AppDateUtils.formatFullDate(date)})', style: AppTextStyle.greyS12),
             ],
           ),
         ],

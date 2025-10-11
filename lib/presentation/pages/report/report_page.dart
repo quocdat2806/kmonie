@@ -10,9 +10,8 @@ import 'package:kmonie/core/services/transaction_category.dart';
 import 'package:kmonie/presentation/bloc/report/report_bloc.dart';
 import 'package:kmonie/presentation/bloc/report/report_event.dart';
 import 'package:kmonie/presentation/bloc/report/report_state.dart';
-import 'package:kmonie/core/navigation/router_path.dart';
 import 'package:kmonie/core/navigation/navigation.dart';
-import 'package:kmonie/presentation/widgets/tab_view/app_tab_view.dart';
+import 'package:kmonie/presentation/widgets/widgets.dart';
 
 class ReportPage extends StatelessWidget {
   const ReportPage({super.key});
@@ -21,11 +20,7 @@ class ReportPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final now = DateTime(DateTime.now().year, DateTime.now().month);
     return BlocProvider<ReportBloc>(
-      create: (_) => ReportBloc(
-        sl<BudgetService>(),
-        sl<TransactionService>(),
-        sl<TransactionCategoryService>(),
-      )..add(ReportEvent.init(period: now)),
+      create: (_) => ReportBloc(sl<BudgetService>(), sl<TransactionService>(), sl<TransactionCategoryService>())..add(ReportEvent.init(period: now)),
       child: const _ReportPageChild(),
     );
   }
@@ -41,247 +36,281 @@ class _ReportPageChild extends StatefulWidget {
 class _ReportPageChildState extends State<_ReportPageChild> {
   int _selectedTabIndex = ReportType.analysis.typeIndex;
 
+  void _onTabSelected(int index) {
+    setState(() {
+      _selectedTabIndex = index;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        backgroundColor: AppColorConstants.primary,
-        foregroundColor: Colors.white,
-        title: Text(AppTextConstants.report, style: AppTextStyle.whiteS18Bold),
-        elevation: 0,
-      ),
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(AppUIConstants.defaultPadding),
-          child: Column(
-            children: [
-              AppTabView<ReportType>(
-                types: ReportType.values,
-                selectedIndex: _selectedTabIndex,
-                getDisplayName: (t) => t.displayName,
-                getTypeIndex: (t) => t.typeIndex,
-                onTabSelected: (i) => setState(() => _selectedTabIndex = i),
+    return ColoredBox(
+      color: AppColorConstants.white,
+      child: Column(
+        children: [
+          ColoredBox(
+            color: AppColorConstants.primary,
+            child: Column(
+              children: [
+                const SizedBox(height: AppUIConstants.defaultSpacing),
+                Text(AppTextConstants.report, style: AppTextStyle.blackS18Bold),
+                const SizedBox(height: AppUIConstants.defaultSpacing),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: AppUIConstants.smallPadding),
+                  child: AppTabView<ReportType>(types: ExReportType.reportTypes, selectedIndex: _selectedTabIndex, getDisplayName: (t) => t.displayName, getTypeIndex: (t) => t.typeIndex, onTabSelected: _onTabSelected),
+                ),
+                const SizedBox(height: AppUIConstants.defaultSpacing),
+              ],
+            ),
+          ),
+          // Content
+          Expanded(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(AppUIConstants.defaultPadding),
+              child: Column(
+                children: [
+                  if (_selectedTabIndex == ReportType.analysis.typeIndex) ...[
+                    _buildMonthlyStatisticsCard(),
+                    const SizedBox(height: AppUIConstants.defaultSpacing),
+                    // Chỉ hiển thị biểu đồ ngân sách khi đã có ngân sách
+                    _buildMonthlyBudgetCard(),
+                  ] else if (_selectedTabIndex == ReportType.account.typeIndex) ...[
+                    _buildNetWorthCard(),
+                    const SizedBox(height: AppUIConstants.defaultSpacing),
+                    _buildAccountActionButtons(),
+                  ],
+                ],
               ),
-              const SizedBox(height: AppUIConstants.defaultSpacing),
-              Expanded(
-                child: BlocBuilder<ReportBloc, ReportState>(
-                  builder: (context, state) {
-                    if (state.isLoading) {
-                      return const Center(child: CircularProgressIndicator());
-                    }
-                    if (state.message != null) {
-                      return Center(
-                        child: Text(
-                          state.message!,
-                          style: AppTextStyle.greyS14,
-                        ),
-                      );
-                    }
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 
-                    return SingleChildScrollView(
+  Widget _buildMonthlyStatisticsCard() {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(AppUIConstants.defaultPadding),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(AppUIConstants.defaultBorderRadius),
+        boxShadow: [BoxShadow(color: Colors.grey.withOpacity(0.1), spreadRadius: 1, blurRadius: 4, offset: const Offset(0, 2))],
+      ),
+      child: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text('Thống kê hàng tháng', style: AppTextStyle.blackS14Bold),
+              const Icon(Icons.arrow_forward_ios, size: 16, color: AppColorConstants.grey),
+            ],
+          ),
+          const SizedBox(height: AppUIConstants.defaultSpacing),
+          Row(
+            children: [
+              Text('Thg ${DateTime.now().month}', style: AppTextStyle.blackS14Medium),
+              _buildStatItem('Chi tiêu', '550.000'),
+              _buildStatItem('Thu nhập', '0'),
+              _buildStatItem('Số dư', '-550.000'),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildStatItem(String label, String value) {
+    return Expanded(
+      child: Column(
+        children: [
+          Text(label, style: AppTextStyle.grayS12Medium),
+          const SizedBox(height: 2),
+          Text(value, style: AppTextStyle.blackS14Medium),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildMonthlyBudgetCard() {
+    return BlocBuilder<ReportBloc, ReportState>(
+      builder: (context, state) {
+        final monthlyBudget = state.monthlyBudget;
+        final totalSpent = state.totalSpent;
+        final remaining = monthlyBudget - totalSpent;
+        final progress = monthlyBudget > 0 ? (totalSpent / monthlyBudget).clamp(0.0, 1.0) : 0.0;
+        // Hiển thị màu đỏ khi: vượt ngưỡng hoặc có chi tiêu mà chưa có ngân sách
+        final isOverBudget = remaining < 0 || (totalSpent > 0 && monthlyBudget == 0);
+
+        return GestureDetector(
+          onTap: () {
+            AppNavigator(context: context).push(RouterPath.budget);
+          },
+          child: Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(AppUIConstants.defaultPadding),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(AppUIConstants.defaultBorderRadius),
+              boxShadow: [BoxShadow(color: Colors.grey.withOpacity(0.1), spreadRadius: 1, blurRadius: 4, offset: const Offset(0, 2))],
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text('Ngân sách hàng tháng', style: AppTextStyle.blackS14Bold),
+                    const Icon(Icons.arrow_forward_ios, size: 16, color: AppColorConstants.grey),
+                  ],
+                ),
+                const SizedBox(height: AppUIConstants.defaultSpacing),
+                Row(
+                  children: [
+                    SizedBox(
+                      width: 80,
+                      height: 80,
+                      child: Stack(
+                        children: [
+                          Transform.rotate(
+                            angle: 0, // Bắt đầu từ đúng vị trí 12 giờ (top)
+                            child: SizedBox(
+                              width: 80,
+                              height: 80,
+                              child: CircularProgressIndicator(
+                                value: progress,
+                                strokeWidth: 8,
+                                backgroundColor: isOverBudget ? Colors.red : AppColorConstants.primary,
+                                valueColor: AlwaysStoppedAnimation<Color>(isOverBudget ? Colors.red.shade700 : Colors.grey), // Màu đã dùng
+                                strokeCap: StrokeCap.round,
+                              ),
+                            ),
+                          ),
+                          Center(
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(isOverBudget ? 'Vượt quá' : 'Còn lại', style: AppTextStyle.blackS12Medium),
+                                Text(isOverBudget ? '100.0%' : '${(100 - progress * 100).toStringAsFixed(1)}%', style: AppTextStyle.blackS12Medium),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(width: AppUIConstants.defaultSpacing),
+                    // Budget info
+                    Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          _buildMonthHeader(context, state),
-                          const SizedBox(height: AppUIConstants.defaultSpacing),
-                          if (_selectedTabIndex ==
-                              ReportType.analysis.typeIndex)
-                            _AnalysisSection(state: state)
-                          else
-                            _AccountSection(state: state),
+                          _buildBudgetInfoItem('Còn lại :', isOverBudget ? '-${_formatAmount(remaining.abs())}' : _formatAmount(remaining)),
+                          const SizedBox(height: 6),
+                          _buildBudgetInfoItem('Ngân sách :', _formatAmount(monthlyBudget)),
+                          const SizedBox(height: 6),
+                          _buildBudgetInfoItem('Chi tiêu :', _formatAmount(totalSpent), isOverBudget: isOverBudget),
                         ],
                       ),
-                    );
-                  },
+                    ),
+                  ],
                 ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildBudgetInfoItem(String label, String value, {bool isOverBudget = false}) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(label, style: AppTextStyle.blackS12Medium),
+        Text(value, style: AppTextStyle.blackS12.copyWith(color: isOverBudget ? AppColorConstants.red : AppColorConstants.black)),
+      ],
+    );
+  }
+
+  String _formatAmount(int amount) {
+    if (amount == 0) return '0';
+    return amount.toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]}.');
+  }
+
+  Widget _buildNetWorthCard() {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(AppUIConstants.defaultPadding),
+      decoration: BoxDecoration(color: AppColorConstants.primary, borderRadius: BorderRadius.circular(AppUIConstants.defaultBorderRadius)),
+      child: Column(
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Giá trị ròng', style: AppTextStyle.blackS14.copyWith(color: AppColorConstants.textGray)),
+                    const SizedBox(height: 4),
+                    Text('0', style: AppTextStyle.blackS18Bold),
+                    const SizedBox(height: 16),
+                    Text('Tài sản', style: AppTextStyle.blackS14.copyWith(color: AppColorConstants.textGray)),
+                    const SizedBox(height: 4),
+                    Text('0', style: AppTextStyle.blackS18Bold),
+                  ],
+                ),
+              ),
+              Column(
+                children: [
+                  const Icon(Icons.account_balance_wallet, size: 48, color: AppColorConstants.textGray),
+                  const SizedBox(height: 16),
+                  Text('Nợ phải trả', style: AppTextStyle.blackS14.copyWith(color: AppColorConstants.textGray)),
+                  const SizedBox(height: 4),
+                  Text('0', style: AppTextStyle.blackS18Bold),
+                ],
               ),
             ],
           ),
-        ),
+        ],
       ),
     );
   }
 
-  Widget _buildMonthHeader(BuildContext context, ReportState state) {
-    final p = state.period ?? DateTime.now();
-    final ym = '${AppTextConstants.month} ${p.month}/${p.year}';
+  Widget _buildAccountActionButtons() {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(ym, style: AppTextStyle.blackS16Bold),
-        TextButton(
-          onPressed: () async {
-            final base = state.period ?? DateTime.now();
-            final prev = DateTime(base.year, base.month - 1);
-            context.read<ReportBloc>().add(
-              ReportEvent.changePeriod(period: prev),
-            );
-          },
-          child: const Text('<'),
-        ),
-        TextButton(
-          onPressed: () async {
-            final base = state.period ?? DateTime.now();
-            final next = DateTime(base.year, base.month + 1);
-            context.read<ReportBloc>().add(
-              ReportEvent.changePeriod(period: next),
-            );
-          },
-          child: const Text('>'),
-        ),
-      ],
-    );
-  }
-}
-
-class _AnalysisSection extends StatelessWidget {
-  final ReportState state;
-  const _AnalysisSection({required this.state});
-
-  @override
-  Widget build(BuildContext context) {
-    final entries = state.budgetsByCategory.entries.toList()
-      ..sort((a, b) => a.key.compareTo(b.key));
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text('Ngân sách hàng tháng', style: AppTextStyle.blackS16Bold),
-            TextButton(
-              onPressed: () async {
-                await AppNavigator(context: context).push(RouterPath.budget);
-                final s = context.read<ReportBloc>().state;
-                final p = s.period ?? DateTime.now();
-                context.read<ReportBloc>().add(
-                  ReportEvent.changePeriod(period: DateTime(p.year, p.month)),
-                );
-              },
-              child: const Text('Thêm ngân sách'),
-            ),
-          ],
-        ),
-        const SizedBox(height: AppUIConstants.smallSpacing),
-        for (final e in entries)
-          _BudgetItem(
-            categoryId: e.key,
-            budget: e.value,
-            spent: state.spentByCategory[e.key] ?? 0,
-            year: (state.period ?? DateTime.now()).year,
-            month: (state.period ?? DateTime.now()).month,
+        Expanded(
+          child: _buildActionButton(
+            text: 'Thêm tài khoản',
+            onTap: () {
+              AppNavigator(context: context).push(RouterPath.addAccount);
+            },
           ),
-      ],
-    );
-  }
-}
-
-class _AccountSection extends StatelessWidget {
-  final ReportState state;
-  const _AccountSection({required this.state});
-
-  @override
-  Widget build(BuildContext context) {
-    // Placeholder for account tab to align with design
-    final totalBudget = state.budgetsByCategory.values.fold<int>(
-      0,
-      (p, c) => p + c,
-    );
-    final totalSpent = state.spentByCategory.values.fold<int>(
-      0,
-      (p, c) => p + c,
-    );
-    final remain = totalBudget - totalSpent;
-    final over = remain < 0;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text('Tổng quan ngân sách', style: AppTextStyle.blackS16Bold),
-        const SizedBox(height: AppUIConstants.smallSpacing),
-        Text(
-          'Tổng ngân sách: $totalBudget',
-          style: AppTextStyle.blackS14Medium,
         ),
-        Text('Đã chi: $totalSpent', style: AppTextStyle.blackS14Medium),
-        Text(
-          over ? 'Vượt ngân sách: ${-remain}' : 'Còn lại: $remain',
-          style: over ? AppTextStyle.redS14Medium : AppTextStyle.greenS14Medium,
+        const SizedBox(width: AppUIConstants.defaultSpacing),
+        Expanded(
+          child: _buildActionButton(
+            text: 'Quản lý tài khoản',
+            onTap: () {
+              // TODO: Navigate to manage account page
+            },
+          ),
         ),
       ],
     );
   }
-}
 
-class _BudgetItem extends StatelessWidget {
-  final int categoryId;
-  final int budget;
-  final int spent;
-  final int year;
-  final int month;
-
-  const _BudgetItem({
-    required this.categoryId,
-    required this.budget,
-    required this.spent,
-    required this.year,
-    required this.month,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final remain = budget - spent;
-    final over = remain < 0;
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(AppUIConstants.defaultPadding),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            if (over)
-              Container(
-                width: double.infinity,
-                decoration: const BoxDecoration(
-                  color: Colors.redAccent,
-                  borderRadius: BorderRadius.all(Radius.circular(6)),
-                ),
-                padding: const EdgeInsets.all(AppUIConstants.smallPadding),
-                margin: const EdgeInsets.only(
-                  bottom: AppUIConstants.smallSpacing,
-                ),
-                child: Text(
-                  'Đã vượt ngân sách tháng',
-                  style: AppTextStyle.whiteS14Bold,
-                ),
-              ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text('Danh mục #$categoryId', style: AppTextStyle.blackS14Bold),
-                Text('Ngân sách: $budget', style: AppTextStyle.blackS14Medium),
-              ],
-            ),
-            const SizedBox(height: AppUIConstants.smallSpacing),
-            LinearProgressIndicator(
-              value: budget == 0 ? 0 : (spent / budget).clamp(0.0, 1.0),
-              backgroundColor: AppColorConstants.grey,
-              color: over ? Colors.red : AppColorConstants.primary,
-            ),
-            const SizedBox(height: AppUIConstants.smallSpacing),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text('Đã chi: $spent', style: AppTextStyle.blackS14Medium),
-                Text(
-                  over ? 'Vượt: ${-remain}' : 'Còn: $remain',
-                  style: over
-                      ? AppTextStyle.redS14Medium
-                      : AppTextStyle.greenS14Medium,
-                ),
-              ],
-            ),
-          ],
+  Widget _buildActionButton({required String text, required VoidCallback onTap}) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: AppUIConstants.defaultSpacing, horizontal: AppUIConstants.defaultPadding),
+        decoration: BoxDecoration(
+          color: AppColorConstants.white,
+          borderRadius: BorderRadius.circular(AppUIConstants.defaultBorderRadius),
+          boxShadow: [BoxShadow(color: Colors.grey.withOpacity(0.1), spreadRadius: 1, blurRadius: 4, offset: const Offset(0, 2))],
         ),
+        child: Center(child: Text(text, style: AppTextStyle.blackS14Medium)),
       ),
     );
   }
