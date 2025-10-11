@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import '../../../../core/constant/export.dart';
-import '../../../../core/text_style/export.dart';
-import '../../../../generated/assets.dart';
-import '../../../../entity/export.dart';
-import '../../../../core/enum/export.dart';
+import 'package:kmonie/core/constants/constants.dart';
+import 'package:kmonie/core/text_style/text_style.dart';
+import 'package:kmonie/generated/assets.dart';
+import 'package:kmonie/entity/entity.dart';
+import 'package:kmonie/core/enums/enums.dart';
 
 class StatisticsList extends StatelessWidget {
   final Map<String, List<Transaction>> groupedTransactions;
@@ -20,11 +20,11 @@ class StatisticsList extends StatelessWidget {
   Widget build(BuildContext context) {
     if (groupedTransactions.isEmpty) {
       return Container(
-        margin: const EdgeInsets.all(UIConstants.smallPadding),
-        padding: const EdgeInsets.all(UIConstants.defaultPadding),
+        margin: const EdgeInsets.all(AppUIConstants.smallPadding),
+        padding: const EdgeInsets.all(AppUIConstants.defaultPadding),
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(UIConstants.smallBorderRadius),
+          borderRadius: BorderRadius.circular(AppUIConstants.smallBorderRadius),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withOpacity(0.05),
@@ -38,12 +38,14 @@ class StatisticsList extends StatelessWidget {
     }
 
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: UIConstants.smallPadding),
+      margin: const EdgeInsets.symmetric(
+        horizontal: AppUIConstants.smallPadding,
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text('Chi tiết giao dịch', style: AppTextStyle.blackS16Bold),
-          const SizedBox(height: UIConstants.smallPadding),
+          const SizedBox(height: AppUIConstants.smallPadding),
           ...groupedTransactions.entries.map((entry) {
             return _buildDateGroup(entry.key, entry.value);
           }).toList(),
@@ -53,13 +55,13 @@ class StatisticsList extends StatelessWidget {
   }
 
   Widget _buildDateGroup(String dateKey, List<Transaction> transactions) {
-    final totalAmount =  transactions.fold(0.0, (sum, t) => sum + t.amount);
+    final totalAmount = transactions.fold(0.0, (sum, t) => sum + t.amount);
 
     return Container(
-      margin: const EdgeInsets.only(bottom: UIConstants.smallPadding),
+      margin: const EdgeInsets.only(bottom: AppUIConstants.smallPadding),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(UIConstants.smallBorderRadius),
+        borderRadius: BorderRadius.circular(AppUIConstants.smallBorderRadius),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.05),
@@ -72,12 +74,12 @@ class StatisticsList extends StatelessWidget {
         children: [
           // Date header
           Container(
-            padding: const EdgeInsets.all(UIConstants.smallPadding),
+            padding: const EdgeInsets.all(AppUIConstants.smallPadding),
             decoration: BoxDecoration(
-              color: ColorConstants.grey.withOpacity(0.1),
+              color: AppColorConstants.grey.withOpacity(0.1),
               borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(UIConstants.smallBorderRadius),
-                topRight: Radius.circular(UIConstants.smallBorderRadius),
+                topLeft: Radius.circular(AppUIConstants.smallBorderRadius),
+                topRight: Radius.circular(AppUIConstants.smallBorderRadius),
               ),
             ),
             child: Row(
@@ -87,7 +89,7 @@ class StatisticsList extends StatelessWidget {
                 Text(
                   _formatAmount(totalAmount.toInt()),
                   style: AppTextStyle.blackS14Bold.copyWith(
-                    color: ColorConstants.primary,
+                    color: AppColorConstants.primary,
                   ),
                 ),
               ],
@@ -107,29 +109,29 @@ class StatisticsList extends StatelessWidget {
     final category = categoriesMap[transaction.transactionCategoryId];
 
     return Container(
-      padding: const EdgeInsets.all(UIConstants.smallPadding),
+      padding: const EdgeInsets.all(AppUIConstants.smallPadding),
       decoration: const BoxDecoration(
         border: Border(
-          top: BorderSide(color: ColorConstants.divider, width: 0.5),
+          top: BorderSide(color: AppColorConstants.divider, width: 0.5),
         ),
       ),
       child: Row(
         children: [
           // Icon
           Container(
-            width: UIConstants.largeIconSize,
-            height: UIConstants.largeIconSize,
+            width: AppUIConstants.largeIconSize,
+            height: AppUIConstants.largeIconSize,
             decoration: BoxDecoration(
               color: _getCategoryColor(category).withOpacity(0.1),
               borderRadius: BorderRadius.circular(
-                UIConstants.smallBorderRadius,
+                AppUIConstants.smallBorderRadius,
               ),
             ),
             child: Center(
               child: SvgPicture.asset(
                 _getCategoryIcon(category),
-                width: UIConstants.defaultIconSize,
-                height: UIConstants.defaultIconSize,
+                width: AppUIConstants.defaultIconSize,
+                height: AppUIConstants.defaultIconSize,
                 colorFilter: ColorFilter.mode(
                   _getCategoryColor(category),
                   BlendMode.srcIn,
@@ -137,7 +139,7 @@ class StatisticsList extends StatelessWidget {
               ),
             ),
           ),
-          const SizedBox(width: UIConstants.smallPadding),
+          const SizedBox(width: AppUIConstants.smallPadding),
 
           // Content
           Expanded(
@@ -186,9 +188,9 @@ class StatisticsList extends StatelessWidget {
 
   Color _getCategoryColor(TransactionCategory? category) {
     if (category?.transactionType == TransactionType.income) {
-      return ColorConstants.secondary;
+      return AppColorConstants.secondary;
     }
-    return ColorConstants.primary;
+    return AppColorConstants.primary;
   }
 
   String _formatAmount(int amount) {

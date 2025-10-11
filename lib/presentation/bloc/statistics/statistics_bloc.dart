@@ -1,7 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../core/service/export.dart';
-import '../../../core/enum/export.dart';
-import '../../../entity/export.dart';
+import 'package:kmonie/core/services/services.dart';
+import 'package:kmonie/core/enums/enums.dart';
+import 'package:kmonie/entity/entity.dart';
 import 'statistics_event.dart';
 import 'statistics_state.dart';
 

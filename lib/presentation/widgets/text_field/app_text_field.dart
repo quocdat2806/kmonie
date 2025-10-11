@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import '../../../core/constant/export.dart';
+import 'package:kmonie/core/constants/constants.dart';
 
 class AppTextField extends StatelessWidget {
   const AppTextField({
@@ -33,7 +33,7 @@ class AppTextField extends StatelessWidget {
     this.onClear,
     this.filledColor = Colors.transparent,
     this.onFieldSubmitted,
-    this.textInputAction = TextInputAction.search
+    this.textInputAction = TextInputAction.search,
   });
 
   final TextEditingController controller;
@@ -63,7 +63,7 @@ class AppTextField extends StatelessWidget {
   final VoidCallback? onClear;
   final Color filledColor;
   final Function(String value)? onFieldSubmitted;
-  final TextInputAction ? textInputAction;
+  final TextInputAction? textInputAction;
 
   @override
   Widget build(BuildContext context) {
@@ -111,7 +111,7 @@ class AppTextField extends StatelessWidget {
                 child: const Icon(
                   Icons.clear,
                   size: 18,
-                  color: ColorConstants.black,
+                  color: AppColorConstants.black,
                 ),
               ),
             ),
@@ -128,7 +128,7 @@ class AppTextField extends StatelessWidget {
           border ??
           UnderlineInputBorder(
             borderSide: BorderSide(
-              color: borderBottomColor ?? ColorConstants.red,
+              color: borderBottomColor ?? AppColorConstants.red,
             ),
           ),
       contentPadding:

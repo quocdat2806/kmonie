@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 
-import '../../../../core/constant/export.dart';
-import '../../../../core/text_style/export.dart';
-import '../../../../core/util/export.dart';
-import '../../../../entity/export.dart';
+import 'package:kmonie/core/constants/constants.dart';
+import 'package:kmonie/core/text_style/text_style.dart';
+import 'package:kmonie/core/utils/utils.dart';
+import 'package:kmonie/entity/entity.dart';
+
 class CalendarGrid extends StatelessWidget {
   final DateTime selectedDate;
   final Map<int, DailyTransactionTotal> dailyTotals;
@@ -47,7 +48,8 @@ class CalendarGrid extends StatelessWidget {
         if (date == null) return const SizedBox();
 
         final total = dailyTotals[date.day];
-        final isSelected = date.day == selectedDate.day &&
+        final isSelected =
+            date.day == selectedDate.day &&
             date.month == selectedDate.month &&
             date.year == selectedDate.year;
 
@@ -81,28 +83,27 @@ class CalendarDayCell extends StatelessWidget {
     return InkWell(
       onTap: onTap,
       child: Container(
-        margin: const EdgeInsets.all(UIConstants.extraSmallSpacingMin),
+        margin: const EdgeInsets.all(AppUIConstants.extraSmallSpacingMin),
         decoration: BoxDecoration(
-          color: isSelected ? ColorConstants.green.withAlpha(60) : ColorConstants.greyWhite.withAlpha(60),
-          borderRadius: BorderRadius.circular(UIConstants.smallBorderRadius),
+          color: isSelected
+              ? AppColorConstants.green.withAlpha(60)
+              : AppColorConstants.greyWhite.withAlpha(60),
+          borderRadius: BorderRadius.circular(AppUIConstants.smallBorderRadius),
         ),
         child: Column(
           children: [
-            const SizedBox(height: UIConstants.smallSpacing),
-            Text(
-              '${date.day}',
-              style: AppTextStyle.blackS14,
-            ),
+            const SizedBox(height: AppUIConstants.smallSpacing),
+            Text('${date.day}', style: AppTextStyle.blackS14),
             if (total != null && (total!.income > 0 || total!.expense > 0)) ...[
               if (total!.income > 0)
                 Text(
-                  FormatUtils.formatAmount(total!.income.toInt()),
+                  FormatUtils.formatCurrency(total!.income.toInt()),
                   style: AppTextStyle.greenS12,
                   overflow: TextOverflow.ellipsis,
                 ),
               if (total!.expense > 0)
                 Text(
-                  FormatUtils.formatAmount(total!.expense.toInt()),
+                  FormatUtils.formatCurrency(total!.expense.toInt()),
                   style: AppTextStyle.redS12,
                   overflow: TextOverflow.ellipsis,
                 ),

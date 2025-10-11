@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../core/config/export.dart';
-import '../../../core/constant/export.dart';
-import '../../../core/di/export.dart';
-import '../../../core/service/export.dart';
-import '../../../core/text_style/export.dart';
-import '../../../core/util/export.dart';
-import '../../../entity/export.dart';
-import '../../bloc/export.dart';
-import '../../widgets/export.dart';
+import 'package:kmonie/core/config/config.dart';
+import 'package:kmonie/core/constants/constants.dart';
+import 'package:kmonie/core/di/di.dart';
+import 'package:kmonie/core/services/services.dart';
+import 'package:kmonie/core/text_style/text_style.dart';
+import 'package:kmonie/core/utils/utils.dart';
+import 'package:kmonie/entity/entity.dart';
+import 'package:kmonie/presentation/bloc/bloc.dart';
+import 'package:kmonie/presentation/widgets/widgets.dart';
 import 'widgets/monthly_expense_summary.dart';
 
 class HomePage extends StatelessWidget {
@@ -60,7 +60,7 @@ class _HomePageChildState extends State<HomePageChild> {
   @override
   Widget build(BuildContext context) {
     return ColoredBox(
-      color: ColorConstants.white,
+      color: AppColorConstants.white,
       child: Column(
         children: <Widget>[
           MonthlyExpenseSummary(
@@ -90,7 +90,7 @@ class _HomePageChildState extends State<HomePageChild> {
                         final daily = data.dailyTotals[dateKey];
                         if (daily == null) return const SizedBox();
                         return Text(
-                          FormatUtils.formatTotalText(
+                          FormatUtils.formatDailyTransactionTotal(
                             daily.income,
                             daily.expense,
                             daily.transfer,
@@ -114,10 +114,13 @@ class _HomePageChildState extends State<HomePageChild> {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
-        spacing: UIConstants.smallSpacing,
+        spacing: AppUIConstants.smallSpacing,
         children: [
-          Text(TextConstants.emptyTransaction, style: AppTextStyle.greyS14),
-          Text(TextConstants.addTransactionAdvice, style: AppTextStyle.greyS12),
+          Text(AppTextConstants.emptyTransaction, style: AppTextStyle.greyS14),
+          Text(
+            AppTextConstants.addTransactionAdvice,
+            style: AppTextStyle.greyS12,
+          ),
         ],
       ),
     );

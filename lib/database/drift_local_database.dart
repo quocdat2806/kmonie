@@ -4,8 +4,8 @@ import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
 import 'package:path_provider/path_provider.dart';
 
-import '../core/constant/export.dart';
-import '../core/util/export.dart';
+import 'package:kmonie/core/constants/constants.dart';
+import 'package:kmonie/core/utils/utils.dart';
 
 part 'drift_local_database.g.dart';
 
@@ -16,12 +16,17 @@ class TransactionsTb extends Table {
 
   DateTimeColumn get date => dateTime()();
 
-  IntColumn get transactionCategoryId => integer().references(TransactionCategoryTb, #id, onDelete: KeyAction.restrict)();
+  IntColumn get transactionCategoryId => integer().references(
+    TransactionCategoryTb,
+    #id,
+    onDelete: KeyAction.restrict,
+  )();
 
   TextColumn get content => text().withDefault(const Constant(''))();
 
   IntColumn get transactionType => integer().withDefault(const Constant(0))();
-  TextColumn get gradientColorsJson => text().withDefault(const Constant('[]'))();
+  TextColumn get gradientColorsJson =>
+      text().withDefault(const Constant('[]'))();
 }
 
 class TransactionCategoryTb extends Table {
@@ -33,16 +38,22 @@ class TransactionCategoryTb extends Table {
 
   IntColumn get transactionType => integer().withDefault(const Constant(0))();
 
-  BoolColumn get isCategoryDefaultSystem => boolean().withDefault(const Constant(true))();
+  BoolColumn get isCategoryDefaultSystem =>
+      boolean().withDefault(const Constant(true))();
 
-  BoolColumn get isCreateNewCategory => boolean().withDefault(const Constant(false))();
+  BoolColumn get isCreateNewCategory =>
+      boolean().withDefault(const Constant(false))();
 }
 
 class BudgetsTb extends Table {
   IntColumn get id => integer().autoIncrement()();
   IntColumn get year => integer()();
   IntColumn get month => integer()();
-  IntColumn get transactionCategoryId => integer().references(TransactionCategoryTb, #id, onDelete: KeyAction.cascade)();
+  IntColumn get transactionCategoryId => integer().references(
+    TransactionCategoryTb,
+    #id,
+    onDelete: KeyAction.cascade,
+  )();
   IntColumn get amount => integer().withDefault(const Constant(0))();
 }
 
@@ -74,13 +85,27 @@ class KMonieDatabase extends _$KMonieDatabase {
         'ON budgets_tb (year, month)',
       );
 
-      await customStatement('CREATE INDEX IF NOT EXISTS idx_transaction_content ON transactions_tb(content)');
-      await customStatement('CREATE INDEX IF NOT EXISTS idx_transaction_type ON transactions_tb(transaction_type)');
-      await customStatement('CREATE INDEX IF NOT EXISTS idx_transactions_date ON transactions_tb (date)');
-      await customStatement('CREATE INDEX IF NOT EXISTS idx_transactions_category ON transactions_tb (transaction_category_id)');
-      await customStatement('CREATE INDEX IF NOT EXISTS idx_category_type ON transaction_category_tb (transaction_type)');
-      await customStatement('CREATE INDEX IF NOT EXISTS idx_transaction_type_date ON transactions_tb (transaction_type, date DESC)');
-      await customStatement('CREATE UNIQUE INDEX IF NOT EXISTS idx_budget_unique_year_month ON budgets_tb (year, month, transaction_category_id)');
+      await customStatement(
+        'CREATE INDEX IF NOT EXISTS idx_transaction_content ON transactions_tb(content)',
+      );
+      await customStatement(
+        'CREATE INDEX IF NOT EXISTS idx_transaction_type ON transactions_tb(transaction_type)',
+      );
+      await customStatement(
+        'CREATE INDEX IF NOT EXISTS idx_transactions_date ON transactions_tb (date)',
+      );
+      await customStatement(
+        'CREATE INDEX IF NOT EXISTS idx_transactions_category ON transactions_tb (transaction_category_id)',
+      );
+      await customStatement(
+        'CREATE INDEX IF NOT EXISTS idx_category_type ON transaction_category_tb (transaction_type)',
+      );
+      await customStatement(
+        'CREATE INDEX IF NOT EXISTS idx_transaction_type_date ON transactions_tb (transaction_type, date DESC)',
+      );
+      await customStatement(
+        'CREATE UNIQUE INDEX IF NOT EXISTS idx_budget_unique_year_month ON budgets_tb (year, month, transaction_category_id)',
+      );
       await _seedSystemCategoriesIfEmpty();
     },
     onUpgrade: (migrator, from, to) async {},
@@ -104,7 +129,10 @@ class KMonieDatabase extends _$KMonieDatabase {
   }
 
   Future<String?> _getMeta(String key) async {
-    final row = await customSelect('SELECT value FROM $_metaTableName WHERE key = ?', variables: [Variable<String>(key)]).getSingleOrNull();
+    final row = await customSelect(
+      'SELECT value FROM $_metaTableName WHERE key = ?',
+      variables: [Variable<String>(key)],
+    ).getSingleOrNull();
     return row?.data['value'] as String?;
   }
 
@@ -147,7 +175,8 @@ class KMonieDatabase extends _$KMonieDatabase {
     final walSize = await _walFileSizeBytes();
     final last = await _lastMaintainAt();
     final now = DateTime.now().toUtc();
-    final needByTime = last == null || now.difference(last).inDays >= _maintenanceIntervalDays;
+    final needByTime =
+        last == null || now.difference(last).inDays >= _maintenanceIntervalDays;
     final needByWal = walSize >= _walBytesThreshold;
 
     if (!needByTime && !needByWal) return;
@@ -158,7 +187,8 @@ class KMonieDatabase extends _$KMonieDatabase {
       if (freePages > 0) {
         await customStatement('PRAGMA incremental_vacuum($freePages);');
       }
-      if (walSize > 64 * 1024 * 1024 || (needByTime && now.difference(last ?? now).inDays >= 90)) {
+      if (walSize > 64 * 1024 * 1024 ||
+          (needByTime && now.difference(last ?? now).inDays >= 90)) {
         await customStatement('VACUUM;');
         await customStatement('PRAGMA wal_checkpoint(TRUNCATE);');
       }
@@ -188,7 +218,9 @@ class KMonieDatabase extends _$KMonieDatabase {
   }
 
   Future<void> _seedSystemCategoriesIfEmpty() async {
-    final countRow = await customSelect('SELECT COUNT(*) AS c FROM transaction_category_tb').getSingle();
+    final countRow = await customSelect(
+      'SELECT COUNT(*) AS c FROM transaction_category_tb',
+    ).getSingle();
     final c = (countRow.data['c'] as int?) ?? 0;
     if (c > 0) return;
     final all = TransactionCategoryConstants.transactionCategorySystem;
@@ -197,7 +229,13 @@ class KMonieDatabase extends _$KMonieDatabase {
         for (final cat in all) {
           b.insert(
             transactionCategoryTb,
-            TransactionCategoryTbCompanion.insert(title: cat.title, pathAsset: Value(cat.pathAsset), transactionType: Value(cat.transactionType.typeIndex), isCategoryDefaultSystem: const Value(true), isCreateNewCategory: Value(cat.isCreateNewCategory)),
+            TransactionCategoryTbCompanion.insert(
+              title: cat.title,
+              pathAsset: Value(cat.pathAsset),
+              transactionType: Value(cat.transactionType.typeIndex),
+              isCategoryDefaultSystem: const Value(true),
+              isCreateNewCategory: Value(cat.isCreateNewCategory),
+            ),
             mode: InsertMode.insertOrIgnore,
           );
         }

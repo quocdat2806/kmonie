@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import '../../../../core/constant/export.dart';
-import '../../../../core/navigation/export.dart';
-import '../../../generated/assets.dart';
+import 'package:kmonie/core/constants/constants.dart';
+import 'package:kmonie/core/navigation/navigation.dart';
+import 'package:kmonie/generated/assets.dart';
 
 class SplashPage extends StatefulWidget {
   const SplashPage({super.key});
@@ -24,7 +24,7 @@ class _SplashPageState extends State<SplashPage> {
   @override
   Widget build(BuildContext context) {
     return ColoredBox(
-      color: ColorConstants.primary,
+      color: AppColorConstants.primary,
       child: Image.asset(Assets.imagesLogo, fit: BoxFit.contain),
     );
   }

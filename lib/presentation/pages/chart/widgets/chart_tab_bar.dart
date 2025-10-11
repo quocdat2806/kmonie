@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../../core/constant/export.dart';
-import '../../../../core/enum/export.dart';
-import '../../../bloc/export.dart';
-import '../../../widgets/export.dart';
+import 'package:kmonie/core/constants/constants.dart';
+import 'package:kmonie/core/enums/enums.dart';
+import 'package:kmonie/presentation/bloc/chart/chart_export.dart';
+import 'package:kmonie/presentation/widgets/widgets.dart';
 
 class ChartTabBar extends StatelessWidget {
   const ChartTabBar({super.key});
@@ -16,14 +16,18 @@ class ChartTabBar extends StatelessWidget {
       builder: (context, selectedIndex) {
         final types = ExIncomeType.incomeTypes;
         return Padding(
-          padding: const EdgeInsets.symmetric(horizontal: UIConstants.smallPadding),
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppUIConstants.smallPadding,
+          ),
           child: AppTabView<IncomeType>(
             types: types,
             selectedIndex: selectedIndex,
             getDisplayName: (t) => t.displayName,
             getTypeIndex: (t) => t.typeIndex,
             onTabSelected: (index) {
-              context.read<ChartBloc>().add(ChangePeriodType(IncomeType.fromIndex(index)));
+              context.read<ChartBloc>().add(
+                ChangePeriodType(IncomeType.fromIndex(index)),
+              );
             },
           ),
         );

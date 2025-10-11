@@ -1,23 +1,32 @@
 import 'package:flutter/material.dart';
+import 'package:kmonie/core/utils/utils.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../core/constant/export.dart';
-import '../../../core/di/export.dart';
-import '../../../core/enum/export.dart';
-import '../../../core/navigation/export.dart';
-import '../../../core/service/export.dart';
-import '../../../core/text_style/export.dart';
-import '../../../entity/export.dart';
-import '../../../generated/export.dart';
-import '../../bloc/export.dart';
-import '../../widgets/export.dart';
+import 'package:kmonie/core/constants/constants.dart';
+import 'package:kmonie/core/di/di.dart';
+import 'package:kmonie/core/enums/enums.dart';
+import 'package:kmonie/core/navigation/navigation.dart';
+import 'package:kmonie/core/services/services.dart';
+import 'package:kmonie/core/text_style/text_style.dart';
+import 'package:kmonie/entity/entity.dart';
+import 'package:kmonie/generated/export.dart';
+import 'package:kmonie/presentation/bloc/search_transaction/search_transaction_bloc.dart';
+import 'package:kmonie/presentation/bloc/search_transaction/search_transaction_event.dart';
+import 'package:kmonie/presentation/bloc/search_transaction/search_transaction_state.dart';
+import 'package:kmonie/presentation/widgets/widgets.dart';
 
 class SearchTransactionPage extends StatelessWidget {
   const SearchTransactionPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider<SearchTransactionBloc>(create: (_) => SearchTransactionBloc(sl<TransactionService>(), sl<TransactionCategoryService>()), child: const SearchTransactionPageChild());
+    return BlocProvider<SearchTransactionBloc>(
+      create: (_) => SearchTransactionBloc(
+        sl<TransactionService>(),
+        sl<TransactionCategoryService>(),
+      ),
+      child: const SearchTransactionPageChild(),
+    );
   }
 }
 
@@ -25,16 +34,18 @@ class SearchTransactionPageChild extends StatefulWidget {
   const SearchTransactionPageChild({super.key});
 
   @override
-  State<SearchTransactionPageChild> createState() => _SearchTransactionPageChildState();
+  State<SearchTransactionPageChild> createState() =>
+      _SearchTransactionPageChildState();
 }
 
-class _SearchTransactionPageChildState extends State<SearchTransactionPageChild> {
+class _SearchTransactionPageChildState
+    extends State<SearchTransactionPageChild> {
   final TextEditingController _searchController = TextEditingController();
   final categories = <Map<String, dynamic>>[
-    {'label': TextConstants.all, 'type': null},
-    {'label': TextConstants.income, 'type': TransactionType.income},
-    {'label': TextConstants.expense, 'type': TransactionType.expense},
-    {'label': TextConstants.transfer, 'type': TransactionType.transfer},
+    {'label': AppTextConstants.all, 'type': null},
+    {'label': AppTextConstants.income, 'type': TransactionType.income},
+    {'label': AppTextConstants.expense, 'type': TransactionType.expense},
+    {'label': AppTextConstants.transfer, 'type': TransactionType.transfer},
   ];
 
   @override
@@ -48,8 +59,15 @@ class _SearchTransactionPageChildState extends State<SearchTransactionPageChild>
     return Scaffold(
       body: SafeArea(
         child: ColoredBox(
-          color: ColorConstants.white,
-          child: Column(children: [_buildSearchHeader(), _buildSearchCategoryButtons(), _buildActionButton(), _buildSearchList()]),
+          color: AppColorConstants.white,
+          child: Column(
+            children: [
+              _buildSearchHeader(),
+              _buildSearchCategoryButtons(),
+              _buildActionButton(),
+              _buildSearchList(),
+            ],
+          ),
         ),
       ),
     );
@@ -57,11 +75,11 @@ class _SearchTransactionPageChildState extends State<SearchTransactionPageChild>
 
   Widget _buildSearchHeader() {
     return ColoredBox(
-      color: ColorConstants.primary,
+      color: AppColorConstants.primary,
       child: Padding(
-        padding: const EdgeInsets.all(UIConstants.defaultPadding),
+        padding: const EdgeInsets.all(AppUIConstants.defaultPadding),
         child: Column(
-          spacing: UIConstants.defaultSpacing,
+          spacing: AppUIConstants.defaultSpacing,
           children: [
             Row(
               children: <Widget>[
@@ -70,7 +88,12 @@ class _SearchTransactionPageChildState extends State<SearchTransactionPageChild>
                   onTap: () => AppNavigator(context: context).pop(),
                 ),
                 Expanded(
-                  child: Center(child: Text(TextConstants.search, style: AppTextStyle.blackS18Bold)),
+                  child: Center(
+                    child: Text(
+                      AppTextConstants.search,
+                      style: AppTextStyle.blackS18Bold,
+                    ),
+                  ),
                 ),
               ],
             ),
@@ -79,33 +102,51 @@ class _SearchTransactionPageChildState extends State<SearchTransactionPageChild>
               builder: (context, state) {
                 return AppTextField(
                   controller: _searchController,
-                  filledColor: ColorConstants.white,
+                  filledColor: AppColorConstants.white,
                   decoration: InputDecoration(
                     focusedBorder: InputBorder.none,
                     disabledBorder: InputBorder.none,
                     enabledBorder: InputBorder.none,
                     errorBorder: InputBorder.none,
-                    contentPadding: const EdgeInsets.all(UIConstants.smallPadding),
+                    contentPadding: const EdgeInsets.all(
+                      AppUIConstants.smallPadding,
+                    ),
                     suffixIcon: state.query.isNotEmpty
                         ? InkWell(
                             onTap: () {
-                              context.read<SearchTransactionBloc>().add(const SearchTransactionEvent.reset());
+                              context.read<SearchTransactionBloc>().add(
+                                const SearchTransactionEvent.reset(),
+                              );
                               _searchController.clear();
                             },
                             child: const Padding(
-                              padding: EdgeInsets.only(right: UIConstants.smallPadding),
-                              child: Icon(Icons.close, size: UIConstants.mediumIconSize),
+                              padding: EdgeInsets.only(
+                                right: AppUIConstants.smallPadding,
+                              ),
+                              child: Icon(
+                                Icons.close,
+                                size: AppUIConstants.mediumIconSize,
+                              ),
                             ),
                           )
                         : Padding(
-                            padding: const EdgeInsets.only(right: UIConstants.smallPadding),
-                            child:SvgConstants.icon(assetPath: Assets.svgsSearch, size: SvgSizeType.medium),
+                            padding: const EdgeInsets.only(
+                              right: AppUIConstants.smallPadding,
+                            ),
+                            child: SvgUtils.icon(
+                              assetPath: Assets.svgsSearch,
+                              size: SvgSizeType.medium,
+                            ),
                           ),
                     suffixIconConstraints: const BoxConstraints(),
                   ),
-                  onChanged: (value) => context.read<SearchTransactionBloc>().add(SearchTransactionEvent.queryChanged(value)),
+                  onChanged: (value) => context
+                      .read<SearchTransactionBloc>()
+                      .add(SearchTransactionEvent.queryChanged(value)),
                   onFieldSubmitted: (value) {
-                    context.read<SearchTransactionBloc>().add(const SearchTransactionEvent.apply());
+                    context.read<SearchTransactionBloc>().add(
+                      const SearchTransactionEvent.apply(),
+                    );
                   },
                 );
               },
@@ -118,24 +159,33 @@ class _SearchTransactionPageChildState extends State<SearchTransactionPageChild>
 
   Widget _buildSearchCategoryButtons() {
     return Padding(
-      padding: const EdgeInsets.all(UIConstants.defaultPadding),
+      padding: const EdgeInsets.all(AppUIConstants.defaultPadding),
       child: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
         child: BlocBuilder<SearchTransactionBloc, SearchTransactionState>(
-          buildWhen: (previous, current) => previous.selectedType != current.selectedType,
+          buildWhen: (previous, current) =>
+              previous.selectedType != current.selectedType,
           builder: (context, state) {
             return Row(
-              spacing: UIConstants.smallSpacing,
+              spacing: AppUIConstants.smallSpacing,
               children: [
                 Text('Kiểu', style: AppTextStyle.blackS14Bold),
                 ...categories.map((item) {
                   final bool isSelected = state.selectedType == item['type'];
                   return AppButton(
                     text: item['label'] as String,
-                    backgroundColor: isSelected ? ColorConstants.primary : ColorConstants.grey.withAlpha(50),
-                    textColor: isSelected ? ColorConstants.white : ColorConstants.black,
+                    backgroundColor: isSelected
+                        ? AppColorConstants.primary
+                        : AppColorConstants.grey.withAlpha(50),
+                    textColor: isSelected
+                        ? AppColorConstants.white
+                        : AppColorConstants.black,
                     onPressed: () {
-                      context.read<SearchTransactionBloc>().add(SearchTransactionEvent.typeChanged(item['type'] as TransactionType?));
+                      context.read<SearchTransactionBloc>().add(
+                        SearchTransactionEvent.typeChanged(
+                          item['type'] as TransactionType?,
+                        ),
+                      );
                     },
                   );
                 }),
@@ -149,40 +199,69 @@ class _SearchTransactionPageChildState extends State<SearchTransactionPageChild>
 
   Widget _buildSearchList() {
     return Expanded(
-      child: BlocSelector<SearchTransactionBloc, SearchTransactionState, ({Map<String, List<Transaction>> groupedResults, Map<int, TransactionCategory> categoriesMap})>(
-        selector: (state) => (groupedResults: state.groupedResults, categoriesMap: state.categoriesMap),
-        builder: (context, data) {
-          return TransactionList(emptyWidget: _buildEmptyResult(), groupedTransactions: data.groupedResults, categoriesMap: data.categoriesMap);
-        },
-      ),
+      child:
+          BlocSelector<
+            SearchTransactionBloc,
+            SearchTransactionState,
+            ({
+              Map<String, List<Transaction>> groupedResults,
+              Map<int, TransactionCategory> categoriesMap,
+            })
+          >(
+            selector: (state) => (
+              groupedResults: state.groupedResults,
+              categoriesMap: state.categoriesMap,
+            ),
+            builder: (context, data) {
+              return TransactionList(
+                emptyWidget: _buildEmptyResult(),
+                groupedTransactions: data.groupedResults,
+                categoriesMap: data.categoriesMap,
+              );
+            },
+          ),
     );
   }
 
   Widget _buildEmptyResult() {
-    return Center(child: Text('Không có kết quả', style: AppTextStyle.blackS14));
+    return Center(
+      child: Text('Không có kết quả', style: AppTextStyle.blackS14),
+    );
   }
 
   Widget _buildActionButton() {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: UIConstants.defaultPadding),
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppUIConstants.defaultPadding,
+      ),
       child: Row(
-        spacing: UIConstants.defaultPadding,
+        spacing: AppUIConstants.defaultPadding,
         children: [
           Expanded(
             child: AppButton(
-              backgroundColor: ColorConstants.greyWhite,
-              iconWidget: SvgConstants.icon(assetPath: Assets.svgsReplay, size: SvgSizeType.medium),
+              backgroundColor: AppColorConstants.greyWhite,
+              iconWidget: SvgUtils.icon(
+                assetPath: Assets.svgsReplay,
+                size: SvgSizeType.medium,
+              ),
               onPressed: () {
-                context.read<SearchTransactionBloc>().add(const SearchTransactionEvent.reset());
+                context.read<SearchTransactionBloc>().add(
+                  const SearchTransactionEvent.reset(),
+                );
                 _searchController.clear();
               },
             ),
           ),
           Expanded(
             child: AppButton(
-              iconWidget:const Icon(Icons.check, size: UIConstants.mediumIconSize),
+              iconWidget: const Icon(
+                Icons.check,
+                size: AppUIConstants.mediumIconSize,
+              ),
               onPressed: () {
-                context.read<SearchTransactionBloc>().add(const SearchTransactionEvent.apply());
+                context.read<SearchTransactionBloc>().add(
+                  const SearchTransactionEvent.apply(),
+                );
               },
             ),
           ),

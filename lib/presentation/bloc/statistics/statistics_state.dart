@@ -1,6 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import '../../../entity/export.dart';
-import '../../../core/enum/export.dart';
+import 'package:kmonie/entity/entity.dart';
+import 'package:kmonie/core/enums/enums.dart';
 
 part 'statistics_state.freezed.dart';
 

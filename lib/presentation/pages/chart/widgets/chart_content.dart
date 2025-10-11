@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../../generated/export.dart';
-import '../../../../core/text_style/export.dart';
-import '../../../../core/tool/export.dart';
-import '../../../../core/constant/export.dart';
-import '../../../../core/enum/export.dart';
-import '../../../bloc/export.dart';
-import '../../../widgets/export.dart';
+import 'package:kmonie/generated/export.dart';
+import 'package:kmonie/core/text_style/text_style.dart';
+import 'package:kmonie/core/tools/tools.dart';
+import 'package:kmonie/core/utils/utils.dart';
+import 'package:kmonie/core/constants/constants.dart';
+import 'package:kmonie/core/enums/enums.dart';
+import 'package:kmonie/presentation/bloc/chart/chart_export.dart';
+import 'package:kmonie/presentation/widgets/widgets.dart';
 
 class ChartContent extends StatelessWidget {
   const ChartContent({super.key});
@@ -15,20 +16,24 @@ class ChartContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<ChartBloc, ChartState>(
+      buildWhen: (previous, current) =>
+          previous.chartData.length != current.chartData.length,
       builder: (context, state) {
-        if (state.isLoading) {
-          return const Center(child: CircularProgressIndicator());
-        }
         if (state.chartData.isEmpty) {
-          return Center(child: Text('Không có dữ liệu để hiển thị', style: AppTextStyle.greyS14));
+          return Center(
+            child: Text(
+              'Không có dữ liệu để hiển thị',
+              style: AppTextStyle.greyS14,
+            ),
+          );
         }
 
         return Padding(
-          padding: const EdgeInsets.all(UIConstants.defaultPadding),
+          padding: const EdgeInsets.all(AppUIConstants.defaultPadding),
           child: Column(
             children: [
               _buildChartSection(state),
-              const SizedBox(height: UIConstants.largeSpacing),
+              const SizedBox(height: AppUIConstants.largeSpacing),
               _buildDetailedList(state),
             ],
           ),
@@ -40,25 +45,39 @@ class ChartContent extends StatelessWidget {
   Widget _buildChartSection(ChartState state) {
     return Row(
       children: [
-        AppChart(data: state.chartData, size: UIConstants.chartPieSize, strokeWidth: UIConstants.chartPieStrokeWidth),
-        const SizedBox(width: UIConstants.smallSpacing),
+        AppChart(
+          data: state.chartData,
+          size: AppUIConstants.chartPieSize,
+          strokeWidth: AppUIConstants.chartPieStrokeWidth,
+        ),
+        const SizedBox(width: AppUIConstants.smallSpacing),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: state.chartData
                 .map(
                   (data) => Padding(
-                    padding: const EdgeInsets.symmetric(vertical: UIConstants.chartContentVerticalSpacing),
+                    padding: const EdgeInsets.symmetric(
+                      vertical: AppUIConstants.chartContentVerticalSpacing,
+                    ),
                     child: Row(
                       children: [
                         Container(
-                          width: UIConstants.chartLegendDotSize,
-                          height: UIConstants.chartLegendDotSize,
-                          decoration: BoxDecoration(color: data.color, shape: BoxShape.circle),
+                          width: AppUIConstants.chartLegendDotSize,
+                          height: AppUIConstants.chartLegendDotSize,
+                          decoration: BoxDecoration(
+                            color: data.color,
+                            shape: BoxShape.circle,
+                          ),
                         ),
-                        const SizedBox(width: UIConstants.smallSpacing),
+                        const SizedBox(width: AppUIConstants.smallSpacing),
                         Expanded(
-                          child: Text('${data.label} ${data.value.toStringAsFixed(1)}%', style: const TextStyle(fontSize: UIConstants.chartContentTextSize)),
+                          child: Text(
+                            '${data.label} ${data.value.toStringAsFixed(1)}%',
+                            style: const TextStyle(
+                              fontSize: AppUIConstants.chartContentTextSize,
+                            ),
+                          ),
                         ),
                       ],
                     ),
@@ -80,12 +99,13 @@ class ChartContent extends StatelessWidget {
           final data = state.chartData[index];
           final catId = state.chartCategoryIds.elementAt(index);
           final category = state.categoriesMap[catId];
-          final gradientHex = state.categoryGradients[catId] ?? const <String>[];
+          final gradientHex =
+              state.categoryGradients[catId] ?? const <String>[];
 
           return Row(
             children: [
               _buildCategoryIcon(category, gradientHex, data),
-              const SizedBox(width: UIConstants.chartCategorySpacing),
+              const SizedBox(width: AppUIConstants.chartCategorySpacing),
               _buildCategoryInfo(data),
             ],
           );
@@ -94,14 +114,29 @@ class ChartContent extends StatelessWidget {
     );
   }
 
-  Widget _buildCategoryIcon(dynamic category, List<String> gradientHex, dynamic data) {
+  Widget _buildCategoryIcon(
+    dynamic category,
+    List<String> gradientHex,
+    dynamic data,
+  ) {
     return Container(
-      width: UIConstants.chartCategoryIconSize,
-      height: UIConstants.chartCategoryIconSize,
-      decoration: BoxDecoration(shape: BoxShape.circle, gradient: gradientHex.isNotEmpty ? GradientHelper.fromColorHexList(gradientHex) : null, color: gradientHex.isEmpty ? (data.color as Color).withOpacity(0.2) : null),
+      width: AppUIConstants.chartCategoryIconSize,
+      height: AppUIConstants.chartCategoryIconSize,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        gradient: gradientHex.isNotEmpty
+            ? GradientHelper.fromColorHexList(gradientHex)
+            : null,
+        color: gradientHex.isEmpty
+            ? (data.color as Color).withOpacity(0.2)
+            : null,
+      ),
       child: Padding(
-        padding: const EdgeInsets.all(UIConstants.smallPadding),
-        child: SvgConstants.icon(assetPath: (category?.pathAsset as String?) ?? Assets.svgsNote, size: SvgSizeType.medium),
+        padding: const EdgeInsets.all(AppUIConstants.smallPadding),
+        child: SvgUtils.icon(
+          assetPath: (category?.pathAsset as String?) ?? Assets.svgsNote,
+          size: SvgSizeType.medium,
+        ),
       ),
     );
   }
@@ -114,14 +149,24 @@ class ChartContent extends StatelessWidget {
           Row(
             children: [
               Expanded(
-                child: Text('${data.label} ${(data.value as double).toStringAsFixed(1)}%', style: const TextStyle(fontWeight: FontWeight.w600)),
+                child: Text(
+                  '${data.label} ${(data.value as double).toStringAsFixed(1)}%',
+                  style: const TextStyle(fontWeight: FontWeight.w600),
+                ),
               ),
             ],
           ),
-          const SizedBox(height: UIConstants.chartCategoryTextSpacing),
+          const SizedBox(height: AppUIConstants.chartCategoryTextSpacing),
           ClipRRect(
-            borderRadius: BorderRadius.circular(UIConstants.chartCategoryProgressRadius),
-            child: LinearProgressIndicator(value: (data.value as double) / 100, backgroundColor: ColorConstants.greyWhite, color: data.color as Color, minHeight: UIConstants.chartCategoryProgressHeight),
+            borderRadius: BorderRadius.circular(
+              AppUIConstants.chartCategoryProgressRadius,
+            ),
+            child: LinearProgressIndicator(
+              value: (data.value as double) / 100,
+              backgroundColor: AppColorConstants.greyWhite,
+              color: data.color as Color,
+              minHeight: AppUIConstants.chartCategoryProgressHeight,
+            ),
           ),
         ],
       ),

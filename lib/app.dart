@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import 'application/auth/auth_export.dart';
-import 'core/config/export.dart';
-import 'core/navigation/export.dart';
-import 'core/service/export.dart';
-import 'core/theme/export.dart';
-import 'core/util/export.dart';
+import 'package:kmonie/application/auth/auth.dart';
+import 'package:kmonie/core/config/config.dart';
+import 'package:kmonie/core/navigation/navigation.dart';
+import 'package:kmonie/core/services/services.dart';
+import 'package:kmonie/core/theme/theme.dart';
+import 'package:kmonie/core/utils/utils.dart';
 
 class App extends StatelessWidget {
   const App({super.key, required this.authBloc, required this.appRouter});
@@ -21,7 +21,11 @@ class App extends StatelessWidget {
         onTap: () => KeyboardUtils.hideKeyboard(context),
         child: MaterialApp.router(
           scaffoldMessengerKey: SnackBarService.scaffoldMessengerKey,
-          theme: ThemeData(useMaterial3: true, inputDecorationTheme: AppInputTheme.defaultInput, fontFamily: AppConfigs.fontFamily),
+          theme: ThemeData(
+            useMaterial3: true,
+            inputDecorationTheme: AppInputTheme.defaultInput,
+            fontFamily: AppConfigs.fontFamily,
+          ),
           routerConfig: appRouter.router,
         ),
       ),

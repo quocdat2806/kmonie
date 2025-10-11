@@ -1,8 +1,8 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-import '../../../core/enum/export.dart';
-import '../../../entity/export.dart';
-import '../../widgets/chart/app_chart.dart';
+import 'package:kmonie/core/enums/enums.dart';
+import 'package:kmonie/entity/entity.dart';
+import 'package:kmonie/presentation/widgets/chart/app_chart.dart';
 
 part 'chart_state.freezed.dart';
 
@@ -21,10 +21,14 @@ abstract class ChartState with _$ChartState {
     @Default([]) List<TransactionCategory> categories,
     @Default({}) Map<int, TransactionCategory> categoriesMap,
     @Default(false) bool isLoading,
+    @Default([]) List<Transaction> localTransactions,
+    @Default({}) Map<int, double> localCategoryTotals,
+    @Default({}) Map<int, List<String>> localCategoryGradients,
   }) = _ChartState;
 
   const ChartState._();
 
-  DateTime? get selectedMonth => months.isNotEmpty ? months[selectedMonthIndex] : null;
+  DateTime? get selectedMonth =>
+      months.isNotEmpty ? months[selectedMonthIndex] : null;
   int? get selectedYear => years.isNotEmpty ? years[selectedYearIndex] : null;
 }

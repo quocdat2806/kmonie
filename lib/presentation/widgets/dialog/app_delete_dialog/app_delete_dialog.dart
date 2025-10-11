@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
-import '../../../../core/constant/export.dart';
-import '../../../../core/text_style/export.dart';
-import '../../../widgets/export.dart';
+import 'package:kmonie/core/constants/constants.dart';
+import 'package:kmonie/core/text_style/text_style.dart';
+import 'package:kmonie/presentation/widgets/widgets.dart';
 
 class AppDeleteDialog extends StatelessWidget {
   final VoidCallback? onConfirm;
@@ -11,18 +11,32 @@ class AppDeleteDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(UIConstants.defaultBorderRadius)),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(AppUIConstants.defaultBorderRadius),
+      ),
       actionsAlignment: MainAxisAlignment.center,
-      content: Text(TextConstants.confirmDeleteTitle, style: AppTextStyle.redS14, textAlign: TextAlign.center),
+      content: Text(
+        AppTextConstants.confirmDeleteTitle,
+        style: AppTextStyle.redS14,
+        textAlign: TextAlign.center,
+      ),
       actions: <Widget>[
         Row(
-          spacing: UIConstants.smallSpacing,
+          spacing: AppUIConstants.smallSpacing,
           children: [
             Expanded(
-              child: AppButton(onPressed: () => Navigator.of(context).pop(), text: TextConstants.cancel, backgroundColor: Colors.transparent),
+              child: AppButton(
+                onPressed: () => Navigator.of(context).pop(),
+                text: AppTextConstants.cancel,
+                backgroundColor: Colors.transparent,
+              ),
             ),
             Expanded(
-              child: AppButton(onPressed: onConfirm ?? () {}, text: TextConstants.confirm, backgroundColor: Colors.transparent),
+              child: AppButton(
+                onPressed: onConfirm ?? () {},
+                text: AppTextConstants.confirm,
+                backgroundColor: Colors.transparent,
+              ),
             ),
           ],
         ),

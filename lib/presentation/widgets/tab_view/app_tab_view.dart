@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import '../../../core/constant/export.dart';
-import '../../../core/enum/export.dart';
-import '../../../core/text_style/export.dart';
+import 'package:kmonie/core/constants/constants.dart';
+import 'package:kmonie/core/enums/enums.dart';
+import 'package:kmonie/core/text_style/text_style.dart';
 
 class AppTabView<T> extends StatelessWidget {
   final List<T> types;
@@ -31,16 +31,16 @@ class AppTabView<T> extends StatelessWidget {
 
         final BorderRadius borderRadius = BorderRadius.only(
           topLeft: isFirst
-              ? const Radius.circular(UIConstants.defaultBorderRadius)
+              ? const Radius.circular(AppUIConstants.defaultBorderRadius)
               : Radius.zero,
           bottomLeft: isFirst
-              ? const Radius.circular(UIConstants.defaultBorderRadius)
+              ? const Radius.circular(AppUIConstants.defaultBorderRadius)
               : Radius.zero,
           topRight: isLast
-              ? const Radius.circular(UIConstants.defaultBorderRadius)
+              ? const Radius.circular(AppUIConstants.defaultBorderRadius)
               : Radius.zero,
           bottomRight: isLast
-              ? const Radius.circular(UIConstants.defaultBorderRadius)
+              ? const Radius.circular(AppUIConstants.defaultBorderRadius)
               : Radius.zero,
         );
 
@@ -50,22 +50,23 @@ class AppTabView<T> extends StatelessWidget {
             child: DecoratedBox(
               decoration: BoxDecoration(
                 color: isSelected
-                    ? ColorConstants.black
-                    : ColorConstants.primary,
+                    ? AppColorConstants.black
+                    : AppColorConstants.primary,
                 border: Border(
-                  top: const BorderSide(color: ColorConstants.black),
-                  bottom: const BorderSide(color: ColorConstants.black),
+                  top: const BorderSide(color: AppColorConstants.black),
+                  bottom: const BorderSide(color: AppColorConstants.black),
                   left: isFirst
-                      ? const BorderSide(color: ColorConstants.black)
+                      ? const BorderSide(color: AppColorConstants.black)
                       : BorderSide.none,
-                  right: const BorderSide(color: ColorConstants.black),
+                  right: const BorderSide(color: AppColorConstants.black),
                 ),
                 borderRadius: borderRadius,
               ),
               child: Padding(
                 padding: const EdgeInsets.symmetric(
                   vertical:
-                      UIConstants.smallPadding + UIConstants.extraSmallSpacing,
+                      AppUIConstants.smallPadding +
+                      AppUIConstants.extraSmallSpacing,
                 ),
                 child: Text(
                   getDisplayName(type),

@@ -1,21 +1,25 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 
-import '../../../core/enum/export.dart';
-import '../../../core/stream/export.dart';
-import '../../../core/util/date.dart';
-import '../../../core/util/format.dart';
-import '../../../core/constant/export.dart';
-import '../../../core/text_style/export.dart';
-import '../../../entity/export.dart';
-import '../../widgets/export.dart';
+import 'package:kmonie/core/enums/enums.dart';
+import 'package:kmonie/core/streams/streams.dart';
+import 'package:kmonie/core/utils/date.dart';
+import 'package:kmonie/core/utils/format.dart';
+import 'package:kmonie/core/constants/constants.dart';
+import 'package:kmonie/core/text_style/text_style.dart';
+import 'package:kmonie/entity/entity.dart';
+import 'package:kmonie/presentation/widgets/widgets.dart';
 
 class DailyTransactionPageArgs {
   final DateTime selectedDate;
   final Map<String, List<Transaction>> groupedTransactions;
   final Map<int, TransactionCategory> categoriesMap;
 
-  const DailyTransactionPageArgs({required this.selectedDate, required this.groupedTransactions, required this.categoriesMap});
+  const DailyTransactionPageArgs({
+    required this.selectedDate,
+    required this.groupedTransactions,
+    required this.categoriesMap,
+  });
 }
 
 class DailyTransactionPage extends StatefulWidget {
@@ -133,7 +137,14 @@ class _DailyTransactionPageState extends State<DailyTransactionPage> {
         }
       }
 
-      return Text(FormatUtils.formatTotalText(income.toDouble(), expense.toDouble(), transfer.toDouble()), style: AppTextStyle.blackS12);
+      return Text(
+        FormatUtils.formatDailyTransactionTotal(
+          income.toDouble(),
+          expense.toDouble(),
+          transfer.toDouble(),
+        ),
+        style: AppTextStyle.blackS12,
+      );
     };
   }
 
@@ -141,24 +152,38 @@ class _DailyTransactionPageState extends State<DailyTransactionPage> {
   Widget build(BuildContext context) {
     final dateStr = AppDateUtils.formatDate(widget.args.selectedDate);
 
-    final bool isEmpty = _groupedTransactions.isEmpty || _groupedTransactions.values.every((list) => list.isEmpty);
+    final bool isEmpty =
+        _groupedTransactions.isEmpty ||
+        _groupedTransactions.values.every((list) => list.isEmpty);
 
     return Scaffold(
       appBar: CustomAppBar(title: 'Giao dịch $dateStr'),
       body: SafeArea(
-        child: isEmpty ? _buildEmptyState(context) : TransactionList(groupedTransactions: _groupedTransactions, categoriesMap: _categoriesMap, dailyTotalWidgetBuilder: _buildDailyTotalBuilder()),
+        child: isEmpty
+            ? _buildEmptyState(context)
+            : TransactionList(
+                groupedTransactions: _groupedTransactions,
+                categoriesMap: _categoriesMap,
+                dailyTotalWidgetBuilder: _buildDailyTotalBuilder(),
+              ),
       ),
-      floatingActionButton: AddTransactionButton(initialDate: widget.args.selectedDate),
+      floatingActionButton: AddTransactionButton(
+        initialDate: widget.args.selectedDate,
+      ),
     );
   }
 
   Widget _buildEmptyState(BuildContext context) {
     return Center(
       child: Column(
-        spacing: UIConstants.defaultSpacing,
+        spacing: AppUIConstants.defaultSpacing,
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Icon(Icons.receipt_long, size: UIConstants.largeIconSize, color: ColorConstants.grey),
+          const Icon(
+            Icons.receipt_long,
+            size: AppUIConstants.largeIconSize,
+            color: AppColorConstants.grey,
+          ),
           Text('Chưa có giao dịch trong ngày này', style: AppTextStyle.greyS12),
         ],
       ),

@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../core/constant/export.dart';
-import '../../../core/text_style/export.dart';
-import '../../../core/di/export.dart';
-import '../../../core/service/export.dart';
-import '../../../core/enum/export.dart';
-import '../../bloc/export.dart';
+import 'package:kmonie/core/constants/constants.dart';
+import 'package:kmonie/core/text_style/text_style.dart';
+import 'package:kmonie/core/di/di.dart';
+import 'package:kmonie/core/services/services.dart';
+import 'package:kmonie/core/enums/enums.dart';
+import 'package:kmonie/presentation/bloc/statistics/statistics_bloc.dart';
+import 'package:kmonie/presentation/bloc/statistics/statistics_event.dart';
+import 'package:kmonie/presentation/bloc/statistics/statistics_state.dart';
 import 'widgets/statistics_header.dart';
 import 'widgets/statistics_chart.dart';
 import 'widgets/statistics_list.dart';
@@ -37,7 +39,7 @@ class StatisticsPageChild extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: ColorConstants.primary,
+        backgroundColor: AppColorConstants.primary,
         foregroundColor: Colors.white,
         title: Text(_getTitle(), style: AppTextStyle.whiteS18Bold),
         elevation: 0,
@@ -58,7 +60,7 @@ class StatisticsPageChild extends StatelessWidget {
                     style: AppTextStyle.greyS14,
                     textAlign: TextAlign.center,
                   ),
-                  const SizedBox(height: UIConstants.smallPadding),
+                  const SizedBox(height: AppUIConstants.smallPadding),
                   ElevatedButton(
                     onPressed: () {
                       context.read<StatisticsBloc>().add(

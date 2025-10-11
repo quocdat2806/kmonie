@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import '../../../../core/constant/export.dart';
-import '../../../../core/text_style/export.dart';
-import '../../../../core/enum/export.dart';
-import '../../../../entity/export.dart';
+import 'package:kmonie/core/constants/constants.dart';
+import 'package:kmonie/core/text_style/text_style.dart';
+import 'package:kmonie/core/enums/enums.dart';
+import 'package:kmonie/entity/entity.dart';
 
 class StatisticsChart extends StatelessWidget {
   final Map<String, List<Transaction>> groupedTransactions;
@@ -21,11 +21,13 @@ class StatisticsChart extends StatelessWidget {
     final chartData = _prepareChartData();
 
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: UIConstants.smallPadding),
-      padding: const EdgeInsets.all(UIConstants.smallPadding),
+      margin: const EdgeInsets.symmetric(
+        horizontal: AppUIConstants.smallPadding,
+      ),
+      padding: const EdgeInsets.all(AppUIConstants.smallPadding),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(UIConstants.smallBorderRadius),
+        borderRadius: BorderRadius.circular(AppUIConstants.smallBorderRadius),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.05),
@@ -38,17 +40,17 @@ class StatisticsChart extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text('Biểu đồ theo ngày', style: AppTextStyle.blackS16Bold),
-          const SizedBox(height: UIConstants.smallPadding),
+          const SizedBox(height: AppUIConstants.smallPadding),
           if (chartData.isEmpty) ...[
             const Center(
               child: Padding(
-                padding: EdgeInsets.all(UIConstants.defaultPadding),
+                padding: EdgeInsets.all(AppUIConstants.defaultPadding),
                 child: Text('Không có dữ liệu để hiển thị'),
               ),
             ),
           ] else ...[
             SizedBox(height: 200, child: _buildBarChart(chartData)),
-            const SizedBox(height: UIConstants.smallPadding),
+            const SizedBox(height: AppUIConstants.smallPadding),
             _buildLegend(),
           ],
         ],
@@ -97,7 +99,7 @@ class StatisticsChart extends StatelessWidget {
             borderRadius: BorderRadius.circular(2),
           ),
         ),
-        const SizedBox(width: UIConstants.smallPadding / 2),
+        const SizedBox(width: AppUIConstants.smallPadding / 2),
         Text(_getTypeLabel(), style: AppTextStyle.greyS12),
       ],
     );
@@ -130,11 +132,11 @@ class StatisticsChart extends StatelessWidget {
   Color _getBarColor() {
     switch (transactionType) {
       case TransactionType.income:
-        return ColorConstants.secondary;
+        return AppColorConstants.secondary;
       case TransactionType.expense:
-        return ColorConstants.primary;
+        return AppColorConstants.primary;
       case TransactionType.transfer:
-        return ColorConstants.primary;
+        return AppColorConstants.primary;
     }
   }
 

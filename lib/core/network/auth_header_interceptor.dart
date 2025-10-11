@@ -1,6 +1,6 @@
 import 'package:dio/dio.dart';
-import '../config/export.dart';
-import '../../database/export.dart';
+import 'package:kmonie/core/config/config.dart';
+import 'package:kmonie/database/database.dart';
 
 class AuthHeaderInterceptor extends Interceptor {
   AuthHeaderInterceptor({required this.secure});

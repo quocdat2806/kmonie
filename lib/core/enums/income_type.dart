@@ -1,0 +1,27 @@
+import 'package:kmonie/core/constants/constants.dart';
+
+enum IncomeType {
+  month(0, AppTextConstants.month),
+  year(1, AppTextConstants.year);
+
+  const IncomeType(this.typeIndex, this.displayName);
+
+  final int typeIndex;
+  final String displayName;
+
+  static IncomeType fromIndex(int index) {
+    return IncomeType.values.firstWhere(
+      (type) => type.typeIndex == index,
+      orElse: () => IncomeType.month,
+    );
+  }
+
+  static const int totalTypes = 2;
+}
+
+extension ExIncomeType on IncomeType {
+  static List<IncomeType> incomeTypes = IncomeType.values;
+  static List<String> incomeTypeNames = incomeTypes
+      .map((e) => e.displayName)
+      .toList();
+}

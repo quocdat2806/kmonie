@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-// import '../../../core/constant/export.dart';
-// import '../../../core/text_style/export.dart';
-// import '../../../core/navigation/export.dart';
-// import '../../widgets/export.dart';
+// import 'package:kmonie/core/constant/export.dart';
+// import 'package:kmonie/core/text_style/text_style.dart';
+// import 'package:kmonie/core/navigation/navigation.dart';
+// import 'package:kmonie/presentation/widgets/widgets.dart';
 
 class AddTransactionCategoryPage extends StatelessWidget {
   const AddTransactionCategoryPage({super.key});
@@ -43,3 +43,4 @@ class AddTransactionCategoryPage extends StatelessWidget {
   //   );
   // }
 }
+

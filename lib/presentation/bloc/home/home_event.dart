@@ -1,6 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-import '../../../entity/export.dart';
+import 'package:kmonie/entity/entity.dart';
 
 part 'home_event.freezed.dart';
 

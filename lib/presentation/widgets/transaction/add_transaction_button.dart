@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import '../../pages/export.dart';
-import '../../../../core/constant/export.dart';
-import '../../../../core/enum/export.dart';
-import '../../../../core/navigation/export.dart';
-import '../../../../generated/export.dart';
+import 'package:kmonie/core/utils/utils.dart';
+import 'package:kmonie/presentation/pages/pages.dart';
+import 'package:kmonie/core/constants/constants.dart';
+import 'package:kmonie/core/enums/enums.dart';
+import 'package:kmonie/core/navigation/navigation.dart';
+import 'package:kmonie/generated/export.dart';
 
 class AddTransactionButton extends StatelessWidget {
   final DateTime? initialDate;
@@ -16,11 +17,11 @@ class AddTransactionButton extends StatelessWidget {
       child: DecoratedBox(
         decoration: const BoxDecoration(
           shape: BoxShape.circle,
-          color: ColorConstants.primary,
+          color: AppColorConstants.primary,
         ),
         child: Padding(
-          padding: const EdgeInsets.all(UIConstants.defaultPadding),
-          child: SvgConstants.icon(
+          padding: const EdgeInsets.all(AppUIConstants.defaultPadding),
+          child: SvgUtils.icon(
             assetPath: Assets.svgsPlus,
             size: SvgSizeType.large,
           ),
@@ -30,6 +31,9 @@ class AddTransactionButton extends StatelessWidget {
   }
 
   void _navigateToAddTransactionPage(BuildContext context) {
-    AppNavigator(context: context).push(RouterPath.transactionActions, extra: TransactionActionsPageArgs(selectedDate: initialDate));
+    AppNavigator(context: context).push(
+      RouterPath.transactionActions,
+      extra: TransactionActionsPageArgs(selectedDate: initialDate),
+    );
   }
 }

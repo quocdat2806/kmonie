@@ -1,23 +1,23 @@
 import 'package:flutter/material.dart';
-import '../../../../core/constant/export.dart';
+import 'package:kmonie/core/constants/constants.dart';
 
 class DatePickerScreen extends StatefulWidget {
   final DateTime? initialDate;
 
-  const DatePickerScreen({Key? key,this.initialDate}) : super(key: key);
+  const DatePickerScreen({Key? key, this.initialDate}) : super(key: key);
 
   @override
   State<DatePickerScreen> createState() => _DatePickerScreenState();
 }
 
 class _DatePickerScreenState extends State<DatePickerScreen> {
- late DateTime _selectedDate;
+  late DateTime _selectedDate;
   late DateTime _displayMonth;
 
   @override
   void initState() {
     super.initState();
-    _selectedDate=widget.initialDate??DateTime.now();
+    _selectedDate = widget.initialDate ?? DateTime.now();
     _displayMonth = DateTime(_selectedDate.year, _selectedDate.month, 1);
   }
 
@@ -29,23 +29,31 @@ class _DatePickerScreenState extends State<DatePickerScreen> {
   }
 
   String _formatHeaderDate(DateTime date) {
-    return '${_getWeekdayName(_selectedDate)}, ${date.day} thg ${date
-        .month}, ${date.year}';
+    return '${_getWeekdayName(_selectedDate)}, ${date.day} thg ${date.month}, ${date.year}';
   }
 
   void _changeMonth(int delta) {
     setState(() {
-      _displayMonth =
-          DateTime(_displayMonth.year, _displayMonth.month + delta, 1);
+      _displayMonth = DateTime(
+        _displayMonth.year,
+        _displayMonth.month + delta,
+        1,
+      );
     });
   }
 
   @override
   Widget build(BuildContext context) {
     final firstDayOfMonth = DateTime(
-        _displayMonth.year, _displayMonth.month, 1);
+      _displayMonth.year,
+      _displayMonth.month,
+      1,
+    );
     final lastDayOfMonth = DateTime(
-        _displayMonth.year, _displayMonth.month + 1, 0);
+      _displayMonth.year,
+      _displayMonth.month + 1,
+      0,
+    );
     final daysInMonth = lastDayOfMonth.day;
     final firstWeekday = ((firstDayOfMonth.weekday - 1) % 7);
 
@@ -77,8 +85,7 @@ class _DatePickerScreenState extends State<DatePickerScreen> {
                     Row(
                       children: [
                         Text(
-                          'tháng ${_displayMonth.month} năm ${_displayMonth
-                              .year}',
+                          'tháng ${_displayMonth.month} năm ${_displayMonth.year}',
                           style: const TextStyle(fontSize: 16),
                         ),
                         const SizedBox(width: 4),
@@ -86,15 +93,20 @@ class _DatePickerScreenState extends State<DatePickerScreen> {
                       ],
                     ),
                     Row(
-                      spacing: UIConstants.smallSpacing,
+                      spacing: AppUIConstants.smallSpacing,
                       children: [
-                        InkWell(onTap:(){
-                        _changeMonth(-1);
-                        }, child: Icon(Icons.arrow_back_ios_new, size: 18,)),
-                        InkWell(onTap: (){
-                          _changeMonth(1);
-
-                        },child: Icon(Icons.arrow_forward_ios, size: 18,))
+                        InkWell(
+                          onTap: () {
+                            _changeMonth(-1);
+                          },
+                          child: Icon(Icons.arrow_back_ios_new, size: 18),
+                        ),
+                        InkWell(
+                          onTap: () {
+                            _changeMonth(1);
+                          },
+                          child: Icon(Icons.arrow_forward_ios, size: 18),
+                        ),
                       ],
                     ),
                   ],
@@ -131,24 +143,37 @@ class _DatePickerScreenState extends State<DatePickerScreen> {
 
                     final day = dayIndex + 1;
                     final date = DateTime(
-                        _displayMonth.year, _displayMonth.month, day);
-                    final isSelected = date.year == _selectedDate.year &&
+                      _displayMonth.year,
+                      _displayMonth.month,
+                      day,
+                    );
+                    final isSelected =
+                        date.year == _selectedDate.year &&
                         date.month == _selectedDate.month &&
                         date.day == _selectedDate.day;
 
                     return GestureDetector(
                       onTap: () {
                         final now = DateTime.now();
-                        final date = DateTime(_displayMonth.year, _displayMonth.month, day,
-                            now.hour, now.minute, now.second, now.millisecond, now.microsecond);
+                        final date = DateTime(
+                          _displayMonth.year,
+                          _displayMonth.month,
+                          day,
+                          now.hour,
+                          now.minute,
+                          now.second,
+                          now.millisecond,
+                          now.microsecond,
+                        );
                         setState(() {
                           _selectedDate = date;
                         });
                       },
                       child: Container(
                         decoration: BoxDecoration(
-                          color: isSelected ? const Color(0xFFDAA520) : Colors
-                              .transparent,
+                          color: isSelected
+                              ? const Color(0xFFDAA520)
+                              : Colors.transparent,
                           shape: BoxShape.circle,
                         ),
                         child: Center(

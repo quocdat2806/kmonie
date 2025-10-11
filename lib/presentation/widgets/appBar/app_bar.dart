@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import '../../../core/constant/export.dart';
-import '../../../core/text_style/export.dart';
-import '../../../core/navigation/export.dart';
+import 'package:kmonie/core/constants/constants.dart';
+import 'package:kmonie/core/text_style/text_style.dart';
+import 'package:kmonie/core/navigation/navigation.dart';
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   const CustomAppBar({
@@ -10,7 +10,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
     this.leading,
     this.actions,
     this.onLeadingTap,
-    this.backgroundColor = ColorConstants.primary,
+    this.backgroundColor = AppColorConstants.primary,
     this.elevation = 0.0,
     this.centerTitle = true,
     this.titleTextStyle,
@@ -45,7 +45,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                 IconButton(
                   icon: const Icon(
                     Icons.arrow_back,
-                    color: ColorConstants.black,
+                    color: AppColorConstants.black,
                   ),
                   onPressed: onLeadingTap ?? () => _handleBack(context),
                 ))

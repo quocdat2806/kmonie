@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../core/di/export.dart';
-import '../../../core/enum/export.dart';
-import '../../../core/service/export.dart';
-import '../../../core/constant/export.dart';
-import '../../bloc/export.dart';
+import 'package:kmonie/core/di/di.dart';
+import 'package:kmonie/core/enums/enums.dart';
+import 'package:kmonie/core/services/services.dart';
+import 'package:kmonie/core/constants/constants.dart';
+import 'package:kmonie/presentation/bloc/bloc.dart';
 import 'widgets/chart_tab_bar.dart';
 import 'widgets/chart_month_selector.dart';
 import 'widgets/chart_year_selector.dart';
@@ -17,7 +17,11 @@ class ChartPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(create: (context) => ChartBloc(sl<TransactionService>(), sl<TransactionCategoryService>()), child: const _ChartPageView());
+    return BlocProvider(
+      create: (context) =>
+          ChartBloc(sl<TransactionService>(), sl<TransactionCategoryService>()),
+      child: const _ChartPageView(),
+    );
   }
 }
 
@@ -36,22 +40,24 @@ class _ChartPageViewState extends State<_ChartPageView> {
     return BlocBuilder<ChartBloc, ChartState>(
       builder: (context, state) {
         return ColoredBox(
-          color: ColorConstants.white,
+          color: AppColorConstants.white,
           child: Column(
             children: [
               ColoredBox(
-                color: ColorConstants.primary,
+                color: AppColorConstants.primary,
                 child: Column(
                   children: [
-                    const SizedBox(height: UIConstants.defaultSpacing),
+                    const SizedBox(height: AppUIConstants.defaultSpacing),
                     ChartTransactionTypeDropdown(dropdownKey: _dropdownKey),
-                    const SizedBox(height: UIConstants.defaultSpacing),
+                    const SizedBox(height: AppUIConstants.defaultSpacing),
                     const ChartTabBar(),
-                    const SizedBox(height: UIConstants.defaultSpacing),
+                    const SizedBox(height: AppUIConstants.defaultSpacing),
                   ],
                 ),
               ),
-              state.selectedPeriodType == IncomeType.month ? const ChartMonthSelector() : const ChartYearSelector(),
+              state.selectedPeriodType == IncomeType.month
+                  ? const ChartMonthSelector()
+                  : const ChartYearSelector(),
               const Expanded(child: ChartContent()),
             ],
           ),

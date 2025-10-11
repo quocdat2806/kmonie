@@ -1,9 +1,24 @@
 import 'package:flutter/material.dart';
 
-import '../../../core/constant/export.dart';
+import 'package:kmonie/core/constants/constants.dart';
 
 class AppButton extends StatelessWidget {
-  const AppButton({super.key, this.text, this.backgroundColor = ColorConstants.primary, this.textColor = ColorConstants.black, required this.onPressed, this.icon, this.iconWidget, this.height = UIConstants.defaultButtonHeight, this.borderRadius = UIConstants.defaultBorderRadius, this.width, this.fontSize = 14, this.fontWeight = FontWeight.w400, this.borderColor, this.disabled = false});
+  const AppButton({
+    super.key,
+    this.text,
+    this.backgroundColor = AppColorConstants.primary,
+    this.textColor = AppColorConstants.black,
+    required this.onPressed,
+    this.icon,
+    this.iconWidget,
+    this.height = AppUIConstants.defaultButtonHeight,
+    this.borderRadius = AppUIConstants.defaultBorderRadius,
+    this.width,
+    this.fontSize = 14,
+    this.fontWeight = FontWeight.w400,
+    this.borderColor,
+    this.disabled = false,
+  });
 
   final String? text;
   final Color backgroundColor;
@@ -30,13 +45,20 @@ class AppButton extends StatelessWidget {
       child: ElevatedButton(
         onPressed: disabled ? null : onPressed,
         style: ElevatedButton.styleFrom(
-          backgroundColor: disabled ? backgroundColor.withAlpha(60) : backgroundColor,
+          backgroundColor: disabled
+              ? backgroundColor.withAlpha(60)
+              : backgroundColor,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(borderRadius),
-            side: BorderSide(color: borderColor ?? Colors.transparent, width: borderColor != null ? 1 : 0),
+            side: BorderSide(
+              color: borderColor ?? Colors.transparent,
+              width: borderColor != null ? 1 : 0,
+            ),
           ),
           elevation: 0,
-          padding: const EdgeInsets.symmetric(horizontal: UIConstants.smallPadding),
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppUIConstants.smallPadding,
+          ),
         ),
         child: _buildContent(),
       ),
@@ -54,19 +76,27 @@ class AppButton extends StatelessWidget {
     if (!hasIcon && hasText) {
       return Text(
         text!,
-        style: TextStyle(color: textColor, fontSize: fontSize, fontWeight: fontWeight),
+        style: TextStyle(
+          color: textColor,
+          fontSize: fontSize,
+          fontWeight: fontWeight,
+        ),
       );
     }
 
     return Row(
       mainAxisSize: MainAxisSize.min,
       mainAxisAlignment: MainAxisAlignment.center,
-      spacing: UIConstants.smallSpacing,
+      spacing: AppUIConstants.smallSpacing,
       children: [
         iconWidget ?? Icon(icon, color: textColor, size: 18),
         Text(
           text!,
-          style: TextStyle(color: textColor, fontSize: fontSize, fontWeight: fontWeight),
+          style: TextStyle(
+            color: textColor,
+            fontSize: fontSize,
+            fontWeight: fontWeight,
+          ),
         ),
       ],
     );

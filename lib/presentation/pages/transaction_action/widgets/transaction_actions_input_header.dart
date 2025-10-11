@@ -2,17 +2,21 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-import '../../../../core/constant/export.dart';
-import '../../../../core/text_style/export.dart';
-import '../../../../generated/assets.dart';
-import '../../../bloc/export.dart';
-import '../../../widgets/export.dart';
+import 'package:kmonie/core/constants/constants.dart';
+import 'package:kmonie/core/text_style/text_style.dart';
+import 'package:kmonie/generated/assets.dart';
+import 'package:kmonie/presentation/bloc/transaction_actions/transaction_actions_export.dart';
+import 'package:kmonie/presentation/widgets/widgets.dart';
 
 class TransactionActionsInputHeader extends StatelessWidget {
   final TextEditingController noteController;
   final FocusNode noteFocusNode;
 
-  const TransactionActionsInputHeader({super.key, required this.noteController, required this.noteFocusNode});
+  const TransactionActionsInputHeader({
+    super.key,
+    required this.noteController,
+    required this.noteFocusNode,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -25,23 +29,36 @@ class TransactionActionsInputHeader extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                SvgPicture.asset(Assets.svgsCccd, width: UIConstants.largeIconSize, height: UIConstants.largeIconSize),
+                SvgPicture.asset(
+                  Assets.svgsCccd,
+                  width: AppUIConstants.largeIconSize,
+                  height: AppUIConstants.largeIconSize,
+                ),
                 Text(amount.toString(), style: AppTextStyle.blackS20Bold),
               ],
             ),
-            const SizedBox(height: UIConstants.smallPadding),
+            const SizedBox(height: AppUIConstants.smallPadding),
             Container(
-              decoration: BoxDecoration(color: ColorConstants.white, borderRadius: BorderRadius.circular(UIConstants.smallBorderRadius)),
-              padding: const EdgeInsets.symmetric(horizontal: UIConstants.smallPadding),
+              decoration: BoxDecoration(
+                color: AppColorConstants.white,
+                borderRadius: BorderRadius.circular(
+                  AppUIConstants.smallBorderRadius,
+                ),
+              ),
+              padding: const EdgeInsets.symmetric(
+                horizontal: AppUIConstants.smallPadding,
+              ),
               child: Row(
                 children: [
-                  Text(TextConstants.note, style: AppTextStyle.greyS14),
+                  Text(AppTextConstants.note, style: AppTextStyle.greyS14),
                   Expanded(
                     child: AppTextField(
                       textInputAction: TextInputAction.done,
                       controller: noteController,
                       focusNode: noteFocusNode,
-                      onChanged: (value) => context.read<TransactionActionsBloc>().add(NoteChanged(value)),
+                      onChanged: (value) => context
+                          .read<TransactionActionsBloc>()
+                          .add(NoteChanged(value)),
                       decoration: const InputDecoration(
                         isDense: true,
                         border: InputBorder.none,
@@ -50,7 +67,9 @@ class TransactionActionsInputHeader extends StatelessWidget {
                         focusedBorder: InputBorder.none,
                         enabledBorder: InputBorder.none,
                         disabledBorder: InputBorder.none,
-                        contentPadding: EdgeInsets.symmetric(vertical: UIConstants.smallPadding),
+                        contentPadding: EdgeInsets.symmetric(
+                          vertical: AppUIConstants.smallPadding,
+                        ),
                       ),
                     ),
                   ),
@@ -58,7 +77,7 @@ class TransactionActionsInputHeader extends StatelessWidget {
                 ],
               ),
             ),
-            const SizedBox(height: UIConstants.smallPadding),
+            const SizedBox(height: AppUIConstants.smallPadding),
           ],
         );
       },

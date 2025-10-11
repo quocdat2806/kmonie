@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
-import '../../../../core/cache/export.dart';
-import '../../../../core/constant/export.dart';
-import '../../../../core/text_style/export.dart';
-import '../../../../entity/export.dart';
+import 'package:kmonie/core/cache/cache.dart';
+import 'package:kmonie/core/constants/constants.dart';
+import 'package:kmonie/core/text_style/text_style.dart';
+import 'package:kmonie/entity/entity.dart';
 
 class TransactionCategoryItem extends StatelessWidget {
   final TransactionCategory category;
@@ -11,27 +11,50 @@ class TransactionCategoryItem extends StatelessWidget {
   final double itemWidth;
   final VoidCallback onTap;
 
-  const TransactionCategoryItem({super.key, required this.category, required this.isSelected, required this.itemWidth, required this.onTap});
+  const TransactionCategoryItem({
+    super.key,
+    required this.category,
+    required this.isSelected,
+    required this.itemWidth,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
-    final Color backgroundColor = isSelected ? ColorConstants.primary : ColorConstants.greyWhite;
-    final iconSize = itemWidth * UIConstants.categoryIconSizeRatio;
+    final Color backgroundColor = isSelected
+        ? AppColorConstants.primary
+        : AppColorConstants.greyWhite;
+    final iconSize = itemWidth * AppUIConstants.categoryIconSizeRatio;
     return InkWell(
       onTap: onTap,
       child: Column(
         children: [
           SizedBox(
-            width: itemWidth * UIConstants.categoryItemSizeRatio,
-            height: itemWidth * UIConstants.categoryItemSizeRatio,
+            width: itemWidth * AppUIConstants.categoryItemSizeRatio,
+            height: itemWidth * AppUIConstants.categoryItemSizeRatio,
             child: DecoratedBox(
-              decoration: BoxDecoration(color: backgroundColor, shape: BoxShape.circle),
-              child: Center(child: SvgCacheManager().getSvg(category.pathAsset, iconSize, iconSize)),
+              decoration: BoxDecoration(
+                color: backgroundColor,
+                shape: BoxShape.circle,
+              ),
+              child: Center(
+                child: SvgCacheManager().getSvg(
+                  category.pathAsset,
+                  iconSize,
+                  iconSize,
+                ),
+              ),
             ),
           ),
-          const SizedBox(height: UIConstants.smallSpacing),
+          const SizedBox(height: AppUIConstants.smallSpacing),
           Flexible(
-            child: Text(category.title, textAlign: TextAlign.center, style: AppTextStyle.blackS12Medium, maxLines: UIConstants.defaultMaxLines, overflow: TextOverflow.ellipsis),
+            child: Text(
+              category.title,
+              textAlign: TextAlign.center,
+              style: AppTextStyle.blackS12Medium,
+              maxLines: AppUIConstants.defaultMaxLines,
+              overflow: TextOverflow.ellipsis,
+            ),
           ),
         ],
       ),

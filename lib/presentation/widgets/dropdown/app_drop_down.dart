@@ -1,14 +1,26 @@
 import 'package:flutter/material.dart';
 
-import '../../../core/constant/export.dart';
+import 'package:kmonie/core/constants/constants.dart';
 
 class AppDropdown {
   static OverlayEntry? _overlayEntry;
 
-  static void show<T>({required BuildContext context, required GlobalKey targetKey, required List<T> items, required Widget Function(T item) itemBuilder, required void Function(T item) onItemSelected, double verticalOffset = 4, double maxHeight = 200, BorderRadius borderRadius = const BorderRadius.all(Radius.circular(UIConstants.smallBorderRadius))}) {
+  static void show<T>({
+    required BuildContext context,
+    required GlobalKey targetKey,
+    required List<T> items,
+    required Widget Function(T item) itemBuilder,
+    required void Function(T item) onItemSelected,
+    double verticalOffset = 4,
+    double maxHeight = 200,
+    BorderRadius borderRadius = const BorderRadius.all(
+      Radius.circular(AppUIConstants.smallBorderRadius),
+    ),
+  }) {
     _remove();
 
-    final RenderBox renderBox = targetKey.currentContext!.findRenderObject() as RenderBox;
+    final RenderBox renderBox =
+        targetKey.currentContext!.findRenderObject() as RenderBox;
     final Size size = renderBox.size;
     final Offset offset = renderBox.localToGlobal(Offset.zero);
 
@@ -17,7 +29,10 @@ class AppDropdown {
         return Stack(
           children: [
             Positioned.fill(
-              child: GestureDetector(behavior: HitTestBehavior.translucent, onTap: _remove),
+              child: GestureDetector(
+                behavior: HitTestBehavior.translucent,
+                onTap: _remove,
+              ),
             ),
 
             Positioned(

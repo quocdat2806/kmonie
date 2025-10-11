@@ -10,10 +10,10 @@ import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:intl/date_symbol_data_local.dart';
 
 import 'app.dart';
-import 'application/auth/auth_export.dart';
-import 'core/di/export.dart' as di;
-import 'core/navigation/export.dart';
-import 'database/export.dart';
+import 'application/auth/auth.dart';
+import 'core/di/di.dart' as di;
+import 'core/navigation/navigation.dart';
+import 'database/database.dart';
 
 DotEnv dotenv = DotEnv();
 Future<void> main() async {
@@ -23,7 +23,8 @@ Future<void> main() async {
       await initializeDateFormatting('vi_VN', null);
       await Firebase.initializeApp();
       await dotenv.load(fileName: ".env");
-      FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterFatalError;
+      FlutterError.onError =
+          FirebaseCrashlytics.instance.recordFlutterFatalError;
       PlatformDispatcher.instance.onError = (error, stack) {
         FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
         return true;
@@ -34,7 +35,8 @@ Future<void> main() async {
 
       await di.init();
 
-      final AuthBloc authBloc = AuthBloc(di.sl<SecureStorageService>())..add(const AuthAppStarted());
+      final AuthBloc authBloc = AuthBloc(di.sl<SecureStorageService>())
+        ..add(const AuthAppStarted());
       final AppRouter appRouter = AppRouter(authBloc);
 
       if (kDebugMode) {

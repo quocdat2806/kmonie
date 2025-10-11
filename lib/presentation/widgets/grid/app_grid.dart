@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../core/constant/export.dart';
+import 'package:kmonie/core/constants/constants.dart';
 
 class AppGrid extends StatelessWidget {
   final int crossAxisCount;
@@ -14,8 +14,8 @@ class AppGrid extends StatelessWidget {
     required this.crossAxisCount,
     required this.itemCount,
     required this.itemBuilder,
-    this.mainAxisSpacing = UIConstants.defaultGridMainAxisSpacing,
-    this.crossAxisSpacing = UIConstants.defaultGridCrossAxisSpacing,
+    this.mainAxisSpacing = AppUIConstants.defaultGridMainAxisSpacing,
+    this.crossAxisSpacing = AppUIConstants.defaultGridCrossAxisSpacing,
   });
 
   @override

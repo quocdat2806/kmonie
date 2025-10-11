@@ -1,5 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import '../../core/enum/export.dart';
+import 'package:kmonie/core/enums/enums.dart';
 part 'transaction_category.freezed.dart';
 part 'transaction_category.g.dart';
 

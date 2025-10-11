@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 
-import '../../../core/constant/export.dart';
-import '../../../core/enum/export.dart';
-import '../../../core/navigation/export.dart';
-import '../../../core/stream/export.dart';
-import '../../../core/text_style/export.dart';
-import '../../../entity/export.dart';
-import '../../pages/export.dart';
+import 'package:kmonie/core/constants/constants.dart';
+import 'package:kmonie/core/enums/enums.dart';
+import 'package:kmonie/core/navigation/navigation.dart';
+import 'package:kmonie/core/streams/streams.dart';
+import 'package:kmonie/core/text_style/text_style.dart';
+import 'package:kmonie/entity/entity.dart';
+import 'package:kmonie/presentation/pages/pages.dart';
 import '../divider/app_divider.dart';
 import 'transaction_item.dart';
 
@@ -36,7 +36,7 @@ class TransactionList extends StatelessWidget {
             final dateKey = groupedTransactions.keys.elementAt(index);
             final transactions = groupedTransactions[dateKey]!;
             return Padding(
-              padding: const EdgeInsets.all(UIConstants.smallPadding),
+              padding: const EdgeInsets.all(AppUIConstants.smallPadding),
               child: Column(
                 children: [
                   Row(
@@ -47,7 +47,7 @@ class TransactionList extends StatelessWidget {
                         dailyTotalWidgetBuilder!(dateKey),
                     ],
                   ),
-                  const SizedBox(height: UIConstants.smallSpacing),
+                  const SizedBox(height: AppUIConstants.smallSpacing),
                   const AppDivider(),
                   ListView.separated(
                     physics: const NeverScrollableScrollPhysics(),

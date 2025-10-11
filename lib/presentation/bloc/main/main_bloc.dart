@@ -1,5 +1,5 @@
 import 'package:bloc/bloc.dart';
-import '../../../core/enum/export.dart';
+import 'package:kmonie/core/enums/enums.dart';
 import 'main_event.dart';
 import 'main_state.dart';
 

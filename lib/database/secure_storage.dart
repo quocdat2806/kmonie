@@ -1,5 +1,5 @@
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import '../../core/config/export.dart';
+import 'package:kmonie/core/config/config.dart';
 
 class SecureStorageService {
   factory SecureStorageService() => _instance;

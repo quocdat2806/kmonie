@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
-import '../../../../core/constant/export.dart';
-import '../../../../core/text_style/export.dart';
-import '../../../presentation/export.dart';
-import '../../../generated/assets.dart';
+import 'package:kmonie/core/constants/constants.dart';
+import 'package:kmonie/core/text_style/text_style.dart';
+import 'package:kmonie/presentation/presentation.dart';
+import 'package:kmonie/generated/assets.dart';
 import 'widgets/menu_item.dart';
 
 class ProfilePage extends StatelessWidget {
@@ -16,18 +16,18 @@ class ProfilePage extends StatelessWidget {
 
   Widget _buildHeader() {
     return ColoredBox(
-      color: ColorConstants.primary,
+      color: AppColorConstants.primary,
       child: Padding(
-        padding: const EdgeInsets.all(UIConstants.defaultPadding),
+        padding: const EdgeInsets.all(AppUIConstants.defaultPadding),
         child: Row(
           children: [
             const AppCircleImage(
-              backgroundColor: ColorConstants.primary,
-              fallbackIcon: Icon(Icons.person, color: ColorConstants.black),
+              backgroundColor: AppColorConstants.primary,
+              fallbackIcon: Icon(Icons.person, color: AppColorConstants.black),
               imageUrl:
                   'https://hoanghamobile.com/tin-tuc/wp-content/uploads/2024/11/tai-hinh-nen-dep-mien-phi.jpg',
             ),
-            const SizedBox(width: UIConstants.defaultSpacing),
+            const SizedBox(width: AppUIConstants.defaultSpacing),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [

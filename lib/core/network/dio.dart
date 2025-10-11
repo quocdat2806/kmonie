@@ -1,7 +1,11 @@
 import 'package:dio/dio.dart';
-import '../../database/export.dart';
-import '../config/export.dart';
-import '../network/export.dart';
+import 'package:kmonie/database/database.dart';
+import 'package:kmonie/core/config/config.dart';
+import 'auth_header_interceptor.dart';
+import 'logging_interceptor.dart';
+import 'network_guard_interceptor.dart';
+import 'network_info.dart';
+import 'retry_interceptor.dart';
 
 abstract class AppDio {
   Dio get dio;

@@ -1,12 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../../core/constant/export.dart';
-import '../../../presentation/bloc/export.dart';
-import '../../../presentation/pages/export.dart';
+import 'package:kmonie/core/constants/constants.dart';
+import 'package:kmonie/presentation/bloc/main/main_bloc.dart';
+import 'package:kmonie/presentation/bloc/main/main_event.dart';
+import 'package:kmonie/presentation/bloc/main/main_state.dart';
+import 'package:kmonie/presentation/pages/pages.dart';
 import 'widgets/bottom_navigation_bar.dart';
 
-final List<Widget> pageList = const <Widget>[HomePage(), ChartPage(), ReportPage(), ProfilePage()];
+final List<Widget> pageList = const <Widget>[
+  HomePage(),
+  ChartPage(),
+  ReportPage(),
+  ProfilePage(),
+];
 
 class MainPage extends StatelessWidget {
   const MainPage({super.key});
@@ -23,7 +30,7 @@ class MainPage extends StatelessWidget {
         builder: (context, state) {
           final int currentIndex = state.selectedIndex;
           return Scaffold(
-            backgroundColor: ColorConstants.primary,
+            backgroundColor: AppColorConstants.primary,
             body: SafeArea(
               child: IndexedStack(index: currentIndex, children: pageList),
             ),

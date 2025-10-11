@@ -1,12 +1,12 @@
 import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../core/service/budget.dart';
-import '../../../core/service/transaction.dart';
-import '../../../core/service/transaction_category.dart';
-import '../../../core/enum/export.dart';
-import '../../../core/util/date.dart';
-import '../../../entity/export.dart';
+import 'package:kmonie/core/services/budget.dart';
+import 'package:kmonie/core/services/transaction.dart';
+import 'package:kmonie/core/services/transaction_category.dart';
+import 'package:kmonie/core/enums/enums.dart';
+import 'package:kmonie/core/utils/date.dart';
+import 'package:kmonie/entity/entity.dart';
 import 'report_event.dart';
 import 'report_state.dart';
 
@@ -16,7 +16,8 @@ class ReportBloc extends Bloc<ReportEvent, ReportState> {
   final TransactionCategoryService categoryService;
   StreamSubscription<List<Transaction>>? _txSub;
 
-  ReportBloc(this.budgetService, this.transactionService, this.categoryService) : super(const ReportState()) {
+  ReportBloc(this.budgetService, this.transactionService, this.categoryService)
+    : super(const ReportState()) {
     on<ReportInit>(_onInit);
     on<ReportChangePeriod>(_onChangePeriod);
     on<ReportSetBudget>(_onSetBudget);
@@ -42,11 +43,18 @@ class ReportBloc extends Bloc<ReportEvent, ReportState> {
       final startLocal = range.startUtc.toLocal();
       final endLocal = range.endUtc.toLocal();
       // include start of month (>= start) and exclude end (before end)
-      final inMonth = all.where((t) => !t.date.isBefore(startLocal) && t.date.isBefore(endLocal)).toList();
+      final inMonth = all
+          .where(
+            (t) => !t.date.isBefore(startLocal) && t.date.isBefore(endLocal),
+          )
+          .toList();
 
       // only expense
       final categories = await categoryService.getAll();
-      final expenseIds = categories.where((c) => c.transactionType == TransactionType.expense).map((c) => c.id!).toSet();
+      final expenseIds = categories
+          .where((c) => c.transactionType == TransactionType.expense)
+          .map((c) => c.id!)
+          .toSet();
 
       final Map<int, int> spent = {};
       for (final Transaction tx in inMonth) {
@@ -55,7 +63,14 @@ class ReportBloc extends Bloc<ReportEvent, ReportState> {
         spent[tx.transactionCategoryId] = current + tx.amount;
       }
 
-      emit(state.copyWith(isLoading: false, budgetsByCategory: budgets, spentByCategory: spent, message: null));
+      emit(
+        state.copyWith(
+          isLoading: false,
+          budgetsByCategory: budgets,
+          spentByCategory: spent,
+          message: null,
+        ),
+      );
     } catch (e) {
       emit(state.copyWith(isLoading: false, message: 'Lỗi tải báo cáo: $e'));
     }
@@ -65,12 +80,23 @@ class ReportBloc extends Bloc<ReportEvent, ReportState> {
     await _load(event.period, emit);
   }
 
-  Future<void> _onChangePeriod(ReportChangePeriod event, Emitter<ReportState> emit) async {
+  Future<void> _onChangePeriod(
+    ReportChangePeriod event,
+    Emitter<ReportState> emit,
+  ) async {
     await _load(event.period, emit);
   }
 
-  Future<void> _onSetBudget(ReportSetBudget event, Emitter<ReportState> emit) async {
-    await budgetService.setBudgetForCategory(year: event.period.year, month: event.period.month, categoryId: event.categoryId, amount: event.amount);
+  Future<void> _onSetBudget(
+    ReportSetBudget event,
+    Emitter<ReportState> emit,
+  ) async {
+    await budgetService.setBudgetForCategory(
+      year: event.period.year,
+      month: event.period.month,
+      categoryId: event.categoryId,
+      amount: event.amount,
+    );
     await _load(event.period, emit);
   }
 

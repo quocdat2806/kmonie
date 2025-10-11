@@ -1,5 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import '../../../entity/export.dart';
+import 'package:kmonie/entity/entity.dart';
 
 part 'calendar_monthly_transaction_event.freezed.dart';
 

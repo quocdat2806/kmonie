@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import '../../../../core/constant/export.dart';
-import '../../../../core/text_style/export.dart';
+import 'package:kmonie/core/constants/constants.dart';
+import 'package:kmonie/core/text_style/text_style.dart';
 
 class MenuItem extends StatelessWidget {
   final String iconAsset;
@@ -14,23 +14,23 @@ class MenuItem extends StatelessWidget {
       onTap: () {},
       child: Padding(
         padding: const EdgeInsets.symmetric(
-          horizontal: UIConstants.extraLargePadding,
-          vertical: UIConstants.defaultPadding,
+          horizontal: AppUIConstants.extraLargePadding,
+          vertical: AppUIConstants.defaultPadding,
         ),
         child: Row(
           children: [
             SvgPicture.asset(
               iconAsset,
-              width: UIConstants.mediumIconSize,
-              height: UIConstants.mediumIconSize,
+              width: AppUIConstants.mediumIconSize,
+              height: AppUIConstants.mediumIconSize,
               colorFilter: const ColorFilter.mode(
-                ColorConstants.primary,
+                AppColorConstants.primary,
                 BlendMode.srcIn,
               ),
             ),
-            const SizedBox(width: UIConstants.defaultSpacing),
+            const SizedBox(width: AppUIConstants.defaultSpacing),
             Expanded(child: Text(title, style: AppTextStyle.blackS14Medium)),
-            const Icon(Icons.chevron_right, color: ColorConstants.grey),
+            const Icon(Icons.chevron_right, color: AppColorConstants.grey),
           ],
         ),
       ),

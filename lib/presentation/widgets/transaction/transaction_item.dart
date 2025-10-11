@@ -1,16 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 
-import '../../../../core/constant/export.dart';
-import '../../../../core/text_style/export.dart';
-import '../../../../core/enum/export.dart';
-import '../../../../core/tool/export.dart';
-import '../../../../core/util/export.dart';
-
-
-import '../../../../core/navigation/export.dart';
-import '../../../../entity/export.dart';
-import '../dialog/app_delete_dialog/app_delete_dialog.dart';
+import 'package:kmonie/core/constants/constants.dart';
+import 'package:kmonie/core/text_style/text_style.dart';
+import 'package:kmonie/core/navigation/navigation.dart';
+import 'package:kmonie/core/enums/enums.dart';
+import 'package:kmonie/core/tools/tools.dart';
+import 'package:kmonie/core/utils/utils.dart';
+import 'package:kmonie/entity/entity.dart';
+import 'package:kmonie/presentation/widgets/dialog/app_delete_dialog/app_delete_dialog.dart';
 
 class TransactionItem extends StatelessWidget {
   final Transaction transaction;
@@ -20,7 +18,13 @@ class TransactionItem extends StatelessWidget {
 
   final VoidCallback? onConfirmDelete;
 
-  const TransactionItem({super.key, required this.transaction, this.category, this.onEdit, this.onConfirmDelete});
+  const TransactionItem({
+    super.key,
+    required this.transaction,
+    this.category,
+    this.onEdit,
+    this.onConfirmDelete,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -34,9 +38,9 @@ class TransactionItem extends StatelessWidget {
             onPressed: (_) {
               onEdit?.call();
             },
-            backgroundColor: ColorConstants.orange,
-            foregroundColor: ColorConstants.white,
-            label: TextConstants.edit,
+            backgroundColor: AppColorConstants.orange,
+            foregroundColor: AppColorConstants.white,
+            label: AppTextConstants.edit,
           ),
           SlidableAction(
             onPressed: (_) {
@@ -52,26 +56,48 @@ class TransactionItem extends StatelessWidget {
                 },
               );
             },
-            backgroundColor: ColorConstants.red,
-            foregroundColor: ColorConstants.white,
-            label: TextConstants.delete,
+            backgroundColor: AppColorConstants.red,
+            foregroundColor: AppColorConstants.white,
+            label: AppTextConstants.delete,
           ),
         ],
       ),
       child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: UIConstants.smallPadding),
+        padding: const EdgeInsets.symmetric(
+          vertical: AppUIConstants.smallPadding,
+        ),
         child: Row(
-          spacing: UIConstants.smallSpacing,
+          spacing: AppUIConstants.smallSpacing,
           children: [
             DecoratedBox(
-              decoration: BoxDecoration(shape: BoxShape.circle, gradient: GradientHelper.fromColorHexList(transaction.gradientColors)),
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: GradientHelper.fromColorHexList(
+                  transaction.gradientColors,
+                ),
+              ),
               child: Padding(
-                padding: const EdgeInsets.all(UIConstants.smallPadding),
-                child: SvgConstants.icon(assetPath: category!.pathAsset, size: SvgSizeType.medium),
+                padding: const EdgeInsets.all(AppUIConstants.smallPadding),
+                child: SvgUtils.icon(
+                  assetPath: category!.pathAsset,
+                  size: SvgSizeType.medium,
+                ),
               ),
             ),
-            Expanded(child: Text(transaction.content.isNotEmpty ? transaction.content : category!.title, style: AppTextStyle.blackS14)),
-            Text(transaction.transactionType == TransactionType.expense.typeIndex ? '-${FormatUtils.formatAmount(transaction.amount)}' : FormatUtils.formatAmount(transaction.amount), style: AppTextStyle.blackS14),
+            Expanded(
+              child: Text(
+                transaction.content.isNotEmpty
+                    ? transaction.content
+                    : category!.title,
+                style: AppTextStyle.blackS14,
+              ),
+            ),
+            Text(
+              transaction.transactionType == TransactionType.expense.typeIndex
+                  ? '-${FormatUtils.formatCurrency(transaction.amount)}'
+                  : FormatUtils.formatCurrency(transaction.amount),
+              style: AppTextStyle.blackS14,
+            ),
           ],
         ),
       ),

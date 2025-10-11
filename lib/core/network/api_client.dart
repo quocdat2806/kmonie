@@ -1,6 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:retrofit/retrofit.dart';
-import '../config/export.dart';
+import 'package:kmonie/core/config/config.dart';
 
 part 'api_client.g.dart';
 

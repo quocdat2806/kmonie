@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:kmonie/core/utils/utils.dart';
 
-import '../../../core/constant/export.dart';
-import '../../../core/text_style/export.dart';
-import '../../../generated/export.dart';
-import '../../../core/enum/export.dart';
-import '../../widgets/export.dart';
+import 'package:kmonie/core/constants/constants.dart';
+import 'package:kmonie/core/text_style/text_style.dart';
+import 'package:kmonie/generated/export.dart';
+import 'package:kmonie/core/enums/enums.dart';
+import 'package:kmonie/presentation/widgets/widgets.dart';
 
 class VipUpgradePage extends StatelessWidget {
   const VipUpgradePage({super.key});
@@ -13,25 +14,25 @@ class VipUpgradePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: const CustomAppBar(
-        title: TextConstants.cancel,
+        title: AppTextConstants.cancel,
         centerTitle: false,
       ),
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.all(UIConstants.smallPadding),
+          padding: const EdgeInsets.all(AppUIConstants.smallPadding),
           child: Column(
-            spacing: UIConstants.defaultSpacing,
+            spacing: AppUIConstants.defaultSpacing,
             children: [
               _buildHeader(),
               _buildFeatureList(),
               Text(
-                TextConstants.feeForYear,
+                AppTextConstants.feeForYear,
                 style: AppTextStyle.blackS14,
                 textAlign: TextAlign.center,
               ),
               AppButton(
                 onPressed: () {},
-                text: TextConstants.register,
+                text: AppTextConstants.register,
                 width: double.infinity,
                 fontWeight: FontWeight.bold,
               ),
@@ -44,12 +45,16 @@ class VipUpgradePage extends StatelessWidget {
 
   Widget _buildHeader() {
     return Column(
-      spacing: UIConstants.defaultSpacing,
+      spacing: AppUIConstants.defaultSpacing,
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        SvgConstants.icon(assetPath: Assets.svgsKing,color: ColorConstants.primary, size: SvgSizeType.large),
+        SvgUtils.icon(
+          assetPath: Assets.svgsKing,
+          color: AppColorConstants.primary,
+          size: SvgSizeType.large,
+        ),
         Text(
-          TextConstants.changeToVipPackage,
+          AppTextConstants.changeToVipPackage,
           style: AppTextStyle.blackS24Bold,
         ),
       ],
@@ -58,14 +63,14 @@ class VipUpgradePage extends StatelessWidget {
 
   Widget _buildFeatureList() {
     final features = [
-      TextConstants.unlockFeatureAndRemoveAds,
-      TextConstants.moreTopicAndCustomize,
-      TextConstants.makeLifeBeautiful,
+      AppTextConstants.unlockFeatureAndRemoveAds,
+      AppTextConstants.moreTopicAndCustomize,
+      AppTextConstants.makeLifeBeautiful,
     ];
 
     return Padding(
       padding: const EdgeInsets.symmetric(
-        horizontal: UIConstants.defaultPadding,
+        horizontal: AppUIConstants.defaultPadding,
       ),
       child: Column(
         children: features.map((text) => _buildFeatureItem(text)).toList(),
@@ -75,15 +80,14 @@ class VipUpgradePage extends StatelessWidget {
 
   Widget _buildFeatureItem(String text) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: UIConstants.largePadding),
+      padding: const EdgeInsets.only(bottom: AppUIConstants.largePadding),
       child: Row(
-        spacing: UIConstants.smallSpacing,
+        spacing: AppUIConstants.smallSpacing,
         children: [
-          const Icon(Icons.check, color: ColorConstants.primary),
+          const Icon(Icons.check, color: AppColorConstants.primary),
           Expanded(child: Text(text, style: AppTextStyle.blackS14Medium)),
         ],
       ),
     );
   }
-
 }

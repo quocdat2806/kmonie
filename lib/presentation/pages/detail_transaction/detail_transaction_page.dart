@@ -2,15 +2,15 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 
-import '../../../core/constant/export.dart';
-import '../../../core/enum/export.dart';
-import '../../../core/navigation/export.dart';
-import '../../../core/stream/export.dart';
-import '../../../core/text_style/export.dart';
-import '../../../core/tool/export.dart';
-import '../../../core/util/export.dart';
-import '../../../entity/export.dart';
-import '../../widgets/export.dart';
+import 'package:kmonie/core/constants/constants.dart';
+import 'package:kmonie/core/enums/enums.dart';
+import 'package:kmonie/core/navigation/navigation.dart';
+import 'package:kmonie/core/streams/streams.dart';
+import 'package:kmonie/core/text_style/text_style.dart';
+import 'package:kmonie/core/tools/tools.dart';
+import 'package:kmonie/core/utils/utils.dart';
+import 'package:kmonie/entity/entity.dart';
+import 'package:kmonie/presentation/widgets/widgets.dart';
 import '../transaction_action/transaction_actions_page.dart';
 
 class DetailTransactionArgs {
@@ -50,7 +50,8 @@ class _DetailTransactionPageState extends State<DetailTransactionPage> {
         }
       }
 
-      if (event.event == AppEvent.deleteTransaction && event.payload == _transaction.id) {
+      if (event.event == AppEvent.deleteTransaction &&
+          event.payload == _transaction.id) {
         if (mounted) Navigator.of(context).pop();
       }
     });
@@ -69,35 +70,49 @@ class _DetailTransactionPageState extends State<DetailTransactionPage> {
       appBar: const CustomAppBar(title: 'Chi tiết giao dịch'),
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.all(UIConstants.defaultPadding),
+          padding: const EdgeInsets.all(AppUIConstants.defaultPadding),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _buildHeader(_category, _transaction),
-              const SizedBox(height: UIConstants.defaultSpacing),
+              const SizedBox(height: AppUIConstants.defaultSpacing),
               _buildRow('Kiểu', typeLabel),
-              _buildRow('Số tiền', FormatUtils.formatAmount(_transaction.amount)),
+              _buildRow(
+                'Số tiền',
+                FormatUtils.formatCurrency(_transaction.amount),
+              ),
               _buildDateRow('Ngày', _transaction.date),
-              _buildRow('Ghi chú', _transaction.content.isEmpty ? '(Trống)' : _transaction.content),
+              _buildRow(
+                'Ghi chú',
+                _transaction.content.isEmpty ? '(Trống)' : _transaction.content,
+              ),
             ],
           ),
         ),
       ),
       bottomNavigationBar: SafeArea(
         child: Container(
-          height: UIConstants.defaultButtonHeight,
+          height: AppUIConstants.defaultButtonHeight,
           decoration: const BoxDecoration(
-            border: Border(top: BorderSide(color: ColorConstants.greyWhite)),
-            color: ColorConstants.white,
+            border: Border(top: BorderSide(color: AppColorConstants.greyWhite)),
+            color: AppColorConstants.white,
           ),
           child: Row(
             children: [
               Expanded(
-                child: AppButton(text: TextConstants.edit, backgroundColor: Colors.transparent, onPressed: _onEditPressed),
+                child: AppButton(
+                  text: AppTextConstants.edit,
+                  backgroundColor: Colors.transparent,
+                  onPressed: _onEditPressed,
+                ),
               ),
-              Container(width: 1, color: ColorConstants.greyWhite),
+              Container(width: 1, color: AppColorConstants.greyWhite),
               Expanded(
-                child: AppButton(backgroundColor: Colors.transparent, onPressed: _onDeletePressed, text: TextConstants.delete),
+                child: AppButton(
+                  backgroundColor: Colors.transparent,
+                  onPressed: _onDeletePressed,
+                  text: AppTextConstants.delete,
+                ),
               ),
             ],
           ),
@@ -109,7 +124,10 @@ class _DetailTransactionPageState extends State<DetailTransactionPage> {
   void _onEditPressed() {
     AppNavigator(context: context).push(
       RouterPath.transactionActions,
-      extra: TransactionActionsPageArgs(mode: TransactionActionsMode.edit, transaction: _transaction),
+      extra: TransactionActionsPageArgs(
+        mode: TransactionActionsMode.edit,
+        transaction: _transaction,
+      ),
     );
   }
 
@@ -129,17 +147,29 @@ class _DetailTransactionPageState extends State<DetailTransactionPage> {
 
   Widget _buildHeader(TransactionCategory category, Transaction transaction) {
     return Row(
-      spacing: UIConstants.defaultSpacing,
+      spacing: AppUIConstants.defaultSpacing,
       children: [
         DecoratedBox(
-          decoration: BoxDecoration(shape: BoxShape.circle, gradient: GradientHelper.fromColorHexList(transaction.gradientColors)),
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            gradient: GradientHelper.fromColorHexList(
+              transaction.gradientColors,
+            ),
+          ),
           child: Padding(
-            padding: const EdgeInsets.all(UIConstants.smallPadding),
-            child: SvgConstants.icon(assetPath: category.pathAsset, size: SvgSizeType.medium),
+            padding: const EdgeInsets.all(AppUIConstants.smallPadding),
+            child: SvgUtils.icon(
+              assetPath: category.pathAsset,
+              size: SvgSizeType.medium,
+            ),
           ),
         ),
         Expanded(
-          child: Text(category.title, style: AppTextStyle.blackS16Medium, overflow: TextOverflow.ellipsis),
+          child: Text(
+            category.title,
+            style: AppTextStyle.blackS16Medium,
+            overflow: TextOverflow.ellipsis,
+          ),
         ),
       ],
     );
@@ -147,12 +177,18 @@ class _DetailTransactionPageState extends State<DetailTransactionPage> {
 
   Widget _buildRow(String label, String value) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: UIConstants.smallPadding),
+      padding: const EdgeInsets.symmetric(
+        vertical: AppUIConstants.smallPadding,
+      ),
       child: Row(
         children: [
           SizedBox(width: 100, child: Text(label, style: AppTextStyle.greyS14)),
           Expanded(
-            child: Text(value, style: AppTextStyle.blackS14Medium, overflow: TextOverflow.ellipsis),
+            child: Text(
+              value,
+              style: AppTextStyle.blackS14Medium,
+              overflow: TextOverflow.ellipsis,
+            ),
           ),
         ],
       ),
@@ -161,17 +197,25 @@ class _DetailTransactionPageState extends State<DetailTransactionPage> {
 
   Widget _buildDateRow(String label, DateTime date) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: UIConstants.smallPadding),
+      padding: const EdgeInsets.symmetric(
+        vertical: AppUIConstants.smallPadding,
+      ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           SizedBox(width: 100, child: Text(label, style: AppTextStyle.greyS14)),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            spacing: UIConstants.smallSpacing,
+            spacing: AppUIConstants.smallSpacing,
             children: [
-              Text(AppDateUtils.formatDate(date), style: AppTextStyle.blackS14Medium),
-              Text('(Thêm ${AppDateUtils.formatFullDate(date)})', style: AppTextStyle.greyS12),
+              Text(
+                AppDateUtils.formatDate(date),
+                style: AppTextStyle.blackS14Medium,
+              ),
+              Text(
+                '(Thêm ${AppDateUtils.formatFullDate(date)})',
+                style: AppTextStyle.greyS12,
+              ),
             ],
           ),
         ],

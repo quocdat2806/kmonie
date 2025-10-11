@@ -1,6 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../database/export.dart';
-import '../../core/config/export.dart';
+import 'package:kmonie/database/database.dart';
+import 'package:kmonie/core/config/config.dart';
 
 import 'auth_event.dart';
 import 'auth_state.dart';

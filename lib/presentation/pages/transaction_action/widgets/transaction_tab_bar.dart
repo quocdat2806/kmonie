@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../../core/constant/export.dart';
-import '../../../../core/enum/export.dart';
-import '../../../bloc/export.dart';
-import '../../../widgets/export.dart';
+import 'package:kmonie/core/constants/constants.dart';
+import 'package:kmonie/core/enums/enums.dart';
+import 'package:kmonie/presentation/bloc/transaction_actions/transaction_actions_export.dart';
+import 'package:kmonie/presentation/widgets/widgets.dart';
 
 class TransactionActionsTabBar extends StatelessWidget {
   const TransactionActionsTabBar({super.key});
@@ -16,7 +16,9 @@ class TransactionActionsTabBar extends StatelessWidget {
       builder: (context, selectedIndex) {
         final transactionTypes = ExTransactionType.transactionTypes;
         return Padding(
-          padding: const EdgeInsets.symmetric(horizontal: UIConstants.smallPadding),
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppUIConstants.smallPadding,
+          ),
           child: AppTabView<TransactionType>(
             types: transactionTypes,
             selectedIndex: selectedIndex,

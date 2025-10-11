@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../../../core/constant/export.dart';
-import '../../../widgets/export.dart';
+import 'package:kmonie/core/constants/constants.dart';
+import 'package:kmonie/presentation/widgets/widgets.dart';
 
 class MainNavigationAddTransactionButton extends StatelessWidget {
   const MainNavigationAddTransactionButton({super.key});
@@ -13,13 +13,11 @@ class MainNavigationAddTransactionButton extends StatelessWidget {
         clipBehavior: Clip.none,
         children: [
           Positioned(
-            top: -UIConstants.topAddTransactionButtonOffset,
+            top: -AppUIConstants.topAddTransactionButtonOffset,
             child: AddTransactionButton(),
           ),
         ],
       ),
     );
   }
-
-
 }

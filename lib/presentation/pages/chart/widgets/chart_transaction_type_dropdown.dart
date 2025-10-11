@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../../core/text_style/export.dart';
-import '../../../../core/enum/export.dart';
-import '../../../../core/constant/export.dart';
-import '../../../bloc/export.dart';
-import '../../../widgets/export.dart';
+import 'package:kmonie/core/text_style/text_style.dart';
+import 'package:kmonie/core/enums/enums.dart';
+import 'package:kmonie/core/constants/constants.dart';
+import 'package:kmonie/presentation/bloc/chart/chart_export.dart';
+import 'package:kmonie/presentation/widgets/widgets.dart';
 
 class ChartTransactionTypeDropdown extends StatelessWidget {
   final GlobalKey dropdownKey;
@@ -14,16 +14,25 @@ class ChartTransactionTypeDropdown extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<ChartBloc, ChartState>(
+      buildWhen: (previous, current) =>
+          previous.selectedTransactionType != current.selectedTransactionType,
       builder: (context, state) {
         return InkWell(
           key: dropdownKey,
           onTap: () => _showTransactionTypeDropdown(context),
           child: Row(
             mainAxisSize: MainAxisSize.min,
-            spacing: UIConstants.smallSpacing,
+            spacing: AppUIConstants.smallSpacing,
             children: [
-              Text(state.selectedTransactionType.displayName, style: AppTextStyle.blackS16Bold),
-              const Icon(Icons.arrow_drop_down, color: ColorConstants.black, size: UIConstants.mediumIconSize),
+              Text(
+                state.selectedTransactionType.displayName,
+                style: AppTextStyle.blackS16Bold,
+              ),
+              const Icon(
+                Icons.arrow_drop_down,
+                color: AppColorConstants.black,
+                size: AppUIConstants.mediumIconSize,
+              ),
             ],
           ),
         );
@@ -40,11 +49,14 @@ class ChartTransactionTypeDropdown extends StatelessWidget {
       targetKey: dropdownKey,
       items: options,
       itemBuilder: (item) => Padding(
-        padding: const EdgeInsets.all(UIConstants.smallPadding),
+        padding: const EdgeInsets.all(AppUIConstants.smallPadding),
         child: Text(item, style: AppTextStyle.blackS14Medium),
       ),
       onItemSelected: (value) {
-        final selectedType = allowedTypes.firstWhere((t) => t.displayName == value, orElse: () => TransactionType.expense);
+        final selectedType = allowedTypes.firstWhere(
+          (t) => t.displayName == value,
+          orElse: () => TransactionType.expense,
+        );
         context.read<ChartBloc>().add(ChangeTransactionType(selectedType));
       },
     );

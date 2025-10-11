@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../core/constant/export.dart';
+import 'package:kmonie/core/constants/constants.dart';
 import 'app_cached_network_image.dart';
 
 class AppCircleImage extends StatelessWidget {
@@ -9,7 +9,13 @@ class AppCircleImage extends StatelessWidget {
   final Color backgroundColor;
   final Widget? fallbackIcon;
 
-  const AppCircleImage({super.key, required this.imageUrl, this.size = 56, this.backgroundColor = ColorConstants.white, this.fallbackIcon});
+  const AppCircleImage({
+    super.key,
+    required this.imageUrl,
+    this.size = 56,
+    this.backgroundColor = AppColorConstants.white,
+    this.fallbackIcon,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +26,7 @@ class AppCircleImage extends StatelessWidget {
         decoration: BoxDecoration(
           color: backgroundColor,
           shape: BoxShape.circle,
-          border: Border.all(color: ColorConstants.white),
+          border: Border.all(color: AppColorConstants.white),
         ),
         child: _buildContent(),
       ),
@@ -31,6 +37,10 @@ class AppCircleImage extends StatelessWidget {
     if (imageUrl == null || imageUrl!.isEmpty) {
       return Center(child: fallbackIcon ?? const Icon(Icons.person));
     }
-    return AppCachedNetworkImage(imageUrl: imageUrl!, width: size, height: size);
+    return AppCachedNetworkImage(
+      imageUrl: imageUrl!,
+      width: size,
+      height: size,
+    );
   }
 }

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import '../../../../core/constant/export.dart';
-import '../../../../core/text_style/export.dart';
-import '../../../../core/enum/export.dart';
+import 'package:kmonie/core/constants/constants.dart';
+import 'package:kmonie/core/text_style/text_style.dart';
+import 'package:kmonie/core/enums/enums.dart';
 
 class StatisticsHeader extends StatelessWidget {
   final TransactionType transactionType;
@@ -22,15 +22,15 @@ class StatisticsHeader extends StatelessWidget {
     final monthName = DateFormat('MMMM yyyy', 'vi').format(currentMonth);
 
     return Container(
-      margin: const EdgeInsets.all(UIConstants.smallPadding),
-      padding: const EdgeInsets.all(UIConstants.defaultPadding),
+      margin: const EdgeInsets.all(AppUIConstants.smallPadding),
+      padding: const EdgeInsets.all(AppUIConstants.defaultPadding),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [_getPrimaryColor(), _getPrimaryColor().withOpacity(0.8)],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
-        borderRadius: BorderRadius.circular(UIConstants.smallBorderRadius),
+        borderRadius: BorderRadius.circular(AppUIConstants.smallBorderRadius),
         boxShadow: [
           BoxShadow(
             color: _getPrimaryColor().withOpacity(0.3),
@@ -42,9 +42,9 @@ class StatisticsHeader extends StatelessWidget {
       child: Column(
         children: [
           Text('Tổng $monthName', style: AppTextStyle.whiteS16),
-          const SizedBox(height: UIConstants.smallPadding),
+          const SizedBox(height: AppUIConstants.smallPadding),
           Text(_formatAmount(totalAmount), style: AppTextStyle.whiteS24Bold),
-          const SizedBox(height: UIConstants.smallPadding / 2),
+          const SizedBox(height: AppUIConstants.smallPadding / 2),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
@@ -68,8 +68,8 @@ class StatisticsHeader extends StatelessWidget {
   Widget _buildStatItem(String label, String value, IconData icon) {
     return Column(
       children: [
-        Icon(icon, color: Colors.white, size: UIConstants.defaultIconSize),
-        const SizedBox(height: UIConstants.smallPadding / 2),
+        Icon(icon, color: Colors.white, size: AppUIConstants.defaultIconSize),
+        const SizedBox(height: AppUIConstants.smallPadding / 2),
         Text(value, style: AppTextStyle.whiteS18Bold),
         Text(label, style: AppTextStyle.whiteS12),
       ],
@@ -79,11 +79,11 @@ class StatisticsHeader extends StatelessWidget {
   Color _getPrimaryColor() {
     switch (transactionType) {
       case TransactionType.income:
-        return ColorConstants.secondary;
+        return AppColorConstants.secondary;
       case TransactionType.expense:
-        return ColorConstants.primary;
+        return AppColorConstants.primary;
       case TransactionType.transfer:
-        return ColorConstants.primary;
+        return AppColorConstants.primary;
     }
   }
 
