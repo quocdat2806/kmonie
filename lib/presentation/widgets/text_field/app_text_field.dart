@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'package:kmonie/core/constants/constants.dart';
+import 'package:kmonie/core/text_style/app_text_style.dart';
 
 class AppTextField extends StatelessWidget {
   const AppTextField({
@@ -67,7 +68,24 @@ class AppTextField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return TextFormField(onFieldSubmitted: onFieldSubmitted, enabled: editAble, style: style, controller: controller, obscureText: obscureText, keyboardType: keyboardType, validator: validator, maxLines: maxLines, readOnly: readOnly, textInputAction: textInputAction, maxLength: maxLength, textAlign: textAlign, focusNode: focusNode, onChanged: onChanged, inputFormatters: inputFormatters, decoration: decoration ?? _buildDefaultDecoration());
+    return TextFormField(
+      onFieldSubmitted: onFieldSubmitted,
+      enabled: editAble,
+      style: style,
+      controller: controller,
+      obscureText: obscureText,
+      keyboardType: keyboardType,
+      validator: validator,
+      maxLines: maxLines,
+      readOnly: readOnly,
+      textInputAction: textInputAction,
+      maxLength: maxLength,
+      textAlign: textAlign,
+      focusNode: focusNode,
+      onChanged: onChanged,
+      inputFormatters: inputFormatters,
+      decoration: decoration ?? _buildDefaultDecoration(),
+    );
   }
 
   InputDecoration _buildDefaultDecoration() {
@@ -75,9 +93,15 @@ class AppTextField extends StatelessWidget {
       labelText: label,
       hintText: hintText,
       isDense: isDense ?? true,
+      hintStyle: AppTextStyle.greyS14,
       filled: true,
       fillColor: filledColor,
-      prefixIcon: prefixIcon == null ? null : Padding(padding: const EdgeInsets.only(left: 12), child: prefixIcon),
+      prefixIcon: prefixIcon == null
+          ? null
+          : Padding(
+              padding: const EdgeInsets.only(left: 12),
+              child: prefixIcon,
+            ),
       suffixIcon: Row(
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
@@ -86,21 +110,61 @@ class AppTextField extends StatelessWidget {
               padding: const EdgeInsets.only(right: 4),
               child: InkWell(
                 onTap: onClear,
-                child: const Icon(Icons.clear, size: 18, color: AppColorConstants.black),
+                child: const Icon(
+                  Icons.clear,
+                  size: 18,
+                  color: AppColorConstants.black,
+                ),
               ),
             ),
-          if (suffixIcon != null) Padding(padding: const EdgeInsets.only(right: 12), child: suffixIcon),
+          if (suffixIcon != null)
+            Padding(
+              padding: const EdgeInsets.only(right: 12),
+              child: suffixIcon,
+            ),
         ],
       ),
       prefixIconConstraints: const BoxConstraints(),
       suffixIconConstraints: const BoxConstraints(),
-      border: border ?? OutlineInputBorder(borderRadius: BorderRadius.circular(4), borderSide: BorderSide.none),
-      enabledBorder: border ?? OutlineInputBorder(borderRadius: BorderRadius.circular(4), borderSide: BorderSide.none),
-      focusedBorder: border ?? OutlineInputBorder(borderRadius: BorderRadius.circular(4), borderSide: BorderSide.none),
-      disabledBorder: border ?? OutlineInputBorder(borderRadius: BorderRadius.circular(4), borderSide: BorderSide.none),
-      errorBorder: border ?? OutlineInputBorder(borderRadius: BorderRadius.circular(4), borderSide: BorderSide.none),
-      focusedErrorBorder: border ?? OutlineInputBorder(borderRadius: BorderRadius.circular(4), borderSide: BorderSide.none),
-      contentPadding: contentPadding ?? const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      border:
+          border ??
+          OutlineInputBorder(
+            borderRadius: BorderRadius.circular(4),
+            borderSide: BorderSide.none,
+          ),
+      enabledBorder:
+          border ??
+          OutlineInputBorder(
+            borderRadius: BorderRadius.circular(4),
+            borderSide: BorderSide.none,
+          ),
+      focusedBorder:
+          border ??
+          OutlineInputBorder(
+            borderRadius: BorderRadius.circular(4),
+            borderSide: BorderSide.none,
+          ),
+      disabledBorder:
+          border ??
+          OutlineInputBorder(
+            borderRadius: BorderRadius.circular(4),
+            borderSide: BorderSide.none,
+          ),
+      errorBorder:
+          border ??
+          OutlineInputBorder(
+            borderRadius: BorderRadius.circular(4),
+            borderSide: BorderSide.none,
+          ),
+      focusedErrorBorder:
+          border ??
+          OutlineInputBorder(
+            borderRadius: BorderRadius.circular(4),
+            borderSide: BorderSide.none,
+          ),
+      contentPadding:
+          contentPadding ??
+          const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
     );
   }
 }

@@ -4,6 +4,8 @@ import 'package:kmonie/core/streams/streams.dart';
 import 'package:kmonie/core/network/network.dart';
 import 'package:kmonie/database/database.dart';
 import 'package:kmonie/core/services/services.dart';
+import 'package:kmonie/core/services/user_service.dart';
+import 'package:kmonie/repository/auth_repository.dart';
 
 final GetIt sl = GetIt.instance;
 
@@ -35,7 +37,11 @@ Future<void> init() async {
     )
     ..registerLazySingleton<SnackBarService>(() => SnackBarService())
     ..registerLazySingleton<NotificationService>(() => NotificationService.I)
-    ..registerLazySingleton<AppStreamEvent>(() => AppStreamEvent());
+    ..registerLazySingleton<AppStreamEvent>(() => AppStreamEvent())
+    ..registerLazySingleton<UserService>(() => UserService())
+    ..registerLazySingleton<AuthRepository>(
+      () => AuthRepositoryImpl(sl<ApiClient>()),
+    );
   await sl<KMonieDatabase>().warmUp();
   await sl<NotificationService>().init();
 }

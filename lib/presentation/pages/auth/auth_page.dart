@@ -1,23 +1,38 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:kmonie/core/constants/constants.dart';
 import 'package:kmonie/core/enums/enums.dart';
-import 'package:kmonie/core/text_style/text_style.dart';
-import 'package:kmonie/presentation/widgets/widgets.dart';
+import 'package:kmonie/lib.dart';
+import 'package:kmonie/core/navigation/router_path.dart';
+import 'package:kmonie/core/di/di.dart' as di;
+import 'package:kmonie/repository/auth_repository.dart';
 
-class AuthScreen extends StatefulWidget {
-  const AuthScreen({super.key, required this.mode});
+class AuthPage extends StatelessWidget {
+  final AuthMode mode;
+  const AuthPage({super.key, required this.mode});
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (context) => AuthBloc(di.sl<AuthRepository>()),
+      child: AuthPageChild(mode: mode),
+    );
+  }
+}
+
+class AuthPageChild extends StatefulWidget {
+  const AuthPageChild({super.key, required this.mode});
 
   final AuthMode mode;
 
   @override
-  State<AuthScreen> createState() => _AuthScreenState();
+  State<AuthPageChild> createState() => _AuthPageChildState();
 }
 
-class _AuthScreenState extends State<AuthScreen> {
+class _AuthPageChildState extends State<AuthPageChild> {
   final TextEditingController _userName = TextEditingController();
   final TextEditingController _password = TextEditingController();
-  bool _obscure = true;
 
   bool get isSignIn => widget.mode == AuthMode.signIn;
 
@@ -37,18 +52,19 @@ class _AuthScreenState extends State<AuthScreen> {
   }
 
   Widget _buildBody() {
-    return SafeArea(
-      child: Center(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              const SizedBox(height: 28),
-              _buildInputInformation(),
-              const SizedBox(height: 8),
-              _buildActionsAuth(),
-            ],
+    return ColoredBox(
+      color: AppColorConstants.primary,
+      child: SafeArea(
+        child: Center(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(
+              horizontal: AppUIConstants.defaultPadding,
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              spacing: AppUIConstants.defaultSpacing,
+              children: <Widget>[_buildInputInformation(), _buildActionsAuth()],
+            ),
           ),
         ),
       ),
@@ -56,88 +72,99 @@ class _AuthScreenState extends State<AuthScreen> {
   }
 
   Widget _buildInputInformation() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        // Text(TextConstants.userName, style: AppTextStyle.blackS12Black),
-        const SizedBox(height: 8),
-        AppTextField(controller: _userName, hintText: 'Username'),
-        const SizedBox(height: 16),
-        // Text(TextConstants.password, style: AppTextStyle.blackS12Black),
-        const SizedBox(height: 8),
-        AppTextField(
-          controller: _password,
-          hintText: 'Password',
-          obscureText: _obscure,
-          suffixIcon: IconButton(
-            icon: Icon(
-              _obscure
-                  ? Icons.visibility_off_outlined
-                  : Icons.visibility_outlined,
-              size: 20,
+    return BlocBuilder<AuthBloc, AuthState>(
+      builder: (context, state) {
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          spacing: AppUIConstants.defaultSpacing,
+          children: <Widget>[
+            AppTextField(
+              controller: _userName,
+              filledColor: AppColorConstants.white,
+              hintText: 'Tên đăng nhập',
+              onChanged: (value) {},
             ),
-            onPressed: () => setState(() => _obscure = !_obscure),
-          ),
-        ),
-      ],
+            AppTextField(
+              controller: _password,
+              hintText: 'Mật khẩu',
+              filledColor: AppColorConstants.white,
+              obscureText: state.isPasswordObscured,
+              onChanged: (value) {
+                context.read<AuthBloc>().add(AuthEvent.passwordChanged(value));
+              },
+              suffixIcon: IconButton(
+                icon: Icon(
+                  state.isPasswordObscured
+                      ? Icons.visibility_off_outlined
+                      : Icons.visibility_outlined,
+                ),
+                onPressed: () {
+                  context.read<AuthBloc>().add(
+                    const AuthEvent.togglePasswordVisibility(),
+                  );
+                },
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 
   void _handleSwitchModeAuth() {
     if (isSignIn) {
-      context.go('/auth/signup');
+      context.go(RouterPath.signUp);
       return;
     }
-    context.go('/auth/signin');
+    context.go(RouterPath.signIn);
   }
 
   Widget _buildActionsAuth() {
-    final String submitLabel = isSignIn ? 'Sign In' : 'Sign Up';
-    final String switchPrompt = isSignIn ? 'No have account?' : 'Have account?';
-    final String switchAction = isSignIn ? 'Sign Up' : 'Sign In';
+    final String submitLabel = isSignIn ? 'Đăng nhập' : 'Đăng ký';
+    final String switchPrompt = isSignIn
+        ? 'Chưa có tài khoản?'
+        : 'Đã có tài khoản?';
+    final String switchAction = isSignIn ? 'Đăng ký' : 'Đăng nhập';
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: <Widget>[
-        if (isSignIn)
-          Align(
-            alignment: Alignment.centerRight,
-            child: TextButton(
-              onPressed: () {},
-              child: const Text('Forget Password'),
-            ),
-          ),
-        if (isSignIn) const SizedBox(height: 4),
-        SizedBox(
-          height: 48,
-          child: ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColorConstants.black,
-              foregroundColor: AppColorConstants.white,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(14),
-              ),
-              elevation: 0,
-            ),
-            onPressed: _handleSubmit,
-            child: Text(submitLabel, style: AppTextStyle.blackS16Medium),
-          ),
-        ),
+    return BlocBuilder<AuthBloc, AuthState>(
+      builder: (context, state) {
+        final bool isLoading = state.loadStatus == LoadStatus.loading;
 
-        const SizedBox(height: 24),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
-            Text(switchPrompt),
-            TextButton(
-              onPressed: _handleSwitchModeAuth,
-              child: Text(switchAction),
+            if (isSignIn)
+              Align(
+                alignment: Alignment.centerRight,
+                child: TextButton(
+                  onPressed: () {},
+                  child: const Text('Quên mật khẩu'),
+                ),
+              ),
+            AppButton(
+              onPressed: isLoading ? () {} : _handleSubmit,
+              text: isLoading ? 'Đang xử lý...' : submitLabel,
+              backgroundColor: AppColorConstants.black,
+              textColor: AppColorConstants.white,
+            ),
+            const SizedBox(height: AppUIConstants.defaultSpacing),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Text(switchPrompt),
+                TextButton(
+                  onPressed: isLoading ? null : _handleSwitchModeAuth,
+                  child: Text(switchAction),
+                ),
+              ],
             ),
           ],
-        ),
-      ],
+        );
+      },
     );
   }
 
-  void _handleSubmit() {}
+  void _handleSubmit() {
+    context.read<AuthBloc>().add(const AuthEvent.handleSubmit());
+  }
 }

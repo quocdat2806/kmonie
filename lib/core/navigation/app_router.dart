@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import 'package:kmonie/application/auth/auth.dart';
+import 'package:kmonie/application/authentication/authentication.dart';
 import 'package:kmonie/presentation/pages/pages.dart';
 import 'package:kmonie/core/enums/enums.dart';
 import './router_path.dart';
@@ -10,32 +10,47 @@ import './router_refresh.dart';
 class AppRouter {
   AppRouter(this.authBloc);
 
-  final AuthBloc authBloc;
+  final AuthenticationBloc authBloc;
   final _rootNavigatorKey = GlobalKey<NavigatorState>();
   late final GoRouter router = GoRouter(
     navigatorKey: _rootNavigatorKey,
     initialLocation: RouterPath.splash,
     refreshListenable: RouterRefresh(authBloc.stream),
-    errorBuilder: (_, GoRouterState state) => const Scaffold(body: Center(child: Text('Page not found'))),
+    errorBuilder: (_, GoRouterState state) =>
+        const Scaffold(body: Center(child: Text('Page not found'))),
     routes: <RouteBase>[
-      GoRoute(path: RouterPath.splash, builder: (_, _) => const SplashPage()),
-      ShellRoute(
-        builder: (BuildContext context, GoRouterState state, Widget child) => child,
-        routes: <RouteBase>[
-          GoRoute(
-            path: RouterPath.signIn,
-            builder: (_, _) => const AuthScreen(mode: AuthMode.signIn),
-          ),
-          GoRoute(
-            path: RouterPath.signUp,
-            builder: (_, _) => const AuthScreen(mode: AuthMode.signUp),
-          ),
-        ],
+      GoRoute(
+        name: RouterPath.splash,
+        path: RouterPath.splash,
+        builder: (_, _) => const SplashPage(),
       ),
-      GoRoute(name: RouterPath.main, path: RouterPath.main, builder: (_, _) => const MainPage()),
-      GoRoute(path: RouterPath.searchTransaction, builder: (_, _) => const SearchTransactionPage()),
-      GoRoute(path: RouterPath.upgradeVip, builder: (_, _) => const VipUpgradePage()),
-      GoRoute(path: RouterPath.calendarMonthlyTransaction, builder: (_, _) => const CalendarMonthlyTransaction()),
+      GoRoute(
+        name: RouterPath.signIn,
+        path: RouterPath.signIn,
+        builder: (_, _) => const AuthPage(mode: AuthMode.signIn),
+      ),
+      GoRoute(
+        name: RouterPath.signUp,
+        path: RouterPath.signUp,
+        builder: (_, _) => const AuthPage(mode: AuthMode.signUp),
+      ),
+      GoRoute(
+        name: RouterPath.main,
+        path: RouterPath.main,
+        builder: (_, _) => const MainPage(),
+      ),
+      GoRoute(
+        path: RouterPath.searchTransaction,
+        builder: (_, _) => const SearchTransactionPage(),
+      ),
+      GoRoute(
+        path: RouterPath.upgradeVip,
+        builder: (_, _) => const VipUpgradePage(),
+      ),
+      GoRoute(
+        path: RouterPath.calendarMonthlyTransaction,
+        builder: (_, _) => const CalendarMonthlyTransaction(),
+      ),
       GoRoute(
         path: RouterPath.transactionActions,
         builder: (_, state) {
@@ -57,43 +72,45 @@ class AppRouter {
           return DailyTransactionPage(args: args);
         },
       ),
-      GoRoute(path: RouterPath.budget, builder: (_, state) => const BudgetPage()),
-      GoRoute(path: RouterPath.addBudget, builder: (_, state) => const AddBudgetPage()),
-      GoRoute(path: RouterPath.addAccount, builder: (_, state) => const AddAccountPage()),
+      GoRoute(
+        path: RouterPath.budget,
+        builder: (_, state) => const BudgetPage(),
+      ),
+      GoRoute(
+        path: RouterPath.addBudget,
+        builder: (_, state) => const AddBudgetPage(),
+      ),
+      GoRoute(
+        path: RouterPath.addAccount,
+        builder: (_, state) => const AddAccountPage(),
+      ),
     ],
-    // redirect: (_, GoRouterState state) {
-    //   final AuthState authState = authBloc.state;
-    //   final String location = state.matchedLocation;
-    //   final bool inAuth = location.startsWith('/auth');
-    //   final bool atSplash = location == RouterPath.splash;
-    //
-    //   if (authState is AuthLoading) {
-    //     return atSplash ? null : RouterPath.splash;
-    //   }
-    //
-    //   if (authState is AuthUnauthenticated) {
-    //     if (atSplash || inAuth) return null;
-    //     final Uri from = state.uri;
-    //     final bool fromIsAuth = from.path.startsWith('/auth');
-    //     final String? fromParam = fromIsAuth ? null : from.toString();
-    //     if (fromParam == null) return '/auth/signin';
-    //     return Uri(
-    //       path: '/auth/signin',
-    //       queryParameters: <String, String>{'from': fromParam},
-    //     ).toString();
-    //   }
-    //
-    //   if (authState is AuthAuthenticated) {
-    //     if (inAuth || atSplash) {
-    //       final String? from = state.uri.queryParameters['from'];
-    //       if (from != null && from.isNotEmpty && !from.startsWith('/auth')) {
-    //         return from;
-    //       }
-    //       return RouterPath.main;
-    //     }
-    //   }
-    //
-    //   return null;
-    // },
+    redirect: (BuildContext context, GoRouterState state) {
+      // final AuthenticationState authState = authBloc.state;
+      final bool isAuthenticated = authBloc.state.isAuthenticated;
+      final String location = state.matchedLocation;
+      final bool isAuthPage =
+          location == RouterPath.signIn || location == RouterPath.signUp;
+      if (isAuthenticated) {
+        if (isAuthPage) {
+          final String? from = state.uri.queryParameters['from'];
+          if (from != null && from.isNotEmpty) {
+            return from;
+          }
+          return RouterPath.main;
+        }
+        return null;
+      }
+
+      if (!isAuthenticated) {
+        if (isAuthPage) return null;
+        return Uri(
+          path: RouterPath.signIn,
+          queryParameters: {'from': location},
+        ).toString();
+      }
+
+      return null;
+    },
   );
 }
