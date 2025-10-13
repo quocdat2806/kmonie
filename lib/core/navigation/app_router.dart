@@ -16,14 +16,9 @@ class AppRouter {
     navigatorKey: _rootNavigatorKey,
     initialLocation: RouterPath.splash,
     refreshListenable: RouterRefresh(authBloc.stream),
-    errorBuilder: (_, GoRouterState state) =>
-        const Scaffold(body: Center(child: Text('Page not found'))),
+    errorBuilder: (_, GoRouterState state) => const Scaffold(body: Center(child: Text('Page not found'))),
     routes: <RouteBase>[
-      GoRoute(
-        name: RouterPath.splash,
-        path: RouterPath.splash,
-        builder: (_, _) => const SplashPage(),
-      ),
+      GoRoute(name: RouterPath.splash, path: RouterPath.splash, builder: (_, _) => const SplashPage()),
       GoRoute(
         name: RouterPath.signIn,
         path: RouterPath.signIn,
@@ -34,23 +29,10 @@ class AppRouter {
         path: RouterPath.signUp,
         builder: (_, _) => const AuthPage(mode: AuthMode.signUp),
       ),
-      GoRoute(
-        name: RouterPath.main,
-        path: RouterPath.main,
-        builder: (_, _) => const MainPage(),
-      ),
-      GoRoute(
-        path: RouterPath.searchTransaction,
-        builder: (_, _) => const SearchTransactionPage(),
-      ),
-      GoRoute(
-        path: RouterPath.upgradeVip,
-        builder: (_, _) => const VipUpgradePage(),
-      ),
-      GoRoute(
-        path: RouterPath.calendarMonthlyTransaction,
-        builder: (_, _) => const CalendarMonthlyTransaction(),
-      ),
+      GoRoute(name: RouterPath.main, path: RouterPath.main, builder: (_, _) => const MainPage()),
+      GoRoute(path: RouterPath.searchTransaction, builder: (_, _) => const SearchTransactionPage()),
+      GoRoute(path: RouterPath.upgradeVip, builder: (_, _) => const VipUpgradePage()),
+      GoRoute(path: RouterPath.calendarMonthlyTransaction, builder: (_, _) => const CalendarMonthlyTransaction()),
       GoRoute(
         path: RouterPath.transactionActions,
         builder: (_, state) {
@@ -72,25 +54,18 @@ class AppRouter {
           return DailyTransactionPage(args: args);
         },
       ),
-      GoRoute(
-        path: RouterPath.budget,
-        builder: (_, state) => const BudgetPage(),
-      ),
-      GoRoute(
-        path: RouterPath.addBudget,
-        builder: (_, state) => const AddBudgetPage(),
-      ),
-      GoRoute(
-        path: RouterPath.addAccount,
-        builder: (_, state) => const AddAccountPage(),
-      ),
+      GoRoute(path: RouterPath.budget, builder: (_, state) => const BudgetPage()),
+      GoRoute(path: RouterPath.addBudget, builder: (_, state) => const AddBudgetPage()),
+      GoRoute(path: RouterPath.addAccount, builder: (_, state) => const AddAccountPage()),
     ],
     redirect: (BuildContext context, GoRouterState state) {
-      // final AuthenticationState authState = authBloc.state;
       final bool isAuthenticated = authBloc.state.isAuthenticated;
       final String location = state.matchedLocation;
-      final bool isAuthPage =
-          location == RouterPath.signIn || location == RouterPath.signUp;
+      final bool isAuthPage = location == RouterPath.signIn || location == RouterPath.signUp;
+      final bool isSplashPage = location == RouterPath.splash;
+      if (isSplashPage) {
+        return null;
+      }
       if (isAuthenticated) {
         if (isAuthPage) {
           final String? from = state.uri.queryParameters['from'];
@@ -104,10 +79,7 @@ class AppRouter {
 
       if (!isAuthenticated) {
         if (isAuthPage) return null;
-        return Uri(
-          path: RouterPath.signIn,
-          queryParameters: {'from': location},
-        ).toString();
+        return Uri(path: RouterPath.signIn, queryParameters: {'from': location}).toString();
       }
 
       return null;
