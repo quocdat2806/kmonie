@@ -82,7 +82,9 @@ class _AuthPageChildState extends State<AuthPageChild> {
               controller: _userName,
               filledColor: AppColorConstants.white,
               hintText: 'Tên đăng nhập',
-              onChanged: (value) {},
+              onChanged: (value) {
+                context.read<AuthBloc>().add(AuthEvent.userNameChanged(value));
+              },
             ),
             AppTextField(
               controller: _password,

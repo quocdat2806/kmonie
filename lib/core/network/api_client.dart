@@ -11,13 +11,13 @@ abstract class ApiClient {
 
   @POST('/auth/register')
   Future<AuthResponse> register({
-    @Field('username') required String username,
-    @Field('password') required String password,
+    @Field('userName') required String username,
+    @Field('passWord') required String password,
   });
 
-  @POST('/auth/signin')
+  @POST('/auth/login')
   Future<AuthResponse> signIn({
-    @Field('username') required String username,
-    @Field('password') required String password,
+    @Field('userName') required String username,
+    @Field('passWord') required String password,
   });
 }

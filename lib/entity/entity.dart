@@ -6,4 +6,4 @@ export 'base_response/base_response.dart';
 export 'user/user.dart';
 export 'auth_response/auth_response.dart';
 export 'auth_response/auth_data.dart';
-export 'auth_response/tokens.dart';
+export 'auth_response/token.dart';

@@ -2,7 +2,7 @@ class AppConfigs {
   AppConfigs._();
 
   static const String fontFamily = 'OpenSans';
-  static const String baseUrl = 'http://192.168.100.8:3000/api/v1';
+  static const String baseUrl = 'http://192.168.1.21:5297/api';
   static const int connectTimeout = 5000;
   static const int receiveTimeout = 5000;
   static const String dateDisplayFormat = 'dd/MM/yyyy';
