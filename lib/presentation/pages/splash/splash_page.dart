@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:kmonie/core/config/app_config.dart';
 import 'package:kmonie/core/constants/constants.dart';
-import 'package:kmonie/core/di/injection_container.dart';
+import 'package:kmonie/core/di/di.dart';
 import 'package:kmonie/core/navigation/navigation.dart';
-import 'package:kmonie/database/secure_storage.dart';
-import 'package:kmonie/generated/assets.dart';
+import 'package:kmonie/core/services/services.dart';
+import 'package:kmonie/generated/generated.dart';
 
 class SplashPage extends StatefulWidget {
   const SplashPage({super.key});
@@ -17,15 +16,14 @@ class _SplashPageState extends State<SplashPage> {
   @override
   void initState() {
     super.initState();
-    if (!mounted) return;
     Future.delayed(const Duration(seconds: 1), () async {
-      final String? isAuthenticated = await sl<SecureStorageService>().read(AppConfigs.tokenKey);
+      final bool isAuthenticated = await sl<SecureStorageService>().isLoggedIn();
       if (!mounted) return;
-      if (isAuthenticated != null && isAuthenticated.isNotEmpty) {
+      if (isAuthenticated) {
         AppNavigator(context: context).goNamed(RouterPath.main);
-      } else {
-        AppNavigator(context: context).goNamed(RouterPath.signIn);
+        return;
       }
+      AppNavigator(context: context).goNamed(RouterPath.main);
     });
   }
 

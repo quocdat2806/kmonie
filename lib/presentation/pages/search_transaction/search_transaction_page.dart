@@ -1,19 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:kmonie/core/utils/utils.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:kmonie/core/constants/constants.dart';
+import 'package:kmonie/core/utils/utils.dart';
 import 'package:kmonie/core/di/di.dart';
 import 'package:kmonie/core/enums/enums.dart';
 import 'package:kmonie/core/navigation/navigation.dart';
 import 'package:kmonie/core/services/services.dart';
 import 'package:kmonie/core/text_style/text_style.dart';
-import 'package:kmonie/entity/entity.dart';
+import 'package:kmonie/entities/entities.dart';
 import 'package:kmonie/generated/generated.dart';
-import 'package:kmonie/presentation/bloc/search_transaction/search_transaction_bloc.dart';
-import 'package:kmonie/presentation/bloc/search_transaction/search_transaction_event.dart';
-import 'package:kmonie/presentation/bloc/search_transaction/search_transaction_state.dart';
 import 'package:kmonie/presentation/widgets/widgets.dart';
+import 'package:kmonie/presentation/bloc/bloc.dart';
 
 class SearchTransactionPage extends StatelessWidget {
   const SearchTransactionPage({super.key});
@@ -33,7 +31,7 @@ class SearchTransactionPageChild extends StatefulWidget {
 
 class _SearchTransactionPageChildState extends State<SearchTransactionPageChild> {
   final TextEditingController _searchController = TextEditingController();
-  final categories = <Map<String, dynamic>>[
+  final searchCategories = <Map<String, dynamic>>[
     {'label': AppTextConstants.all, 'type': null},
     {'label': AppTextConstants.income, 'type': TransactionType.income},
     {'label': AppTextConstants.expense, 'type': TransactionType.expense},
@@ -88,6 +86,8 @@ class _SearchTransactionPageChildState extends State<SearchTransactionPageChild>
                     disabledBorder: InputBorder.none,
                     enabledBorder: InputBorder.none,
                     errorBorder: InputBorder.none,
+                    filled: true,
+                    fillColor: AppColorConstants.white,
                     contentPadding: const EdgeInsets.all(AppUIConstants.smallPadding),
                     suffixIcon: state.query.isNotEmpty
                         ? InkWell(
@@ -131,7 +131,7 @@ class _SearchTransactionPageChildState extends State<SearchTransactionPageChild>
               spacing: AppUIConstants.smallSpacing,
               children: [
                 Text('Kiểu', style: AppTextStyle.blackS14Bold),
-                ...categories.map((item) {
+                ...searchCategories.map((item) {
                   final bool isSelected = state.selectedType == item['type'];
                   return AppButton(
                     text: item['label'] as String,

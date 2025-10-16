@@ -7,7 +7,7 @@ import 'package:kmonie/core/navigation/navigation.dart';
 import 'package:kmonie/core/enums/enums.dart';
 import 'package:kmonie/core/tools/tools.dart';
 import 'package:kmonie/core/utils/utils.dart';
-import 'package:kmonie/entity/entity.dart';
+import 'package:kmonie/entities/entities.dart';
 import 'package:kmonie/presentation/widgets/dialog/app_delete_dialog/app_delete_dialog.dart';
 
 class TransactionItem extends StatelessWidget {

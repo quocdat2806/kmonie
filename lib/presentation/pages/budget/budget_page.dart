@@ -6,18 +6,17 @@ import 'package:kmonie/core/di/di.dart';
 import 'package:kmonie/core/services/budget.dart';
 import 'package:kmonie/core/services/transaction_category.dart';
 import 'package:kmonie/core/text_style/text_style.dart';
-import 'package:kmonie/core/enums/enums.dart';
 import 'package:kmonie/presentation/bloc/budget/budget_bloc.dart';
 import 'package:kmonie/presentation/bloc/budget/budget_event.dart';
 import 'package:kmonie/presentation/bloc/budget/budget_state.dart';
 import 'package:kmonie/presentation/widgets/widgets.dart';
 import 'package:kmonie/core/navigation/router_path.dart';
 import 'package:go_router/go_router.dart';
-import 'package:kmonie/core/tools/tools.dart';
-import 'package:kmonie/core/utils/utils.dart';
-import 'package:kmonie/generated/generated.dart';
+// import 'package:kmonie/core/tools/tools.dart';
 
-import '../../../entity/transaction_category/transaction_category.dart';
+import '../../../entities/transaction_category/transaction_category.dart';
+import 'widgets/budget_category_card.dart';
+import 'widgets/budget_monthly_card.dart';
 
 class BudgetPage extends StatelessWidget {
   const BudgetPage({super.key});
@@ -40,21 +39,27 @@ class _BudgetPageChild extends StatefulWidget {
 }
 
 class _BudgetPageChildState extends State<_BudgetPageChild> {
-  int _currentInput = 0;
-  DateTime _selectedPeriod = DateTime.now();
+  @override
+  void initState() {
+    super.initState();
+    final now = DateTime(DateTime.now().year, DateTime.now().month);
+    context.read<BudgetBloc>().add(BudgetEvent.setSelectedPeriod(period: now));
+  }
 
   void _showMonthPicker() async {
     final result = await showDialog<Map<String, int>>(
       context: context,
-      builder: (context) => MonthPickerDialog(initialMonth: _selectedPeriod.month, initialYear: _selectedPeriod.year),
+      builder: (context) {
+        final s = context.read<BudgetBloc>().state;
+        final sp = s.selectedPeriod ?? DateTime.now();
+        return MonthPickerDialog(initialMonth: sp.month, initialYear: sp.year);
+      },
     );
 
     if (result != null) {
-      setState(() {
-        _selectedPeriod = DateTime(result['year']!, result['month']!);
-      });
-      // Update bloc with new period
-      context.read<BudgetBloc>().add(BudgetEvent.changePeriod(period: _selectedPeriod));
+      final newP = DateTime(result['year']!, result['month']!);
+      context.read<BudgetBloc>().add(BudgetEvent.setSelectedPeriod(period: newP));
+      context.read<BudgetBloc>().add(BudgetEvent.changePeriod(period: newP));
     }
   }
 
@@ -72,7 +77,12 @@ class _BudgetPageChildState extends State<_BudgetPageChild> {
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text('thg ${_selectedPeriod.month} ${_selectedPeriod.year}', style: AppTextStyle.blackS14Medium),
+                  Builder(
+                    builder: (context) {
+                      final sp = context.select((BudgetBloc b) => b.state.selectedPeriod ?? DateTime.now());
+                      return Text('thg ${sp.month} ${sp.year}', style: AppTextStyle.blackS14Medium);
+                    },
+                  ),
                   const SizedBox(width: 4),
                   const Icon(Icons.keyboard_arrow_down, color: AppColorConstants.black, size: 16),
                 ],
@@ -111,184 +121,20 @@ class _BudgetPageChildState extends State<_BudgetPageChild> {
     );
   }
 
+  // Widget extracted to widgets/budget_monthly_card.dart
+  // ignore: unused_element
   Widget _buildMonthlyBudgetCard(BudgetState state) {
-    final monthlyBudget = state.monthlyBudget;
-    final totalSpent = state.totalSpent;
-    final remaining = monthlyBudget - totalSpent;
-    final progress = monthlyBudget > 0 ? (totalSpent / monthlyBudget).clamp(0.0, 1.0) : 0.0;
-
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(AppUIConstants.defaultPadding),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(AppUIConstants.defaultBorderRadius),
-        boxShadow: [BoxShadow(color: Colors.grey.withValues(alpha: 0.1), spreadRadius: 1, blurRadius: 4, offset: const Offset(0, 2))],
-      ),
-      child: Column(
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text('Ngân sách hàng tháng', style: AppTextStyle.blackS16Bold),
-              TextButton(
-                onPressed: () {
-                  // Edit monthly budget
-                },
-                child: Text('Sửa', style: AppTextStyle.blueS14Medium),
-              ),
-            ],
-          ),
-          const SizedBox(height: AppUIConstants.defaultSpacing),
-          Row(
-            children: [
-              // Progress circle
-              SizedBox(
-                width: 80,
-                height: 80,
-                child: Stack(
-                  children: [
-                    Transform.rotate(
-                      angle: 0, // Bắt đầu từ đúng vị trí 12 giờ (top)
-                      child: SizedBox(
-                        width: 80,
-                        height: 80,
-                        child: CircularProgressIndicator(
-                          value: progress,
-                          strokeWidth: 8,
-                          backgroundColor: AppColorConstants.primary, // Màu còn lại
-                          // valueColor: AlwaysStoppedAnimation<Color>(progress >= 1.0 ? AppColorConstants.red : AppColorConstants.greyWhite), // Màu đã dùng
-                          strokeCap: StrokeCap.round,
-                        ),
-                      ),
-                    ),
-                    Center(
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(remaining >= 0 ? 'Còn lại' : 'Vượt quá', style: AppTextStyle.blackS12Medium),
-                          Text(remaining >= 0 ? '${(100 - progress * 100).toStringAsFixed(1)}%' : '${(progress * 100).toStringAsFixed(1)}%', style: AppTextStyle.blackS12Medium),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(width: AppUIConstants.defaultSpacing),
-              // Budget info
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    _buildBudgetInfoItem('Còn lại :', remaining >= 0 ? _formatAmount(remaining) : '-${_formatAmount(remaining.abs())}'),
-                    const SizedBox(height: 6),
-                    _buildBudgetInfoItem('Ngân sách :', _formatAmount(monthlyBudget)),
-                    const SizedBox(height: 6),
-                    _buildBudgetInfoItem('Chi tiêu :', _formatAmount(totalSpent), isOverBudget: remaining < 0),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
+    return BudgetMonthlyCard(monthlyBudget: state.monthlyBudget, totalSpent: state.totalSpent);
   }
 
   Widget _buildCategoryCard(TransactionCategory category, BudgetState state) {
     final budget = state.categoryBudgets[category.id!] ?? 0;
     final spent = state.categorySpent[category.id!] ?? 0;
-    final remaining = budget - spent;
-    final progress = budget > 0 ? (spent / budget).clamp(0.0, 1.0) : 0.0;
-
-    return Container(
-      width: double.infinity,
-      margin: const EdgeInsets.only(bottom: AppUIConstants.smallSpacing),
-      padding: const EdgeInsets.all(AppUIConstants.defaultPadding),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(AppUIConstants.defaultBorderRadius),
-        boxShadow: [BoxShadow(color: Colors.grey.withValues(alpha: 0.1), spreadRadius: 1, blurRadius: 4, offset: const Offset(0, 2))],
-      ),
-      child: Column(
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Row(
-                children: [
-                  Container(
-                    width: 40,
-                    height: 40,
-                    decoration: BoxDecoration(shape: BoxShape.circle, gradient: category.gradientColors.isNotEmpty ? GradientHelper.fromColorHexList(category.gradientColors) : null, color: category.gradientColors.isEmpty ? AppColorConstants.primary : null),
-                    child: Padding(
-                      padding: const EdgeInsets.all(AppUIConstants.smallPadding),
-                      child: SvgUtils.icon(assetPath: category.pathAsset.isNotEmpty ? category.pathAsset : Assets.svgsNote, size: SvgSizeType.medium),
-                    ),
-                  ),
-                  const SizedBox(width: AppUIConstants.smallSpacing),
-                  Text(category.title, style: AppTextStyle.blackS16Bold),
-                ],
-              ),
-              TextButton(
-                onPressed: () => _showBudgetDialog(category),
-                child: Text('Sửa', style: AppTextStyle.blueS14Medium),
-              ),
-            ],
-          ),
-          const SizedBox(height: AppUIConstants.defaultSpacing),
-          Row(
-            children: [
-              // Progress circle
-              SizedBox(
-                width: 80,
-                height: 80,
-                child: Stack(
-                  children: [
-                    Transform.rotate(
-                      angle: 0,
-                      child: SizedBox(
-                        width: 80,
-                        height: 80,
-                        child: CircularProgressIndicator(value: progress, strokeWidth: 8, backgroundColor: AppColorConstants.primary, valueColor: AlwaysStoppedAnimation<Color>(progress >= 1.0 ? AppColorConstants.red : AppColorConstants.greyWhite), strokeCap: StrokeCap.round),
-                      ),
-                    ),
-                    Center(
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(remaining >= 0 ? 'Còn lại' : 'Vượt quá', style: TextStyle(fontSize: 10, color: remaining >= 0 ? AppColorConstants.black : AppColorConstants.red)),
-                          Text(
-                            remaining >= 0 ? '${(100 - progress * 100).toStringAsFixed(1)}%' : '${(progress * 100).toStringAsFixed(1)}%',
-                            style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: remaining >= 0 ? AppColorConstants.black : AppColorConstants.red),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(width: AppUIConstants.defaultSpacing),
-              // Budget info
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    _buildBudgetInfoItem('Còn lại :', remaining >= 0 ? _formatAmount(remaining) : '-${_formatAmount(remaining.abs())}'),
-                    const SizedBox(height: 6),
-                    _buildBudgetInfoItem('Ngân sách :', _formatAmount(budget)),
-                    const SizedBox(height: 6),
-                    _buildBudgetInfoItem('Chi tiêu :', _formatAmount(spent), isOverBudget: remaining < 0),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
+    return BudgetCategoryCard(category: category, budget: budget, spent: spent, onEdit: () => _showBudgetDialog(category));
   }
 
+  // kept for small inline rows
+  // ignore: unused_element
   Widget _buildBudgetInfoItem(String label, String value, {bool isOverBudget = false}) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -304,7 +150,7 @@ class _BudgetPageChildState extends State<_BudgetPageChild> {
       context: context,
       isScrollControlled: true,
       builder: (_) {
-        _currentInput = 0;
+        context.read<BudgetBloc>().add(const BudgetEvent.resetInput());
         return Padding(
           padding: const EdgeInsets.all(AppUIConstants.defaultPadding),
           child: Column(
@@ -316,24 +162,22 @@ class _BudgetPageChildState extends State<_BudgetPageChild> {
               StatefulBuilder(
                 builder: (context, setSheet) => Column(
                   children: [
-                    Text('$_currentInput', style: AppTextStyle.blackS20),
+                    Builder(
+                      builder: (context) {
+                        final input = context.select((BudgetBloc b) => b.state.currentInput);
+                        return Text('$input', style: AppTextStyle.blackS20);
+                      },
+                    ),
                     const SizedBox(height: AppUIConstants.smallSpacing),
                     AppKeyboard(
                       onValueChanged: (v) {
                         if (v == 'DONE') {
-                          Navigator.of(context).pop(_currentInput);
+                          final val = context.read<BudgetBloc>().state.currentInput;
+                          Navigator.of(context).pop(val);
                           return;
                         }
-                        if (v == 'CLEAR') {
-                          setState(() => _currentInput = _currentInput ~/ 10);
-                          setSheet(() {});
-                          return;
-                        }
-                        if (RegExp(r'^\d+?$').hasMatch(v)) {
-                          final digit = int.tryParse(v) ?? 0;
-                          setState(() => _currentInput = _currentInput * 10 + digit);
-                          setSheet(() {});
-                        }
+                        context.read<BudgetBloc>().add(BudgetEvent.inputKey(key: v));
+                        setSheet(() {});
                       },
                     ),
                   ],
@@ -352,11 +196,14 @@ class _BudgetPageChildState extends State<_BudgetPageChild> {
     });
   }
 
+  // small formatter used in this file
+  // ignore: unused_element
   String _formatAmount(int amount) {
     if (amount == 0) return '0';
     return amount.toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]}.');
   }
 
+  // ignore: unused_element
   Widget _buildEmptyBudgetMessage() {
     return Container(
       width: double.infinity,

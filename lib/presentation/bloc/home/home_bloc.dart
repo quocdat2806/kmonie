@@ -6,7 +6,7 @@ import 'package:kmonie/core/enums/enums.dart';
 import 'package:kmonie/core/services/services.dart';
 import 'package:kmonie/core/streams/streams.dart';
 import 'package:kmonie/core/utils/utils.dart';
-import 'package:kmonie/entity/entity.dart';
+import 'package:kmonie/entities/entities.dart';
 import 'home_event.dart';
 import 'home_state.dart';
 
@@ -15,8 +15,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   final TransactionCategoryService categoryService;
   StreamSubscription<AppStreamData>? _refreshSubscription;
 
-  HomeBloc(this.transactionService, this.categoryService)
-    : super(const HomeState()) {
+  HomeBloc(this.transactionService, this.categoryService) : super(const HomeState()) {
     on<HomeLoadTransactions>(_onLoadTransactions);
     on<HomeChangeDate>(_onChangeDate);
     on<HomeLoadMore>(_onLoadMore);
@@ -38,15 +37,14 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
           final id = data.payload as int;
           add(HomeDeleteTransaction(id));
           break;
+        default:
+          break;
       }
     });
     add(const HomeLoadTransactions());
   }
 
-  Map<String, DailyTransactionTotal> _calculateDailyTotals(
-    Map<String, List<Transaction>> grouped,
-    Map<int, TransactionCategory> categoriesMap,
-  ) {
+  Map<String, DailyTransactionTotal> _calculateDailyTotals(Map<String, List<Transaction>> grouped, Map<int, TransactionCategory> categoriesMap) {
     final Map<String, DailyTransactionTotal> dailyTotals = {};
 
     grouped.forEach((dateKey, txList) {
@@ -71,105 +69,51 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         }
       }
 
-      dailyTotals[dateKey] = DailyTransactionTotal(
-        income: income,
-        expense: expense,
-        transfer: transfer,
-      );
+      dailyTotals[dateKey] = DailyTransactionTotal(income: income, expense: expense, transfer: transfer);
     });
 
     return dailyTotals;
   }
 
-  Future<void> _onInsertTransaction(
-    HomeInsertTransaction event,
-    Emitter<HomeState> emit,
-  ) async {
+  Future<void> _onInsertTransaction(HomeInsertTransaction event, Emitter<HomeState> emit) async {
     final updated = [event.transaction, ...state.transactions];
     final grouped = transactionService.groupByDate(updated);
     final dailyTotals = _calculateDailyTotals(grouped, state.categoriesMap);
 
-    emit(
-      state.copyWith(
-        transactions: updated,
-        groupedTransactions: grouped,
-        dailyTotals: dailyTotals,
-        totalRecords: (state.totalRecords ?? 0) + 1,
-      ),
-    );
+    emit(state.copyWith(transactions: updated, groupedTransactions: grouped, dailyTotals: dailyTotals, totalRecords: (state.totalRecords ?? 0) + 1));
   }
 
-  Future<void> _onUpdateTransaction(
-    HomeUpdateTransaction event,
-    Emitter<HomeState> emit,
-  ) async {
-    final updated = state.transactions
-        .map((t) => t.id == event.transaction.id ? event.transaction : t)
-        .toList();
+  Future<void> _onUpdateTransaction(HomeUpdateTransaction event, Emitter<HomeState> emit) async {
+    final updated = state.transactions.map((t) => t.id == event.transaction.id ? event.transaction : t).toList();
     final grouped = transactionService.groupByDate(updated);
     final dailyTotals = _calculateDailyTotals(grouped, state.categoriesMap);
-    emit(
-      state.copyWith(
-        transactions: updated,
-        groupedTransactions: grouped,
-        dailyTotals: dailyTotals,
-      ),
-    );
+    emit(state.copyWith(transactions: updated, groupedTransactions: grouped, dailyTotals: dailyTotals));
   }
 
-  Future<void> _onLoadTransactions(
-    HomeLoadTransactions event,
-    Emitter<HomeState> emit,
-  ) async {
+  Future<void> _onLoadTransactions(HomeLoadTransactions event, Emitter<HomeState> emit) async {
     try {
       final date = state.selectedDate ?? DateTime.now();
-      final result = await transactionService.getTransactionsInMonth(
-        year: date.year,
-        month: date.month,
-      );
+      final result = await transactionService.getTransactionsInMonth(year: date.year, month: date.month);
 
       final grouped = transactionService.groupByDate(result.transactions);
       final categories = await categoryService.getAll();
       final categoriesMap = {for (final c in categories) c.id!: c};
       final dailyTotals = _calculateDailyTotals(grouped, categoriesMap);
-
-      emit(
-        state.copyWith(
-          transactions: result.transactions,
-          groupedTransactions: grouped,
-          categoriesMap: categoriesMap,
-          totalRecords: result.totalRecords,
-          dailyTotals: dailyTotals,
-        ),
-      );
+      emit(state.copyWith(transactions: result.transactions, groupedTransactions: grouped, categoriesMap: categoriesMap, totalRecords: result.totalRecords, dailyTotals: dailyTotals));
     } catch (e) {
       logger.e('HomeBloc: Error in load transactions: $e');
       emit(state.copyWith(transactions: [], groupedTransactions: {}));
     }
   }
 
-  Future<void> _onChangeDate(
-    HomeChangeDate event,
-    Emitter<HomeState> emit,
-  ) async {
-    emit(
-      state.copyWith(
-        selectedDate: event.date,
-        transactions: [],
-        groupedTransactions: {},
-        dailyTotals: {},
-        totalRecords: 0,
-        pageIndex: 0,
-        isLoadingMore: false,
-      ),
-    );
+  Future<void> _onChangeDate(HomeChangeDate event, Emitter<HomeState> emit) async {
+    emit(state.copyWith(selectedDate: event.date, transactions: [], groupedTransactions: {}, dailyTotals: {}, totalRecords: 0, pageIndex: 0, isLoadingMore: false));
     add(const HomeLoadTransactions());
   }
 
   Future<void> _onLoadMore(HomeLoadMore event, Emitter<HomeState> emit) async {
     if (state.isLoadingMore) return;
-    if (state.totalRecords == null ||
-        state.transactions.length >= state.totalRecords!) {
+    if (state.totalRecords == null || state.transactions.length >= state.totalRecords!) {
       return;
     }
 
@@ -178,11 +122,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     final date = state.selectedDate ?? DateTime.now();
 
     try {
-      final result = await transactionService.getTransactionsInMonth(
-        year: date.year,
-        month: date.month,
-        pageIndex: nextPage,
-      );
+      final result = await transactionService.getTransactionsInMonth(year: date.year, month: date.month, pageIndex: nextPage);
 
       final updatedTransactions = [...state.transactions];
       for (final tx in result.transactions) {
@@ -194,45 +134,23 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       final grouped = transactionService.groupByDate(updatedTransactions);
       final dailyTotals = _calculateDailyTotals(grouped, state.categoriesMap);
 
-      emit(
-        state.copyWith(
-          transactions: updatedTransactions,
-          groupedTransactions: grouped,
-          dailyTotals: dailyTotals,
-          pageIndex: nextPage,
-          isLoadingMore: false,
-        ),
-      );
+      emit(state.copyWith(transactions: updatedTransactions, groupedTransactions: grouped, dailyTotals: dailyTotals, pageIndex: nextPage, isLoadingMore: false));
     } catch (e) {
       logger.e('HomeBloc: Error in load more: $e');
       emit(state.copyWith(isLoadingMore: false));
     }
   }
 
-  Future<void> _onDeleteTransaction(
-    HomeDeleteTransaction event,
-    Emitter<HomeState> emit,
-  ) async {
+  Future<void> _onDeleteTransaction(HomeDeleteTransaction event, Emitter<HomeState> emit) async {
     try {
-      final success = await transactionService.deleteTransaction(
-        event.transactionId,
-      );
+      final success = await transactionService.deleteTransaction(event.transactionId);
       if (!success) return;
 
-      final updated = state.transactions
-          .where((t) => t.id != event.transactionId)
-          .toList();
+      final updated = state.transactions.where((t) => t.id != event.transactionId).toList();
       final grouped = transactionService.groupByDate(updated);
       final dailyTotals = _calculateDailyTotals(grouped, state.categoriesMap);
 
-      emit(
-        state.copyWith(
-          transactions: updated,
-          groupedTransactions: grouped,
-          dailyTotals: dailyTotals,
-          totalRecords: (state.totalRecords ?? 1) - 1,
-        ),
-      );
+      emit(state.copyWith(transactions: updated, groupedTransactions: grouped, dailyTotals: dailyTotals, totalRecords: (state.totalRecords ?? 1) - 1));
     } catch (e) {
       logger.e('HomeBloc: Error deleting transaction: $e');
     }

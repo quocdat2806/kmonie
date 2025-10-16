@@ -97,7 +97,7 @@ import 'package:kmonie/entity/auth_response.dart';
 
 // Mới
 import 'package:kmonie/entity/user/user.dart';
-import 'package:kmonie/entity/auth_response/auth_response.dart';
+import 'package:kmonie/entities/auth_response/auth_response.dart';
 ```
 
 ### Sử dụng BaseResponse

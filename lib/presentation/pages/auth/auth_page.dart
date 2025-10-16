@@ -3,10 +3,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:kmonie/core/constants/constants.dart';
 import 'package:kmonie/core/enums/enums.dart';
-import 'package:kmonie/lib.dart';
-import 'package:kmonie/core/navigation/router_path.dart';
+import 'package:kmonie/core/navigation/navigation.dart';
 import 'package:kmonie/core/di/di.dart' as di;
-import 'package:kmonie/repository/auth_repository.dart';
+import 'package:kmonie/repository/repository.dart';
+import 'package:kmonie/presentation/bloc/bloc.dart';
+import 'package:kmonie/presentation/widgets/widgets.dart';
 
 class AuthPage extends StatelessWidget {
   final AuthMode mode;
@@ -45,10 +46,7 @@ class _AuthPageChildState extends State<AuthPageChild> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColorConstants.white,
-      body: _buildBody(),
-    );
+    return Scaffold(backgroundColor: AppColorConstants.white, body: _buildBody());
   }
 
   Widget _buildBody() {
@@ -57,14 +55,8 @@ class _AuthPageChildState extends State<AuthPageChild> {
       child: SafeArea(
         child: Center(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(
-              horizontal: AppUIConstants.defaultPadding,
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              spacing: AppUIConstants.defaultSpacing,
-              children: <Widget>[_buildInputInformation(), _buildActionsAuth()],
-            ),
+            padding: const EdgeInsets.symmetric(horizontal: AppUIConstants.defaultPadding),
+            child: Column(crossAxisAlignment: CrossAxisAlignment.start, spacing: AppUIConstants.defaultSpacing, children: <Widget>[_buildInputInformation(), _buildActionsAuth()]),
           ),
         ),
       ),
@@ -95,15 +87,9 @@ class _AuthPageChildState extends State<AuthPageChild> {
                 context.read<AuthBloc>().add(AuthEvent.passwordChanged(value));
               },
               suffixIcon: IconButton(
-                icon: Icon(
-                  state.isPasswordObscured
-                      ? Icons.visibility_off_outlined
-                      : Icons.visibility_outlined,
-                ),
+                icon: Icon(state.isPasswordObscured ? Icons.visibility_off_outlined : Icons.visibility_outlined),
                 onPressed: () {
-                  context.read<AuthBloc>().add(
-                    const AuthEvent.togglePasswordVisibility(),
-                  );
+                  context.read<AuthBloc>().add(const AuthEvent.togglePasswordVisibility());
                 },
               ),
             ),
@@ -123,9 +109,7 @@ class _AuthPageChildState extends State<AuthPageChild> {
 
   Widget _buildActionsAuth() {
     final String submitLabel = isSignIn ? 'Đăng nhập' : 'Đăng ký';
-    final String switchPrompt = isSignIn
-        ? 'Chưa có tài khoản?'
-        : 'Đã có tài khoản?';
+    final String switchPrompt = isSignIn ? 'Chưa có tài khoản?' : 'Đã có tài khoản?';
     final String switchAction = isSignIn ? 'Đăng ký' : 'Đăng nhập';
 
     return BlocBuilder<AuthBloc, AuthState>(
@@ -138,26 +122,15 @@ class _AuthPageChildState extends State<AuthPageChild> {
             if (isSignIn)
               Align(
                 alignment: Alignment.centerRight,
-                child: TextButton(
-                  onPressed: () {},
-                  child: const Text('Quên mật khẩu'),
-                ),
+                child: TextButton(onPressed: () {}, child: const Text('Quên mật khẩu')),
               ),
-            AppButton(
-              onPressed: isLoading ? () {} : _handleSubmit,
-              text: isLoading ? 'Đang xử lý...' : submitLabel,
-              backgroundColor: AppColorConstants.black,
-              textColor: AppColorConstants.white,
-            ),
+            AppButton(onPressed: isLoading ? () {} : _handleSubmit, text: isLoading ? 'Đang xử lý...' : submitLabel, backgroundColor: AppColorConstants.black, textColor: AppColorConstants.white),
             const SizedBox(height: AppUIConstants.defaultSpacing),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 Text(switchPrompt),
-                TextButton(
-                  onPressed: isLoading ? null : _handleSwitchModeAuth,
-                  child: Text(switchAction),
-                ),
+                TextButton(onPressed: isLoading ? null : _handleSwitchModeAuth, child: Text(switchAction)),
               ],
             ),
           ],
@@ -167,6 +140,6 @@ class _AuthPageChildState extends State<AuthPageChild> {
   }
 
   void _handleSubmit() {
-    context.read<AuthBloc>().add(const AuthEvent.handleSubmit());
+    context.read<AuthBloc>().add(AuthEvent.handleSubmit(widget.mode));
   }
 }

@@ -12,6 +12,7 @@ import 'package:kmonie/presentation/bloc/report/report_event.dart';
 import 'package:kmonie/presentation/bloc/report/report_state.dart';
 import 'package:kmonie/core/navigation/navigation.dart';
 import 'package:kmonie/presentation/widgets/widgets.dart';
+import 'package:kmonie/core/utils/utils.dart';
 
 class ReportPage extends StatelessWidget {
   const ReportPage({super.key});
@@ -34,12 +35,8 @@ class _ReportPageChild extends StatefulWidget {
 }
 
 class _ReportPageChildState extends State<_ReportPageChild> {
-  int _selectedTabIndex = ReportType.analysis.typeIndex;
-
   void _onTabSelected(int index) {
-    setState(() {
-      _selectedTabIndex = index;
-    });
+    context.read<ReportBloc>().add(ReportEvent.changeTab(index: index));
   }
 
   @override
@@ -55,9 +52,14 @@ class _ReportPageChildState extends State<_ReportPageChild> {
                 const SizedBox(height: AppUIConstants.defaultSpacing),
                 Text(AppTextConstants.report, style: AppTextStyle.blackS18Bold),
                 const SizedBox(height: AppUIConstants.defaultSpacing),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: AppUIConstants.smallPadding),
-                  child: AppTabView<ReportType>(types: ExReportType.reportTypes, selectedIndex: _selectedTabIndex, getDisplayName: (t) => t.displayName, getTypeIndex: (t) => t.typeIndex, onTabSelected: _onTabSelected),
+                BlocBuilder<ReportBloc, ReportState>(
+                  buildWhen: (p, c) => p.selectedTabIndex != c.selectedTabIndex,
+                  builder: (context, state) {
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: AppUIConstants.smallPadding),
+                      child: AppTabView<ReportType>(types: ExReportType.reportTypes, selectedIndex: state.selectedTabIndex, getDisplayName: (t) => t.displayName, getTypeIndex: (t) => t.typeIndex, onTabSelected: _onTabSelected),
+                    );
+                  },
                 ),
                 const SizedBox(height: AppUIConstants.defaultSpacing),
               ],
@@ -69,16 +71,7 @@ class _ReportPageChildState extends State<_ReportPageChild> {
               padding: const EdgeInsets.all(AppUIConstants.defaultPadding),
               child: Column(
                 children: [
-                  if (_selectedTabIndex == ReportType.analysis.typeIndex) ...[
-                    _buildMonthlyStatisticsCard(),
-                    const SizedBox(height: AppUIConstants.defaultSpacing),
-                    // Chỉ hiển thị biểu đồ ngân sách khi đã có ngân sách
-                    _buildMonthlyBudgetCard(),
-                  ] else if (_selectedTabIndex == ReportType.account.typeIndex) ...[
-                    _buildNetWorthCard(),
-                    const SizedBox(height: AppUIConstants.defaultSpacing),
-                    _buildAccountActionButtons(),
-                  ],
+                  if (context.select((ReportBloc b) => b.state.selectedTabIndex) == ReportType.analysis.typeIndex) ...[_buildMonthlyStatisticsCard(), const SizedBox(height: AppUIConstants.defaultSpacing), _buildMonthlyBudgetCard()] else if (context.select((ReportBloc b) => b.state.selectedTabIndex) == ReportType.account.typeIndex) ...[_buildNetWorthCard(), const SizedBox(height: AppUIConstants.defaultSpacing), _buildAccountActionButtons()],
                 ],
               ),
             ),
@@ -107,13 +100,22 @@ class _ReportPageChildState extends State<_ReportPageChild> {
             ],
           ),
           const SizedBox(height: AppUIConstants.defaultSpacing),
-          Row(
-            children: [
-              Text('Thg ${DateTime.now().month}', style: AppTextStyle.blackS14Medium),
-              _buildStatItem('Chi tiêu', '550.000'),
-              _buildStatItem('Thu nhập', '0'),
-              _buildStatItem('Số dư', '-550.000'),
-            ],
+          BlocBuilder<ReportBloc, ReportState>(
+            builder: (context, state) {
+              final now = DateTime.now();
+              final double income = state.totalIncome;
+              final double expense = state.totalExpense;
+              final double balance = state.totalBalance;
+
+              return Row(
+                children: [
+                  Text('Thg ${now.month}', style: AppTextStyle.blackS14Medium),
+                  _buildStatItem('Chi tiêu', FormatUtils.formatCurrency(expense.toInt())),
+                  _buildStatItem('Thu nhập', FormatUtils.formatCurrency(income.toInt())),
+                  _buildStatItem('Số dư', FormatUtils.formatCurrency(balance.toInt())),
+                ],
+              );
+            },
           ),
         ],
       ),
@@ -136,11 +138,7 @@ class _ReportPageChildState extends State<_ReportPageChild> {
     return BlocBuilder<ReportBloc, ReportState>(
       builder: (context, state) {
         final monthlyBudget = state.monthlyBudget;
-        final totalSpent = state.totalSpent;
-        final remaining = monthlyBudget - totalSpent;
-        final progress = monthlyBudget > 0 ? (totalSpent / monthlyBudget).clamp(0.0, 1.0) : 0.0;
-        // Hiển thị màu đỏ khi: vượt ngưỡng hoặc có chi tiêu mà chưa có ngân sách
-        final isOverBudget = remaining < 0 || (totalSpent > 0 && monthlyBudget == 0);
+        final totalSpent = state.totalExpense;
 
         return GestureDetector(
           onTap: () {
@@ -165,55 +163,7 @@ class _ReportPageChildState extends State<_ReportPageChild> {
                   ],
                 ),
                 const SizedBox(height: AppUIConstants.defaultSpacing),
-                Row(
-                  children: [
-                    SizedBox(
-                      width: 80,
-                      height: 80,
-                      child: Stack(
-                        children: [
-                          Transform.rotate(
-                            angle: 0, // Bắt đầu từ đúng vị trí 12 giờ (top)
-                            child: SizedBox(
-                              width: 80,
-                              height: 80,
-                              child: CircularProgressIndicator(
-                                value: progress,
-                                strokeWidth: 8,
-                                backgroundColor: isOverBudget ? Colors.red : AppColorConstants.primary,
-                                valueColor: AlwaysStoppedAnimation<Color>(isOverBudget ? Colors.red.shade700 : Colors.grey), // Màu đã dùng
-                                strokeCap: StrokeCap.round,
-                              ),
-                            ),
-                          ),
-                          Center(
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Text(isOverBudget ? 'Vượt quá' : 'Còn lại', style: AppTextStyle.blackS12Medium),
-                                Text(isOverBudget ? '100.0%' : '${(100 - progress * 100).toStringAsFixed(1)}%', style: AppTextStyle.blackS12Medium),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(width: AppUIConstants.defaultSpacing),
-                    // Budget info
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          _buildBudgetInfoItem('Còn lại :', isOverBudget ? '-${_formatAmount(remaining.abs())}' : _formatAmount(remaining)),
-                          const SizedBox(height: 6),
-                          _buildBudgetInfoItem('Ngân sách :', _formatAmount(monthlyBudget)),
-                          const SizedBox(height: 6),
-                          _buildBudgetInfoItem('Chi tiêu :', _formatAmount(totalSpent), isOverBudget: isOverBudget),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
+                MonthlyBudgetSummary(monthlyBudget: monthlyBudget.toInt(), totalSpent: totalSpent.toInt(), useOverBudgetColors: true, alignRight: false),
               ],
             ),
           ),
@@ -222,20 +172,7 @@ class _ReportPageChildState extends State<_ReportPageChild> {
     );
   }
 
-  Widget _buildBudgetInfoItem(String label, String value, {bool isOverBudget = false}) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text(label, style: AppTextStyle.blackS12Medium),
-        Text(value, style: AppTextStyle.blackS12.copyWith(color: isOverBudget ? AppColorConstants.red : AppColorConstants.black)),
-      ],
-    );
-  }
-
-  String _formatAmount(int amount) {
-    if (amount == 0) return '0';
-    return amount.toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]}.');
-  }
+  // removed duplicate budget info/format helpers (now shared via MonthlyBudgetSummary)
 
   Widget _buildNetWorthCard() {
     return Container(

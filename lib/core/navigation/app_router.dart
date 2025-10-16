@@ -58,31 +58,31 @@ class AppRouter {
       GoRoute(path: RouterPath.addBudget, builder: (_, state) => const AddBudgetPage()),
       GoRoute(path: RouterPath.addAccount, builder: (_, state) => const AddAccountPage()),
     ],
-    redirect: (BuildContext context, GoRouterState state) {
-      final bool isAuthenticated = authBloc.state.isAuthenticated;
-      final String location = state.matchedLocation;
-      final bool isAuthPage = location == RouterPath.signIn || location == RouterPath.signUp;
-      final bool isSplashPage = location == RouterPath.splash;
-      if (isSplashPage) {
-        return null;
-      }
-      if (isAuthenticated) {
-        if (isAuthPage) {
-          final String? from = state.uri.queryParameters['from'];
-          if (from != null && from.isNotEmpty) {
-            return from;
-          }
-          return RouterPath.main;
-        }
-        return null;
-      }
+    // redirect: (BuildContext context, GoRouterState state) {
+    //   final bool isAuthenticated = authBloc.state.isAuthenticated;
+    //   final String location = state.matchedLocation;
+    //   final bool isAuthPage = location == RouterPath.signIn || location == RouterPath.signUp;
+    //   final bool isSplashPage = location == RouterPath.splash;
+    //   if (isSplashPage) {
+    //     return null;
+    //   }
+    //   if (isAuthenticated) {
+    //     if (isAuthPage) {
+    //       final String? from = state.uri.queryParameters['from'];
+    //       if (from != null && from.isNotEmpty) {
+    //         return from;
+    //       }
+    //       return RouterPath.main;
+    //     }
+    //     return null;
+    //   }
 
-      if (!isAuthenticated) {
-        if (isAuthPage) return null;
-        return Uri(path: RouterPath.signIn, queryParameters: {'from': location}).toString();
-      }
+    //   if (!isAuthenticated) {
+    //     if (isAuthPage) return null;
+    //     return Uri(path: RouterPath.signIn, queryParameters: {'from': location}).toString();
+    //   }
 
-      return null;
-    },
+    //   return null;
+    // },
   );
 }

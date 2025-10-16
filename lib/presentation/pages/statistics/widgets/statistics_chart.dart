@@ -2,39 +2,26 @@ import 'package:flutter/material.dart';
 import 'package:kmonie/core/constants/constants.dart';
 import 'package:kmonie/core/text_style/text_style.dart';
 import 'package:kmonie/core/enums/enums.dart';
-import 'package:kmonie/entity/entity.dart';
+import 'package:kmonie/entities/entities.dart';
 
 class StatisticsChart extends StatelessWidget {
   final Map<String, List<Transaction>> groupedTransactions;
   final Map<int, TransactionCategory> categoriesMap;
   final TransactionType transactionType;
 
-  const StatisticsChart({
-    super.key,
-    required this.groupedTransactions,
-    required this.categoriesMap,
-    required this.transactionType,
-  });
+  const StatisticsChart({super.key, required this.groupedTransactions, required this.categoriesMap, required this.transactionType});
 
   @override
   Widget build(BuildContext context) {
     final chartData = _prepareChartData();
 
     return Container(
-      margin: const EdgeInsets.symmetric(
-        horizontal: AppUIConstants.smallPadding,
-      ),
+      margin: const EdgeInsets.symmetric(horizontal: AppUIConstants.smallPadding),
       padding: const EdgeInsets.all(AppUIConstants.smallPadding),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(AppUIConstants.smallBorderRadius),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 4,
-            offset: const Offset(0, 2),
-          ),
-        ],
+        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 4, offset: const Offset(0, 2))],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -43,10 +30,7 @@ class StatisticsChart extends StatelessWidget {
           const SizedBox(height: AppUIConstants.smallPadding),
           if (chartData.isEmpty) ...[
             const Center(
-              child: Padding(
-                padding: EdgeInsets.all(AppUIConstants.defaultPadding),
-                child: Text('Không có dữ liệu để hiển thị'),
-              ),
+              child: Padding(padding: EdgeInsets.all(AppUIConstants.defaultPadding), child: Text('Không có dữ liệu để hiển thị')),
             ),
           ] else ...[
             SizedBox(height: 200, child: _buildBarChart(chartData)),
@@ -74,10 +58,7 @@ class StatisticsChart extends StatelessWidget {
             Container(
               width: 30,
               height: height,
-              decoration: BoxDecoration(
-                color: _getBarColor(),
-                borderRadius: BorderRadius.circular(4),
-              ),
+              decoration: BoxDecoration(color: _getBarColor(), borderRadius: BorderRadius.circular(4)),
             ),
             const SizedBox(height: 4),
             Text(item.day, style: AppTextStyle.greyS12),
@@ -94,10 +75,7 @@ class StatisticsChart extends StatelessWidget {
         Container(
           width: 12,
           height: 12,
-          decoration: BoxDecoration(
-            color: _getBarColor(),
-            borderRadius: BorderRadius.circular(2),
-          ),
+          decoration: BoxDecoration(color: _getBarColor(), borderRadius: BorderRadius.circular(2)),
         ),
         const SizedBox(width: AppUIConstants.smallPadding / 2),
         Text(_getTypeLabel(), style: AppTextStyle.greyS12),
@@ -109,8 +87,7 @@ class StatisticsChart extends StatelessWidget {
     final List<ChartData> data = [];
 
     // Lấy 7 ngày gần nhất có giao dịch
-    final sortedDays = groupedTransactions.keys.toList()
-      ..sort((a, b) => b.compareTo(a));
+    final sortedDays = groupedTransactions.keys.toList()..sort((a, b) => b.compareTo(a));
 
     final recentDays = sortedDays.take(7).toList();
 

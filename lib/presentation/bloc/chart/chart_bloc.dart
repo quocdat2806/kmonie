@@ -6,7 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kmonie/core/enums/enums.dart';
 import 'package:kmonie/core/services/services.dart';
 import 'package:kmonie/core/streams/streams.dart';
-import 'package:kmonie/entity/entity.dart';
+import 'package:kmonie/entities/entities.dart';
 import 'package:kmonie/core/utils/utils.dart';
 import 'package:kmonie/core/tools/tools.dart';
 import 'package:kmonie/presentation/widgets/chart/app_chart.dart';
@@ -58,6 +58,8 @@ class ChartBloc extends Bloc<ChartEvent, ChartState> {
               add(DeleteTransactionLocal(transactionId));
             }
           }
+          break;
+        default:
           break;
       }
     });

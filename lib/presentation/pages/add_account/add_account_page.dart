@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:kmonie/core/constants/constants.dart';
 import 'package:kmonie/core/text_style/text_style.dart';
 import 'package:kmonie/presentation/widgets/widgets.dart';
+import 'package:kmonie/core/di/di.dart';
+import 'package:kmonie/core/services/services.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class AddAccountPage extends StatefulWidget {
   const AddAccountPage({super.key});
@@ -14,29 +17,19 @@ class _AddAccountPageState extends State<AddAccountPage> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _amountController = TextEditingController();
   final TextEditingController _notesController = TextEditingController();
+  final TextEditingController _accountNumberController = TextEditingController();
 
   String _selectedType = AppTextConstants.accountTypeDefault;
-  String _selectedIcon = 'money';
+  BankInfo? _selectedBank;
 
   final List<String> _accountTypes = [AppTextConstants.accountTypeDefault, 'Tiết kiệm', 'Đầu tư', 'Thanh toán'];
+  late final List<BankInfo> _banks;
 
-  final List<Map<String, String>> _icons = [
-    {'name': 'money', 'icon': '💰'},
-    {'name': 'credit_card', 'icon': '💳'},
-    {'name': 'cards', 'icon': '💳'},
-    {'name': 'dollar', 'icon': '💲'},
-    {'name': 'pound', 'icon': '💷'},
-    {'name': 'euro', 'icon': '💶'},
-    {'name': 'paypal', 'icon': 'P'},
-    {'name': 'bitcoin', 'icon': '₿'},
-    {'name': 'bag', 'icon': '👜'},
-    {'name': 'bank', 'icon': '🏛️'},
-    {'name': 'chart', 'icon': '📊'},
-    {'name': 'phone', 'icon': '📱'},
-    {'name': 'wallet', 'icon': '👛'},
-    {'name': 'piggy', 'icon': '🐷'},
-    {'name': 'safe', 'icon': '🔒'},
-  ];
+  @override
+  void initState() {
+    super.initState();
+    _banks = BankService.vietNamBanks;
+  }
 
   @override
   void dispose() {
@@ -69,6 +62,10 @@ class _AddAccountPageState extends State<AddAccountPage> {
                 label: AppTextConstants.accountName,
                 child: AppTextField(controller: _nameController, hintText: AppTextConstants.accountNameHint, filledColor: AppColorConstants.white),
               ),
+              _buildInputField(
+                label: AppTextConstants.accountNumber,
+                child: AppTextField(controller: _accountNumberController, hintText: AppTextConstants.accountNumberHint, filledColor: AppColorConstants.white),
+              ),
               const SizedBox(height: AppUIConstants.defaultSpacing),
               _buildInputField(
                 label: AppTextConstants.accountType,
@@ -89,38 +86,30 @@ class _AddAccountPageState extends State<AddAccountPage> {
               ),
               const SizedBox(height: AppUIConstants.defaultSpacing),
               _buildInputField(
-                label: AppTextConstants.amount,
-                child: AppTextField(controller: _amountController, hintText: 'Số tiền', keyboardType: TextInputType.number, filledColor: AppColorConstants.white),
-              ),
-              const SizedBox(height: AppUIConstants.defaultSpacing),
-              _buildInputField(
-                label: AppTextConstants.icon,
-                child: GridView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 4, crossAxisSpacing: 8, mainAxisSpacing: 8),
-                  itemCount: _icons.length,
-                  itemBuilder: (context, index) {
-                    final icon = _icons[index];
-                    final isSelected = _selectedIcon == icon['name'];
-                    return GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          _selectedIcon = icon['name']!;
-                        });
-                      },
-                      child: Container(
-                        decoration: BoxDecoration(color: isSelected ? AppColorConstants.primary : AppColorConstants.white, borderRadius: BorderRadius.circular(4)),
-                        child: Center(child: Text(icon['icon']!, style: const TextStyle(fontSize: 24))),
-                      ),
-                    );
-                  },
+                label: 'Ngân hàng',
+                child: GestureDetector(
+                  onTap: _showBankPicker,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: AppUIConstants.defaultPadding, vertical: AppUIConstants.defaultSpacing),
+                    decoration: BoxDecoration(color: AppColorConstants.white, borderRadius: BorderRadius.circular(4)),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          child: Row(
+                            children: [
+                              if (_selectedBank?.logo != null && _selectedBank!.logo.isNotEmpty) ...[SvgPicture.network(_selectedBank!.logo, width: 24, height: 24), const SizedBox(width: 8)],
+                              Flexible(
+                                child: Text(_selectedBank?.name ?? 'Chưa chọn ngân hàng', style: AppTextStyle.blackS14Medium, overflow: TextOverflow.ellipsis),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const Icon(Icons.keyboard_arrow_down, color: AppColorConstants.black, size: 20),
+                      ],
+                    ),
+                  ),
                 ),
-              ),
-              const SizedBox(height: AppUIConstants.defaultSpacing),
-              _buildInputField(
-                label: AppTextConstants.notes,
-                child: AppTextField(controller: _notesController, maxLines: 3, filledColor: AppColorConstants.white),
               ),
             ],
           ),
@@ -142,6 +131,44 @@ class _AddAccountPageState extends State<AddAccountPage> {
         const SizedBox(height: 8),
         child,
       ],
+    );
+  }
+
+  void _showBankPicker() {
+    showModalBottomSheet<BankInfo>(
+      context: context,
+      backgroundColor: AppColorConstants.white,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(),
+      builder: (context) => Container(
+        constraints: BoxConstraints(maxHeight: MediaQuery.of(context).size.height * 0.5),
+        padding: const EdgeInsets.all(AppUIConstants.defaultPadding),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text('Chọn ngân hàng', style: AppTextStyle.blackS16Bold),
+            const SizedBox(height: AppUIConstants.defaultSpacing),
+            Flexible(
+              child: ListView(
+                shrinkWrap: true,
+                children: _banks
+                    .map(
+                      (b) => ListTile(
+                        leading: b.logo.isNotEmpty ? Image.network(b.logo, width: 80, height: 80) : const SizedBox(width: 24, height: 24),
+                        title: Text(b.shortName, style: AppTextStyle.blackS14Medium),
+                        subtitle: Text(b.code, style: AppTextStyle.grayS12Medium),
+                        onTap: () {
+                          setState(() => _selectedBank = b);
+                          Navigator.pop(context);
+                        },
+                      ),
+                    )
+                    .toList(),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 

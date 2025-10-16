@@ -1,5 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:kmonie/entity/user/user.dart';
+import 'package:kmonie/entities/entities.dart';
 
 part 'user_event.freezed.dart';
 

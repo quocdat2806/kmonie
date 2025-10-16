@@ -1,6 +1,6 @@
 import 'package:drift/drift.dart';
 import 'package:kmonie/database/database.dart';
-import 'package:kmonie/entity/entity.dart';
+import 'package:kmonie/entities/entities.dart';
 import 'package:kmonie/core/config/config.dart';
 import 'package:kmonie/core/utils/utils.dart';
 

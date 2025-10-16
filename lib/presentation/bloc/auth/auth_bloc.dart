@@ -7,9 +7,9 @@ import 'package:kmonie/application/authentication/authentication_bloc.dart';
 import 'package:kmonie/application/authentication/authentication_event.dart';
 import 'package:kmonie/application/user/user.dart';
 import 'package:kmonie/core/di/injection_container.dart';
-import 'package:kmonie/database/database.dart';
 import 'package:kmonie/core/config/config.dart';
-import 'dart:convert';
+import 'package:kmonie/core/services/user.dart';
+import 'package:kmonie/core/services/secure_storage.dart';
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final AuthRepository _authRepository;
@@ -20,44 +20,32 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<HandleSubmit>(_onHandleSubmit);
   }
 
-  void _onTogglePasswordVisibility(
-    TogglePasswordVisibility event,
-    Emitter<AuthState> emit,
-  ) {
+  void _onTogglePasswordVisibility(TogglePasswordVisibility event, Emitter<AuthState> emit) {
     emit(state.copyWith(isPasswordObscured: !state.isPasswordObscured));
   }
 
   void _onHandleSubmit(HandleSubmit event, Emitter<AuthState> emit) async {
     emit(state.copyWith(loadStatus: LoadStatus.loading));
-    final result = await _authRepository.signIn(
-      username: state.username,
-      password: state.password,
-    );
-    result.fold(
-      (failure) => emit(state.copyWith(loadStatus: LoadStatus.error)),
-      (response) async {
-        emit(state.copyWith(loadStatus: LoadStatus.success));
 
-        // Lưu token và user vào secure storage
-        final secure = sl<SecureStorageService>();
-        await secure.write(
-          AppConfigs.tokenKey,
-          response.data.tokens.accessToken,
-        );
-        await secure.write(
-          AppConfigs.userKey,
-          json.encode(response.data.user.toJson()),
-        );
+    final result = await _authRepository.authenticate(username: state.username, password: state.password, mode: event.mode);
 
-        // Set user vào UserBloc
-        sl<UserBloc>().add(UserEvent.setUser(response.data.user));
+    result.fold((failure) => emit(state.copyWith(loadStatus: LoadStatus.error)), (response) async {
+      emit(state.copyWith(loadStatus: LoadStatus.success));
 
-        // Set authentication state
-        sl<AuthenticationBloc>().add(
-          const AuthenticationEvent.setAuthenticated(),
-        );
-      },
-    );
+      // Lưu token vào secure storage
+      final secure = sl<SecureStorageService>();
+      await secure.write(AppConfigs.tokenKey, response.data.token.accessToken);
+
+      // Lưu user vào SharedPreferences qua UserService
+      final userService = sl<UserService>();
+      await userService.saveUser(response.data.user);
+
+      // Set user vào UserBloc
+      sl<UserBloc>().add(UserEvent.setUser(response.data.user));
+
+      // Set authentication state
+      sl<AuthenticationBloc>().add(const AuthenticationEvent.setAuthenticated());
+    });
   }
 
   void _onUpdateUsername(UserNameChanged event, Emitter<AuthState> emit) {

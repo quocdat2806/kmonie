@@ -1,4 +1,4 @@
-import 'package:kmonie/entity/entity.dart';
+import 'package:kmonie/entities/entities.dart';
 import 'package:kmonie/generated/generated.dart';
 import 'constants.dart';
 import 'package:kmonie/core/enums/enums.dart';

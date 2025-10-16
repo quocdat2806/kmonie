@@ -8,7 +8,6 @@ import 'package:kmonie/core/navigation/navigation.dart';
 import 'package:kmonie/core/services/services.dart';
 import 'package:kmonie/core/utils/utils.dart';
 import 'package:kmonie/core/di/di.dart' as di;
-import 'package:kmonie/database/database.dart';
 
 class App extends StatefulWidget {
   const App({super.key});
@@ -24,8 +23,7 @@ class _AppState extends State<App> {
 
   Future<void> _initializeApp() async {
     _userBloc = UserBloc(di.sl<UserService>());
-    _authBloc = AuthenticationBloc(di.sl<SecureStorageService>(), _userBloc);
-
+    _authBloc = AuthenticationBloc(di.sl<SecureStorageService>(), _userBloc, di.sl<UserService>());
     _authBloc.add(const AuthenticationEvent.checkAuthStatus());
     _appRouter = AppRouter(_authBloc);
   }

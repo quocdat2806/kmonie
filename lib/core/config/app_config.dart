@@ -11,6 +11,5 @@ class AppConfigs {
   static const int defaultPageSize = 20;
   static const int defaultPageIndex = 0;
   static const String tokenKey = 'token';
-  static const String userKey = 'user';
   static const double scrollThreshold = 0.7;
 }

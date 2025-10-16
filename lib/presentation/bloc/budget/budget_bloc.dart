@@ -1,8 +1,10 @@
+import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:kmonie/core/services/transaction_category.dart';
 import 'package:kmonie/core/services/budget.dart';
 import 'package:kmonie/core/enums/enums.dart';
+import 'package:kmonie/core/streams/streams.dart';
 
 import 'budget_event.dart';
 import 'budget_state.dart';
@@ -10,11 +12,22 @@ import 'budget_state.dart';
 class BudgetBloc extends Bloc<BudgetEvent, BudgetState> {
   final TransactionCategoryService _categoryService;
   final BudgetService _budgetService;
+  StreamSubscription<AppStreamData>? _refreshSubscription;
 
   BudgetBloc(this._categoryService, this._budgetService) : super(const BudgetState()) {
     on<BudgetEventInit>(_onInit);
     on<BudgetEventChangePeriod>(_onChangePeriod);
     on<BudgetEventSetBudget>(_onSetBudget);
+    on<BudgetEventResetInput>(_onResetInput);
+    on<BudgetEventInputKey>(_onInputKey);
+    on<BudgetEventSetSelectedPeriod>(_onSetSelectedPeriod);
+
+    _refreshSubscription = AppStreamEvent.eventStreamStatic.listen((data) {
+      if (data.event == AppEvent.budgetChanged) {
+        final p = state.period ?? DateTime.now();
+        add(BudgetEvent.changePeriod(period: DateTime(p.year, p.month)));
+      }
+    });
   }
 
   Future<void> _onInit(BudgetEventInit event, Emitter<BudgetState> emit) async {
@@ -71,5 +84,32 @@ class BudgetBloc extends Bloc<BudgetEvent, BudgetState> {
     }
 
     emit(state.copyWith(expenseCategories: expenseCategories, categoryBudgets: categoryBudgets, monthlyBudget: monthlyBudget, totalSpent: totalSpent, categorySpent: categorySpent, period: period));
+  }
+
+  void _onResetInput(BudgetEventResetInput event, Emitter<BudgetState> emit) {
+    emit(state.copyWith(currentInput: 0));
+  }
+
+  void _onInputKey(BudgetEventInputKey event, Emitter<BudgetState> emit) {
+    final key = event.key;
+    if (key == 'DONE') return; // handled by UI
+    if (key == 'CLEAR') {
+      emit(state.copyWith(currentInput: state.currentInput ~/ 10));
+      return;
+    }
+    if (RegExp(r'^\d+$').hasMatch(key)) {
+      final digit = int.tryParse(key) ?? 0;
+      emit(state.copyWith(currentInput: state.currentInput * 10 + digit));
+    }
+  }
+
+  void _onSetSelectedPeriod(BudgetEventSetSelectedPeriod event, Emitter<BudgetState> emit) {
+    emit(state.copyWith(selectedPeriod: DateTime(event.period.year, event.period.month)));
+  }
+
+  @override
+  Future<void> close() async {
+    await _refreshSubscription?.cancel();
+    return super.close();
   }
 }

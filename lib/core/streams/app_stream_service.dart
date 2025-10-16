@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:kmonie/entity/entity.dart';
+import 'package:kmonie/entities/entities.dart';
 import 'package:kmonie/core/enums/enums.dart';
 
 class AppStreamData {
@@ -15,8 +15,7 @@ class AppStreamEvent {
   factory AppStreamEvent() => _instance;
   AppStreamEvent._internal();
 
-  final StreamController<AppStreamData> _eventController =
-      StreamController<AppStreamData>.broadcast();
+  final StreamController<AppStreamData> _eventController = StreamController<AppStreamData>.broadcast();
 
   Stream<AppStreamData> get eventStream => _eventController.stream;
 
@@ -36,6 +35,10 @@ class AppStreamEvent {
     triggerEvent(AppEvent.deleteTransaction, payload: id);
   }
 
+  void budgetChanged() {
+    triggerEvent(AppEvent.budgetChanged);
+  }
+
   void dispose() {
     _eventController.close();
   }
@@ -50,6 +53,10 @@ class AppStreamEvent {
 
   static void deleteTransactionStatic(int id) {
     _instance.deleteTransaction(id);
+  }
+
+  static void budgetChangedStatic() {
+    _instance.budgetChanged();
   }
 
   static Stream<AppStreamData> get eventStreamStatic => _instance.eventStream;

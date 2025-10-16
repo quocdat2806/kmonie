@@ -1,6 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:kmonie/core/services/user_service.dart';
-import 'package:kmonie/entity/user/user.dart';
+import 'package:kmonie/core/services/services.dart';
+import 'package:kmonie/entities/entities.dart';
 
 import 'user_event.dart';
 import 'user_state.dart';
@@ -57,12 +57,10 @@ class UserBloc extends Bloc<UserEvent, UserState> {
     }
   }
 
-  /// Lấy user hiện tại từ state
   User? get currentUser {
     return state.maybeWhen(loaded: (user) => user, orElse: () => null);
   }
 
-  /// Kiểm tra user đã được load chưa
   bool get isUserLoaded {
     return state.maybeWhen(loaded: (_) => true, orElse: () => false);
   }

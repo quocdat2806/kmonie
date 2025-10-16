@@ -1,6 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kmonie/core/utils/utils.dart';
 import 'package:kmonie/core/services/services.dart';
+import 'package:kmonie/core/streams/streams.dart';
 import 'package:kmonie/core/enums/enums.dart';
 
 import 'add_budget_event.dart';
@@ -10,62 +11,57 @@ class AddBudgetBloc extends Bloc<AddBudgetEvent, AddBudgetState> {
   final TransactionCategoryService _categoryService;
   final BudgetService _budgetService;
 
-  AddBudgetBloc(this._categoryService, this._budgetService)
-    : super(const AddBudgetState()) {
+  AddBudgetBloc(this._categoryService, this._budgetService) : super(const AddBudgetState()) {
     on<AddBudgetEventInit>(_onInit);
     on<AddBudgetEventSetBudget>(_onSetBudget);
+    on<AddBudgetEventResetInput>(_onResetInput);
+    on<AddBudgetEventInputKey>(_onInputKey);
   }
 
-  Future<void> _onInit(
-    AddBudgetEventInit event,
-    Emitter<AddBudgetState> emit,
-  ) async {
+  Future<void> _onInit(AddBudgetEventInit event, Emitter<AddBudgetState> emit) async {
     try {
-      final allExpenseCategories = await _categoryService.getByType(
-        TransactionType.expense,
-      );
-      final expenseCategories = allExpenseCategories
-          .where((category) => category.isCategoryDefaultSystem)
-          .toList();
+      final allExpenseCategories = await _categoryService.getByType(TransactionType.expense);
+      final expenseCategories = allExpenseCategories.where((category) => category.isCategoryDefaultSystem).toList();
       emit(state.copyWith(expenseCategories: expenseCategories));
     } catch (e) {
       logger.e(e);
     }
   }
 
-  Future<void> _onSetBudget(
-    AddBudgetEventSetBudget event,
-    Emitter<AddBudgetState> emit,
-  ) async {
+  void _onResetInput(AddBudgetEventResetInput event, Emitter<AddBudgetState> emit) {
+    emit(state.copyWith(currentInput: 0));
+  }
+
+  void _onInputKey(AddBudgetEventInputKey event, Emitter<AddBudgetState> emit) {
+    final key = event.key;
+    if (key == 'DONE') {
+      return; // handled by UI caller to dispatch setBudget with currentInput
+    }
+    if (key == 'CLEAR') {
+      emit(state.copyWith(currentInput: state.currentInput ~/ 10));
+      return;
+    }
+    if (RegExp(r'^\d+$').hasMatch(key)) {
+      final digit = int.tryParse(key) ?? 0;
+      emit(state.copyWith(currentInput: state.currentInput * 10 + digit));
+    }
+  }
+
+  Future<void> _onSetBudget(AddBudgetEventSetBudget event, Emitter<AddBudgetState> emit) async {
     try {
       final now = DateTime.now();
       final year = now.year;
       final month = now.month;
 
       if (event.itemTitle == 'Ngân sách hàng tháng') {
-        await _budgetService.setMonthlyBudget(
-          year: year,
-          month: month,
-          amount: event.amount,
-        );
+        await _budgetService.setMonthlyBudget(year: year, month: month, amount: event.amount);
       } else {
-        final category = state.expenseCategories.firstWhere(
-          (cat) => cat.title == event.itemTitle,
-          orElse: () => throw Exception('Category not found'),
-        );
-        await _budgetService.setBudgetForCategory(
-          year: year,
-          month: month,
-          categoryId: category.id!,
-          amount: event.amount,
-        );
+        final category = state.expenseCategories.firstWhere((cat) => cat.title == event.itemTitle, orElse: () => throw Exception('Category not found'));
+        await _budgetService.setBudgetForCategory(year: year, month: month, categoryId: category.id!, amount: event.amount);
       }
 
-      emit(
-        state.copyWith(
-          budgets: {...state.budgets, event.itemTitle: event.amount},
-        ),
-      );
+      emit(state.copyWith(budgets: {...state.budgets, event.itemTitle: event.amount}));
+      AppStreamEvent.budgetChangedStatic();
     } catch (e) {
       emit(state);
     }

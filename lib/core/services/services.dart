@@ -3,4 +3,7 @@ export 'snack_bar.dart';
 export 'transaction.dart';
 export 'notification.dart';
 export 'budget.dart';
-export 'user_service.dart';
+export 'user.dart';
+export 'secure_storage.dart';
+export 'shared_preferences.dart';
+export 'bank.dart';

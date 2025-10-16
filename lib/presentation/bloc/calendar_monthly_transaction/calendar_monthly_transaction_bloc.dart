@@ -4,20 +4,17 @@ import 'package:kmonie/core/enums/enums.dart';
 import 'package:kmonie/core/streams/streams.dart';
 import 'package:kmonie/core/utils/utils.dart';
 import 'package:kmonie/core/services/services.dart';
-import 'package:kmonie/entity/entity.dart';
+import 'package:kmonie/entities/entities.dart';
 import 'calendar_monthly_transaction_event.dart';
 import 'calendar_monthly_transaction_state.dart';
 
-class CalendarMonthlyTransactionBloc
-    extends
-        Bloc<CalendarMonthlyTransactionEvent, CalendarMonthTransactionState> {
+class CalendarMonthlyTransactionBloc extends Bloc<CalendarMonthlyTransactionEvent, CalendarMonthTransactionState> {
   final TransactionService transactionService;
   final TransactionCategoryService categoryService;
 
   StreamSubscription<AppStreamData>? _sub;
 
-  CalendarMonthlyTransactionBloc(this.transactionService, this.categoryService)
-    : super(CalendarMonthTransactionState(selectedDate: DateTime.now())) {
+  CalendarMonthlyTransactionBloc(this.transactionService, this.categoryService) : super(CalendarMonthTransactionState(selectedDate: DateTime.now())) {
     on<LoadMonthData>(_onLoadMonthData);
     on<ChangeSelectedDate>(_onChangeSelectedDate);
     on<CalendarMonthlyTransactionInsertTransaction>(_onInsertTransaction);
@@ -28,21 +25,15 @@ class CalendarMonthlyTransactionBloc
     _sub = AppStreamEvent.eventStreamStatic.listen((data) {
       switch (data.event) {
         case AppEvent.insertTransaction:
-          add(
-            CalendarMonthlyTransactionInsertTransaction(
-              data.payload as Transaction,
-            ),
-          );
+          add(CalendarMonthlyTransactionInsertTransaction(data.payload as Transaction));
           break;
         case AppEvent.updateTransaction:
-          add(
-            CalendarMonthlyTransactionUpdateTransaction(
-              data.payload as Transaction,
-            ),
-          );
+          add(CalendarMonthlyTransactionUpdateTransaction(data.payload as Transaction));
           break;
         case AppEvent.deleteTransaction:
           add(CalendarMonthlyTransactionDeleteTransaction(data.payload as int));
+          break;
+        default:
           break;
       }
     });
@@ -52,14 +43,10 @@ class CalendarMonthlyTransactionBloc
 
   bool _isDateInCurrentMonthRange(DateTime date) {
     final currentSelectedDate = state.selectedDate ?? DateTime.now();
-    return date.year == currentSelectedDate.year &&
-        date.month == currentSelectedDate.month;
+    return date.year == currentSelectedDate.year && date.month == currentSelectedDate.month;
   }
 
-  Future<void> _onLoadMonthData(
-    LoadMonthData event,
-    Emitter<CalendarMonthTransactionState> emit,
-  ) async {
+  Future<void> _onLoadMonthData(LoadMonthData event, Emitter<CalendarMonthTransactionState> emit) async {
     emit(state.copyWith(isLoading: true));
 
     try {
@@ -67,15 +54,9 @@ class CalendarMonthlyTransactionBloc
       final year = event.year ?? now.year;
       final month = event.month ?? now.month;
 
-      final allTransactions = await transactionService.getTransactionsInMonth(
-        year: year,
-        month: month,
-        pageSize: 9999,
-      );
+      final allTransactions = await transactionService.getTransactionsInMonth(year: year, month: month, pageSize: 9999);
 
-      final grouped = transactionService.groupByDate(
-        allTransactions.transactions,
-      );
+      final grouped = transactionService.groupByDate(allTransactions.transactions);
 
       final categories = await categoryService.getAll();
       final categoriesMap = {for (final c in categories) c.id!: c};
@@ -99,62 +80,34 @@ class CalendarMonthlyTransactionBloc
           }
         }
 
-        dailyTotals[date.day] = DailyTransactionTotal(
-          income: income,
-          expense: expense,
-          transfer: transfer,
-        );
+        dailyTotals[date.day] = DailyTransactionTotal(income: income, expense: expense, transfer: transfer);
       }
 
       final currentSelectedDate = state.selectedDate ?? DateTime.now();
-      emit(
-        state.copyWith(
-          isLoading: false,
-          groupedTransactions: grouped,
-          dailyTotals: dailyTotals,
-          categoriesMap: categoriesMap,
-          selectedDate: DateTime(year, month, currentSelectedDate.day),
-        ),
-      );
+      emit(state.copyWith(isLoading: false, groupedTransactions: grouped, dailyTotals: dailyTotals, categoriesMap: categoriesMap, selectedDate: DateTime(year, month, currentSelectedDate.day)));
     } catch (e) {
       logger.e('❤️ ERROR: CalendarBloc error: $e');
       emit(state.copyWith(isLoading: false, dailyTotals: {}));
     }
   }
 
-  void _onChangeSelectedDate(
-    ChangeSelectedDate event,
-    Emitter<CalendarMonthTransactionState> emit,
-  ) {
+  void _onChangeSelectedDate(ChangeSelectedDate event, Emitter<CalendarMonthTransactionState> emit) {
     emit(state.copyWith(selectedDate: event.date));
   }
 
-  void _onInsertTransaction(
-    CalendarMonthlyTransactionInsertTransaction event,
-    Emitter<CalendarMonthTransactionState> emit,
-  ) {
+  void _onInsertTransaction(CalendarMonthlyTransactionInsertTransaction event, Emitter<CalendarMonthTransactionState> emit) {
     final tx = event.transaction;
     final day = tx.date.day;
     final existing = state.dailyTotals[day] ?? const DailyTransactionTotal();
-    final updatedDailyTotals = Map<int, DailyTransactionTotal>.from(
-      state.dailyTotals,
-    );
-    final updatedGroupedTransactions = Map<String, List<Transaction>>.from(
-      state.groupedTransactions,
-    );
+    final updatedDailyTotals = Map<int, DailyTransactionTotal>.from(state.dailyTotals);
+    final updatedGroupedTransactions = Map<String, List<Transaction>>.from(state.groupedTransactions);
 
     if (tx.transactionType == TransactionType.income.typeIndex) {
-      updatedDailyTotals[day] = existing.copyWith(
-        income: existing.income + tx.amount,
-      );
+      updatedDailyTotals[day] = existing.copyWith(income: existing.income + tx.amount);
     } else if (tx.transactionType == TransactionType.expense.typeIndex) {
-      updatedDailyTotals[day] = existing.copyWith(
-        expense: existing.expense + tx.amount,
-      );
+      updatedDailyTotals[day] = existing.copyWith(expense: existing.expense + tx.amount);
     } else if (tx.transactionType == TransactionType.transfer.typeIndex) {
-      updatedDailyTotals[day] = existing.copyWith(
-        transfer: existing.transfer + tx.amount,
-      );
+      updatedDailyTotals[day] = existing.copyWith(transfer: existing.transfer + tx.amount);
     }
 
     final dateKey = AppDateUtils.formatDateKey(tx.date);
@@ -164,18 +117,10 @@ class CalendarMonthlyTransactionBloc
       updatedGroupedTransactions[dateKey] = existingTransactions;
     }
 
-    emit(
-      state.copyWith(
-        dailyTotals: updatedDailyTotals,
-        groupedTransactions: updatedGroupedTransactions,
-      ),
-    );
+    emit(state.copyWith(dailyTotals: updatedDailyTotals, groupedTransactions: updatedGroupedTransactions));
   }
 
-  void _onUpdateTransaction(
-    CalendarMonthlyTransactionUpdateTransaction event,
-    Emitter<CalendarMonthTransactionState> emit,
-  ) {
+  void _onUpdateTransaction(CalendarMonthlyTransactionUpdateTransaction event, Emitter<CalendarMonthTransactionState> emit) {
     final tx = event.transaction;
 
     if (!_isDateInCurrentMonthRange(tx.date)) {
@@ -183,12 +128,8 @@ class CalendarMonthlyTransactionBloc
     }
 
     final day = tx.date.day;
-    final updatedDailyTotals = Map<int, DailyTransactionTotal>.from(
-      state.dailyTotals,
-    );
-    final updatedGroupedTransactions = Map<String, List<Transaction>>.from(
-      state.groupedTransactions,
-    );
+    final updatedDailyTotals = Map<int, DailyTransactionTotal>.from(state.dailyTotals);
+    final updatedGroupedTransactions = Map<String, List<Transaction>>.from(state.groupedTransactions);
 
     final dateKey = AppDateUtils.formatDateKey(tx.date);
     final dayTransactions = updatedGroupedTransactions[dateKey] ?? []
@@ -210,37 +151,17 @@ class CalendarMonthlyTransactionBloc
       }
     }
 
-    updatedDailyTotals[day] = DailyTransactionTotal(
-      income: income,
-      expense: expense,
-      transfer: transfer,
-    );
+    updatedDailyTotals[day] = DailyTransactionTotal(income: income, expense: expense, transfer: transfer);
 
-    emit(
-      state.copyWith(
-        dailyTotals: updatedDailyTotals,
-        groupedTransactions: updatedGroupedTransactions,
-      ),
-    );
+    emit(state.copyWith(dailyTotals: updatedDailyTotals, groupedTransactions: updatedGroupedTransactions));
   }
 
-  void _onDeleteTransaction(
-    CalendarMonthlyTransactionDeleteTransaction event,
-    Emitter<CalendarMonthTransactionState> emit,
-  ) async {
+  void _onDeleteTransaction(CalendarMonthlyTransactionDeleteTransaction event, Emitter<CalendarMonthTransactionState> emit) async {
     final transactionId = event.id;
 
     Transaction? transactionToDelete;
     for (final transactions in state.groupedTransactions.values) {
-      final found = transactions.firstWhere(
-        (t) => t.id == transactionId,
-        orElse: () => Transaction(
-          id: -1,
-          amount: 0,
-          date: DateTime.now(),
-          transactionCategoryId: 0,
-        ),
-      );
+      final found = transactions.firstWhere((t) => t.id == transactionId, orElse: () => Transaction(id: -1, amount: 0, date: DateTime.now(), transactionCategoryId: 0));
       if (found.id == transactionId) {
         transactionToDelete = found;
         break;
@@ -255,12 +176,8 @@ class CalendarMonthlyTransactionBloc
     }
 
     final day = transactionToDelete.date.day;
-    final updatedDailyTotals = Map<int, DailyTransactionTotal>.from(
-      state.dailyTotals,
-    );
-    final updatedGroupedTransactions = Map<String, List<Transaction>>.from(
-      state.groupedTransactions,
-    );
+    final updatedDailyTotals = Map<int, DailyTransactionTotal>.from(state.dailyTotals);
+    final updatedGroupedTransactions = Map<String, List<Transaction>>.from(state.groupedTransactions);
 
     final dateKey = AppDateUtils.formatDateKey(transactionToDelete.date);
     final dayTransactions = updatedGroupedTransactions[dateKey] ?? []
@@ -286,25 +203,13 @@ class CalendarMonthlyTransactionBloc
         }
       }
 
-      updatedDailyTotals[day] = DailyTransactionTotal(
-        income: income,
-        expense: expense,
-        transfer: transfer,
-      );
+      updatedDailyTotals[day] = DailyTransactionTotal(income: income, expense: expense, transfer: transfer);
     }
 
-    emit(
-      state.copyWith(
-        dailyTotals: updatedDailyTotals,
-        groupedTransactions: updatedGroupedTransactions,
-      ),
-    );
+    emit(state.copyWith(dailyTotals: updatedDailyTotals, groupedTransactions: updatedGroupedTransactions));
   }
 
-  void _onChangeMonthYear(
-    ChangeMonthYear event,
-    Emitter<CalendarMonthTransactionState> emit,
-  ) {
+  void _onChangeMonthYear(ChangeMonthYear event, Emitter<CalendarMonthTransactionState> emit) {
     final now = DateTime.now();
     final year = event.year ?? now.year;
     final month = event.month ?? now.month;

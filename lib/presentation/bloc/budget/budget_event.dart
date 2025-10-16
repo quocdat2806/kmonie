@@ -7,4 +7,7 @@ abstract class BudgetEvent with _$BudgetEvent {
   const factory BudgetEvent.init({required DateTime period}) = BudgetEventInit;
   const factory BudgetEvent.changePeriod({required DateTime period}) = BudgetEventChangePeriod;
   const factory BudgetEvent.setBudget({required DateTime period, required int categoryId, required int amount}) = BudgetEventSetBudget;
+  const factory BudgetEvent.resetInput() = BudgetEventResetInput;
+  const factory BudgetEvent.inputKey({required String key}) = BudgetEventInputKey;
+  const factory BudgetEvent.setSelectedPeriod({required DateTime period}) = BudgetEventSetSelectedPeriod;
 }

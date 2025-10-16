@@ -9,7 +9,7 @@ import 'package:kmonie/core/streams/streams.dart';
 import 'package:kmonie/core/text_style/text_style.dart';
 import 'package:kmonie/core/tools/tools.dart';
 import 'package:kmonie/core/utils/utils.dart';
-import 'package:kmonie/entity/entity.dart';
+import 'package:kmonie/entities/entities.dart';
 import 'package:kmonie/presentation/widgets/widgets.dart';
 import '../transaction_action/transaction_actions_page.dart';
 

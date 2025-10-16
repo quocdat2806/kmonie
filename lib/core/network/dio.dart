@@ -1,6 +1,6 @@
 import 'package:dio/dio.dart';
-import 'package:kmonie/database/database.dart';
 import 'package:kmonie/core/config/config.dart';
+import 'package:kmonie/core/services/secure_storage.dart';
 import 'auth_header_interceptor.dart';
 import 'logging_interceptor.dart';
 import 'network_guard_interceptor.dart';
@@ -12,13 +12,7 @@ abstract class AppDio {
 }
 
 class TranslationDio extends AppDio {
-  TranslationDio({
-    required NetworkInfo networkInfo,
-    required SecureStorageService secure,
-    required LoggingInterceptor logging,
-  }) : _networkInfo = networkInfo,
-       _secure = secure,
-       _logging = logging {
+  TranslationDio({required NetworkInfo networkInfo, required SecureStorageService secure, required LoggingInterceptor logging}) : _networkInfo = networkInfo, _secure = secure, _logging = logging {
     _dio = _build();
   }
 
@@ -34,27 +28,15 @@ class TranslationDio extends AppDio {
     final Dio d = Dio(
       BaseOptions(
         baseUrl: AppConfigs.baseUrl,
-        headers: const <String, dynamic>{
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-        },
+        headers: const <String, dynamic>{'Content-Type': 'application/json', 'Accept': 'application/json'},
         connectTimeout: const Duration(milliseconds: AppConfigs.connectTimeout),
         receiveTimeout: const Duration(milliseconds: AppConfigs.receiveTimeout),
       ),
     );
 
-    final RetryInterceptor retry = RetryInterceptor(
-      dio: d,
-      retryAbleStatusCodes: <int>{502, 503, 504},
-      retryMethods: <String>{'GET', 'PUT', 'DELETE', 'HEAD', 'OPTIONS', 'POST'},
-    );
+    final RetryInterceptor retry = RetryInterceptor(dio: d, retryAbleStatusCodes: <int>{502, 503, 504}, retryMethods: <String>{'GET', 'PUT', 'DELETE', 'HEAD', 'OPTIONS', 'POST'});
 
-    d.interceptors.addAll(<Interceptor>[
-      NetworkGuardInterceptor(networkInfo: _networkInfo),
-      AuthHeaderInterceptor(secure: _secure),
-      retry,
-      _logging,
-    ]);
+    d.interceptors.addAll(<Interceptor>[NetworkGuardInterceptor(networkInfo: _networkInfo), AuthHeaderInterceptor(secure: _secure), retry, _logging]);
 
     return d;
   }
