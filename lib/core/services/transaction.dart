@@ -4,34 +4,48 @@ import 'package:kmonie/database/database.dart';
 import 'package:kmonie/entities/entities.dart';
 import 'package:kmonie/core/config/config.dart';
 import 'package:kmonie/core/utils/utils.dart';
-import 'package:kmonie/core/di/injection_container.dart';
+import 'package:kmonie/core/helper/helper.dart';
+import 'package:kmonie/core/di/di.dart';
 
 class PagedTransactionResult {
   final List<Transaction> transactions;
   final int totalRecords;
 
-  PagedTransactionResult({required this.transactions, required this.totalRecords});
+  PagedTransactionResult({
+    required this.transactions,
+    required this.totalRecords,
+  });
 }
 
-class TransactionService {
+class TransactionService with TransactionQueryHelper {
   final KMonieDatabase _db;
 
+  // ✅ Override for mixin
+  @override
+  KMonieDatabase get db => _db;
+
   // ✅ FIX: LRU cache với size limit
-  final _LRUCache<String, Map<String, List<Transaction>>> _groupCache = _LRUCache(maxSize: 10); // Chỉ giữ 10 tháng gần nhất
+  final _LRUCache<String, Map<String, List<Transaction>>> _groupCache =
+      _LRUCache(maxSize: 10);
 
   // ✅ FIX: Year cache + invalidation tracking
   final Map<int, List<Transaction>> _yearCache = {};
-  final Set<int> _dirtyYears = {}; // Track years cần refresh
+  final Set<int> _dirtyYears = {};
 
   TransactionService(this._db);
 
   Transaction _mapRow(TransactionsTbData row) {
-    return Transaction(id: row.id, amount: row.amount, date: row.date.toLocal(), transactionCategoryId: row.transactionCategoryId, content: row.content, transactionType: row.transactionType);
+    return Transaction(
+      id: row.id,
+      amount: row.amount,
+      date: row.date.toLocal(),
+      transactionCategoryId: row.transactionCategoryId,
+      content: row.content,
+      transactionType: row.transactionType,
+    );
   }
 
-  Expression<bool> _dateInRange(Expression<DateTime> dateCol, DateTime start, DateTime end) {
-    return dateCol.isBiggerOrEqualValue(start) & dateCol.isSmallerThanValue(end);
-  }
+  // ✅ REMOVED: _dateInRange() - now using mixin's dateInMonthRange() and dateInYearRange()
 
   // ✅ Helper: Invalidate all caches
   void _invalidateAllCaches([int? transactionYear]) {
@@ -46,11 +60,27 @@ class TransactionService {
     }
   }
 
-  Future<Transaction> createTransaction({required int amount, required DateTime date, required int transactionCategoryId, String content = '', required int transactionType}) async {
+  Future<Transaction> createTransaction({
+    required int amount,
+    required DateTime date,
+    required int transactionCategoryId,
+    String content = '',
+    required int transactionType,
+  }) async {
     try {
       final utc = date.toUtc();
 
-      final id = await _db.into(_db.transactionsTb).insert(TransactionsTbCompanion.insert(amount: amount, date: utc, transactionCategoryId: transactionCategoryId, content: Value(content), transactionType: Value(transactionType)));
+      final id = await _db
+          .into(_db.transactionsTb)
+          .insert(
+            TransactionsTbCompanion.insert(
+              amount: amount,
+              date: utc,
+              transactionCategoryId: transactionCategoryId,
+              content: Value(content),
+              transactionType: Value(transactionType),
+            ),
+          );
 
       // ✅ FIX: Invalidate cache after create
       _invalidateAllCaches(date.year);
@@ -58,14 +88,24 @@ class TransactionService {
       // Update pinned account balance if exists
       await _updatePinnedAccountBalance(amount, transactionType);
 
-      return Transaction(id: id, amount: amount, date: utc.toLocal(), transactionCategoryId: transactionCategoryId, content: content, transactionType: transactionType);
+      return Transaction(
+        id: id,
+        amount: amount,
+        date: utc.toLocal(),
+        transactionCategoryId: transactionCategoryId,
+        content: content,
+        transactionType: transactionType,
+      );
     } catch (e) {
       logger.e('Error creating transaction: $e');
       rethrow;
     }
   }
 
-  Future<void> _updatePinnedAccountBalance(int amount, int transactionType) async {
+  Future<void> _updatePinnedAccountBalance(
+    int amount,
+    int transactionType,
+  ) async {
     try {
       final accountService = sl<AccountService>();
       final pinnedAccount = await accountService.getPinnedAccount();
@@ -87,8 +127,13 @@ class TransactionService {
           newBalance = 0;
         }
 
-        await accountService.updateAccountBalance(pinnedAccount.id!, newBalance);
-        logger.i('Updated pinned account balance: ${pinnedAccount.name} -> $newBalance VND');
+        await accountService.updateAccountBalance(
+          pinnedAccount.id!,
+          newBalance,
+        );
+        logger.i(
+          'Updated pinned account balance: ${pinnedAccount.name} -> $newBalance VND',
+        );
       }
     } catch (e) {
       logger.e('Error updating pinned account balance: $e');
@@ -96,7 +141,8 @@ class TransactionService {
     }
   }
 
-  String _buildCacheKey(List<Transaction> list) => list.map((e) => e.id).join(',');
+  String _buildCacheKey(List<Transaction> list) =>
+      list.map((e) => e.id).join(',');
 
   Map<String, List<Transaction>> groupByDate(List<Transaction> transactions) {
     final key = _buildCacheKey(transactions);
@@ -112,14 +158,17 @@ class TransactionService {
     final sortedKeys = grouped.keys.toList()..sort((a, b) => b.compareTo(a));
     final sortedGrouped = {for (final k in sortedKeys) k: grouped[k]!};
 
-    _groupCache.put(key, sortedGrouped); // ✅ LRU auto-evicts oldest
+    _groupCache.put(key, sortedGrouped);
     return sortedGrouped;
   }
 
-  // ✅ REMOVED: invalidateGroupCacheForTransaction (không cần nữa)
-
   // ✅ FIX: Add pagination
-  Future<PagedTransactionResult> searchByContent({String? keyword, int? transactionType, int pageSize = AppConfigs.defaultPageSize, int pageIndex = AppConfigs.defaultPageIndex}) async {
+  Future<PagedTransactionResult> searchByContent({
+    String? keyword,
+    int? transactionType,
+    int pageSize = AppConfigs.defaultPageSize,
+    int pageIndex = AppConfigs.defaultPageIndex,
+  }) async {
     try {
       // Count query
       final countExp = _db.transactionsTb.id.count();
@@ -130,7 +179,9 @@ class TransactionService {
         countQ.where(_db.transactionsTb.content.like(like));
       }
       if (transactionType != null) {
-        countQ.where(_db.transactionsTb.transactionType.equals(transactionType));
+        countQ.where(
+          _db.transactionsTb.transactionType.equals(transactionType),
+        );
       }
 
       final totalRecords = (await countQ.getSingle()).read(countExp) ?? 0;
@@ -152,7 +203,10 @@ class TransactionService {
       final rows = await q.get();
       final items = rows.map(_mapRow).toList();
 
-      return PagedTransactionResult(transactions: items, totalRecords: totalRecords);
+      return PagedTransactionResult(
+        transactions: items,
+        totalRecords: totalRecords,
+      );
     } catch (e) {
       logger.e('Error searchByContent: $e');
       return PagedTransactionResult(transactions: [], totalRecords: 0);
@@ -161,19 +215,36 @@ class TransactionService {
 
   // ✅ FIX: Remove single-item cache, SQLite handles this
   Future<Transaction?> getTransactionById(int id) async {
-    final row = await (_db.select(_db.transactionsTb)..where((t) => t.id.equals(id))).getSingleOrNull();
+    final row = await (_db.select(
+      _db.transactionsTb,
+    )..where((t) => t.id.equals(id))).getSingleOrNull();
 
     return row != null ? _mapRow(row) : null;
   }
 
-  Future<Transaction?> updateTransaction({required int id, int? amount, DateTime? date, int? transactionCategoryId, String? content}) async {
+  Future<Transaction?> updateTransaction({
+    required int id,
+    int? amount,
+    DateTime? date,
+    int? transactionCategoryId,
+    String? content,
+  }) async {
     try {
       // ✅ Get old transaction to know which year to invalidate
       final oldTx = await getTransactionById(id);
 
-      final companion = TransactionsTbCompanion(amount: amount != null ? Value(amount) : const Value.absent(), date: date != null ? Value(date.toUtc()) : const Value.absent(), transactionCategoryId: transactionCategoryId != null ? Value(transactionCategoryId) : const Value.absent(), content: content != null ? Value(content) : const Value.absent());
+      final companion = TransactionsTbCompanion(
+        amount: amount != null ? Value(amount) : const Value.absent(),
+        date: date != null ? Value(date.toUtc()) : const Value.absent(),
+        transactionCategoryId: transactionCategoryId != null
+            ? Value(transactionCategoryId)
+            : const Value.absent(),
+        content: content != null ? Value(content) : const Value.absent(),
+      );
 
-      await (_db.update(_db.transactionsTb)..where((t) => t.id.equals(id))).write(companion);
+      await (_db.update(
+        _db.transactionsTb,
+      )..where((t) => t.id.equals(id))).write(companion);
 
       // ✅ Invalidate caches for affected years
       final affectedYears = <int>{};
@@ -196,7 +267,9 @@ class TransactionService {
       // ✅ Get transaction to know which year to invalidate
       final tx = await getTransactionById(id);
 
-      final deletedRows = await (_db.delete(_db.transactionsTb)..where((t) => t.id.equals(id))).go();
+      final deletedRows = await (_db.delete(
+        _db.transactionsTb,
+      )..where((t) => t.id.equals(id))).go();
 
       if (deletedRows > 0 && tx != null) {
         _invalidateAllCaches(tx.date.year);
@@ -211,7 +284,9 @@ class TransactionService {
 
   Future<List<Transaction>> getAllTransactions() async {
     try {
-      final rows = await (_db.select(_db.transactionsTb)..orderBy([(t) => OrderingTerm.desc(t.date)])).get();
+      final rows = await (_db.select(
+        _db.transactionsTb,
+      )..orderBy([(t) => OrderingTerm.desc(t.date)])).get();
       return rows.map(_mapRow).toList();
     } catch (e) {
       logger.e('Error getting all transactions: $e');
@@ -219,35 +294,46 @@ class TransactionService {
     }
   }
 
-  Future<PagedTransactionResult> getTransactionsInMonth({required int year, required int month, int pageSize = AppConfigs.defaultPageSize, int pageIndex = AppConfigs.defaultPageIndex}) async {
+  Future<PagedTransactionResult> getTransactionsInMonth({
+    required int year,
+    required int month,
+    int pageSize = AppConfigs.defaultPageSize,
+    int pageIndex = AppConfigs.defaultPageIndex,
+  }) async {
     try {
-      final r = AppDateUtils.monthRangeUtc(year, month);
-
+      // ✅ REFACTORED: Use mixin's dateInMonthRange()
       // Count
       final totalCountExp = _db.transactionsTb.id.count();
       final totalCountQuery = _db.selectOnly(_db.transactionsTb)
-        ..where(_db.transactionsTb.date.isBiggerOrEqualValue(r.startUtc) & _db.transactionsTb.date.isSmallerThanValue(r.endUtc))
+        ..where(dateInMonthRange(_db.transactionsTb.date, year, month))
         ..addColumns([totalCountExp]);
 
-      final totalRecords = (await totalCountQuery.getSingle()).read(totalCountExp) ?? 0;
+      final totalRecords =
+          (await totalCountQuery.getSingle()).read(totalCountExp) ?? 0;
 
       // Data
       final query = _db.select(_db.transactionsTb)
-        ..where((t) => _dateInRange(t.date, r.startUtc, r.endUtc))
+        ..where((t) => dateInMonthRange(t.date, year, month))
         ..orderBy([(t) => OrderingTerm.desc(t.date)])
         ..limit(pageSize, offset: pageIndex * pageSize);
 
       final rows = await query.get();
       final transactions = rows.map(_mapRow).toList();
 
-      return PagedTransactionResult(transactions: transactions, totalRecords: totalRecords);
+      return PagedTransactionResult(
+        transactions: transactions,
+        totalRecords: totalRecords,
+      );
     } catch (e) {
       logger.e('Error getting paged transactions by month/year: $e');
       return PagedTransactionResult(transactions: [], totalRecords: 0);
     }
   }
 
-  Future<List<Transaction>> getTransactionsInYear(int year, {bool forceRefresh = false}) async {
+  Future<List<Transaction>> getTransactionsInYear(
+    int year, {
+    bool forceRefresh = false,
+  }) async {
     // ✅ Check if year is dirty
     if (_dirtyYears.contains(year)) {
       _yearCache.remove(year);
@@ -260,10 +346,10 @@ class TransactionService {
     }
 
     try {
-      final r = AppDateUtils.yearRangeUtc(year);
+      // ✅ REFACTORED: Use mixin's dateInYearRange()
       final rows =
           await (_db.select(_db.transactionsTb)
-                ..where((t) => _dateInRange(t.date, r.startUtc, r.endUtc))
+                ..where((t) => dateInYearRange(t.date, year))
                 ..orderBy([(t) => OrderingTerm.desc(t.date)]))
               .get();
 
@@ -289,11 +375,17 @@ class TransactionService {
   }
 
   Stream<List<Transaction>> watchTransactions() {
-    return _db.select(_db.transactionsTb).watch().map((rows) => rows.map(_mapRow).toList());
+    return _db
+        .select(_db.transactionsTb)
+        .watch()
+        .map((rows) => rows.map(_mapRow).toList());
   }
 
   Stream<List<Transaction>> watchTransactionsByCategory(int categoryId) {
-    return (_db.select(_db.transactionsTb)..where((t) => t.transactionCategoryId.equals(categoryId))).watch().map((rows) => rows.map(_mapRow).toList());
+    return (_db.select(_db.transactionsTb)
+          ..where((t) => t.transactionCategoryId.equals(categoryId)))
+        .watch()
+        .map((rows) => rows.map(_mapRow).toList());
   }
 }
 
@@ -309,8 +401,9 @@ class _LRUCache<K, V> {
     if (!_cache.containsKey(key)) return null;
 
     // Move to end (most recently used)
-    _accessOrder.remove(key);
-    _accessOrder.add(key);
+    _accessOrder
+      ..remove(key)
+      ..add(key);
     return _cache[key];
   }
 

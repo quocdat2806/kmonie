@@ -2,9 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:kmonie/core/constants/constants.dart';
-import 'package:kmonie/presentation/bloc/main/main_bloc.dart';
-import 'package:kmonie/presentation/bloc/main/main_event.dart';
-import 'package:kmonie/presentation/bloc/main/main_state.dart';
+import 'package:kmonie/presentation/bloc/bloc.dart';
 import 'package:kmonie/presentation/pages/pages.dart';
 import 'widgets/bottom_navigation_bar.dart';
 

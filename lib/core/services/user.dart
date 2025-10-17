@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:kmonie/entities/user/user.dart';
 import 'package:kmonie/core/services/services.dart';
-import 'package:kmonie/core/di/injection_container.dart';
+import 'package:kmonie/core/di/di.dart';
 
 class UserService {
   static const String _userKey = 'user_data';
