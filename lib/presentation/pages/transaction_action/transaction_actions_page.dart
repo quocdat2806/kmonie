@@ -17,11 +17,11 @@ import 'widgets/transaction_category_grid.dart';
 import 'widgets/transaction_tab_bar.dart';
 
 class TransactionActionsPageArgs {
-  final TransactionActionsMode mode;
+  final ActionsMode mode;
   final Transaction? transaction;
   final DateTime? selectedDate;
 
-  TransactionActionsPageArgs({this.mode = TransactionActionsMode.add, this.transaction, this.selectedDate});
+  TransactionActionsPageArgs({this.mode = ActionsMode.add, this.transaction, this.selectedDate});
 }
 
 class TransactionActionsPage extends StatelessWidget {

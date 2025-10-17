@@ -1,8 +1,10 @@
 import 'package:drift/drift.dart';
+import 'package:kmonie/core/services/account.dart';
 import 'package:kmonie/database/database.dart';
 import 'package:kmonie/entities/entities.dart';
 import 'package:kmonie/core/config/config.dart';
 import 'package:kmonie/core/utils/utils.dart';
+import 'package:kmonie/core/di/injection_container.dart';
 
 class PagedTransactionResult {
   final List<Transaction> transactions;
@@ -53,10 +55,44 @@ class TransactionService {
       // ✅ FIX: Invalidate cache after create
       _invalidateAllCaches(date.year);
 
+      // Update pinned account balance if exists
+      await _updatePinnedAccountBalance(amount, transactionType);
+
       return Transaction(id: id, amount: amount, date: utc.toLocal(), transactionCategoryId: transactionCategoryId, content: content, transactionType: transactionType);
     } catch (e) {
       logger.e('Error creating transaction: $e');
       rethrow;
+    }
+  }
+
+  Future<void> _updatePinnedAccountBalance(int amount, int transactionType) async {
+    try {
+      final accountService = sl<AccountService>();
+      final pinnedAccount = await accountService.getPinnedAccount();
+
+      if (pinnedAccount != null && pinnedAccount.id != null) {
+        int newBalance = pinnedAccount.balance;
+
+        // TransactionType: 0 = Expense (chi), 1 = Income (thu)
+        if (transactionType == 0) {
+          // Expense: subtract from balance
+          newBalance -= amount;
+        } else if (transactionType == 1) {
+          // Income: add to balance
+          newBalance += amount;
+        }
+
+        // Ensure balance doesn't go negative
+        if (newBalance < 0) {
+          newBalance = 0;
+        }
+
+        await accountService.updateAccountBalance(pinnedAccount.id!, newBalance);
+        logger.i('Updated pinned account balance: ${pinnedAccount.name} -> $newBalance VND');
+      }
+    } catch (e) {
+      logger.e('Error updating pinned account balance: $e');
+      // Don't rethrow to avoid breaking transaction creation
     }
   }
 

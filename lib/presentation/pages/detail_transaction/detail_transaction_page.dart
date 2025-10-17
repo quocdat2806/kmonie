@@ -109,7 +109,7 @@ class _DetailTransactionPageState extends State<DetailTransactionPage> {
   void _onEditPressed() {
     AppNavigator(context: context).push(
       RouterPath.transactionActions,
-      extra: TransactionActionsPageArgs(mode: TransactionActionsMode.edit, transaction: _transaction),
+      extra: TransactionActionsPageArgs(mode: ActionsMode.edit, transaction: _transaction),
     );
   }
 

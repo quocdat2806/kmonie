@@ -6,4 +6,4 @@ export 'budget.dart';
 export 'user.dart';
 export 'secure_storage.dart';
 export 'shared_preferences.dart';
-export 'bank.dart';
+export 'account.dart';

@@ -32,7 +32,7 @@ class TransactionActionsBloc extends Bloc<TransactionActionsEvent, TransactionAc
   }
 
   Future<void> _onInitialize(Initialize e, Emitter<TransactionActionsState> emit) async {
-    if (args != null && args!.mode == TransactionActionsMode.edit) {
+    if (args != null && args!.mode == ActionsMode.edit) {
       final tx = args!.transaction!;
       final type = TransactionType.fromIndex(tx.transactionType);
       add(LoadCategories(type));
@@ -107,7 +107,7 @@ class TransactionActionsBloc extends Bloc<TransactionActionsEvent, TransactionAc
   Future<void> _onSubmitTransaction(SubmitTransaction e, Emitter<TransactionActionsState> emit) async {
     add(const ToggleKeyboardVisibility());
 
-    if (args != null && args!.mode == TransactionActionsMode.edit) {
+    if (args != null && args!.mode == ActionsMode.edit) {
       await _updateExistingTransaction();
       emit(state.copyWith(loadStatus: LoadStatus.success));
       return;

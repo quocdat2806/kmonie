@@ -1,6 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:kmonie/core/config/config.dart';
-import 'package:kmonie/core/services/secure_storage.dart';
+import 'package:kmonie/core/services/services.dart';
 import 'auth_header_interceptor.dart';
 import 'logging_interceptor.dart';
 import 'network_guard_interceptor.dart';

@@ -1,7 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:retrofit/retrofit.dart';
 import 'package:kmonie/core/config/config.dart';
-import 'package:kmonie/entities/auth_response/auth_response.dart';
+import 'package:kmonie/entities/entities.dart';
 
 part 'api_client.g.dart';
 
@@ -10,8 +10,8 @@ abstract class ApiClient {
   factory ApiClient(Dio dio, {String? baseUrl}) = _ApiClient;
 
   @POST('/auth/signUp')
-  Future<AuthResponse> register({@Field('userName') required String username, @Field('passWord') required String password});
+  Future<AuthResponse> signUp({@Field('userName') required String userName, @Field('password') required String passWord});
 
   @POST('/auth/signIn')
-  Future<AuthResponse> signIn({@Field('userName') required String username, @Field('passWord') required String password});
+  Future<AuthResponse> signIn({@Field('userName') required String userName, @Field('password') required String passWord});
 }

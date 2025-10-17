@@ -1,7 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kmonie/presentation/bloc/auth/auth_event.dart';
 import 'package:kmonie/presentation/bloc/auth/auth_state.dart';
-import 'package:kmonie/repository/auth_repository.dart';
+import 'package:kmonie/repositories/auth.dart';
 import 'package:kmonie/core/enums/enums.dart';
 import 'package:kmonie/application/authentication/authentication_bloc.dart';
 import 'package:kmonie/application/authentication/authentication_event.dart';

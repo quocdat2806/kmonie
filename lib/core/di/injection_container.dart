@@ -4,7 +4,7 @@ import 'package:kmonie/core/streams/streams.dart';
 import 'package:kmonie/core/network/network.dart';
 import 'package:kmonie/database/database.dart';
 import 'package:kmonie/core/services/services.dart';
-import 'package:kmonie/repository/auth_repository.dart';
+import 'package:kmonie/repositories/repositories.dart';
 
 final GetIt sl = GetIt.instance;
 
@@ -21,11 +21,13 @@ Future<void> init() async {
     ..registerLazySingleton<TransactionCategoryService>(() => TransactionCategoryService(sl<KMonieDatabase>()))
     ..registerLazySingleton<TransactionService>(() => TransactionService(sl<KMonieDatabase>()))
     ..registerLazySingleton<BudgetService>(() => BudgetService(sl<KMonieDatabase>()))
-    ..registerLazySingleton<SnackBarService>(() => SnackBarService())
+    ..registerLazySingleton<AccountService>(() => AccountService(sl<KMonieDatabase>()))
     ..registerLazySingleton<NotificationService>(() => NotificationService.I)
-    ..registerLazySingleton<AppStreamEvent>(() => AppStreamEvent())
     ..registerLazySingleton<UserService>(() => UserService())
-    ..registerLazySingleton<AuthRepository>(() => AuthRepositoryImpl(sl<ApiClient>()));
+    ..registerLazySingleton<SnackBarService>(() => SnackBarService())
+    ..registerLazySingleton<AppStreamEvent>(() => AppStreamEvent())
+    ..registerLazySingleton<AuthRepository>(() => AuthRepositoryImpl(sl<ApiClient>()))
+    ..registerLazySingleton<AccountRepository>(() => AccountRepositoryImpl(sl<AccountService>()));
   await sl<KMonieDatabase>().warmUp();
   await sl<NotificationService>().init();
 }

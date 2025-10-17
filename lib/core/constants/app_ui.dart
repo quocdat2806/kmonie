@@ -9,9 +9,9 @@ class AppUIConstants {
   static const double defaultMargin = 16.0;
   static const double smallMargin = 8.0;
   static const double largeMargin = 24.0;
+  static const double extraLargeMargin = 32.0;
 
   static const double defaultBlurRadius = 8.0;
-
   static const double smallBorderRadius = 4.0;
   static const double defaultBorderRadius = 8.0;
   static const double largeBorderRadius = 12.0;
@@ -66,7 +66,6 @@ class AppUIConstants {
 
   static const double screenHeightPercentage = 0.85;
 
-  // Chart specific constants
   static const double chartSelectorHeight = 40.0;
   static const double chartSelectorPadding = 12.0;
   static const double chartSelectorBorderRadius = 20.0;

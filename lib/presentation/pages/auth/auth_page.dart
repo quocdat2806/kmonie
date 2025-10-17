@@ -5,7 +5,7 @@ import 'package:kmonie/core/constants/constants.dart';
 import 'package:kmonie/core/enums/enums.dart';
 import 'package:kmonie/core/navigation/navigation.dart';
 import 'package:kmonie/core/di/di.dart' as di;
-import 'package:kmonie/repository/repository.dart';
+import 'package:kmonie/repositories/repositories.dart';
 import 'package:kmonie/presentation/bloc/bloc.dart';
 import 'package:kmonie/presentation/widgets/widgets.dart';
 

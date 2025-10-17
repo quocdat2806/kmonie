@@ -6,7 +6,7 @@ part 'report_state.freezed.dart';
 
 @freezed
 abstract class ReportState with _$ReportState {
-  const factory ReportState({@Default(false) bool isLoading, DateTime? period, @Default({}) Map<int, int> budgetsByCategory, @Default({}) Map<int, int> spentByCategory, @Default(0) int monthlyBudget, String? message, @Default(0) int selectedTabIndex, @Default([]) List<Transaction> transactions}) = _ReportState;
+  const factory ReportState({@Default(false) bool isLoading, DateTime? period, @Default({}) Map<int, int> budgetsByCategory, @Default({}) Map<int, int> spentByCategory, @Default(0) int monthlyBudget, String? message, @Default(0) int selectedTabIndex, @Default([]) List<Transaction> transactions, @Default([]) List<Account> accounts}) = _ReportState;
 
   const ReportState._();
 
@@ -14,4 +14,6 @@ abstract class ReportState with _$ReportState {
   double get totalExpense => TransactionCalculator.calculateExpense(transactions);
   double get totalTransfer => TransactionCalculator.calculateTransfer(transactions);
   double get totalBalance => TransactionCalculator.calculateBalance(transactions);
+
+  int get totalAccountBalance => accounts.fold(0, (sum, account) => sum + account.balance);
 }

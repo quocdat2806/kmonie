@@ -55,7 +55,20 @@ class MonthlyBudgetsTb extends Table {
   IntColumn get totalAmount => integer().withDefault(const Constant(0))();
 }
 
-@DriftDatabase(tables: [TransactionsTb, TransactionCategoryTb, BudgetsTb, MonthlyBudgetsTb])
+class AccountsTb extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  TextColumn get name => text()();
+  TextColumn get type => text().withDefault(const Constant('Tiết kiệm'))();
+  IntColumn get amount => integer().withDefault(const Constant(0))();
+  IntColumn get balance => integer().withDefault(const Constant(0))();
+  TextColumn get accountNumber => text().withDefault(const Constant(''))();
+  TextColumn get bankJson => text().withDefault(const Constant(''))();
+  BoolColumn get isPinned => boolean().withDefault(const Constant(false))();
+  DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
+  DateTimeColumn get updatedAt => dateTime().withDefault(currentDateAndTime)();
+}
+
+@DriftDatabase(tables: [TransactionsTb, TransactionCategoryTb, BudgetsTb, MonthlyBudgetsTb, AccountsTb])
 class KMonieDatabase extends _$KMonieDatabase {
   static KMonieDatabase? _instance;
   static const _walBytesThreshold = 16 * 1024 * 1024;
@@ -70,7 +83,7 @@ class KMonieDatabase extends _$KMonieDatabase {
   KMonieDatabase._create() : super(_openConnection());
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 5;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -95,9 +108,24 @@ class KMonieDatabase extends _$KMonieDatabase {
       await customStatement('CREATE INDEX IF NOT EXISTS idx_transaction_type_date ON transactions_tb (transaction_type, date DESC)');
       await customStatement('CREATE UNIQUE INDEX IF NOT EXISTS idx_budget_unique_year_month ON budgets_tb (year, month, transaction_category_id)');
       await customStatement('CREATE UNIQUE INDEX IF NOT EXISTS idx_monthly_budget_unique_year_month ON monthly_budgets_tb (year, month)');
+      await customStatement('CREATE INDEX IF NOT EXISTS idx_accounts_name ON accounts_tb (name)');
+      await customStatement('CREATE INDEX IF NOT EXISTS idx_accounts_type ON accounts_tb (type)');
       await _seedSystemCategoriesIfEmpty();
     },
-    onUpgrade: (migrator, from, to) async {},
+    onUpgrade: (migrator, from, to) async {
+      // Best-effort, additive migrations for older installs
+      if (from < 5) {
+        try {
+          await customStatement('ALTER TABLE accounts_tb ADD COLUMN is_pinned INTEGER NOT NULL DEFAULT 0');
+        } catch (_) {}
+        try {
+          await customStatement('ALTER TABLE accounts_tb ADD COLUMN created_at TEXT DEFAULT CURRENT_TIMESTAMP');
+        } catch (_) {}
+        try {
+          await customStatement('ALTER TABLE accounts_tb ADD COLUMN updated_at TEXT DEFAULT CURRENT_TIMESTAMP');
+        } catch (_) {}
+      }
+    },
   );
 
   Future<void> warmUp() async {

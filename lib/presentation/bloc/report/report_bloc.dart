@@ -8,6 +8,8 @@ import 'package:kmonie/core/enums/enums.dart';
 import 'package:kmonie/core/utils/date.dart';
 import 'package:kmonie/core/streams/streams.dart';
 import 'package:kmonie/entities/entities.dart';
+import 'package:kmonie/repositories/repositories.dart';
+import 'package:kmonie/entities/entities.dart';
 import 'report_event.dart';
 import 'report_state.dart';
 
@@ -15,10 +17,12 @@ class ReportBloc extends Bloc<ReportEvent, ReportState> {
   final BudgetService budgetService;
   final TransactionService transactionService;
   final TransactionCategoryService categoryService;
+  final AccountRepository accountRepository;
   StreamSubscription<List<Transaction>>? _txSub;
   StreamSubscription<AppStreamData>? _budgetSub;
+  StreamSubscription<List<Account>>? _accountsSub;
 
-  ReportBloc(this.budgetService, this.transactionService, this.categoryService) : super(const ReportState()) {
+  ReportBloc(this.budgetService, this.transactionService, this.categoryService, this.accountRepository) : super(const ReportState()) {
     on<ReportInit>(_onInit);
     on<ReportChangePeriod>(_onChangePeriod);
     on<ReportSetBudget>(_onSetBudget);
@@ -39,6 +43,17 @@ class ReportBloc extends Bloc<ReportEvent, ReportState> {
         add(ReportChangePeriod(period: DateTime(p.year, p.month)));
       }
     });
+
+    // Watch accounts so Account tab refreshes in real-time after add/edit/delete
+    _accountsSub = accountRepository.watchAccounts().listen((accounts) {
+      // Only update accounts list; avoid heavy reload unless period is null
+      if (state.period == null) {
+        final p = DateTime.now();
+        add(ReportChangePeriod(period: DateTime(p.year, p.month)));
+      } else {
+        emit(state.copyWith(accounts: accounts));
+      }
+    });
   }
 
   Future<void> _load(DateTime period, Emitter<ReportState> emit) async {
@@ -47,7 +62,6 @@ class ReportBloc extends Bloc<ReportEvent, ReportState> {
     try {
       final budgets = await budgetService.getBudgetsForMonth(p.year, p.month);
       final monthlyBudget = await budgetService.getMonthlyBudget(year: p.year, month: p.month);
-      final totalSpent = await budgetService.getTotalSpentForMonth(year: p.year, month: p.month);
 
       final range = AppDateUtils.monthRangeUtc(p.year, p.month);
       final all = await transactionService.getAllTransactions();
@@ -68,17 +82,19 @@ class ReportBloc extends Bloc<ReportEvent, ReportState> {
       }
 
       // compute income/transfer via transactions in month
-      int income = 0;
-      int transfer = 0;
       for (final Transaction tx in inMonth) {
         if (tx.transactionType == TransactionType.income) {
-          income += tx.amount;
+          // income += tx.amount;
         } else if (tx.transactionType == TransactionType.transfer) {
-          transfer += tx.amount;
+          // transfer += tx.amount;
         }
       }
 
-      emit(state.copyWith(isLoading: false, budgetsByCategory: budgets, spentByCategory: spent, monthlyBudget: monthlyBudget, transactions: inMonth, message: null));
+      // Load accounts
+      final accountsResult = await accountRepository.getAllAccounts();
+      final accounts = accountsResult.fold((failure) => <Account>[], (accounts) => accounts);
+
+      emit(state.copyWith(isLoading: false, budgetsByCategory: budgets, spentByCategory: spent, monthlyBudget: monthlyBudget, transactions: inMonth, accounts: accounts, message: null));
     } catch (e) {
       emit(state.copyWith(isLoading: false, message: 'Lỗi tải báo cáo: $e'));
     }
@@ -105,6 +121,7 @@ class ReportBloc extends Bloc<ReportEvent, ReportState> {
   Future<void> close() async {
     await _txSub?.cancel();
     await _budgetSub?.cancel();
+    await _accountsSub?.cancel();
     return super.close();
   }
 }

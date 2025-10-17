@@ -77,6 +77,7 @@ class AppTextConstants {
   static const String pet = 'Thú cưng';
   static const String repair = 'Sửa chữa';
   static const String house = 'Nhà ở';
+  static const String wardrobe = 'Kho đồ';
   static const String gift = 'Quà tặng';
   static const String donate = 'Quyên góp';
   static const String lottery = 'Vé số';

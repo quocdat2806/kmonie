@@ -1,53 +1,104 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kmonie/core/constants/constants.dart';
 import 'package:kmonie/core/text_style/text_style.dart';
 import 'package:kmonie/presentation/widgets/widgets.dart';
-import 'package:kmonie/core/di/di.dart';
-import 'package:kmonie/core/services/services.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+import 'package:kmonie/core/constants/banks.dart';
+import 'package:kmonie/core/di/injection_container.dart';
+import 'package:kmonie/presentation/bloc/account_actions/account_actions.dart';
+import 'package:kmonie/entities/entities.dart';
+import 'package:kmonie/presentation/pages/manage_account/manage_account_page.dart';
+import 'package:kmonie/repositories/repositories.dart';
 
-class AddAccountPage extends StatefulWidget {
-  const AddAccountPage({super.key});
+class AccountActionsPage extends StatefulWidget {
+  final AccountActionsPageArgs? args;
+
+  const AccountActionsPage({super.key, this.args});
 
   @override
-  State<AddAccountPage> createState() => _AddAccountPageState();
+  State<AccountActionsPage> createState() => _AccountActionsPageState();
 }
 
-class _AddAccountPageState extends State<AddAccountPage> {
+class _AccountActionsPageState extends State<AccountActionsPage> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _amountController = TextEditingController();
+  final TextEditingController _balanceController = TextEditingController();
   final TextEditingController _notesController = TextEditingController();
   final TextEditingController _accountNumberController = TextEditingController();
 
-  String _selectedType = AppTextConstants.accountTypeDefault;
-  BankInfo? _selectedBank;
+  String _selectedType = 'Tiết kiệm';
+  Bank? _selectedBank;
+  bool _submitted = false;
 
-  final List<String> _accountTypes = [AppTextConstants.accountTypeDefault, 'Tiết kiệm', 'Đầu tư', 'Thanh toán'];
-  late final List<BankInfo> _banks;
+  final List<String> _accountTypes = [AppTextConstants.accountTypeDefault, 'Tiết kiệm', 'Đầu tư', 'Tín dụng'];
+  late final List<Bank> _banks;
+
+  bool get _isEditMode => widget.args?.account != null;
+
+  void _clearFocus() {
+    FocusManager.instance.primaryFocus?.unfocus();
+  }
 
   @override
   void initState() {
     super.initState();
-    _banks = BankService.vietNamBanks;
+    _banks = BankConstants.vietNamBanks;
+
+    if (_isEditMode) {
+      final account = widget.args!.account!;
+      _nameController.text = account.name;
+      _accountNumberController.text = account.accountNumber;
+      _balanceController.text = account.balance.toString();
+      _selectedType = account.type;
+      _selectedBank = account.bank;
+    }
   }
 
   @override
   void dispose() {
     _nameController.dispose();
     _amountController.dispose();
+    _balanceController.dispose();
     _notesController.dispose();
+    _accountNumberController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (context) => AccountActionsBloc(sl<AccountRepository>()),
+      child: BlocListener<AccountActionsBloc, AccountActionsState>(
+        listener: (context, state) {
+          state.when(
+            initial: () {},
+            loading: () {},
+            loaded: (accounts) {
+              if (_submitted) {
+                _submitted = false;
+                ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(_isEditMode ? 'Tài khoản đã được cập nhật thành công' : 'Tài khoản đã được lưu thành công')));
+                Navigator.of(context).pop();
+              }
+            },
+            error: (message) {
+              print('error $message');
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Lỗi: $message')));
+            },
+          );
+        },
+        child: Builder(builder: (context) => _buildScaffold(context)),
+      ),
+    );
+  }
+
+  Widget _buildScaffold(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColorConstants.greyWhite,
       appBar: CustomAppBar(
-        title: AppTextConstants.add,
+        title: _isEditMode ? 'Sửa tài khoản' : AppTextConstants.addAccount,
         actions: [
           IconButton(
-            onPressed: _saveAccount,
+            onPressed: () => _saveAccount(context),
             icon: const Icon(Icons.check, color: AppColorConstants.black),
           ),
         ],
@@ -66,11 +117,18 @@ class _AddAccountPageState extends State<AddAccountPage> {
                 label: AppTextConstants.accountNumber,
                 child: AppTextField(controller: _accountNumberController, hintText: AppTextConstants.accountNumberHint, filledColor: AppColorConstants.white),
               ),
+              _buildInputField(
+                label: 'Số dư',
+                child: AppTextField(controller: _balanceController, hintText: 'Nhập số dư tài khoản', filledColor: AppColorConstants.white),
+              ),
               const SizedBox(height: AppUIConstants.defaultSpacing),
               _buildInputField(
                 label: AppTextConstants.accountType,
                 child: GestureDetector(
-                  onTap: _showTypePicker,
+                  onTap: () {
+                    _clearFocus();
+                    _showTypePicker();
+                  },
                   child: Container(
                     padding: const EdgeInsets.symmetric(horizontal: AppUIConstants.defaultPadding, vertical: AppUIConstants.defaultSpacing),
                     decoration: BoxDecoration(color: AppColorConstants.white, borderRadius: BorderRadius.circular(4)),
@@ -88,7 +146,10 @@ class _AddAccountPageState extends State<AddAccountPage> {
               _buildInputField(
                 label: 'Ngân hàng',
                 child: GestureDetector(
-                  onTap: _showBankPicker,
+                  onTap: () {
+                    _clearFocus();
+                    _showBankPicker();
+                  },
                   child: Container(
                     padding: const EdgeInsets.symmetric(horizontal: AppUIConstants.defaultPadding, vertical: AppUIConstants.defaultSpacing),
                     decoration: BoxDecoration(color: AppColorConstants.white, borderRadius: BorderRadius.circular(4)),
@@ -98,7 +159,7 @@ class _AddAccountPageState extends State<AddAccountPage> {
                         Expanded(
                           child: Row(
                             children: [
-                              if (_selectedBank?.logo != null && _selectedBank!.logo.isNotEmpty) ...[SvgPicture.network(_selectedBank!.logo, width: 24, height: 24), const SizedBox(width: 8)],
+                              if ((_selectedBank?.logo ?? '').isNotEmpty) ...[Image.network(_selectedBank!.logo, width: 40, height: 40), const SizedBox(width: 8)],
                               Flexible(
                                 child: Text(_selectedBank?.name ?? 'Chưa chọn ngân hàng', style: AppTextStyle.blackS14Medium, overflow: TextOverflow.ellipsis),
                               ),
@@ -111,6 +172,29 @@ class _AddAccountPageState extends State<AddAccountPage> {
                   ),
                 ),
               ),
+              const SizedBox(height: AppUIConstants.defaultSpacing),
+              // Pinned status indicator (only show in edit mode)
+              if (_isEditMode) ...[
+                Container(
+                  padding: const EdgeInsets.all(AppUIConstants.defaultPadding),
+                  decoration: BoxDecoration(
+                    color: widget.args!.account!.isPinned ? Colors.orange.withOpacity(0.1) : AppColorConstants.greyWhite,
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: widget.args!.account!.isPinned ? Colors.orange : AppColorConstants.grey),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(widget.args!.account!.isPinned ? Icons.push_pin : Icons.push_pin_outlined, color: widget.args!.account!.isPinned ? Colors.orange : AppColorConstants.grey, size: 20),
+                      const SizedBox(width: 8),
+                      Text(
+                        widget.args!.account!.isPinned ? 'Tài khoản đã được ghim' : 'Tài khoản chưa được ghim',
+                        style: TextStyle(color: widget.args!.account!.isPinned ? Colors.orange : AppColorConstants.grey, fontWeight: FontWeight.w500),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: AppUIConstants.defaultSpacing),
+              ],
             ],
           ),
         ),
@@ -135,7 +219,8 @@ class _AddAccountPageState extends State<AddAccountPage> {
   }
 
   void _showBankPicker() {
-    showModalBottomSheet<BankInfo>(
+    _clearFocus();
+    showModalBottomSheet<Bank>(
       context: context,
       backgroundColor: AppColorConstants.white,
       isScrollControlled: true,
@@ -159,6 +244,7 @@ class _AddAccountPageState extends State<AddAccountPage> {
                         subtitle: Text(b.code, style: AppTextStyle.grayS12Medium),
                         onTap: () {
                           setState(() => _selectedBank = b);
+                          _clearFocus();
                           Navigator.pop(context);
                         },
                       ),
@@ -173,6 +259,7 @@ class _AddAccountPageState extends State<AddAccountPage> {
   }
 
   void _showTypePicker() {
+    _clearFocus();
     showModalBottomSheet<String>(
       context: context,
       backgroundColor: AppColorConstants.white,
@@ -197,6 +284,7 @@ class _AddAccountPageState extends State<AddAccountPage> {
                           setState(() {
                             _selectedType = type;
                           });
+                          _clearFocus();
                           Navigator.pop(context);
                         },
                       ),
@@ -210,22 +298,18 @@ class _AddAccountPageState extends State<AddAccountPage> {
     );
   }
 
-  void _saveAccount() {
+  void _saveAccount(BuildContext context) {
     if (_nameController.text.trim().isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Vui lòng nhập tên tài khoản')));
       return;
     }
 
-    // TODO: Save account to database
-    // final account = Account(
-    //   name: _nameController.text.trim(),
-    //   type: _selectedType,
-    //   currency: 'VND', // Mặc định là VND
-    //   amount: int.tryParse(_amountController.text) ?? 0,
-    //   iconPath: _selectedIcon,
-    //   notes: _notesController.text.trim(),
-    // );
-
-    Navigator.of(context).pop();
+    final account = Account(id: _isEditMode ? widget.args!.account!.id : null, name: _nameController.text.trim(), type: _selectedType, amount: int.tryParse(_amountController.text) ?? 0, balance: int.tryParse(_balanceController.text) ?? 0, accountNumber: _accountNumberController.text.trim(), bank: _selectedBank);
+    _submitted = true;
+    if (_isEditMode) {
+      context.read<AccountActionsBloc>().add(AccountActionsEvent.updateAccount(account));
+    } else {
+      context.read<AccountActionsBloc>().add(AccountActionsEvent.createAccount(account));
+    }
   }
 }

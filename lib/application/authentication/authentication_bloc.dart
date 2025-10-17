@@ -2,7 +2,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kmonie/core/config/config.dart';
 import 'package:kmonie/entities/entities.dart';
 import 'package:kmonie/application/user/user.dart';
-import 'package:kmonie/core/di/di.dart';
 import 'package:kmonie/core/utils/utils.dart';
 import 'package:kmonie/core/services/services.dart';
 import 'authentication_event.dart';
@@ -26,16 +25,12 @@ class AuthenticationBloc extends Bloc<AuthenticationEvent, AuthenticationState> 
       final User? user = await userService.getUser();
 
       if (token != null && token.isNotEmpty && user != null) {
-        sl<UserBloc>().add(UserEvent.setUser(user));
-
+        userBloc.add(UserEvent.setUser(user));
         emit(const AuthenticationState(isAuthenticated: true));
         return;
       }
-
-      emit(const AuthenticationState());
     } catch (_) {
       logger.e('Error checking auth status');
-      emit(const AuthenticationState());
     }
   }
 
@@ -47,11 +42,8 @@ class AuthenticationBloc extends Bloc<AuthenticationEvent, AuthenticationState> 
     try {
       await secure.delete(tokenKey);
       await userService.clearUser();
-
-      sl<UserBloc>().add(const UserEvent.clearUser());
-
+      userBloc.add(const UserEvent.setUser(null));
       emit(const AuthenticationState());
-
       logger.i('User logged out successfully');
     } catch (e) {
       logger.e('Error during logout: $e');

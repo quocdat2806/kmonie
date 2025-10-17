@@ -15,4 +15,6 @@ class RouterPath {
   static const String budget = '/budget';
   static const String addBudget = '/add-budget';
   static const String addAccount = '/add-account';
+  static const String manageAccount = '/manage-account';
+  static const String monthlyStatistics = '/monthly-statistics';
 }

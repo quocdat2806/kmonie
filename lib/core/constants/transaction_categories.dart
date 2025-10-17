@@ -1,8 +1,8 @@
 import 'package:kmonie/entities/entities.dart';
 import 'package:kmonie/generated/generated.dart';
-import 'constants.dart';
 import 'package:kmonie/core/enums/enums.dart';
 import 'package:kmonie/core/tools/tools.dart';
+import 'app_texts.dart';
 
 class TransactionCategoryConstants {
   TransactionCategoryConstants._();
@@ -10,7 +10,6 @@ class TransactionCategoryConstants {
   static List<TransactionCategory> get transactionCategorySystem {
     final categories = <TransactionCategory>[];
 
-    // Expense categories
     final expenseCategories = [
       (AppTextConstants.shopping, Assets.svgsShopping),
       (AppTextConstants.food, Assets.svgsChicken),
@@ -31,7 +30,7 @@ class TransactionCategoryConstants {
       (AppTextConstants.pet, Assets.svgsPet),
       (AppTextConstants.repair, Assets.svgsRepair),
       (AppTextConstants.house, Assets.svgsPaint),
-      (AppTextConstants.house, Assets.svgsWardrobe),
+      (AppTextConstants.wardrobe, Assets.svgsWardrobe),
       (AppTextConstants.gift, Assets.svgsGift),
       (AppTextConstants.donate, Assets.svgsHeart),
       (AppTextConstants.lottery, Assets.svgsBilliard),
@@ -46,10 +45,8 @@ class TransactionCategoryConstants {
       categories.add(TransactionCategory(title: title, pathAsset: asset, gradientColors: GradientHelper.generateSmartGradientColors()));
     }
 
-    // Add expense setting category
     categories.add(TransactionCategory(title: AppTextConstants.setting, pathAsset: Assets.svgsPlus, isCreateNewCategory: true, gradientColors: GradientHelper.generateSmartGradientColors()));
 
-    // Income categories
     final incomeCategories = [(AppTextConstants.salary, Assets.svgsCreditCard), (AppTextConstants.bonus, Assets.svgsInvest), (AppTextConstants.interest, Assets.svgsInterest), (AppTextConstants.gift, Assets.svgsAward), (AppTextConstants.other, Assets.svgsCommand)];
 
     for (int i = 0; i < incomeCategories.length; i++) {
@@ -57,7 +54,6 @@ class TransactionCategoryConstants {
       categories.add(TransactionCategory(title: title, pathAsset: asset, transactionType: TransactionType.income, gradientColors: GradientHelper.generateSmartGradientColors()));
     }
 
-    // Add income setting category
     categories.add(TransactionCategory(title: AppTextConstants.setting, pathAsset: Assets.svgsPlus, transactionType: TransactionType.income, isCreateNewCategory: true, gradientColors: GradientHelper.generateSmartGradientColors()));
 
     return categories;

@@ -7,5 +7,5 @@ export 'main_tabs.dart';
 export 'report_type.dart';
 export 'snack_bar_status.dart';
 export 'svg_size_type.dart';
-export 'transaction_actions_mode.dart';
+export 'actions_mode.dart';
 export 'transaction_type.dart';

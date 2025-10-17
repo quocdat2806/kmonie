@@ -58,7 +58,7 @@ class TransactionList extends StatelessWidget {
                           onConfirmDelete: () => AppStreamEvent.deleteTransactionStatic(transaction.id!),
                           onEdit: () => AppNavigator(context: context).push(
                             RouterPath.transactionActions,
-                            extra: TransactionActionsPageArgs(mode: TransactionActionsMode.edit, transaction: transaction),
+                            extra: TransactionActionsPageArgs(mode: ActionsMode.edit, transaction: transaction),
                           ),
                           transaction: transaction,
                           category: category,
