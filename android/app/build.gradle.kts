@@ -38,6 +38,7 @@ android {
         implementation("androidx.window:window-java:1.0.0")
         implementation("com.google.firebase:firebase-analytics")
         implementation(platform("com.google.firebase:firebase-bom:34.3.0"))
+        implementation("com.google.android.gms:play-services-ads:24.7.0")
 
     }
 

@@ -137,45 +137,48 @@ class _AddBudgetPageChildState extends State<_AddBudgetPageChild> {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (_) {
-        return Container(
-          decoration: const BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.vertical(top: Radius.circular(AppUIConstants.defaultBorderRadius)),
-          ),
-          child: Padding(
-            padding: EdgeInsets.only(left: AppUIConstants.defaultPadding, right: AppUIConstants.defaultPadding, top: AppUIConstants.defaultPadding, bottom: MediaQuery.of(context).viewInsets.bottom + AppUIConstants.defaultPadding),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('Nhập ngân sách cho $itemTitle', style: AppTextStyle.blackS16Bold),
-                const SizedBox(height: AppUIConstants.smallSpacing),
-                StatefulBuilder(
-                  builder: (context, setSheet) => Column(
-                    children: [
-                      Builder(
-                        builder: (context) {
-                          final input = context.select((AddBudgetBloc b) => b.state.currentInput);
-                          return Text(_formatAmount(input), style: AppTextStyle.blackS20);
-                        },
-                      ),
-                      const SizedBox(height: AppUIConstants.smallSpacing),
-                      AppKeyboard(
-                        onValueChanged: (v) {
-                          if (v == 'DONE') {
-                            final val = context.read<AddBudgetBloc>().state.currentInput;
-                            Navigator.of(context).pop(val);
-                            return;
-                          }
-                          context.read<AddBudgetBloc>().add(AddBudgetEvent.inputKey(key: v));
-                          setSheet(() {});
-                        },
-                      ),
-                    ],
+      builder: (modalContext) {
+        return BlocProvider.value(
+          value: context.read<AddBudgetBloc>(),
+          child: Container(
+            decoration: const BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.vertical(top: Radius.circular(AppUIConstants.defaultBorderRadius)),
+            ),
+            child: Padding(
+              padding: EdgeInsets.only(left: AppUIConstants.defaultPadding, right: AppUIConstants.defaultPadding, top: AppUIConstants.defaultPadding, bottom: MediaQuery.of(modalContext).viewInsets.bottom + AppUIConstants.defaultPadding),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('Nhập ngân sách cho $itemTitle', style: AppTextStyle.blackS16Bold),
+                  const SizedBox(height: AppUIConstants.smallSpacing),
+                  StatefulBuilder(
+                    builder: (context, setSheet) => Column(
+                      children: [
+                        Builder(
+                          builder: (context) {
+                            final input = context.select((AddBudgetBloc b) => b.state.currentInput);
+                            return Text(_formatAmount(input), style: AppTextStyle.blackS20);
+                          },
+                        ),
+                        const SizedBox(height: AppUIConstants.smallSpacing),
+                        AppKeyboard(
+                          onValueChanged: (v) {
+                            if (v == 'DONE') {
+                              final val = context.read<AddBudgetBloc>().state.currentInput;
+                              Navigator.of(context).pop(val);
+                              return;
+                            }
+                            context.read<AddBudgetBloc>().add(AddBudgetEvent.inputKey(key: v));
+                            setSheet(() {});
+                          },
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         );

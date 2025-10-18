@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 import 'package:kmonie/core/constants/constants.dart';
-import 'app_cached_network_image.dart';
 
 class AppCircleImage extends StatelessWidget {
   final String? imageUrl;
@@ -9,38 +9,19 @@ class AppCircleImage extends StatelessWidget {
   final Color backgroundColor;
   final Widget? fallbackIcon;
 
-  const AppCircleImage({
-    super.key,
-    required this.imageUrl,
-    this.size = 56,
-    this.backgroundColor = AppColorConstants.white,
-    this.fallbackIcon,
-  });
+  const AppCircleImage({super.key, required this.imageUrl, this.size = 56, this.backgroundColor = AppColorConstants.white, this.fallbackIcon});
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
+    return Container(
       width: size,
       height: size,
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          color: backgroundColor,
-          shape: BoxShape.circle,
-          border: Border.all(color: AppColorConstants.white),
-        ),
-        child: _buildContent(),
+      decoration: BoxDecoration(
+        color: backgroundColor,
+        shape: BoxShape.circle,
+        image: imageUrl != null && imageUrl!.isNotEmpty ? DecorationImage(image: CachedNetworkImageProvider(imageUrl!), fit: BoxFit.cover) : null,
       ),
-    );
-  }
-
-  Widget _buildContent() {
-    if (imageUrl == null || imageUrl!.isEmpty) {
-      return Center(child: fallbackIcon ?? const Icon(Icons.person));
-    }
-    return AppCachedNetworkImage(
-      imageUrl: imageUrl!,
-      width: size,
-      height: size,
+      child: imageUrl == null || imageUrl!.isEmpty ? Center(child: fallbackIcon ?? const Icon(Icons.person)) : null,
     );
   }
 }

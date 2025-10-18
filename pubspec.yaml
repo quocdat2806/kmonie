@@ -72,6 +72,8 @@ dependencies:
   firebase_analytics: ^12.0.2
   flutter_dotenv: ^6.0.0
   flutter_slidable: ^4.0.3
+  share_plus: ^12.0.0
+  google_mobile_ads: ^6.0.0
 
 dev_dependencies:
   flutter_test:

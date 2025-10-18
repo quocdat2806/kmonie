@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 import 'package:kmonie/core/constants/constants.dart';
 import 'package:kmonie/core/text_style/text_style.dart';
+import 'package:kmonie/core/navigation/router_path.dart';
 import 'package:kmonie/presentation/presentation.dart';
 import 'package:kmonie/generated/assets.dart';
 import 'widgets/menu_item.dart';
@@ -11,7 +13,15 @@ class ProfilePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(children: [_buildHeader(), _buildBody()]);
+    return ColoredBox(
+      color: AppColorConstants.white,
+      child: Column(
+        children: [
+          _buildHeader(),
+          ColoredBox(color: AppColorConstants.white, child: _buildBody(context)),
+        ],
+      ),
+    );
   }
 
   Widget _buildHeader() {
@@ -22,11 +32,10 @@ class ProfilePage extends StatelessWidget {
         child: Row(
           children: [
             const AppCircleImage(
-              backgroundColor: AppColorConstants.primary,
               fallbackIcon: Icon(Icons.person, color: AppColorConstants.black),
-              imageUrl:
-                  'https://hoanghamobile.com/tin-tuc/wp-content/uploads/2024/11/tai-hinh-nen-dep-mien-phi.jpg',
+              imageUrl: 'https://hoanghamobile.com/tin-tuc/wp-content/uploads/2024/11/tai-hinh-nen-dep-mien-phi.jpg',
             ),
+
             const SizedBox(width: AppUIConstants.defaultSpacing),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -42,16 +51,16 @@ class ProfilePage extends StatelessWidget {
     );
   }
 
-  Widget _buildBody() {
-    return const Column(
+  Widget _buildBody(BuildContext context) {
+    return Column(
       children: [
-        MenuItem(iconAsset: Assets.svgsKing, title: 'Thành viên premium'),
-        AppDivider(),
-        MenuItem(iconAsset: Assets.svgsLike, title: 'Giới thiệu cho bạn bè'),
-        AppDivider(),
-        MenuItem(iconAsset: Assets.svgsSetting, title: 'Cài đặt'),
-        AppDivider(),
-        MenuItem(iconAsset: Assets.svgsNote, title: 'Ứng dụng của chúng tôi'),
+        MenuItem(iconAsset: Assets.svgsKing, title: 'Thành viên premium Chặn quảng cáo', onTap: () => context.push(RouterPath.upgradeVip)),
+        const AppDivider(),
+        const MenuItem(iconAsset: Assets.svgsLike, title: 'Giới thiệu cho bạn bè'),
+        const AppDivider(),
+        MenuItem(iconAsset: Assets.svgsSetting, title: 'Cài đặt', onTap: () => context.push(RouterPath.settings)),
+        const AppDivider(),
+        MenuItem(iconAsset: Assets.svgsNote, title: 'Ứng dụng của chúng tôi', onTap: () => context.push(RouterPath.myApp)),
       ],
     );
   }

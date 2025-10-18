@@ -3,6 +3,8 @@ import 'package:go_router/go_router.dart';
 
 import 'package:kmonie/application/authentication/authentication.dart';
 import 'package:kmonie/presentation/pages/pages.dart';
+import 'package:kmonie/presentation/pages/my_app/my_app_page.dart';
+import 'package:kmonie/presentation/pages/settings/settings_page.dart';
 import 'package:kmonie/core/enums/enums.dart';
 import './router_path.dart';
 import './router_refresh.dart';
@@ -55,7 +57,7 @@ class AppRouter {
         },
       ),
       GoRoute(path: RouterPath.budget, builder: (_, state) => const BudgetPage()),
-      GoRoute(path: RouterPath.addBudget, builder: (_, state) => const AddBudgetPage()),
+      GoRoute(name: RouterPath.addBudget, path: RouterPath.addBudget, builder: (_, state) => const AddBudgetPage()),
       GoRoute(
         path: RouterPath.addAccount,
         builder: (_, state) {
@@ -65,32 +67,34 @@ class AppRouter {
       ),
       GoRoute(path: RouterPath.manageAccount, builder: (_, state) => const ManageAccountPage()),
       GoRoute(path: RouterPath.monthlyStatistics, builder: (_, state) => const MonthlyStatisticsPage()),
+      GoRoute(name: RouterPath.myApp, path: RouterPath.myApp, builder: (_, state) => const MyAppPage()),
+      GoRoute(name: RouterPath.settings, path: RouterPath.settings, builder: (_, state) => const SettingsPage()),
     ],
-    redirect: (BuildContext context, GoRouterState state) {
-      final bool isAuthenticated = authBloc.state.isAuthenticated;
-      final String location = state.matchedLocation;
-      final bool isAuthPage = location == RouterPath.signIn || location == RouterPath.signUp;
-      final bool isSplashPage = location == RouterPath.splash;
-      if (isSplashPage) {
-        return null;
-      }
-      if (isAuthenticated) {
-        if (isAuthPage) {
-          final String? from = state.uri.queryParameters['from'];
-          if (from != null && from.isNotEmpty) {
-            return from;
-          }
-          return RouterPath.main;
-        }
-        return null;
-      }
+    // redirect: (BuildContext context, GoRouterState state) {
+    //   final bool isAuthenticated = authBloc.state.isAuthenticated;
+    //   final String location = state.matchedLocation;
+    //   final bool isAuthPage = location == RouterPath.signIn || location == RouterPath.signUp;
+    //   final bool isSplashPage = location == RouterPath.splash;
+    //   if (isSplashPage) {
+    //     return null;
+    //   }
+    //   if (isAuthenticated) {
+    //     if (isAuthPage) {
+    //       final String? from = state.uri.queryParameters['from'];
+    //       if (from != null && from.isNotEmpty) {
+    //         return from;
+    //       }
+    //       return RouterPath.main;
+    //     }
+    //     return null;
+    //   }
 
-      if (!isAuthenticated) {
-        if (isAuthPage) return null;
-        return Uri(path: RouterPath.signIn, queryParameters: {'from': location}).toString();
-      }
+    //   if (!isAuthenticated) {
+    //     if (isAuthPage) return null;
+    //     return Uri(path: RouterPath.signIn, queryParameters: {'from': location}).toString();
+    //   }
 
-      return null;
-    },
+    //   return null;
+    // },
   );
 }

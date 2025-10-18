@@ -10,6 +10,7 @@ import 'package:intl/date_symbol_data_local.dart';
 
 import 'app.dart';
 import 'core/di/di.dart' as di;
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 DotEnv dotenv = DotEnv();
 Future<void> main() async {
@@ -19,12 +20,12 @@ Future<void> main() async {
       await initializeDateFormatting('vi_VN');
       await Firebase.initializeApp();
       await dotenv.load();
-      FlutterError.onError =
-          FirebaseCrashlytics.instance.recordFlutterFatalError;
+      FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterFatalError;
       PlatformDispatcher.instance.onError = (error, stack) {
         FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
         return true;
       };
+      MobileAds.instance.initialize();
 
       SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
       SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
