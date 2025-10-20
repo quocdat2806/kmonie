@@ -21,8 +21,7 @@ class AddBudgetBloc extends Bloc<AddBudgetEvent, AddBudgetState> {
   Future<void> _onInit(AddBudgetEventInit event, Emitter<AddBudgetState> emit) async {
     try {
       final allExpenseCategories = await _categoryService.getByType(TransactionType.expense);
-      final expenseCategories = allExpenseCategories.where((category) => category.isCategoryDefaultSystem).toList();
-      emit(state.copyWith(expenseCategories: expenseCategories));
+      emit(state.copyWith(expenseCategories: allExpenseCategories));
     } catch (e) {
       logger.e(e);
     }

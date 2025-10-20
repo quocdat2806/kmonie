@@ -13,25 +13,12 @@ class TransactionCategoryGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocSelector<
-      TransactionActionsBloc,
-      TransactionActionsState,
-      ({
-        TransactionType type,
-        List<TransactionCategory> categories,
-        int? selectedId,
-      })
-    >(
-      selector: (state) => (
-        type: state.currentType,
-        categories: state.categoriesFor(state.currentType),
-        selectedId: state.selectedCategoryIdFor(state.currentType),
-      ),
+    return BlocSelector<TransactionActionsBloc, TransactionActionsState, ({TransactionType type, List<TransactionCategory> categories, int? selectedId})>(
+      selector: (state) => (type: state.currentType, categories: state.categoriesFor(state.currentType), selectedId: state.selectedCategoryIdFor(state.currentType)),
       builder: (context, data) {
         return LayoutBuilder(
           builder: (context, constraints) {
-            final itemWidth =
-                constraints.maxWidth / AppUIConstants.defaultGridCrossAxisCount;
+            final itemWidth = constraints.maxWidth / AppUIConstants.defaultGridCrossAxisCount;
             return AppGrid(
               mainAxisSpacing: AppUIConstants.zeroInsets,
               crossAxisSpacing: AppUIConstants.zeroInsets,
@@ -44,19 +31,7 @@ class TransactionCategoryGrid extends StatelessWidget {
                   isSelected: category.id == data.selectedId,
                   itemWidth: itemWidth,
                   onTap: () {
-                    if (category.isCreateNewCategory) {
-                      ///todo
-                      // AppNavigator(
-                      //   context: context,
-                      // ).push(RouterPath.addTransactionCategory);
-                      return;
-                    }
-                    context.read<TransactionActionsBloc>().add(
-                      CategoryChanged(
-                        type: data.type,
-                        categoryId: category.id!,
-                      ),
-                    );
+                    context.read<TransactionActionsBloc>().add(CategoryChanged(type: data.type, categoryId: category.id!));
                   },
                 );
               },

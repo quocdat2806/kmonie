@@ -32,11 +32,6 @@ class TransactionCategoryTb extends Table {
   TextColumn get pathAsset => text().withDefault(const Constant(''))();
 
   IntColumn get transactionType => integer().withDefault(const Constant(0))();
-
-  BoolColumn get isCategoryDefaultSystem => boolean().withDefault(const Constant(true))();
-
-  BoolColumn get isCreateNewCategory => boolean().withDefault(const Constant(false))();
-
   TextColumn get gradientColorsJson => text().withDefault(const Constant('[]'))();
 }
 
@@ -112,20 +107,7 @@ class KMonieDatabase extends _$KMonieDatabase {
       await customStatement('CREATE INDEX IF NOT EXISTS idx_accounts_type ON accounts_tb (type)');
       await _seedSystemCategoriesIfEmpty();
     },
-    onUpgrade: (migrator, from, to) async {
-      // Best-effort, additive migrations for older installs
-      if (from < 5) {
-        try {
-          await customStatement('ALTER TABLE accounts_tb ADD COLUMN is_pinned INTEGER NOT NULL DEFAULT 0');
-        } catch (_) {}
-        try {
-          await customStatement('ALTER TABLE accounts_tb ADD COLUMN created_at TEXT DEFAULT CURRENT_TIMESTAMP');
-        } catch (_) {}
-        try {
-          await customStatement('ALTER TABLE accounts_tb ADD COLUMN updated_at TEXT DEFAULT CURRENT_TIMESTAMP');
-        } catch (_) {}
-      }
-    },
+    onUpgrade: (migrator, from, to) async {},
   );
 
   Future<void> warmUp() async {
@@ -239,7 +221,7 @@ class KMonieDatabase extends _$KMonieDatabase {
         for (final cat in all) {
           b.insert(
             transactionCategoryTb,
-            TransactionCategoryTbCompanion.insert(title: cat.title, pathAsset: Value(cat.pathAsset), transactionType: Value(cat.transactionType.typeIndex), isCategoryDefaultSystem: const Value(true), isCreateNewCategory: Value(cat.isCreateNewCategory), gradientColorsJson: Value(cat.gradientColors.isEmpty ? '[]' : jsonEncode(cat.gradientColors))),
+            TransactionCategoryTbCompanion.insert(title: cat.title, pathAsset: Value(cat.pathAsset), transactionType: Value(cat.transactionType.typeIndex), gradientColorsJson: Value(cat.gradientColors.isEmpty ? '[]' : jsonEncode(cat.gradientColors))),
             mode: InsertMode.insertOrIgnore,
           );
         }

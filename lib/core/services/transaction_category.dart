@@ -19,7 +19,7 @@ class TransactionCategoryService {
   }
 
   TransactionCategory _mapRow(TransactionCategoryTbData r) {
-    return TransactionCategory(id: r.id, title: r.title, pathAsset: r.pathAsset, transactionType: TransactionType.values[r.transactionType], isCreateNewCategory: r.isCreateNewCategory, gradientColors: (jsonDecode(r.gradientColorsJson) as List).map((e) => e.toString()).toList());
+    return TransactionCategory(id: r.id, title: r.title, pathAsset: r.pathAsset, transactionType: TransactionType.values[r.transactionType], gradientColors: (jsonDecode(r.gradientColorsJson) as List).map((e) => e.toString()).toList());
   }
 
   // ✅ Helper: Separate categories by type
@@ -129,22 +129,11 @@ class TransactionCategoryService {
   Future<TransactionCategory> createCategory({required String title, required String pathAsset, required TransactionType transactionType, bool isCreateNewCategory = true}) async {
     try {
       final gradientColors = GradientHelper.generateSmartGradientColors();
-      final id = await _db
-          .into(_db.transactionCategoryTb)
-          .insert(
-            TransactionCategoryTbCompanion.insert(
-              title: title,
-              pathAsset: Value(pathAsset),
-              transactionType: Value(transactionType.typeIndex),
-              isCategoryDefaultSystem: const Value(false), // User-created
-              isCreateNewCategory: Value(isCreateNewCategory),
-              gradientColorsJson: Value(jsonEncode(gradientColors)),
-            ),
-          );
+      final id = await _db.into(_db.transactionCategoryTb).insert(TransactionCategoryTbCompanion.insert(title: title, pathAsset: Value(pathAsset), transactionType: Value(transactionType.typeIndex), gradientColorsJson: Value(jsonEncode(gradientColors))));
 
       clearCache(); // Invalidate cache
 
-      return TransactionCategory(id: id, title: title, pathAsset: pathAsset, transactionType: transactionType, isCreateNewCategory: isCreateNewCategory, gradientColors: gradientColors);
+      return TransactionCategory(id: id, title: title, pathAsset: pathAsset, transactionType: transactionType, gradientColors: gradientColors);
     } catch (e) {
       logger.e('Error creating category: $e');
       rethrow;

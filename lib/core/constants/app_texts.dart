@@ -1,13 +1,10 @@
 class AppTextConstants {
   AppTextConstants._();
 
-  static const String userName = 'Tên người dùng';
-  static const String password = 'Mật khẩu';
   static const String add = 'Thêm';
   static const String edit = 'Sửa';
   static const String delete = 'Xoá';
   static const String confirmDeleteTitle = 'Bạn có chắc muốn xoá không?';
-  static const String setting = 'Cài đặt';
   static const String expense = 'Chi tiêu';
   static const String income = 'Thu nhập';
   static const String transfer = 'Chuyển khoản';
@@ -31,15 +28,7 @@ class AppTextConstants {
   static const String year = 'Năm';
   static const String balance = 'Số dư';
 
-  static const String invalidTransaction = 'Loại giao dịch không hợp lệ';
-  static const String categoryNotFound = 'Không tìm thấy danh mục';
-  static const String networkError = 'Lỗi kết nối mạng';
-  static const String unknownError = 'Lỗi không xác định';
-  static const String cancelRequestError = 'Lỗi yêu cầu bị hủy';
-  static const String badCertificateError = 'Lỗi chứng chỉ không hợp lệ';
-
   static const String transactionAddedSuccess = 'Giao dịch đã được thêm thành công';
-  static const String categorySelectedSuccess = 'Danh mục đã được chọn';
   static const String requiredField = 'Trường này là bắt buộc';
   static const String invalidAmount = 'Số tiền không hợp lệ';
   static const String invalidDate = 'Ngày không hợp lệ';

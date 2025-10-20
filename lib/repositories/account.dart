@@ -27,7 +27,7 @@ class AccountRepositoryImpl implements AccountRepository {
       final accounts = await _accountService.getAllAccounts();
       return Right(accounts);
     } catch (e) {
-      return Left(Failure.server(e.toString()));
+      return Left(Failure.cache(e.toString()));
     }
   }
 
@@ -37,7 +37,7 @@ class AccountRepositoryImpl implements AccountRepository {
       final createdAccount = await _accountService.createAccount(account);
       return Right(createdAccount);
     } catch (e) {
-      return Left(Failure.server(e.toString()));
+      return Left(Failure.cache(e.toString()));
     }
   }
 
@@ -47,7 +47,7 @@ class AccountRepositoryImpl implements AccountRepository {
       final updatedAccount = await _accountService.updateAccount(account);
       return Right(updatedAccount);
     } catch (e) {
-      return Left(Failure.server(e.toString()));
+      return Left(Failure.cache(e.toString()));
     }
   }
 
@@ -57,7 +57,7 @@ class AccountRepositoryImpl implements AccountRepository {
       await _accountService.deleteAccount(accountId);
       return const Right(null);
     } catch (e) {
-      return Left(Failure.server(e.toString()));
+      return Left(Failure.cache(e.toString()));
     }
   }
 
@@ -67,7 +67,7 @@ class AccountRepositoryImpl implements AccountRepository {
       final account = await _accountService.getPinnedAccount();
       return Right(account);
     } catch (e) {
-      return Left(Failure.server(e.toString()));
+      return Left(Failure.cache(e.toString()));
     }
   }
 
@@ -77,7 +77,7 @@ class AccountRepositoryImpl implements AccountRepository {
       await _accountService.pinAccount(accountId);
       return const Right(null);
     } catch (e) {
-      return Left(Failure.server(e.toString()));
+      return Left(Failure.cache(e.toString()));
     }
   }
 
@@ -87,7 +87,7 @@ class AccountRepositoryImpl implements AccountRepository {
       await _accountService.unpinAccount(accountId);
       return const Right(null);
     } catch (e) {
-      return Left(Failure.server(e.toString()));
+      return Left(Failure.cache(e.toString()));
     }
   }
 
@@ -97,7 +97,7 @@ class AccountRepositoryImpl implements AccountRepository {
       await _accountService.updateAccountBalance(accountId, newBalance);
       return const Right(null);
     } catch (e) {
-      return Left(Failure.server(e.toString()));
+      return Left(Failure.cache(e.toString()));
     }
   }
 

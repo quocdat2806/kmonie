@@ -1,5 +1,4 @@
 export 'transaction_action/transaction_actions_page.dart';
-export 'auth/auth_page.dart';
 export 'chart/chart_page.dart';
 export 'home/home_page.dart';
 export 'main/main_page.dart';

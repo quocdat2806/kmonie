@@ -81,31 +81,15 @@ class _SearchTransactionPageChildState extends State<SearchTransactionPageChild>
                 return AppTextField(
                   controller: _searchController,
                   filledColor: AppColorConstants.white,
-                  decoration: InputDecoration(
-                    focusedBorder: InputBorder.none,
-                    disabledBorder: InputBorder.none,
-                    enabledBorder: InputBorder.none,
-                    errorBorder: InputBorder.none,
-                    filled: true,
-                    fillColor: AppColorConstants.white,
-                    contentPadding: const EdgeInsets.all(AppUIConstants.smallPadding),
-                    suffixIcon: state.query.isNotEmpty
-                        ? InkWell(
-                            onTap: () {
-                              context.read<SearchTransactionBloc>().add(const SearchTransactionEvent.reset());
-                              _searchController.clear();
-                            },
-                            child: const Padding(
-                              padding: EdgeInsets.only(right: AppUIConstants.smallPadding),
-                              child: Icon(Icons.close, size: AppUIConstants.mediumIconSize),
-                            ),
-                          )
-                        : Padding(
-                            padding: const EdgeInsets.only(right: AppUIConstants.smallPadding),
-                            child: SvgUtils.icon(assetPath: Assets.svgsSearch, size: SvgSizeType.medium),
-                          ),
-                    suffixIconConstraints: const BoxConstraints(),
-                  ),
+                  suffixIcon: state.query.isNotEmpty
+                      ? const Padding(
+                          padding: EdgeInsets.only(right: AppUIConstants.smallPadding),
+                          child: Icon(Icons.clear, size: 24),
+                        )
+                      : Padding(
+                          padding: const EdgeInsets.only(right: AppUIConstants.smallPadding),
+                          child: SvgUtils.icon(assetPath: Assets.svgsSearch, size: SvgSizeType.medium),
+                        ),
                   onChanged: (value) => context.read<SearchTransactionBloc>().add(SearchTransactionEvent.queryChanged(value)),
                   onFieldSubmitted: (value) {
                     context.read<SearchTransactionBloc>().add(const SearchTransactionEvent.apply());
