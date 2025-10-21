@@ -18,7 +18,10 @@ class ProfilePage extends StatelessWidget {
       child: Column(
         children: [
           _buildHeader(),
-          ColoredBox(color: AppColorConstants.white, child: _buildBody(context)),
+          ColoredBox(
+            color: AppColorConstants.white,
+            child: _buildBody(context),
+          ),
         ],
       ),
     );
@@ -31,11 +34,10 @@ class ProfilePage extends StatelessWidget {
         padding: const EdgeInsets.all(AppUIConstants.defaultPadding),
         child: Row(
           children: [
-            const AppCircleImage(
-              fallbackIcon: Icon(Icons.person, color: AppColorConstants.black),
-              imageUrl: 'https://hoanghamobile.com/tin-tuc/wp-content/uploads/2024/11/tai-hinh-nen-dep-mien-phi.jpg',
-            ),
-
+            // const AppCircleImage(
+            //   fallbackIcon: Icon(Icons.person, color: AppColorConstants.black),
+            //   imageUrl: 'https://hoanghamobile.com/tin-tuc/wp-content/uploads/2024/11/tai-hinh-nen-dep-mien-phi.jpg',
+            // ),
             const SizedBox(width: AppUIConstants.defaultSpacing),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -54,13 +56,28 @@ class ProfilePage extends StatelessWidget {
   Widget _buildBody(BuildContext context) {
     return Column(
       children: [
-        MenuItem(iconAsset: Assets.svgsKing, title: 'Thành viên premium Chặn quảng cáo', onTap: () => context.push(RouterPath.upgradeVip)),
+        MenuItem(
+          iconAsset: Assets.svgsKing,
+          title: 'Thành viên premium Chặn quảng cáo',
+          onTap: () => context.push(RouterPath.upgradeVip),
+        ),
         const AppDivider(),
-        const MenuItem(iconAsset: Assets.svgsLike, title: 'Giới thiệu cho bạn bè'),
+        const MenuItem(
+          iconAsset: Assets.svgsLike,
+          title: 'Giới thiệu cho bạn bè',
+        ),
         const AppDivider(),
-        MenuItem(iconAsset: Assets.svgsSetting, title: 'Cài đặt', onTap: () => context.push(RouterPath.settings)),
+        MenuItem(
+          iconAsset: Assets.svgsSetting,
+          title: 'Cài đặt',
+          onTap: () => context.push(RouterPath.settings),
+        ),
         const AppDivider(),
-        MenuItem(iconAsset: Assets.svgsNote, title: 'Ứng dụng của chúng tôi', onTap: () => context.push(RouterPath.myApp)),
+        MenuItem(
+          iconAsset: Assets.svgsNote,
+          title: 'Ứng dụng của chúng tôi',
+          onTap: () => context.push(RouterPath.myApp),
+        ),
       ],
     );
   }
