@@ -22,7 +22,6 @@ class TransactionActionsBloc
   ) : super(const TransactionActionsState()) {
     on<Initialize>(_onInitialize);
     on<SwitchTab>(_onSwitchTab);
-    on<LoadCategories>(_onLoadCategories);
     on<CategoryChanged>(_onCategoryChanged);
     on<ToggleKeyboardVisibility>(_onKeyboardVisibilityChanged);
     on<AmountChanged>(_onAmountChanged);
@@ -42,10 +41,18 @@ class TransactionActionsBloc
     Initialize e,
     Emitter<TransactionActionsState> emit,
   ) async {
+    // Load separated categories once for all tabs
+    try {
+      final separated = await categoryService.getSeparated();
+      emit(state.copyWith(separatedCategories: separated));
+    } catch (_) {
+      emit(state.copyWith(loadStatus: LoadStatus.error));
+      return;
+    }
+
     if (args != null && args!.mode == ActionsMode.edit) {
       final tx = args!.transaction!;
       final type = TransactionType.fromIndex(tx.transactionType);
-      add(LoadCategories(type));
       emit(
         state.copyWith(
           selectedIndex: type.index,
@@ -62,8 +69,6 @@ class TransactionActionsBloc
     // Set initial date from args or default to now
     final initialDate = args?.selectedDate ?? DateTime.now();
     emit(state.copyWith(date: initialDate));
-
-    add(LoadCategories(state.currentType));
   }
 
   void _onKeyboardVisibilityChanged(
@@ -104,29 +109,9 @@ class TransactionActionsBloc
     emit(state.copyWith(note: e.value));
   }
 
-  Future<void> _onSwitchTab(
-    SwitchTab e,
-    Emitter<TransactionActionsState> emit,
-  ) async {
+  void _onSwitchTab(SwitchTab e, Emitter<TransactionActionsState> emit) {
     if (e.index == state.selectedIndex) return;
-    final newType = TransactionType.fromIndex(e.index);
     emit(state.copyWith(selectedIndex: e.index));
-
-    if (state.separatedCategories == null) {
-      add(LoadCategories(newType));
-    }
-  }
-
-  Future<void> _onLoadCategories(
-    LoadCategories e,
-    Emitter<TransactionActionsState> emit,
-  ) async {
-    try {
-      final separated = await categoryService.getSeparated();
-      emit(state.copyWith(separatedCategories: separated));
-    } catch (_) {
-      emit(state.copyWith(loadStatus: LoadStatus.error));
-    }
   }
 
   void _onCategoryChanged(

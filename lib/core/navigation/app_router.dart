@@ -28,10 +28,7 @@ class AppRouter {
         path: RouterPath.searchTransaction,
         builder: (_, _) => const SearchTransactionPage(),
       ),
-      GoRoute(
-        path: RouterPath.upgradeVip,
-        builder: (_, _) => const VipUpgradePage(),
-      ),
+
       GoRoute(
         path: RouterPath.calendarMonthlyTransaction,
         builder: (_, _) => const CalendarMonthlyTransaction(),

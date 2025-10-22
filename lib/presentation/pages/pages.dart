@@ -8,7 +8,6 @@ export 'search_transaction/search_transaction_page.dart';
 export 'splash/splash_page.dart';
 export 'statistics/statistics_page.dart';
 export 'calendar_monthly_transaction/calendar_monthly_transaction.dart';
-export 'upgrade_vip/upgrade_vip_page.dart';
 export 'add_transaction_category/add_transaction_category_page.dart';
 export 'detail_transaction/detail_transaction_page.dart';
 export 'daily_transactions/daily_transaction_page.dart';

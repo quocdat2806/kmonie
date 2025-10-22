@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 
 import 'package:kmonie/core/constants/constants.dart';
 import 'package:kmonie/core/text_style/text_style.dart';
-import 'package:kmonie/generated/assets.dart';
 import 'package:kmonie/presentation/bloc/transaction_actions/transaction_actions.dart';
 import 'package:kmonie/presentation/widgets/widgets.dart';
 
@@ -27,13 +25,8 @@ class TransactionActionsInputHeader extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                SvgPicture.asset(
-                  Assets.svgsCccd,
-                  width: AppUIConstants.largeIconSize,
-                  height: AppUIConstants.largeIconSize,
-                ),
                 Text(amount.toString(), style: AppTextStyle.blackS20Bold),
               ],
             ),
@@ -73,7 +66,6 @@ class TransactionActionsInputHeader extends StatelessWidget {
                       ),
                     ),
                   ),
-                  Icon(Icons.camera_alt_outlined),
                 ],
               ),
             ),
