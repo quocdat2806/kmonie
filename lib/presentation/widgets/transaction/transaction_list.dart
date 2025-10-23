@@ -16,7 +16,8 @@ class TransactionList extends StatelessWidget {
   final Widget? emptyWidget;
   final Widget Function(String dateKey)? dailyTotalWidgetBuilder;
 
-  const TransactionList({super.key, required this.groupedTransactions, required this.categoriesMap, this.emptyWidget, this.dailyTotalWidgetBuilder});
+  final ScrollController? scrollController;
+  const TransactionList({super.key, required this.groupedTransactions, required this.categoriesMap, this.emptyWidget, this.dailyTotalWidgetBuilder, this.scrollController});
 
   @override
   Widget build(BuildContext context) {
@@ -24,6 +25,7 @@ class TransactionList extends StatelessWidget {
       return emptyWidget ?? const SizedBox();
     }
     return CustomScrollView(
+      controller: scrollController,
       slivers: [
         SliverList(
           delegate: SliverChildBuilderDelegate((context, index) {

@@ -102,8 +102,13 @@ class AccountRepositoryImpl implements AccountRepository {
   }
 
   @override
-  Future<Either<Failure, Account?>> getAccountById(int accountId) {
-    throw UnimplementedError();
+  Future<Either<Failure, Account?>> getAccountById(int accountId) async {
+    try {
+      final account = await _accountService.getAccountById(accountId);
+      return Right(account);
+    } catch (e) {
+      return Left(Failure.cache(e.toString()));
+    }
   }
 
   @override

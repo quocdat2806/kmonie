@@ -31,7 +31,7 @@ class TransactionService with TransactionQueryHelper {
   TransactionService(this._db);
 
   Transaction _mapRow(TransactionsTbData row) {
-    return Transaction(id: row.id, amount: row.amount, date: row.date.toLocal(), transactionCategoryId: row.transactionCategoryId, content: row.content, transactionType: row.transactionType);
+    return Transaction(id: row.id, amount: row.amount, date: row.date.toLocal(), transactionCategoryId: row.transactionCategoryId, content: row.content, transactionType: row.transactionType, createdAt: row.createdAt.toLocal(), updatedAt: row.updatedAt.toLocal());
   }
 
   // ✅ REMOVED: _dateInRange() - now using mixin's dateInMonthRange() and dateInYearRange()
@@ -61,7 +61,7 @@ class TransactionService with TransactionQueryHelper {
       // Update pinned account balance if exists
       await _updatePinnedAccountBalance(amount, transactionType);
 
-      return Transaction(id: id, amount: amount, date: utc.toLocal(), transactionCategoryId: transactionCategoryId, content: content, transactionType: transactionType);
+      return Transaction(id: id, amount: amount, date: utc.toLocal(), transactionCategoryId: transactionCategoryId, content: content, transactionType: transactionType, createdAt: DateTime.now(), updatedAt: DateTime.now());
     } catch (e) {
       logger.e('Error creating transaction: $e');
       rethrow;
@@ -222,8 +222,6 @@ class TransactionService with TransactionQueryHelper {
 
   Future<PagedTransactionResult> getTransactionsInMonth({required int year, required int month, int pageSize = AppConfigs.defaultPageSize, int pageIndex = AppConfigs.defaultPageIndex}) async {
     try {
-      // ✅ REFACTORED: Use mixin's dateInMonthRange()
-      // Count
       final totalCountExp = _db.transactionsTb.id.count();
       final totalCountQuery = _db.selectOnly(_db.transactionsTb)
         ..where(dateInMonthRange(_db.transactionsTb.date, year, month))

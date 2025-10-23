@@ -4,7 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kmonie/core/config/config.dart';
 import 'package:kmonie/core/constants/constants.dart';
 import 'package:kmonie/core/di/di.dart';
-import 'package:kmonie/core/services/services.dart';
+import 'package:kmonie/repositories/repositories.dart';
 import 'package:kmonie/core/text_style/text_style.dart';
 import 'package:kmonie/core/utils/utils.dart';
 import 'package:kmonie/entities/entities.dart';
@@ -17,11 +17,7 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider<HomeBloc>(
-      create: (_) =>
-          HomeBloc(sl<TransactionService>(), sl<TransactionCategoryService>()),
-      child: const HomePageChild(),
-    );
+    return BlocProvider<HomeBloc>(create: (_) => HomeBloc(sl<TransactionRepository>(), sl<TransactionCategoryRepository>()), child: const HomePageChild());
   }
 }
 
@@ -43,10 +39,10 @@ class _HomePageChildState extends State<HomePageChild> {
   }
 
   void _onScroll() {
-    if (_scrollController.position.maxScrollExtent == 0) return;
     final position = _scrollController.position;
+    if (position.maxScrollExtent == 0) return;
     final scrollPercent = position.pixels / position.maxScrollExtent;
-    if (scrollPercent >= AppConfigs.scrollThreshold && !position.outOfRange) {
+    if (scrollPercent >= AppConfigs.scrollThreshold && !position.outOfRange && !context.read<HomeBloc>().state.isLoadingMore) {
       context.read<HomeBloc>().add(const HomeEvent.loadMore());
     }
   }
@@ -69,41 +65,22 @@ class _HomePageChildState extends State<HomePageChild> {
             },
           ),
           Expanded(
-            child:
-                BlocSelector<
-                  HomeBloc,
-                  HomeState,
-                  ({
-                    Map<String, List<Transaction>> groupedTransactions,
-                    Map<int, TransactionCategory> categoriesMap,
-                    Map<String, DailyTransactionTotal> dailyTotals,
-                  })
-                >(
-                  selector: (state) => (
-                    groupedTransactions: state.groupedTransactions,
-                    categoriesMap: state.categoriesMap,
-                    dailyTotals: state.dailyTotals,
-                  ),
-                  builder: (context, data) {
-                    return TransactionList(
-                      dailyTotalWidgetBuilder: (dateKey) {
-                        final daily = data.dailyTotals[dateKey];
-                        if (daily == null) return const SizedBox();
-                        return Text(
-                          FormatUtils.formatDailyTransactionTotal(
-                            daily.income,
-                            daily.expense,
-                            daily.transfer,
-                          ),
-                          style: AppTextStyle.blackS12,
-                        );
-                      },
-                      emptyWidget: _buildEmptyState(),
-                      groupedTransactions: data.groupedTransactions,
-                      categoriesMap: data.categoriesMap,
-                    );
+            child: BlocSelector<HomeBloc, HomeState, ({Map<String, List<Transaction>> groupedTransactions, Map<int, TransactionCategory> categoriesMap, Map<String, DailyTransactionTotal> dailyTotals})>(
+              selector: (state) => (groupedTransactions: state.groupedTransactions, categoriesMap: state.categoriesMap, dailyTotals: state.dailyTotals),
+              builder: (context, data) {
+                return TransactionList(
+                  scrollController: _scrollController,
+                  dailyTotalWidgetBuilder: (dateKey) {
+                    final daily = data.dailyTotals[dateKey];
+                    if (daily == null) return const SizedBox();
+                    return Text(FormatUtils.formatDailyTransactionTotal(daily.income, daily.expense, daily.transfer), style: AppTextStyle.blackS12);
                   },
-                ),
+                  emptyWidget: _buildEmptyState(),
+                  groupedTransactions: data.groupedTransactions,
+                  categoriesMap: data.categoriesMap,
+                );
+              },
+            ),
           ),
         ],
       ),
@@ -117,10 +94,7 @@ class _HomePageChildState extends State<HomePageChild> {
         spacing: AppUIConstants.smallSpacing,
         children: [
           Text(AppTextConstants.emptyTransaction, style: AppTextStyle.greyS14),
-          Text(
-            AppTextConstants.addTransactionAdvice,
-            style: AppTextStyle.greyS12,
-          ),
+          Text(AppTextConstants.addTransactionAdvice, style: AppTextStyle.greyS12),
         ],
       ),
     );

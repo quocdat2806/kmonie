@@ -44,9 +44,7 @@ class ChartBloc extends Bloc<ChartEvent, ChartState> {
         case AppEvent.updateTransaction:
           if (data.payload is Transaction) {
             final transaction = data.payload as Transaction;
-            if (_isTransactionInCurrentPeriod(transaction)) {
-              add(UpdateTransactionLocal(transaction));
-            }
+            add(UpdateTransactionLocal(transaction));
           }
           break;
         case AppEvent.deleteTransaction:

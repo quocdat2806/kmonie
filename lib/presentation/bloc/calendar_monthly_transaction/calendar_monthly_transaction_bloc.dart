@@ -1,20 +1,21 @@
 import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
 import 'package:kmonie/core/enums/enums.dart';
+import 'package:kmonie/repositories/repositories.dart';
 import 'package:kmonie/core/streams/streams.dart';
 import 'package:kmonie/core/utils/utils.dart';
-import 'package:kmonie/core/services/services.dart';
 import 'package:kmonie/entities/entities.dart';
 import 'calendar_monthly_transaction_event.dart';
 import 'calendar_monthly_transaction_state.dart';
 
 class CalendarMonthlyTransactionBloc extends Bloc<CalendarMonthlyTransactionEvent, CalendarMonthTransactionState> {
-  final TransactionService transactionService;
-  final TransactionCategoryService categoryService;
+  final TransactionRepository transactionRepository;
+  final TransactionCategoryRepository categoryRepository;
 
   StreamSubscription<AppStreamData>? _sub;
 
-  CalendarMonthlyTransactionBloc(this.transactionService, this.categoryService) : super(CalendarMonthTransactionState(selectedDate: DateTime.now())) {
+  CalendarMonthlyTransactionBloc(this.transactionRepository, this.categoryRepository) : super(CalendarMonthTransactionState(selectedDate: DateTime.now())) {
     on<LoadMonthData>(_onLoadMonthData);
     on<ChangeSelectedDate>(_onChangeSelectedDate);
     on<CalendarMonthlyTransactionInsertTransaction>(_onInsertTransaction);
@@ -25,13 +26,24 @@ class CalendarMonthlyTransactionBloc extends Bloc<CalendarMonthlyTransactionEven
     _sub = AppStreamEvent.eventStreamStatic.listen((data) {
       switch (data.event) {
         case AppEvent.insertTransaction:
-          add(CalendarMonthlyTransactionInsertTransaction(data.payload as Transaction));
+          if (data.payload is Transaction) {
+            final transaction = data.payload as Transaction;
+            final bool isInCurrentMonth = _isDateInCurrentMonthRange(transaction.date);
+            if (isInCurrentMonth) {
+              add(CalendarMonthlyTransactionInsertTransaction(transaction));
+            }
+          }
           break;
         case AppEvent.updateTransaction:
-          add(CalendarMonthlyTransactionUpdateTransaction(data.payload as Transaction));
+          if (data.payload is Transaction) {
+            final transaction = data.payload as Transaction;
+            add(CalendarMonthlyTransactionUpdateTransaction(transaction));
+          }
           break;
         case AppEvent.deleteTransaction:
-          add(CalendarMonthlyTransactionDeleteTransaction(data.payload as int));
+          if (data.payload is int) {
+            add(CalendarMonthlyTransactionDeleteTransaction(data.payload as int));
+          }
           break;
         default:
           break;
@@ -49,46 +61,35 @@ class CalendarMonthlyTransactionBloc extends Bloc<CalendarMonthlyTransactionEven
   Future<void> _onLoadMonthData(LoadMonthData event, Emitter<CalendarMonthTransactionState> emit) async {
     emit(state.copyWith(isLoading: true));
 
-    try {
-      final now = DateTime.now();
-      final year = event.year ?? now.year;
-      final month = event.month ?? now.month;
+    final now = DateTime.now();
+    final year = event.year ?? now.year;
+    final month = event.month ?? now.month;
 
-      final allTransactions = await transactionService.getTransactionsInMonth(year: year, month: month, pageSize: 9999);
+    final transactionsResult = await transactionRepository.getTransactionsInMonth(year: year, month: month, pageSize: 9999);
 
-      final grouped = transactionService.groupByDate(allTransactions.transactions);
+    await transactionsResult.fold(
+      (failure) async {
+        logger.e('CalendarMonthlyTransactionBloc: error loading transactions: ${failure.message}');
+        emit(state.copyWith(isLoading: false));
+      },
+      (pagedResult) async {
+        final grouped = transactionRepository.groupByDate(pagedResult.transactions);
+        final categoriesResult = await categoryRepository.getAll();
 
-      final categories = await categoryService.getAll();
-      final categoriesMap = {for (final c in categories) c.id!: c};
+        await categoriesResult.fold(
+          (failure) async {
+            logger.e('CalendarMonthlyTransactionBloc: error loading categories: ${failure.message}');
+            emit(state.copyWith(isLoading: false));
+          },
+          (categories) async {
+            final categoriesMap = {for (final c in categories) c.id!: c};
 
-      final dailyTotals = <int, DailyTransactionTotal>{};
-
-      for (final entry in grouped.entries) {
-        final date = AppDateUtils.parseDateKey(entry.key);
-
-        double income = 0;
-        double expense = 0;
-        double transfer = 0;
-
-        for (final tx in entry.value) {
-          if (tx.transactionType == TransactionType.income.typeIndex) {
-            income += tx.amount;
-          } else if (tx.transactionType == TransactionType.expense.typeIndex) {
-            expense += tx.amount;
-          } else if (tx.transactionType == TransactionType.transfer.typeIndex) {
-            transfer += tx.amount;
-          }
-        }
-
-        dailyTotals[date.day] = DailyTransactionTotal(income: income, expense: expense, transfer: transfer);
-      }
-
-      final currentSelectedDate = state.selectedDate ?? DateTime.now();
-      emit(state.copyWith(isLoading: false, groupedTransactions: grouped, dailyTotals: dailyTotals, categoriesMap: categoriesMap, selectedDate: DateTime(year, month, currentSelectedDate.day)));
-    } catch (e) {
-      logger.e('❤️ ERROR: CalendarBloc error: $e');
-      emit(state.copyWith(isLoading: false, dailyTotals: {}));
-    }
+            final currentSelectedDate = state.selectedDate ?? DateTime.now();
+            emit(state.copyWith(isLoading: false, groupedTransactions: grouped, categoriesMap: categoriesMap, selectedDate: DateTime(year, month, currentSelectedDate.day)));
+          },
+        );
+      },
+    );
   }
 
   void _onChangeSelectedDate(ChangeSelectedDate event, Emitter<CalendarMonthTransactionState> emit) {
@@ -97,18 +98,7 @@ class CalendarMonthlyTransactionBloc extends Bloc<CalendarMonthlyTransactionEven
 
   void _onInsertTransaction(CalendarMonthlyTransactionInsertTransaction event, Emitter<CalendarMonthTransactionState> emit) {
     final tx = event.transaction;
-    final day = tx.date.day;
-    final existing = state.dailyTotals[day] ?? const DailyTransactionTotal();
-    final updatedDailyTotals = Map<int, DailyTransactionTotal>.from(state.dailyTotals);
     final updatedGroupedTransactions = Map<String, List<Transaction>>.from(state.groupedTransactions);
-
-    if (tx.transactionType == TransactionType.income.typeIndex) {
-      updatedDailyTotals[day] = existing.copyWith(income: existing.income + tx.amount);
-    } else if (tx.transactionType == TransactionType.expense.typeIndex) {
-      updatedDailyTotals[day] = existing.copyWith(expense: existing.expense + tx.amount);
-    } else if (tx.transactionType == TransactionType.transfer.typeIndex) {
-      updatedDailyTotals[day] = existing.copyWith(transfer: existing.transfer + tx.amount);
-    }
 
     final dateKey = AppDateUtils.formatDateKey(tx.date);
     final existingTransactions = updatedGroupedTransactions[dateKey] ?? [];
@@ -117,96 +107,71 @@ class CalendarMonthlyTransactionBloc extends Bloc<CalendarMonthlyTransactionEven
       updatedGroupedTransactions[dateKey] = existingTransactions;
     }
 
-    emit(state.copyWith(dailyTotals: updatedDailyTotals, groupedTransactions: updatedGroupedTransactions));
+    emit(state.copyWith(groupedTransactions: updatedGroupedTransactions));
   }
 
   void _onUpdateTransaction(CalendarMonthlyTransactionUpdateTransaction event, Emitter<CalendarMonthTransactionState> emit) {
     final tx = event.transaction;
 
-    if (!_isDateInCurrentMonthRange(tx.date)) {
-      return;
-    }
+    // Check if the updated transaction is still in current month
+    final isInCurrentMonth = _isDateInCurrentMonthRange(tx.date);
 
-    final day = tx.date.day;
-    final updatedDailyTotals = Map<int, DailyTransactionTotal>.from(state.dailyTotals);
     final updatedGroupedTransactions = Map<String, List<Transaction>>.from(state.groupedTransactions);
 
-    final dateKey = AppDateUtils.formatDateKey(tx.date);
-    final dayTransactions = updatedGroupedTransactions[dateKey] ?? []
-      ..removeWhere((t) => t.id == tx.id)
-      ..add(tx);
-    updatedGroupedTransactions[dateKey] = dayTransactions;
-
-    double income = 0;
-    double expense = 0;
-    double transfer = 0;
-
-    for (final t in dayTransactions) {
-      if (t.transactionType == TransactionType.income.typeIndex) {
-        income += t.amount;
-      } else if (t.transactionType == TransactionType.expense.typeIndex) {
-        expense += t.amount;
-      } else if (t.transactionType == TransactionType.transfer.typeIndex) {
-        transfer += t.amount;
+    if (isInCurrentMonth) {
+      // Transaction is still in current month → update it
+      final dateKey = AppDateUtils.formatDateKey(tx.date);
+      final dayTransactions = List<Transaction>.from(updatedGroupedTransactions[dateKey] ?? [])
+        ..removeWhere((t) => t.id == tx.id)
+        ..add(tx);
+      updatedGroupedTransactions[dateKey] = dayTransactions;
+    } else {
+      // Transaction moved to different month → remove it from current month
+      for (final entry in updatedGroupedTransactions.entries) {
+        final transactions = entry.value;
+        final updatedTransactions = transactions.where((t) => t.id != tx.id).toList();
+        if (updatedTransactions.isEmpty) {
+          updatedGroupedTransactions.remove(entry.key);
+        } else {
+          updatedGroupedTransactions[entry.key] = updatedTransactions;
+        }
       }
     }
 
-    updatedDailyTotals[day] = DailyTransactionTotal(income: income, expense: expense, transfer: transfer);
-
-    emit(state.copyWith(dailyTotals: updatedDailyTotals, groupedTransactions: updatedGroupedTransactions));
+    emit(state.copyWith(groupedTransactions: updatedGroupedTransactions));
   }
 
   void _onDeleteTransaction(CalendarMonthlyTransactionDeleteTransaction event, Emitter<CalendarMonthTransactionState> emit) async {
     final transactionId = event.id;
 
+    // Find the transaction to delete
     Transaction? transactionToDelete;
-    for (final transactions in state.groupedTransactions.values) {
-      final found = transactions.firstWhere((t) => t.id == transactionId, orElse: () => Transaction(id: -1, amount: 0, date: DateTime.now(), transactionCategoryId: 0));
-      if (found.id == transactionId) {
+    String? dateKeyToUpdate;
+
+    for (final entry in state.groupedTransactions.entries) {
+      final transactions = entry.value;
+      final found = transactions.where((t) => t.id == transactionId).firstOrNull;
+      if (found != null) {
         transactionToDelete = found;
+        dateKeyToUpdate = entry.key;
         break;
       }
     }
-    if (transactionToDelete == null) {
+
+    if (transactionToDelete == null || dateKeyToUpdate == null) {
       return;
     }
 
-    if (!_isDateInCurrentMonthRange(transactionToDelete.date)) {
-      return;
-    }
-
-    final day = transactionToDelete.date.day;
-    final updatedDailyTotals = Map<int, DailyTransactionTotal>.from(state.dailyTotals);
     final updatedGroupedTransactions = Map<String, List<Transaction>>.from(state.groupedTransactions);
-
-    final dateKey = AppDateUtils.formatDateKey(transactionToDelete.date);
-    final dayTransactions = updatedGroupedTransactions[dateKey] ?? []
-      ..removeWhere((t) => t.id == transactionId);
+    final dayTransactions = List<Transaction>.from(updatedGroupedTransactions[dateKeyToUpdate] ?? [])..removeWhere((t) => t.id == transactionId);
 
     if (dayTransactions.isEmpty) {
-      updatedGroupedTransactions.remove(dateKey);
-      updatedDailyTotals.remove(day);
+      updatedGroupedTransactions.remove(dateKeyToUpdate);
     } else {
-      updatedGroupedTransactions[dateKey] = dayTransactions;
-
-      double income = 0;
-      double expense = 0;
-      double transfer = 0;
-
-      for (final t in dayTransactions) {
-        if (t.transactionType == TransactionType.income.typeIndex) {
-          income += t.amount;
-        } else if (t.transactionType == TransactionType.expense.typeIndex) {
-          expense += t.amount;
-        } else if (t.transactionType == TransactionType.transfer.typeIndex) {
-          transfer += t.amount;
-        }
-      }
-
-      updatedDailyTotals[day] = DailyTransactionTotal(income: income, expense: expense, transfer: transfer);
+      updatedGroupedTransactions[dateKeyToUpdate] = dayTransactions;
     }
 
-    emit(state.copyWith(dailyTotals: updatedDailyTotals, groupedTransactions: updatedGroupedTransactions));
+    emit(state.copyWith(groupedTransactions: updatedGroupedTransactions));
   }
 
   void _onChangeMonthYear(ChangeMonthYear event, Emitter<CalendarMonthTransactionState> emit) {

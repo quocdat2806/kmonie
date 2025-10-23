@@ -5,5 +5,6 @@ class AppConfigs {
   static const String dateDisplayFormat = 'dd/MM/yyyy';
   static const int defaultPageSize = 20;
   static const int defaultPageIndex = 0;
-  static const double scrollThreshold = 0.7;
+  static const double scrollThreshold = 0.8;
+  static const Duration loadMoreDebounceDuration = Duration(milliseconds: 100);
 }

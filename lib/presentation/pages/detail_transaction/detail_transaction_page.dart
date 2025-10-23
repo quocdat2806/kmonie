@@ -41,7 +41,7 @@ class _DetailTransactionPageState extends State<DetailTransactionPage> {
     _category = widget.args.category;
 
     _sub = AppStreamEvent.eventStreamStatic.listen((event) {
-      if (event.event == AppEvent.updateTransaction) {
+      if (event.event == AppEvent.updateTransaction && event.payload is Transaction) {
         final updatedTx = event.payload as Transaction;
         if (updatedTx.id == _transaction.id) {
           setState(() {
@@ -171,7 +171,7 @@ class _DetailTransactionPageState extends State<DetailTransactionPage> {
             spacing: AppUIConstants.smallSpacing,
             children: [
               Text(AppDateUtils.formatDate(date), style: AppTextStyle.blackS14Medium),
-              Text('(Thêm ${AppDateUtils.formatFullDate(date)})', style: AppTextStyle.greyS12),
+              Text('(Thêm ${AppDateUtils.formatFullDate(_transaction.createdAt ?? date)})', style: AppTextStyle.greyS12),
             ],
           ),
         ],

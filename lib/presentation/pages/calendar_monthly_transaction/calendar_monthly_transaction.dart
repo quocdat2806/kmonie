@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kmonie/core/di/di.dart';
 import 'package:kmonie/core/navigation/navigation.dart';
 import 'package:kmonie/core/text_style/text_style.dart';
-import 'package:kmonie/core/services/services.dart';
+import 'package:kmonie/repositories/repositories.dart';
 import 'package:kmonie/core/constants/constants.dart';
 import 'package:kmonie/core/utils/utils.dart';
 import 'package:kmonie/presentation/bloc/calendar_monthly_transaction/calendar_monthly_transaction_bloc.dart';
@@ -38,7 +38,7 @@ class _CalendarMonthlyTransactionState extends State<CalendarMonthlyTransaction>
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => CalendarMonthlyTransactionBloc(sl<TransactionService>(), sl<TransactionCategoryService>()),
+      create: (_) => CalendarMonthlyTransactionBloc(sl<TransactionRepository>(), sl<TransactionCategoryRepository>()),
       child: BlocBuilder<CalendarMonthlyTransactionBloc, CalendarMonthTransactionState>(
         builder: (context, state) {
           final selectedDate = state.selectedDate ?? DateTime.now();

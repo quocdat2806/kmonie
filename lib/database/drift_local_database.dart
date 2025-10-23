@@ -22,6 +22,8 @@ class TransactionsTb extends Table {
   TextColumn get content => text().withDefault(const Constant(''))();
 
   IntColumn get transactionType => integer().withDefault(const Constant(0))();
+  DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
+  DateTimeColumn get updatedAt => dateTime().withDefault(currentDateAndTime)();
 }
 
 class TransactionCategoryTb extends Table {
@@ -41,6 +43,8 @@ class BudgetsTb extends Table {
   IntColumn get month => integer()();
   IntColumn get transactionCategoryId => integer().references(TransactionCategoryTb, #id, onDelete: KeyAction.cascade)();
   IntColumn get amount => integer().withDefault(const Constant(0))();
+  DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
+  DateTimeColumn get updatedAt => dateTime().withDefault(currentDateAndTime)();
 }
 
 class MonthlyBudgetsTb extends Table {
@@ -48,6 +52,8 @@ class MonthlyBudgetsTb extends Table {
   IntColumn get year => integer()();
   IntColumn get month => integer()();
   IntColumn get totalAmount => integer().withDefault(const Constant(0))();
+  DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
+  DateTimeColumn get updatedAt => dateTime().withDefault(currentDateAndTime)();
 }
 
 class AccountsTb extends Table {

@@ -6,7 +6,7 @@ import 'package:kmonie/core/utils/utils.dart';
 import 'package:kmonie/core/di/di.dart';
 import 'package:kmonie/core/enums/enums.dart';
 import 'package:kmonie/core/navigation/navigation.dart';
-import 'package:kmonie/core/services/services.dart';
+import 'package:kmonie/repositories/repositories.dart';
 import 'package:kmonie/core/text_style/text_style.dart';
 import 'package:kmonie/entities/entities.dart';
 import 'package:kmonie/generated/generated.dart';
@@ -18,7 +18,7 @@ class SearchTransactionPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider<SearchTransactionBloc>(create: (_) => SearchTransactionBloc(sl<TransactionService>(), sl<TransactionCategoryService>()), child: const SearchTransactionPageChild());
+    return BlocProvider<SearchTransactionBloc>(create: (_) => SearchTransactionBloc(sl<TransactionRepository>(), sl<TransactionCategoryRepository>()), child: const SearchTransactionPageChild());
   }
 }
 
