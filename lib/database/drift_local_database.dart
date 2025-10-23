@@ -63,7 +63,7 @@ class AccountsTb extends Table {
   IntColumn get amount => integer().withDefault(const Constant(0))();
   IntColumn get balance => integer().withDefault(const Constant(0))();
   TextColumn get accountNumber => text().withDefault(const Constant(''))();
-  TextColumn get bankJson => text().withDefault(const Constant(''))();
+  IntColumn get bankId => integer().nullable()();
   BoolColumn get isPinned => boolean().withDefault(const Constant(false))();
   DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
   DateTimeColumn get updatedAt => dateTime().withDefault(currentDateAndTime)();
