@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kmonie/core/constants/constants.dart';
 import 'package:kmonie/core/text_style/text_style.dart';
 import 'package:kmonie/core/utils/utils.dart';
-import 'package:kmonie/presentation/bloc/monthly_statistics/monthly_statistics.dart';
+import 'package:kmonie/presentation/blocs/monthly_statistics/monthly_statistics.dart';
 
 class MonthlyStatisticsPage extends StatelessWidget {
   const MonthlyStatisticsPage({super.key});

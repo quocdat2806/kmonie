@@ -7,7 +7,7 @@ import 'package:kmonie/core/navigation/navigation.dart';
 import 'package:kmonie/core/text_style/text_style.dart';
 import 'package:kmonie/core/utils/utils.dart';
 import 'package:kmonie/generated/generated.dart';
-import 'package:kmonie/presentation/bloc/home/home.dart';
+import 'package:kmonie/presentation/blocs/home/home.dart';
 import 'package:kmonie/presentation/widgets/widgets.dart';
 
 class MonthlyExpenseSummary extends StatelessWidget {

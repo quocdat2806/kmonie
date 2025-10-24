@@ -49,12 +49,12 @@ class _MonthPickerDialogState extends State<MonthPickerDialog> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    GestureDetector(
+                    InkWell(
                       onTap: () => _changeYear(-1),
                       child: const Icon(Icons.arrow_back_ios, size: AppUIConstants.smallIconSize),
                     ),
                     Text('$selectedYear', style: AppTextStyle.blackS14Medium),
-                    GestureDetector(
+                    InkWell(
                       onTap: () => _changeYear(1),
                       child: const Icon(Icons.arrow_forward_ios, size: AppUIConstants.smallIconSize),
                     ),
@@ -69,7 +69,7 @@ class _MonthPickerDialogState extends State<MonthPickerDialog> {
                 itemBuilder: (context, index) {
                   final month = index + 1;
                   final isSelected = month == selectedMonth;
-                  return GestureDetector(
+                  return InkWell(
                     onTap: () => setState(() => selectedMonth = month),
                     child: Center(
                       child: DecoratedBox(

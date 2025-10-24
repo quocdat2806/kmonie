@@ -4,7 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kmonie/core/constants/constants.dart';
 import 'package:kmonie/core/enums/enums.dart';
 import 'package:kmonie/entities/entities.dart';
-import 'package:kmonie/presentation/bloc/transaction_actions/transaction_actions.dart';
+import 'package:kmonie/presentation/blocs/transaction_actions/transaction_actions.dart';
 import 'package:kmonie/presentation/widgets/widgets.dart';
 import 'transaction_category_item.dart';
 

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:kmonie/core/constants/constants.dart';
-import 'package:kmonie/presentation/bloc/bloc.dart';
+import 'package:kmonie/presentation/blocs/blocs.dart';
 import 'package:kmonie/presentation/pages/pages.dart';
 import 'widgets/bottom_navigation_bar.dart';
 
@@ -24,9 +24,7 @@ class MainPage extends StatelessWidget {
           final int currentIndex = state.selectedIndex;
           return Scaffold(
             backgroundColor: AppColorConstants.primary,
-            body: SafeArea(
-              child: IndexedStack(index: currentIndex, children: pageList),
-            ),
+            body: SafeArea(child: pageList[currentIndex]),
             bottomNavigationBar: MainBottomNavigationBar(
               currentIndex: currentIndex,
               onTabSelected: (i) => _onTabSelected(context: context, index: i),

@@ -11,7 +11,7 @@ import 'package:kmonie/core/text_style/text_style.dart';
 import 'package:kmonie/entities/entities.dart';
 import 'package:kmonie/generated/generated.dart';
 import 'package:kmonie/presentation/widgets/widgets.dart';
-import 'package:kmonie/presentation/bloc/bloc.dart';
+import 'package:kmonie/presentation/blocs/blocs.dart';
 
 class SearchTransactionPage extends StatelessWidget {
   const SearchTransactionPage({super.key});
@@ -84,7 +84,7 @@ class _SearchTransactionPageChildState extends State<SearchTransactionPageChild>
                   suffixIcon: state.query.isNotEmpty
                       ? const Padding(
                           padding: EdgeInsets.only(right: AppUIConstants.smallPadding),
-                          child: Icon(Icons.clear, size: 24),
+                          child: Icon(Icons.clear, size: AppUIConstants.mediumIconSize),
                         )
                       : Padding(
                           padding: const EdgeInsets.only(right: AppUIConstants.smallPadding),
@@ -114,7 +114,7 @@ class _SearchTransactionPageChildState extends State<SearchTransactionPageChild>
             return Row(
               spacing: AppUIConstants.smallSpacing,
               children: [
-                Text('Kiểu', style: AppTextStyle.blackS14Bold),
+                Text(AppTextConstants.type, style: AppTextStyle.blackS14Bold),
                 ...searchCategories.map((item) {
                   final bool isSelected = state.selectedType == item['type'];
                   return AppButton(

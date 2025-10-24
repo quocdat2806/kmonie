@@ -3,7 +3,7 @@ import 'package:kmonie/core/streams/streams.dart';
 import 'package:kmonie/database/database.dart';
 import 'package:kmonie/repositories/repositories.dart';
 import 'package:kmonie/core/services/services.dart';
-import 'package:kmonie/presentation/bloc/calendar_monthly_transaction/calendar_monthly_transaction_bloc.dart';
+import 'package:kmonie/presentation/blocs/calendar_monthly_transaction/calendar_monthly_transaction_bloc.dart';
 
 final GetIt sl = GetIt.instance;
 

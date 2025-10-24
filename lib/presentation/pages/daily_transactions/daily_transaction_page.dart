@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import 'package:kmonie/core/utils/date.dart';
-import 'package:kmonie/core/utils/format.dart';
+import 'package:kmonie/core/utils/utils.dart';
 import 'package:kmonie/core/constants/constants.dart';
 import 'package:kmonie/core/text_style/text_style.dart';
 import 'package:kmonie/entities/entities.dart';
 import 'package:kmonie/presentation/widgets/widgets.dart';
-import 'package:kmonie/presentation/bloc/bloc.dart';
+import 'package:kmonie/presentation/blocs/blocs.dart';
 
 class DailyTransactionPageArgs {
   final DateTime selectedDate;
@@ -48,7 +47,6 @@ class _DailyTransactionPageChildState extends State<DailyTransactionPageChild> {
   @override
   void initState() {
     super.initState();
-    // Load data when widget initializes
     context.read<DailyTransactionBloc>().add(DailyTransactionEvent.loadDailyTransactions(selectedDate: widget.selectedDate, groupedTransactions: widget.groupedTransactions, categoriesMap: widget.categoriesMap));
   }
 
@@ -57,13 +55,11 @@ class _DailyTransactionPageChildState extends State<DailyTransactionPageChild> {
     return BlocBuilder<DailyTransactionBloc, DailyTransactionState>(
       builder: (context, state) {
         if (state.selectedDate == null) {
-          return const Scaffold(body: Center(child: CircularProgressIndicator()));
+          return const SizedBox.shrink();
         }
 
-        final dateStr = AppDateUtils.formatDate(widget.selectedDate);
-
         return Scaffold(
-          appBar: CustomAppBar(title: 'Giao dịch $dateStr'),
+          appBar: CustomAppBar(title: 'Giao dịch ${AppDateUtils.formatDate(widget.selectedDate)}'),
           body: SafeArea(
             child: state.isEmpty
                 ? _buildEmptyState(context)

@@ -6,7 +6,10 @@ class TransactionCalculator {
   TransactionCalculator._();
 
   static double calculateIncome(List<Transaction> transactions) {
-    return transactions.where((t) => t.transactionType == TransactionType.income.typeIndex).fold(0.0, (sum, t) => sum + t.amount);
+    final incomeTransactions = transactions.where((t) => t.transactionType == TransactionType.income.typeIndex).toList();
+    final total = incomeTransactions.fold(0.0, (sum, t) => sum + t.amount);
+
+    return total;
   }
 
   static double calculateExpense(List<Transaction> transactions) {

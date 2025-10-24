@@ -5,9 +5,9 @@ import 'package:kmonie/core/text_style/text_style.dart';
 import 'package:kmonie/core/di/di.dart';
 import 'package:kmonie/core/services/services.dart';
 import 'package:kmonie/core/enums/enums.dart';
-import 'package:kmonie/presentation/bloc/statistics/statistics_bloc.dart';
-import 'package:kmonie/presentation/bloc/statistics/statistics_event.dart';
-import 'package:kmonie/presentation/bloc/statistics/statistics_state.dart';
+import 'package:kmonie/presentation/blocs/statistics/statistics_bloc.dart';
+import 'package:kmonie/presentation/blocs/statistics/statistics_event.dart';
+import 'package:kmonie/presentation/blocs/statistics/statistics_state.dart';
 import 'widgets/statistics_header.dart';
 import 'widgets/statistics_chart.dart';
 import 'widgets/statistics_list.dart';
@@ -20,10 +20,7 @@ class StatisticsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider<StatisticsBloc>(
-      create: (_) => StatisticsBloc(
-        sl<TransactionService>(),
-        sl<TransactionCategoryService>(),
-      )..add(StatisticsLoadData(transactionType)),
+      create: (_) => StatisticsBloc(sl<TransactionService>(), sl<TransactionCategoryService>())..add(StatisticsLoadData(transactionType)),
       child: StatisticsPageChild(transactionType: transactionType),
     );
   }
@@ -55,17 +52,11 @@ class StatisticsPageChild extends StatelessWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text(
-                    state.message!,
-                    style: AppTextStyle.greyS14,
-                    textAlign: TextAlign.center,
-                  ),
+                  Text(state.message!, style: AppTextStyle.greyS14, textAlign: TextAlign.center),
                   const SizedBox(height: AppUIConstants.smallPadding),
                   ElevatedButton(
                     onPressed: () {
-                      context.read<StatisticsBloc>().add(
-                        StatisticsLoadData(transactionType),
-                      );
+                      context.read<StatisticsBloc>().add(StatisticsLoadData(transactionType));
                     },
                     child: const Text('Thử lại'),
                   ),
@@ -78,28 +69,17 @@ class StatisticsPageChild extends StatelessWidget {
             slivers: [
               // Header với tổng số tiền
               SliverToBoxAdapter(
-                child: StatisticsHeader(
-                  transactionType: transactionType,
-                  totalAmount: state.totalAmount,
-                  transactionCount: state.transactionCount,
-                ),
+                child: StatisticsHeader(transactionType: transactionType, totalAmount: state.totalAmount, transactionCount: state.transactionCount),
               ),
 
               // Chart thống kê
               SliverToBoxAdapter(
-                child: StatisticsChart(
-                  groupedTransactions: state.groupedTransactions,
-                  categoriesMap: state.categoriesMap,
-                  transactionType: transactionType,
-                ),
+                child: StatisticsChart(groupedTransactions: state.groupedTransactions, categoriesMap: state.categoriesMap, transactionType: transactionType),
               ),
 
               // Danh sách giao dịch
               SliverToBoxAdapter(
-                child: StatisticsList(
-                  groupedTransactions: state.groupedTransactions,
-                  categoriesMap: state.categoriesMap,
-                ),
+                child: StatisticsList(groupedTransactions: state.groupedTransactions, categoriesMap: state.categoriesMap),
               ),
             ],
           );

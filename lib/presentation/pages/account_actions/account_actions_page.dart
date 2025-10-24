@@ -4,7 +4,7 @@ import 'package:kmonie/core/constants/constants.dart';
 import 'package:kmonie/core/text_style/text_style.dart';
 import 'package:kmonie/presentation/widgets/widgets.dart';
 import 'package:kmonie/core/di/injection_container.dart';
-import 'package:kmonie/presentation/bloc/account_actions/account_actions.dart';
+import 'package:kmonie/presentation/blocs/account_actions/account_actions.dart';
 import 'package:kmonie/entities/entities.dart';
 import 'package:kmonie/presentation/pages/manage_account/manage_account_page.dart';
 import 'package:kmonie/repositories/repositories.dart';

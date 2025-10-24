@@ -1,13 +1,17 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+import 'package:kmonie/core/tools/tools.dart';
+import 'package:kmonie/entities/entities.dart';
 
 class ChartData {
   final String label;
   final double value;
   final Color color;
+  final List<String>? gradientColors;
+  final TransactionCategory? category; // Thêm category info
 
-  ChartData(this.label, this.value, this.color);
+  ChartData(this.label, this.value, this.color, {this.gradientColors, this.category});
 }
 
 class ChartCircular extends StatefulWidget {
@@ -90,10 +94,17 @@ class AppChartPainter extends CustomPainter {
 
       if (visiblePercent > 0) {
         final paint = Paint()
-          ..color = data[i].color
           ..style = PaintingStyle.stroke
           ..strokeWidth = strokeWidth
           ..strokeCap = StrokeCap.butt;
+
+        // Sử dụng gradient nếu có, ngược lại dùng màu đơn sắc
+        if (data[i].gradientColors != null && data[i].gradientColors!.isNotEmpty) {
+          final gradient = GradientHelper.fromColorHexList(data[i].gradientColors!);
+          paint.shader = gradient.createShader(rect);
+        } else {
+          paint.color = data[i].color;
+        }
 
         canvas.drawArc(rect, startAngle, sweepAngle * visiblePercent, false, paint);
       }

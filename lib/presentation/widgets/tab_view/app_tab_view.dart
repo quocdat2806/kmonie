@@ -24,7 +24,7 @@ class AppTabView<T> extends StatelessWidget {
         final BorderRadius borderRadius = BorderRadius.only(topLeft: isFirst ? const Radius.circular(AppUIConstants.defaultBorderRadius) : Radius.zero, bottomLeft: isFirst ? const Radius.circular(AppUIConstants.defaultBorderRadius) : Radius.zero, topRight: isLast ? const Radius.circular(AppUIConstants.defaultBorderRadius) : Radius.zero, bottomRight: isLast ? const Radius.circular(AppUIConstants.defaultBorderRadius) : Radius.zero);
 
         return Expanded(
-          child: GestureDetector(
+          child: InkWell(
             onTap: () => onTabSelected(index),
             child: DecoratedBox(
               decoration: BoxDecoration(

@@ -12,33 +12,15 @@ class CalendarGrid extends StatelessWidget {
 
   const CalendarGrid({super.key, required this.selectedDate, required this.dailyTotals, required this.onDateSelected});
 
-  List<DateTime?> _generateCalendarDays() {
-    final firstDay = DateTime(selectedDate.year, selectedDate.month);
-    final lastDay = DateTime(selectedDate.year, selectedDate.month + 1, 0);
-
-    final List<DateTime?> days = [];
-
-    for (int i = 0; i < firstDay.weekday % 7; i++) {
-      days.add(null);
-    }
-
-    for (int day = 1; day <= lastDay.day; day++) {
-      days.add(DateTime(firstDay.year, firstDay.month, day));
-    }
-
-    return days;
-  }
-
   @override
   Widget build(BuildContext context) {
-    final days = _generateCalendarDays();
+    final days = AppDateUtils.generateCalendarDays(selectedDate);
     return GridView.builder(
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 7, childAspectRatio: 0.70),
       itemCount: days.length,
       itemBuilder: (context, index) {
         final date = days[index];
         if (date == null) return const SizedBox();
-
         final total = dailyTotals[date.day];
         final isSelected = AppDateUtils.isSameDate(date, selectedDate);
 

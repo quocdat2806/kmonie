@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:kmonie/core/constants/constants.dart';
 import 'package:kmonie/core/enums/enums.dart';
-import 'package:kmonie/presentation/bloc/transaction_actions/transaction_actions.dart';
+import 'package:kmonie/presentation/blocs/transaction_actions/transaction_actions.dart';
 import 'package:kmonie/presentation/widgets/widgets.dart';
 
 class TransactionActionsTabBar extends StatelessWidget {
@@ -16,9 +16,7 @@ class TransactionActionsTabBar extends StatelessWidget {
       builder: (context, selectedIndex) {
         final transactionTypes = ExTransactionType.transactionTypes;
         return Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: AppUIConstants.smallPadding,
-          ),
+          padding: const EdgeInsets.symmetric(horizontal: AppUIConstants.smallPadding),
           child: AppTabView<TransactionType>(
             types: transactionTypes,
             selectedIndex: selectedIndex,

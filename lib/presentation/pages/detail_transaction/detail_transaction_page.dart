@@ -11,7 +11,7 @@ import 'package:kmonie/core/tools/tools.dart';
 import 'package:kmonie/core/utils/utils.dart';
 import 'package:kmonie/entities/entities.dart';
 import 'package:kmonie/presentation/widgets/widgets.dart';
-import '../transaction_action/transaction_actions_page.dart';
+import 'package:kmonie/presentation/pages/pages.dart';
 
 class DetailTransactionArgs {
   final Transaction transaction;
@@ -66,21 +66,11 @@ class _DetailTransactionPageState extends State<DetailTransactionPage> {
   Widget build(BuildContext context) {
     final String typeLabel = _category.transactionType.displayName;
     return Scaffold(
-      appBar: const CustomAppBar(title: 'Chi tiết giao dịch'),
+      appBar: const CustomAppBar(title: AppTextConstants.detailTransaction),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(AppUIConstants.defaultPadding),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildHeader(_category, _transaction),
-              const SizedBox(height: AppUIConstants.defaultSpacing),
-              _buildRow('Kiểu', typeLabel),
-              _buildRow('Số tiền', FormatUtils.formatCurrency(_transaction.amount)),
-              _buildDateRow('Ngày', _transaction.date),
-              _buildRow('Ghi chú', _transaction.content.isEmpty ? '(Trống)' : _transaction.content),
-            ],
-          ),
+          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [_buildHeaderTransaction(_category, _transaction), _buildRow(AppTextConstants.type, typeLabel), _buildRow(AppTextConstants.amount, FormatUtils.formatCurrency(_transaction.amount)), _buildDateRow(AppTextConstants.date, _transaction.date), _buildRow(AppTextConstants.note, _transaction.content.isEmpty ? AppTextConstants.empty : _transaction.content)]),
         ),
       ),
       bottomNavigationBar: SafeArea(
@@ -127,7 +117,7 @@ class _DetailTransactionPageState extends State<DetailTransactionPage> {
     );
   }
 
-  Widget _buildHeader(TransactionCategory category, Transaction transaction) {
+  Widget _buildHeaderTransaction(TransactionCategory category, Transaction transaction) {
     return Row(
       spacing: AppUIConstants.defaultSpacing,
       children: [
@@ -171,7 +161,7 @@ class _DetailTransactionPageState extends State<DetailTransactionPage> {
             spacing: AppUIConstants.smallSpacing,
             children: [
               Text(AppDateUtils.formatDate(date), style: AppTextStyle.blackS14Medium),
-              Text('(Thêm ${AppDateUtils.formatFullDate(_transaction.createdAt ?? date)})', style: AppTextStyle.greyS12),
+              Text('(${AppTextConstants.add} ${AppDateUtils.formatFullDate(_transaction.createdAt ?? date)})', style: AppTextStyle.greyS12),
             ],
           ),
         ],

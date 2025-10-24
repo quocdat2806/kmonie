@@ -94,4 +94,23 @@ class AppDateUtils {
   static bool isSameDate(DateTime date1, DateTime date2) {
     return date1.year == date2.year && date1.month == date2.month && date1.day == date2.day;
   }
+
+  static List<DateTime?> generateCalendarDays(DateTime selectedDate) {
+    final firstDay = DateTime(selectedDate.year, selectedDate.month);
+    final lastDay = DateTime(selectedDate.year, selectedDate.month + 1, 0);
+
+    final List<DateTime?> days = [];
+
+    // Add null days for the first week (days before the first day of month)
+    for (int i = 0; i < firstDay.weekday % 7; i++) {
+      days.add(null);
+    }
+
+    // Add actual days of the month
+    for (int day = 1; day <= lastDay.day; day++) {
+      days.add(DateTime(firstDay.year, firstDay.month, day));
+    }
+
+    return days;
+  }
 }

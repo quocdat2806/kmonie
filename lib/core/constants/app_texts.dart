@@ -20,20 +20,26 @@ class AppTextConstants {
   static const String cancel = 'Huỷ';
   static const String gotIt = 'Đã hiểu';
   static const String note = 'Ghi chú: ';
+  static const String empty = '(Trống)';
   static const String amountDefault = '0';
   static const String analysis = 'Phân tích';
   static const String account = 'Tài khoản';
   static const String month = 'Tháng';
   static const String year = 'Năm';
+  static const String calendar = 'Lịch';
+  static const String type = 'Kiểu';
 
   static const String balance = 'Số dư';
 
+  static const String detailTransaction = 'Chi tiết giao dịch';
+  static const String date = 'Ngày';
   static const String transactionAddedSuccess = 'Giao dịch đã được thêm thành công';
   static const String requiredField = 'Trường này là bắt buộc';
   static const String invalidAmount = 'Số tiền không hợp lệ';
   static const String invalidDate = 'Ngày không hợp lệ';
   static const String emptyTransaction = 'Chưa có giao dịch nào';
   static const String addTransactionAdvice = 'Hãy thêm giao dịch đầu tiên của bạn';
+  static const String noData = 'Không có dữ liệu để hiển thị';
 
   static const String all = 'Tất cả';
   static const String search = 'Tìm kiếm';

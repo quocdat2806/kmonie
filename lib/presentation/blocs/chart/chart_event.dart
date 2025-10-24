@@ -1,7 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 import 'package:kmonie/core/enums/enums.dart';
-import 'package:kmonie/entities/entities.dart';
 
 part 'chart_event.freezed.dart';
 
@@ -15,8 +14,4 @@ class ChartEvent with _$ChartEvent {
   const factory ChartEvent.loadMoreMonths() = LoadMoreMonths;
   const factory ChartEvent.loadMoreYears() = LoadMoreYears;
   const factory ChartEvent.refreshChart() = RefreshChart;
-  // Local state update events
-  const factory ChartEvent.addTransactionLocal(Transaction transaction) = AddTransactionLocal;
-  const factory ChartEvent.updateTransactionLocal(Transaction transaction) = UpdateTransactionLocal;
-  const factory ChartEvent.deleteTransactionLocal(int transactionId) = DeleteTransactionLocal;
 }

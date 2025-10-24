@@ -108,40 +108,6 @@ class _DatePickerScreenState extends State<DatePickerScreen> {
                     );
                   },
                 ),
-                // GridView.builder(
-                //   shrinkWrap: true,
-                //   physics: const NeverScrollableScrollPhysics(),
-                //   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 7, mainAxisSpacing: 4, crossAxisSpacing: 4),
-                //   itemCount: 7 + firstWeekday + daysInMonth,
-                //   itemBuilder: (context, index) {
-                //     if (index < 7) {
-                //       return Center(child: Text(AppDateUtils.weekdays[index], style: AppTextStyle.blackS14Medium));
-                //     }
-
-                //     final dayIndex = index - 7 - firstWeekday;
-                //     if (dayIndex < 0 || dayIndex >= daysInMonth) {
-                //       return const SizedBox();
-                //     }
-
-                //     final day = dayIndex + 1;
-                //     final date = DateTime(_displayMonth.year, _displayMonth.month, day);
-                //     final isSelected = AppDateUtils.isSameDate(date, _selectedDate);
-
-                //     return GestureDetector(
-                //       onTap: () {
-                //         final now = DateTime.now();
-                //         final date = DateTime(_displayMonth.year, _displayMonth.month, day, now.hour, now.minute, now.second, now.millisecond, now.microsecond);
-                //         setState(() {
-                //           _selectedDate = date;
-                //         });
-                //       },
-                //       child: Container(
-                //         decoration: BoxDecoration(color: isSelected ? AppColorConstants.primary : Colors.transparent, shape: BoxShape.circle),
-                //         child: Center(child: Text('$day', style: isSelected ? AppTextStyle.blackS14Bold : AppTextStyle.blackS14Medium)),
-                //       ),
-                //     );
-                //   },
-                // ),
                 Row(
                   spacing: AppUIConstants.defaultSpacing,
                   children: [

@@ -3,8 +3,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kmonie/core/text_style/text_style.dart';
 import 'package:kmonie/core/enums/enums.dart';
 import 'package:kmonie/core/constants/constants.dart';
-import 'package:kmonie/presentation/bloc/chart/chart_export.dart';
+import 'package:kmonie/core/utils/utils.dart';
+import 'package:kmonie/presentation/blocs/blocs.dart';
 import 'package:kmonie/presentation/widgets/widgets.dart';
+import 'package:kmonie/generated/generated.dart';
 
 class ChartTransactionTypeDropdown extends StatelessWidget {
   final GlobalKey dropdownKey;
@@ -24,7 +26,7 @@ class ChartTransactionTypeDropdown extends StatelessWidget {
             spacing: AppUIConstants.smallSpacing,
             children: [
               Text(state.selectedTransactionType.displayName, style: AppTextStyle.blackS18Bold),
-              const Icon(Icons.arrow_drop_down, color: AppColorConstants.black, size: AppUIConstants.mediumIconSize),
+              SvgUtils.icon(assetPath: Assets.svgsArrowDown, size: SvgSizeType.medium),
             ],
           ),
         );
@@ -34,7 +36,7 @@ class ChartTransactionTypeDropdown extends StatelessWidget {
 
   void _showTransactionTypeDropdown(BuildContext context) {
     const allowedTypes = [TransactionType.expense, TransactionType.income];
-    final options = allowedTypes.map((t) => t.displayName).toList();
+    final options = List<String>.generate(allowedTypes.length, (index) => allowedTypes[index].displayName);
 
     AppDropdown.show<String>(
       context: context,

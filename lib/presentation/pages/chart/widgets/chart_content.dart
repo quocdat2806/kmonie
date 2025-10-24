@@ -1,15 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import 'package:kmonie/generated/generated.dart';
 import 'package:kmonie/core/text_style/text_style.dart';
+import 'package:kmonie/core/constants/constants.dart';
 import 'package:kmonie/core/tools/tools.dart';
 import 'package:kmonie/core/utils/utils.dart';
-import 'package:kmonie/core/constants/constants.dart';
 import 'package:kmonie/core/enums/enums.dart';
-import 'package:kmonie/presentation/bloc/chart/chart_export.dart';
+import 'package:kmonie/presentation/blocs/chart/chart.dart';
 import 'package:kmonie/presentation/widgets/widgets.dart';
-import 'package:kmonie/entities/entities.dart';
 
 class ChartContent extends StatelessWidget {
   const ChartContent({super.key});
@@ -20,16 +18,16 @@ class ChartContent extends StatelessWidget {
       buildWhen: (previous, current) => previous.chartData.length != current.chartData.length,
       builder: (context, state) {
         if (state.chartData.isEmpty) {
-          return Center(child: Text('Không có dữ liệu để hiển thị', style: AppTextStyle.greyS14));
+          return Center(child: Text(AppTextConstants.noData, style: AppTextStyle.greyS14));
         }
-
         return Padding(
           padding: const EdgeInsets.all(AppUIConstants.defaultPadding),
           child: Column(
             children: [
-              _buildChartSection(state),
+              _buildChartSection(context, state.chartData),
               const SizedBox(height: AppUIConstants.largeSpacing),
-              _buildDetailedList(state),
+              _buildDetailedList(state.chartData),
+              const SizedBox(height: AppUIConstants.largeSpacing),
             ],
           ),
         );
@@ -37,54 +35,52 @@ class ChartContent extends StatelessWidget {
     );
   }
 
-  Widget _buildChartSection(ChartState state) {
-    return Row(
-      children: [
-        ChartCircular(data: state.chartData, size: AppUIConstants.chartPieSize, strokeWidth: AppUIConstants.chartPieStrokeWidth),
-        const SizedBox(width: AppUIConstants.smallSpacing),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: state.chartData
-                .map(
-                  (data) => Padding(
-                    padding: const EdgeInsets.symmetric(vertical: AppUIConstants.chartContentVerticalSpacing),
-                    child: Row(
-                      children: [
-                        Container(
-                          width: AppUIConstants.chartLegendDotSize,
-                          height: AppUIConstants.chartLegendDotSize,
-                          decoration: BoxDecoration(color: data.color, shape: BoxShape.circle),
-                        ),
-                        const SizedBox(width: AppUIConstants.smallSpacing),
-                        Expanded(
-                          child: Text('${data.label} ${data.value.toStringAsFixed(1)}%', style: const TextStyle(fontSize: AppUIConstants.chartContentTextSize)),
-                        ),
-                      ],
-                    ),
+  Widget _buildChartSection(BuildContext context, List<ChartData> chartData) {
+    return SizedBox(
+      height: MediaQuery.of(context).size.height * 0.25,
+      child: Row(
+        children: [
+          ChartCircular(data: chartData, size: AppUIConstants.chartPieSize, strokeWidth: AppUIConstants.chartPieStrokeWidth),
+          const SizedBox(width: AppUIConstants.defaultSpacing),
+          Expanded(
+            child: ListView.builder(
+              itemCount: chartData.length,
+              itemBuilder: (context, index) {
+                final data = chartData[index];
+                return Padding(
+                  padding: const EdgeInsets.symmetric(vertical: AppUIConstants.chartContentVerticalSpacing),
+                  child: Row(
+                    children: [
+                      Container(
+                        width: AppUIConstants.chartLegendDotSize,
+                        height: AppUIConstants.chartLegendDotSize,
+                        decoration: BoxDecoration(shape: BoxShape.circle, gradient: data.gradientColors != null && data.gradientColors!.isNotEmpty ? GradientHelper.fromColorHexList(data.gradientColors!) : null, color: data.gradientColors == null || data.gradientColors!.isEmpty ? data.color : null),
+                      ),
+                      const SizedBox(width: AppUIConstants.smallSpacing),
+                      Expanded(
+                        child: Text('${data.label} ${data.value.toStringAsFixed(1)}%', style: const TextStyle(fontSize: AppUIConstants.chartContentTextSize)),
+                      ),
+                    ],
                   ),
-                )
-                .toList(),
+                );
+              },
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
-  Widget _buildDetailedList(ChartState state) {
+  Widget _buildDetailedList(List<ChartData> chartData) {
     return Expanded(
       child: ListView.separated(
-        itemCount: state.chartData.length,
-        separatorBuilder: (_, _) => const Divider(),
+        itemCount: chartData.length,
+        separatorBuilder: (_, _) => const SizedBox(height: AppUIConstants.defaultSpacing),
         itemBuilder: (context, index) {
-          final data = state.chartData[index];
-          final catId = state.chartCategoryIds.elementAt(index);
-          final category = state.categoriesMap[catId];
-          final gradientHex = state.categoryGradients[catId] ?? const <String>[];
-
+          final data = chartData[index];
           return Row(
             children: [
-              _buildCategoryIcon(category as TransactionCategory, gradientHex, data),
+              _buildCategoryIcon(data),
               const SizedBox(width: AppUIConstants.chartCategorySpacing),
               _buildCategoryInfo(data),
             ],
@@ -94,14 +90,14 @@ class ChartContent extends StatelessWidget {
     );
   }
 
-  Widget _buildCategoryIcon(TransactionCategory category, List<String> gradientHex, ChartData data) {
+  Widget _buildCategoryIcon(ChartData data) {
     return Container(
       width: AppUIConstants.chartCategoryIconSize,
       height: AppUIConstants.chartCategoryIconSize,
-      decoration: BoxDecoration(shape: BoxShape.circle, gradient: gradientHex.isNotEmpty ? GradientHelper.fromColorHexList(gradientHex) : null, color: gradientHex.isEmpty ? (data.color).withValues(alpha: 0.2) : null),
+      decoration: BoxDecoration(shape: BoxShape.circle, gradient: data.gradientColors != null && data.gradientColors!.isNotEmpty ? GradientHelper.fromColorHexList(data.gradientColors!) : null, color: data.gradientColors == null || data.gradientColors!.isEmpty ? data.color.withValues(alpha: 0.2) : null),
       child: Padding(
         padding: const EdgeInsets.all(AppUIConstants.smallPadding),
-        child: SvgUtils.icon(assetPath: category.pathAsset.isNotEmpty ? category.pathAsset : Assets.svgsNote, size: SvgSizeType.medium),
+        child: data.category?.pathAsset != null && data.category!.pathAsset.isNotEmpty ? SvgUtils.icon(assetPath: data.category!.pathAsset, size: SvgSizeType.medium) : const SizedBox(),
       ),
     );
   }

@@ -43,21 +43,18 @@ class AppKeyboard extends StatelessWidget {
       builder: (context, constraints) {
         final totalSpacing = AppUIConstants.smallGridSpacing * (AppUIConstants.defaultGridCrossAxisCount - 1);
         final itemWidth = (constraints.maxWidth - totalSpacing) / AppUIConstants.defaultGridCrossAxisCount;
-        return GridView.count(
-          crossAxisCount: AppUIConstants.defaultGridCrossAxisCount,
+        return GridView.builder(
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: AppUIConstants.defaultGridCrossAxisCount, mainAxisSpacing: AppUIConstants.smallGridSpacing, crossAxisSpacing: AppUIConstants.smallGridSpacing, childAspectRatio: itemWidth / AppUIConstants.largeButtonHeight),
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
-          mainAxisSpacing: AppUIConstants.smallGridSpacing,
-          crossAxisSpacing: AppUIConstants.smallGridSpacing,
-          childAspectRatio: itemWidth / AppUIConstants.largeButtonHeight,
-          children: items
-              .map((spec) {
-                return InkWell(
-                  onTap: () => onValueChanged?.call(spec.value),
-                  child: _KeyButton(spec: spec),
-                );
-              })
-              .toList(growable: false),
+          itemCount: items.length,
+          itemBuilder: (context, index) {
+            final spec = items[index];
+            return InkWell(
+              onTap: () => onValueChanged?.call(spec.value),
+              child: _KeyButton(spec: spec),
+            );
+          },
         );
       },
     );

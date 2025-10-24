@@ -6,7 +6,7 @@ import 'package:kmonie/core/text_style/text_style.dart';
 import 'package:kmonie/core/utils/utils.dart';
 import 'package:kmonie/presentation/widgets/widgets.dart';
 import 'package:kmonie/core/di/injection_container.dart';
-import 'package:kmonie/presentation/bloc/account_actions/account_actions.dart';
+import 'package:kmonie/presentation/blocs/account_actions/account_actions.dart';
 import 'package:kmonie/entities/entities.dart';
 import 'package:kmonie/core/navigation/navigation.dart';
 import 'package:kmonie/repositories/repositories.dart';
