@@ -19,6 +19,7 @@ Future<void> init() async {
     ..registerLazySingleton<AccountRepository>(() => AccountRepositoryImpl(sl<AccountService>()))
     ..registerLazySingleton<TransactionRepository>(() => TransactionRepositoryImpl(sl<TransactionService>()))
     ..registerLazySingleton<TransactionCategoryRepository>(() => TransactionCategoryRepositoryImpl(sl<TransactionCategoryService>()))
+    ..registerLazySingleton<BudgetRepository>(() => BudgetRepositoryImpl(sl<BudgetService>()))
     ..registerLazySingleton<CalendarMonthlyTransactionBloc>(() => CalendarMonthlyTransactionBloc(sl<TransactionRepository>(), sl<TransactionCategoryRepository>()));
   await sl<KMonieDatabase>().warmUp();
   await sl<NotificationService>().init();

@@ -101,12 +101,10 @@ class AppDateUtils {
 
     final List<DateTime?> days = [];
 
-    // Add null days for the first week (days before the first day of month)
     for (int i = 0; i < firstDay.weekday % 7; i++) {
       days.add(null);
     }
 
-    // Add actual days of the month
     for (int day = 1; day <= lastDay.day; day++) {
       days.add(DateTime(firstDay.year, firstDay.month, day));
     }

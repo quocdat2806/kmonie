@@ -32,22 +32,7 @@ class TransactionActionsInputHeader extends StatelessWidget {
                 children: [
                   Text(AppTextConstants.note, style: AppTextStyle.greyS14),
                   Expanded(
-                    child: AppTextField(
-                      textInputAction: TextInputAction.done,
-                      controller: noteController,
-                      focusNode: noteFocusNode,
-                      onChanged: (value) => context.read<TransactionActionsBloc>().add(NoteChanged(value)),
-                      decoration: const InputDecoration(
-                        isDense: true,
-                        border: InputBorder.none,
-                        fillColor: Colors.transparent,
-                        filled: true,
-                        focusedBorder: InputBorder.none,
-                        enabledBorder: InputBorder.none,
-                        disabledBorder: InputBorder.none,
-                        contentPadding: EdgeInsets.symmetric(vertical: AppUIConstants.smallPadding),
-                      ),
-                    ),
+                    child: AppTextField(textInputAction: TextInputAction.done, controller: noteController, focusNode: noteFocusNode, onChanged: (value) => context.read<TransactionActionsBloc>().add(NoteChanged(value))),
                   ),
                 ],
               ),

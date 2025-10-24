@@ -24,10 +24,8 @@ abstract class TransactionRepository {
 
   Map<String, List<Transaction>> groupByDate(List<Transaction> transactions);
 
-  /// Calculate daily total for a single list of transactions
   DailyTransactionTotal calculateDailyTotal(List<Transaction> transactions);
 
-  /// Get spent amount for a category in a specific month
   Future<Either<Failure, int>> getSpentAmountForCategory({required int categoryId, required int year, required int month});
 
   Stream<List<Transaction>> watchTransactions();

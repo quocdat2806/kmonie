@@ -9,7 +9,7 @@ class ChartData {
   final double value;
   final Color color;
   final List<String>? gradientColors;
-  final TransactionCategory? category; // Thêm category info
+  final TransactionCategory? category;
 
   ChartData(this.label, this.value, this.color, {this.gradientColors, this.category});
 }
@@ -98,7 +98,6 @@ class AppChartPainter extends CustomPainter {
           ..strokeWidth = strokeWidth
           ..strokeCap = StrokeCap.butt;
 
-        // Sử dụng gradient nếu có, ngược lại dùng màu đơn sắc
         if (data[i].gradientColors != null && data[i].gradientColors!.isNotEmpty) {
           final gradient = GradientHelper.fromColorHexList(data[i].gradientColors!);
           paint.shader = gradient.createShader(rect);

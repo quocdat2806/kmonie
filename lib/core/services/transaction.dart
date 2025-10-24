@@ -154,7 +154,6 @@ class TransactionService {
       }
     } catch (e) {
       logger.e('Error updating pinned account balance: $e');
-      // Don't rethrow to avoid breaking transaction creation
     }
   }
 

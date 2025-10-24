@@ -103,12 +103,6 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   Future<void> _onLoadTransactions(HomeLoadTransactions event, Emitter<HomeState> emit) async {
     try {
       final date = state.selectedDate ?? DateTime.now();
-      logger.d('HomeBloc: Loading transactions for ${date.year}/${date.month}');
-
-      // Debug month range
-      final monthRange = AppDateUtils.monthRangeUtc(date.year, date.month);
-      logger.d('HomeBloc: Month range UTC - Start: ${monthRange.startUtc}, End: ${monthRange.endUtc}');
-      logger.d('HomeBloc: Month range Local - Start: ${monthRange.startUtc.toLocal()}, End: ${monthRange.endUtc.toLocal()}');
 
       final pageEither = await transactionRepository.getTransactionsInMonth(year: date.year, month: date.month);
       final catsEither = await categoryRepository.getAll();
@@ -116,27 +110,10 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       final PagedTransactionResult page = pageEither.getOrElse(() => PagedTransactionResult(transactions: const <Transaction>[], totalRecords: 0));
       final List<TransactionCategory> categories = catsEither.getOrElse(() => <TransactionCategory>[]);
 
-      logger.d('HomeBloc: Found ${page.transactions.length} transactions');
-      logger.d('HomeBloc: Income transactions: ${page.transactions.where((t) => t.transactionType == TransactionType.income.typeIndex).length}');
-      logger.d('HomeBloc: Expense transactions: ${page.transactions.where((t) => t.transactionType == TransactionType.expense.typeIndex).length}');
-
-      // Log ALL transactions details để debug
-      logger.d('HomeBloc: All transactions in month ${date.year}/${date.month}:');
-      for (final tx in page.transactions) {
-        logger.d('HomeBloc: Transaction - Date: ${tx.date}, Amount: ${tx.amount}, Type: ${tx.transactionType}, Category: ${tx.transactionCategoryId}');
-      }
-
-      // Log income transactions details
-      final incomeTransactions = page.transactions.where((t) => t.transactionType == TransactionType.income.typeIndex).toList();
-      for (final tx in incomeTransactions) {
-        logger.d('HomeBloc: Income transaction - Date: ${tx.date}, Amount: ${tx.amount}, Category: ${tx.transactionCategoryId}');
-      }
-
       final grouped = transactionRepository.groupByDate(page.transactions);
       final categoriesMap = {for (final c in categories) c.id!: c};
       emit(state.copyWith(transactions: page.transactions, groupedTransactions: grouped, categoriesMap: categoriesMap, totalRecords: page.totalRecords));
     } catch (e) {
-      logger.e('HomeBloc: Error in load transactions: $e');
       emit(state.copyWith(transactions: [], groupedTransactions: {}));
     }
   }

@@ -5,8 +5,7 @@ import 'package:kmonie/core/constants/constants.dart';
 import 'package:kmonie/core/di/di.dart';
 import 'package:kmonie/core/enums/enums.dart';
 import 'package:kmonie/core/navigation/navigation.dart';
-import 'package:kmonie/core/services/services.dart';
-import 'package:kmonie/core/utils/utils.dart';
+import 'package:kmonie/repositories/repositories.dart';
 import 'package:kmonie/core/text_style/text_style.dart';
 import 'package:kmonie/entities/entities.dart';
 import 'package:kmonie/presentation/blocs/blocs.dart';
@@ -31,7 +30,7 @@ class TransactionActionsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider<TransactionActionsBloc>(
-      create: (_) => TransactionActionsBloc(sl<TransactionCategoryService>(), sl<TransactionService>(), args),
+      create: (_) => TransactionActionsBloc(sl<TransactionCategoryRepository>(), sl<TransactionRepository>(), args),
       child: TransactionActionsPageChild(args: args),
     );
   }
@@ -94,8 +93,21 @@ class _TransactionActionsPageChildState extends State<TransactionActionsPageChil
     final keyboardHeight = MediaQuery.of(context).viewInsets.bottom;
     return BlocListener<TransactionActionsBloc, TransactionActionsState>(
       listener: (context, state) {
+        // Handle success state
         if (state.loadStatus == LoadStatus.success) {
           AppNavigator(context: context).pop();
+        }
+
+        // Handle select date state
+        if (state.selectDateState == SelectDateState.showDatePicker) {
+          _showDatePicker(context);
+          context.read<TransactionActionsBloc>().add(const ClearSelectDateState());
+        }
+
+        // Handle over budget state
+        if (state.overBudgetState == OverBudgetState.showOverBudgetDialog) {
+          _showOverBudgetDialog(context);
+          context.read<TransactionActionsBloc>().add(const ClearOverBudgetState());
         }
       },
       child: Scaffold(
@@ -145,73 +157,15 @@ class _TransactionActionsPageChildState extends State<TransactionActionsPageChil
                                   builder: (context, state) {
                                     return AppKeyboard(
                                       selectDate: state.date,
-                                      onValueChanged: (value) async {
+                                      onValueChanged: (value) {
                                         final bloc = context.read<TransactionActionsBloc>();
                                         if (value == 'SELECT_DATE') {
-                                          final picked = await showDialog<DateTime>(
-                                            context: context,
-                                            builder: (context) => DatePickerScreen(initialDate: state.date),
-                                          );
-                                          if (picked != null) {
-                                            bloc.add(SelectDateChange(picked));
-                                          }
+                                          bloc.add(const RequestSelectDate());
                                           return;
                                         }
                                         if (value == 'DONE') {
-                                          // Budget check before submit with safe fallbacks
-                                          final s = bloc.state;
-                                          final type = s.currentType;
-                                          final int amount = s.amount;
-                                          final int? categoryId = s.selectedCategoryIdFor(type);
-                                          final DateTime date = s.date ?? DateTime.now();
-
-                                          // If not an expense or invalid data, submit immediately
-                                          if (type != TransactionType.expense || amount <= 0 || categoryId == null) {
-                                            bloc.add(const SubmitTransaction());
-                                            return;
-                                          }
-
-                                          try {
-                                            final year = date.year;
-                                            final month = date.month;
-                                            final amount = await sl<BudgetService>().getBudgetForCategory(year: year, month: month, categoryId: categoryId);
-                                            if (amount <= 0) {
-                                              bloc.add(const SubmitTransaction());
-                                              return;
-                                            }
-
-                                            final range = AppDateUtils.monthRangeUtc(year, month);
-                                            final all = await sl<TransactionService>().getAllTransactions();
-                                            final startLocal = range.startUtc.toLocal();
-                                            final endLocal = range.endUtc.toLocal();
-                                            final spentSoFar = all.where((t) => t.transactionCategoryId == categoryId && t.transactionType == TransactionType.expense.typeIndex && !t.date.isBefore(startLocal) && t.date.isBefore(endLocal)).fold<int>(0, (p, t) => p + t.amount);
-                                            final proposed = spentSoFar + amount;
-                                            if (proposed > amount && context.mounted) {
-                                              final proceed = await showDialog<bool>(
-                                                context: context,
-                                                builder: (ctx) => AlertDialog(
-                                                  title: const Text('Vượt ngân sách'),
-                                                  content: const Text('Khoản này sẽ vượt ngân sách tháng cho danh mục. Tiếp tục?'),
-                                                  actions: [
-                                                    TextButton(onPressed: () => Navigator.of(ctx).pop(false), child: const Text('Huỷ')),
-                                                    TextButton(onPressed: () => Navigator.of(ctx).pop(true), child: const Text('Tiếp tục')),
-                                                  ],
-                                                ),
-                                              );
-                                              if (proceed == true) {
-                                                bloc.add(const SubmitTransaction());
-                                              }
-                                              return;
-                                            }
-
-                                            // Under budget -> proceed
-                                            bloc.add(const SubmitTransaction());
-                                            return;
-                                          } catch (_) {
-                                            // On any error, do not block submitting
-                                            bloc.add(const SubmitTransaction());
-                                            return;
-                                          }
+                                          bloc.add(const CheckOverBudget());
+                                          return;
                                         }
                                         bloc.add(AmountChanged(value));
                                       },
@@ -260,5 +214,30 @@ class _TransactionActionsPageChildState extends State<TransactionActionsPageChil
         ),
       ),
     );
+  }
+
+  Future<void> _showDatePicker(BuildContext context) async {
+    final bloc = context.read<TransactionActionsBloc>();
+    final state = bloc.state;
+
+    final picked = await showDialog<DateTime>(
+      context: context,
+      builder: (context) => DatePickerScreen(initialDate: state.date),
+    );
+
+    if (picked != null) {
+      bloc.add(SelectDateChange(picked));
+    }
+  }
+
+  Future<void> _showOverBudgetDialog(BuildContext context) async {
+    final proceed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AppExceedBudgetDialog(onConfirm: () => Navigator.of(ctx).pop(true)),
+    );
+
+    if (proceed == true) {
+      context.read<TransactionActionsBloc>().add(const SubmitTransaction());
+    }
   }
 }

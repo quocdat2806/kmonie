@@ -142,17 +142,6 @@ class ChartBloc extends Bloc<ChartEvent, ChartState> {
       );
 
       return result.map((data) {
-        logger.d('ChartBloc: Found ${data.transactions.length} transactions in month');
-        logger.d('ChartBloc: Income transactions: ${data.transactions.where((t) => t.transactionType == TransactionType.income.typeIndex).length}');
-        logger.d('ChartBloc: Expense transactions: ${data.transactions.where((t) => t.transactionType == TransactionType.expense.typeIndex).length}');
-
-        // Debug: Log income transactions
-        for (final tx in data.transactions) {
-          if (tx.transactionType == TransactionType.income.typeIndex) {
-            logger.d('ChartBloc: Found income transaction - Date: ${tx.date}, Amount: ${tx.amount}, Category: ${tx.transactionCategoryId}');
-          }
-        }
-
         return data.transactions;
       });
     } else if (state.selectedPeriodType == IncomeType.year && state.selectedYear != null) {
@@ -162,15 +151,9 @@ class ChartBloc extends Bloc<ChartEvent, ChartState> {
     return const Right([]);
   }
 
-  /// Tính toán chart data từ transactions và categories
   List<ChartData> _calculateChartData(List<Transaction> transactions, List<TransactionCategory> categories) {
-    logger.d('ChartBloc: _calculateChartData - Input: ${transactions.length} transactions, ${categories.length} categories');
-    logger.d('ChartBloc: Selected transaction type: ${state.selectedTransactionType}');
-
-    // Tạo map categories để lookup nhanh
     final categoriesMap = {for (final cat in categories) cat.id!: cat};
 
-    // Filter transactions theo type
     final filteredTransactions = transactions.where((transaction) {
       final category = categoriesMap[transaction.transactionCategoryId];
       final matches = category?.transactionType == state.selectedTransactionType;
@@ -184,7 +167,6 @@ class ChartBloc extends Bloc<ChartEvent, ChartState> {
 
     logger.d('ChartBloc: Filtered transactions: ${filteredTransactions.length}');
 
-    // Group by category và tính totals
     final Map<int, double> categoryTotals = {};
     for (final transaction in filteredTransactions) {
       final catId = transaction.transactionCategoryId;
