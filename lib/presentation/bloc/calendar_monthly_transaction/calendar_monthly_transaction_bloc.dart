@@ -28,7 +28,7 @@ class CalendarMonthlyTransactionBloc extends Bloc<CalendarMonthlyTransactionEven
         case AppEvent.insertTransaction:
           if (data.payload is Transaction) {
             final transaction = data.payload as Transaction;
-            final bool isInCurrentMonth = _isDateInCurrentMonthRange(transaction.date);
+            final bool isInCurrentMonth = state.currentYear != null && state.currentMonth != null ? AppDateUtils.isDateInCurrentMonth(transaction.date, DateTime(state.currentYear!, state.currentMonth!)) : false;
             if (isInCurrentMonth) {
               add(CalendarMonthlyTransactionInsertTransaction(transaction));
             }
@@ -51,11 +51,6 @@ class CalendarMonthlyTransactionBloc extends Bloc<CalendarMonthlyTransactionEven
     });
 
     add(const LoadMonthData());
-  }
-
-  bool _isDateInCurrentMonthRange(DateTime date) {
-    final currentSelectedDate = state.selectedDate ?? DateTime.now();
-    return date.year == currentSelectedDate.year && date.month == currentSelectedDate.month;
   }
 
   Future<void> _onLoadMonthData(LoadMonthData event, Emitter<CalendarMonthTransactionState> emit) async {
@@ -85,7 +80,7 @@ class CalendarMonthlyTransactionBloc extends Bloc<CalendarMonthlyTransactionEven
             final categoriesMap = {for (final c in categories) c.id!: c};
 
             final currentSelectedDate = state.selectedDate ?? DateTime.now();
-            emit(state.copyWith(isLoading: false, groupedTransactions: grouped, categoriesMap: categoriesMap, selectedDate: DateTime(year, month, currentSelectedDate.day)));
+            emit(state.copyWith(isLoading: false, groupedTransactions: grouped, categoriesMap: categoriesMap, selectedDate: DateTime(year, month, currentSelectedDate.day), currentYear: year, currentMonth: month));
           },
         );
       },
@@ -96,82 +91,36 @@ class CalendarMonthlyTransactionBloc extends Bloc<CalendarMonthlyTransactionEven
     emit(state.copyWith(selectedDate: event.date));
   }
 
-  void _onInsertTransaction(CalendarMonthlyTransactionInsertTransaction event, Emitter<CalendarMonthTransactionState> emit) {
+  void _onInsertTransaction(CalendarMonthlyTransactionInsertTransaction event, Emitter<CalendarMonthTransactionState> emit) async {
     final tx = event.transaction;
-    final updatedGroupedTransactions = Map<String, List<Transaction>>.from(state.groupedTransactions);
 
-    final dateKey = AppDateUtils.formatDateKey(tx.date);
-    final existingTransactions = updatedGroupedTransactions[dateKey] ?? [];
-    if (!existingTransactions.any((e) => e.id == tx.id)) {
-      existingTransactions.insert(0, tx);
-      updatedGroupedTransactions[dateKey] = existingTransactions;
+    // Check if transaction is in current month range
+    if (state.currentYear == null || state.currentMonth == null) return;
+    if (!AppDateUtils.isDateInCurrentMonth(tx.date, DateTime(state.currentYear!, state.currentMonth!))) return;
+
+    // Reload data from database to ensure consistency
+    if (state.currentYear != null && state.currentMonth != null) {
+      add(LoadMonthData(year: state.currentYear, month: state.currentMonth));
     }
-
-    emit(state.copyWith(groupedTransactions: updatedGroupedTransactions));
   }
 
-  void _onUpdateTransaction(CalendarMonthlyTransactionUpdateTransaction event, Emitter<CalendarMonthTransactionState> emit) {
+  void _onUpdateTransaction(CalendarMonthlyTransactionUpdateTransaction event, Emitter<CalendarMonthTransactionState> emit) async {
     final tx = event.transaction;
 
-    // Check if the updated transaction is still in current month
-    final isInCurrentMonth = _isDateInCurrentMonthRange(tx.date);
+    // Check if transaction affects current month (either old or new date)
+    final affectsCurrentMonth = state.currentYear != null && state.currentMonth != null ? AppDateUtils.isDateInCurrentMonth(tx.date, DateTime(state.currentYear!, state.currentMonth!)) : false;
 
-    final updatedGroupedTransactions = Map<String, List<Transaction>>.from(state.groupedTransactions);
-
-    if (isInCurrentMonth) {
-      // Transaction is still in current month → update it
-      final dateKey = AppDateUtils.formatDateKey(tx.date);
-      final dayTransactions = List<Transaction>.from(updatedGroupedTransactions[dateKey] ?? [])
-        ..removeWhere((t) => t.id == tx.id)
-        ..add(tx);
-      updatedGroupedTransactions[dateKey] = dayTransactions;
-    } else {
-      // Transaction moved to different month → remove it from current month
-      for (final entry in updatedGroupedTransactions.entries) {
-        final transactions = entry.value;
-        final updatedTransactions = transactions.where((t) => t.id != tx.id).toList();
-        if (updatedTransactions.isEmpty) {
-          updatedGroupedTransactions.remove(entry.key);
-        } else {
-          updatedGroupedTransactions[entry.key] = updatedTransactions;
-        }
-      }
+    // If transaction affects current month, reload data
+    if (affectsCurrentMonth && state.currentYear != null && state.currentMonth != null) {
+      add(LoadMonthData(year: state.currentYear, month: state.currentMonth));
     }
-
-    emit(state.copyWith(groupedTransactions: updatedGroupedTransactions));
   }
 
   void _onDeleteTransaction(CalendarMonthlyTransactionDeleteTransaction event, Emitter<CalendarMonthTransactionState> emit) async {
-    final transactionId = event.id;
-
-    // Find the transaction to delete
-    Transaction? transactionToDelete;
-    String? dateKeyToUpdate;
-
-    for (final entry in state.groupedTransactions.entries) {
-      final transactions = entry.value;
-      final found = transactions.where((t) => t.id == transactionId).firstOrNull;
-      if (found != null) {
-        transactionToDelete = found;
-        dateKeyToUpdate = entry.key;
-        break;
-      }
+    // Always reload data from database when deleting to ensure consistency
+    if (state.currentYear != null && state.currentMonth != null) {
+      add(LoadMonthData(year: state.currentYear, month: state.currentMonth));
     }
-
-    if (transactionToDelete == null || dateKeyToUpdate == null) {
-      return;
-    }
-
-    final updatedGroupedTransactions = Map<String, List<Transaction>>.from(state.groupedTransactions);
-    final dayTransactions = List<Transaction>.from(updatedGroupedTransactions[dateKeyToUpdate] ?? [])..removeWhere((t) => t.id == transactionId);
-
-    if (dayTransactions.isEmpty) {
-      updatedGroupedTransactions.remove(dateKeyToUpdate);
-    } else {
-      updatedGroupedTransactions[dateKeyToUpdate] = dayTransactions;
-    }
-
-    emit(state.copyWith(groupedTransactions: updatedGroupedTransactions));
   }
 
   void _onChangeMonthYear(ChangeMonthYear event, Emitter<CalendarMonthTransactionState> emit) {

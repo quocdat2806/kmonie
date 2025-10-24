@@ -9,7 +9,6 @@ import 'package:kmonie/core/utils/date.dart';
 import 'package:kmonie/core/streams/streams.dart';
 import 'package:kmonie/entities/entities.dart';
 import 'package:kmonie/repositories/repositories.dart';
-import 'package:kmonie/entities/entities.dart';
 import 'report_event.dart';
 import 'report_state.dart';
 
@@ -43,17 +42,6 @@ class ReportBloc extends Bloc<ReportEvent, ReportState> {
         add(ReportChangePeriod(period: DateTime(p.year, p.month)));
       }
     });
-
-    // Watch accounts so Account tab refreshes in real-time after add/edit/delete
-    _accountsSub = accountRepository.watchAccounts().listen((accounts) {
-      // Only update accounts list; avoid heavy reload unless period is null
-      if (state.period == null) {
-        final p = DateTime.now();
-        add(ReportChangePeriod(period: DateTime(p.year, p.month)));
-      } else {
-        emit(state.copyWith(accounts: accounts));
-      }
-    });
   }
 
   Future<void> _load(DateTime period, Emitter<ReportState> emit) async {
@@ -67,10 +55,8 @@ class ReportBloc extends Bloc<ReportEvent, ReportState> {
       final all = await transactionService.getAllTransactions();
       final startLocal = range.startUtc.toLocal();
       final endLocal = range.endUtc.toLocal();
-      // include start of month (>= start) and exclude end (before end)
       final inMonth = all.where((t) => !t.date.isBefore(startLocal) && t.date.isBefore(endLocal)).toList();
 
-      // only expense
       final categories = await categoryService.getAll();
       final expenseIds = categories.where((c) => c.transactionType == TransactionType.expense).map((c) => c.id!).toSet();
 
@@ -81,16 +67,6 @@ class ReportBloc extends Bloc<ReportEvent, ReportState> {
         spent[tx.transactionCategoryId] = current + tx.amount;
       }
 
-      // compute income/transfer via transactions in month
-      for (final Transaction tx in inMonth) {
-        if (tx.transactionType == TransactionType.income) {
-          // income += tx.amount;
-        } else if (tx.transactionType == TransactionType.transfer) {
-          // transfer += tx.amount;
-        }
-      }
-
-      // Load accounts
       final accountsResult = await accountRepository.getAllAccounts();
       final accounts = accountsResult.fold((failure) => <Account>[], (accounts) => accounts);
 

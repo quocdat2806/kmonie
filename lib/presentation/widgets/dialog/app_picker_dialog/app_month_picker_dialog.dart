@@ -8,11 +8,7 @@ class MonthPickerDialog extends StatefulWidget {
   final int initialMonth;
   final int initialYear;
 
-  const MonthPickerDialog({
-    super.key,
-    required this.initialMonth,
-    required this.initialYear,
-  });
+  const MonthPickerDialog({super.key, required this.initialMonth, required this.initialYear});
 
   @override
   State<MonthPickerDialog> createState() => _MonthPickerDialogState();
@@ -39,48 +35,37 @@ class _MonthPickerDialogState extends State<MonthPickerDialog> {
   Widget build(BuildContext context) {
     return Dialog(
       insetPadding: const EdgeInsets.all(AppUIConstants.smallPadding),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(AppUIConstants.defaultBorderRadius),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppUIConstants.defaultBorderRadius)),
       child: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(AppUIConstants.defaultPadding),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text(
-                'Tháng $selectedMonth năm $selectedYear',
-                style: AppTextStyle.blackS18Bold,
-              ),
+              Text('${AppTextConstants.month} $selectedMonth ${AppTextConstants.year.toLowerCase()} $selectedYear', style: AppTextStyle.blackS18Bold),
               const SizedBox(height: AppUIConstants.smallSpacing),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  GestureDetector(
-                    onTap: () => _changeYear(-1),
-                    child: const Icon(
-                      Icons.arrow_back_ios,
-                      size: AppUIConstants.smallIconSize,
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: AppUIConstants.smallPadding),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    GestureDetector(
+                      onTap: () => _changeYear(-1),
+                      child: const Icon(Icons.arrow_back_ios, size: AppUIConstants.smallIconSize),
                     ),
-                  ),
-                  Text('$selectedYear', style: AppTextStyle.blackS14Medium),
-                  GestureDetector(
-                    onTap: () => _changeYear(1),
-                    child: const Icon(
-                      Icons.arrow_forward_ios,
-                      size: AppUIConstants.smallIconSize,
+                    Text('$selectedYear', style: AppTextStyle.blackS14Medium),
+                    GestureDetector(
+                      onTap: () => _changeYear(1),
+                      child: const Icon(Icons.arrow_forward_ios, size: AppUIConstants.smallIconSize),
                     ),
-                  ),
-                ],
-              ),
-              GridView.builder(
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: 12,
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: AppUIConstants.defaultGridCrossAxisCount,
-                  childAspectRatio: 0.8,
+                  ],
                 ),
+              ),
+              AppGrid(
+                crossAxisCount: AppUIConstants.defaultGridCrossAxisCount,
+                itemCount: 12,
                 shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
                 itemBuilder: (context, index) {
                   final month = index + 1;
                   final isSelected = month == selectedMonth;
@@ -89,49 +74,27 @@ class _MonthPickerDialogState extends State<MonthPickerDialog> {
                     child: Center(
                       child: DecoratedBox(
                         decoration: BoxDecoration(
-                          color: isSelected
-                              ? AppColorConstants.primary
-                              : Colors.transparent,
-                          border: isSelected
-                              ? Border.all(color: AppColorConstants.black)
-                              : null,
-                          borderRadius: const BorderRadius.all(
-                            Radius.circular(16),
-                          ),
+                          color: isSelected ? AppColorConstants.primary : Colors.transparent,
+                          border: isSelected ? Border.all(color: AppColorConstants.black) : null,
+                          borderRadius: BorderRadius.circular(AppUIConstants.extraLargeBorderRadius),
                         ),
                         child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 8,
-                            vertical: 6,
-                          ),
-                          child: Text(
-                            'Thg $month',
-                            style: AppTextStyle.blackS14Medium,
-                          ),
+                          padding: const EdgeInsets.symmetric(horizontal: AppUIConstants.smallPadding, vertical: AppUIConstants.extraSmallSpacing),
+                          child: Text('Thg $month', style: AppTextStyle.blackS14Medium),
                         ),
                       ),
                     ),
                   );
                 },
               ),
-              const SizedBox(height: AppUIConstants.defaultSpacing),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
-                  AppButton(
-                    onPressed: () => Navigator.pop(context),
-                    textColor: AppColorConstants.orange,
-                    text: AppTextConstants.cancel,
-                    backgroundColor: Colors.transparent,
-                  ),
+                  AppButton(onPressed: () => Navigator.pop(context), text: AppTextConstants.cancel, backgroundColor: Colors.transparent),
                   AppButton(
                     onPressed: () {
-                      Navigator.pop(context, {
-                        'month': selectedMonth,
-                        'year': selectedYear,
-                      });
+                      Navigator.pop(context, {'month': selectedMonth, 'year': selectedYear});
                     },
-                    textColor: AppColorConstants.orange,
                     text: AppTextConstants.confirm,
                     backgroundColor: Colors.transparent,
                   ),

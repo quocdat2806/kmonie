@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:kmonie/core/navigation/navigation.dart';
 import 'package:kmonie/core/utils/utils.dart';
-import 'package:kmonie/core/services/services.dart';
 import 'package:kmonie/core/config/config.dart';
 
 class App extends StatefulWidget {
@@ -26,7 +25,6 @@ class _AppState extends State<App> {
     return GestureDetector(
       onTap: () => KeyboardUtils.hideKeyboard(context),
       child: MaterialApp.router(
-        scaffoldMessengerKey: SnackBarService.scaffoldMessengerKey,
         theme: ThemeData(useMaterial3: true, fontFamily: AppConfigs.fontFamily),
         routerConfig: _router,
       ),

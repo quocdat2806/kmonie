@@ -27,14 +27,30 @@ class DailyTransactionPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => DailyTransactionBloc()..add(DailyTransactionEvent.loadDailyTransactions(selectedDate: selectedDate, groupedTransactions: groupedTransactions, categoriesMap: categoriesMap)),
-      child: const DailyTransactionPageChild(),
+      create: (_) => DailyTransactionBloc(),
+      child: DailyTransactionPageChild(selectedDate: selectedDate, groupedTransactions: groupedTransactions, categoriesMap: categoriesMap),
     );
   }
 }
 
-class DailyTransactionPageChild extends StatelessWidget {
-  const DailyTransactionPageChild({super.key});
+class DailyTransactionPageChild extends StatefulWidget {
+  final DateTime selectedDate;
+  final Map<String, List<Transaction>> groupedTransactions;
+  final Map<int, TransactionCategory> categoriesMap;
+
+  const DailyTransactionPageChild({super.key, required this.selectedDate, required this.groupedTransactions, required this.categoriesMap});
+
+  @override
+  State<DailyTransactionPageChild> createState() => _DailyTransactionPageChildState();
+}
+
+class _DailyTransactionPageChildState extends State<DailyTransactionPageChild> {
+  @override
+  void initState() {
+    super.initState();
+    // Load data when widget initializes
+    context.read<DailyTransactionBloc>().add(DailyTransactionEvent.loadDailyTransactions(selectedDate: widget.selectedDate, groupedTransactions: widget.groupedTransactions, categoriesMap: widget.categoriesMap));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -44,7 +60,7 @@ class DailyTransactionPageChild extends StatelessWidget {
           return const Scaffold(body: Center(child: CircularProgressIndicator()));
         }
 
-        final dateStr = AppDateUtils.formatDate(state.selectedDate!);
+        final dateStr = AppDateUtils.formatDate(widget.selectedDate);
 
         return Scaffold(
           appBar: CustomAppBar(title: 'Giao dịch $dateStr'),
@@ -61,7 +77,7 @@ class DailyTransactionPageChild extends StatelessWidget {
                     },
                   ),
           ),
-          floatingActionButton: AddTransactionButton(initialDate: state.selectedDate!),
+          floatingActionButton: AddTransactionButton(initialDate: widget.selectedDate),
         );
       },
     );

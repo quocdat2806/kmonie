@@ -6,12 +6,7 @@ import 'package:kmonie/presentation/bloc/bloc.dart';
 import 'package:kmonie/presentation/pages/pages.dart';
 import 'widgets/bottom_navigation_bar.dart';
 
-final List<Widget> pageList = const <Widget>[
-  HomePage(),
-  ChartPage(),
-  ReportPage(),
-  ProfilePage(),
-];
+final List<Widget> pageList = const <Widget>[HomePage(), ChartPage(), ReportPage(), ProfilePage()];
 
 class MainPage extends StatelessWidget {
   const MainPage({super.key});

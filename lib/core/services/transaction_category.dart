@@ -1,10 +1,8 @@
 import 'dart:convert';
-import 'package:drift/drift.dart';
 import 'package:kmonie/database/database.dart';
 import 'package:kmonie/entities/entities.dart';
 import 'package:kmonie/core/enums/enums.dart';
 import 'package:kmonie/core/utils/utils.dart';
-import 'package:kmonie/core/tools/tools.dart';
 
 class TransactionCategoryService {
   final KMonieDatabase _db;
@@ -22,7 +20,6 @@ class TransactionCategoryService {
     return TransactionCategory(id: r.id, title: r.title, pathAsset: r.pathAsset, transactionType: TransactionType.values[r.transactionType], gradientColors: (jsonDecode(r.gradientColorsJson) as List).map((e) => e.toString()).toList());
   }
 
-  // ✅ Helper: Separate categories by type
   SeparatedCategories _separateCategories(List<TransactionCategory> all) {
     final expense = <TransactionCategory>[];
     final income = <TransactionCategory>[];
@@ -45,17 +42,6 @@ class TransactionCategoryService {
     return SeparatedCategories(expense: expense, income: income, transfer: transfer);
   }
 
-  // ========== READ OPERATIONS ==========
-
-  Stream<List<TransactionCategory>> watchAll() {
-    return _db.select(_db.transactionCategoryTb).watch().map((rows) {
-      final list = rows.map(_mapRow).toList();
-      _cachedCategories = list;
-      _isCacheInitialized = true;
-      return list;
-    });
-  }
-
   Future<List<TransactionCategory>> getAll({bool forceRefresh = false}) async {
     if (!forceRefresh && _isCacheInitialized && _cachedCategories != null) {
       return _cachedCategories!;
@@ -67,31 +53,12 @@ class TransactionCategoryService {
     return _cachedCategories!;
   }
 
-  // ✅ NEW: Get single category by ID
-  Future<TransactionCategory?> getCategoryById(int id) async {
-    // Try cache first
-    if (_isCacheInitialized && _cachedCategories != null) {
-      try {
-        return _cachedCategories!.firstWhere((e) => e.id == id);
-      } catch (_) {
-        // Not found in cache, fallback to DB
-      }
-    }
-
-    // Query DB
-    final row = await (_db.select(_db.transactionCategoryTb)..where((t) => t.id.equals(id))).getSingleOrNull();
-
-    return row != null ? _mapRow(row) : null;
-  }
-
   Future<List<TransactionCategory>> getByType(TransactionType type) async {
     try {
-      // Use cache if available
       if (_isCacheInitialized && _cachedCategories != null) {
         return _cachedCategories!.where((e) => e.transactionType == type).toList();
       }
 
-      // Fallback to DB query
       final q = _db.select(_db.transactionCategoryTb)..where((t) => t.transactionType.equals(type.typeIndex));
       final rows = await q.get();
       return rows.map(_mapRow).toList();
@@ -105,112 +72,7 @@ class TransactionCategoryService {
     final all = await getAll(forceRefresh: forceRefresh);
     return _separateCategories(all);
   }
-
-  // ✅ FIX: Simplified watchByType - don't manage cache here
-  Stream<List<TransactionCategory>> watchByType(TransactionType type) {
-    final q = _db.select(_db.transactionCategoryTb)..where((t) => t.transactionType.equals(type.typeIndex));
-
-    // Just return the stream, let watchAll() handle cache updates
-    return q.watch().map((rows) => rows.map(_mapRow).toList());
-  }
-
-  Stream<SeparatedCategories> watchSeparated() {
-    return _db.select(_db.transactionCategoryTb).watch().map((rows) {
-      final list = rows.map(_mapRow).toList();
-      _cachedCategories = list;
-      _isCacheInitialized = true;
-      return _separateCategories(list);
-    });
-  }
-
-  // ========== CREATE OPERATION ==========
-
-  // ✅ NEW: Create category
-  Future<TransactionCategory> createCategory({required String title, required String pathAsset, required TransactionType transactionType, bool isCreateNewCategory = true}) async {
-    try {
-      final gradientColors = GradientHelper.generateSmartGradientColors();
-      final id = await _db.into(_db.transactionCategoryTb).insert(TransactionCategoryTbCompanion.insert(title: title, pathAsset: Value(pathAsset), transactionType: Value(transactionType.typeIndex), gradientColorsJson: Value(jsonEncode(gradientColors))));
-
-      clearCache(); // Invalidate cache
-
-      return TransactionCategory(id: id, title: title, pathAsset: pathAsset, transactionType: transactionType, gradientColors: gradientColors);
-    } catch (e) {
-      logger.e('Error creating category: $e');
-      rethrow;
-    }
-  }
-
-  // ========== UPDATE OPERATION ==========
-
-  // ✅ NEW: Update category
-  Future<TransactionCategory?> updateCategory({required int id, String? title, String? pathAsset}) async {
-    try {
-      final companion = TransactionCategoryTbCompanion(title: title != null ? Value(title) : const Value.absent(), pathAsset: pathAsset != null ? Value(pathAsset) : const Value.absent());
-
-      final updated = await (_db.update(_db.transactionCategoryTb)..where((t) => t.id.equals(id))).write(companion);
-
-      if (updated > 0) {
-        clearCache();
-        return await getCategoryById(id);
-      }
-      return null;
-    } catch (e) {
-      logger.e('Error updating category: $e');
-      return null;
-    }
-  }
-
-  // ========== DELETE OPERATION ==========
-
-  // ✅ NEW: Delete category (with safety check)
-  Future<bool> deleteCategory(int id) async {
-    try {
-      // ⚠️ Check if category has transactions (RESTRICT constraint)
-      final txCount =
-          await (_db.selectOnly(_db.transactionsTb)
-                ..where(_db.transactionsTb.transactionCategoryId.equals(id))
-                ..addColumns([_db.transactionsTb.id.count()]))
-              .getSingle();
-
-      final count = txCount.read(_db.transactionsTb.id.count()) ?? 0;
-
-      if (count > 0) {
-        throw CategoryInUseException('Cannot delete category: $count transaction(s) still using it');
-      }
-
-      // Safe to delete
-      final deleted = await (_db.delete(_db.transactionCategoryTb)..where((t) => t.id.equals(id))).go();
-
-      if (deleted > 0) {
-        clearCache();
-      }
-
-      return deleted > 0;
-    } catch (e) {
-      logger.e('Error deleting category: $e');
-      rethrow;
-    }
-  }
-
-  // ✅ NEW: Check if category can be deleted
-  Future<bool> canDeleteCategory(int id) async {
-    try {
-      final txCount =
-          await (_db.selectOnly(_db.transactionsTb)
-                ..where(_db.transactionsTb.transactionCategoryId.equals(id))
-                ..addColumns([_db.transactionsTb.id.count()]))
-              .getSingle();
-
-      final count = txCount.read(_db.transactionsTb.id.count()) ?? 0;
-      return count == 0;
-    } catch (e) {
-      logger.e('Error checking category: $e');
-      return false;
-    }
-  }
 }
-
-// ========== MODELS ==========
 
 class SeparatedCategories {
   final List<TransactionCategory> expense;
@@ -218,13 +80,4 @@ class SeparatedCategories {
   final List<TransactionCategory> transfer;
 
   const SeparatedCategories({required this.expense, required this.income, required this.transfer});
-}
-
-// ✅ NEW: Custom exception
-class CategoryInUseException implements Exception {
-  final String message;
-  CategoryInUseException(this.message);
-
-  @override
-  String toString() => 'CategoryInUseException: $message';
 }

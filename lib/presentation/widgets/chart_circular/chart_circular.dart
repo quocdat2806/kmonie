@@ -10,19 +10,19 @@ class ChartData {
   ChartData(this.label, this.value, this.color);
 }
 
-class AppChart extends StatefulWidget {
+class ChartCircular extends StatefulWidget {
   final List<ChartData> data;
   final double size;
   final double strokeWidth;
   final Duration duration;
 
-  const AppChart({super.key, required this.data, this.size = 200, this.strokeWidth = 40, this.duration = const Duration(milliseconds: 800)});
+  const ChartCircular({super.key, required this.data, this.size = 200, this.strokeWidth = 40, this.duration = const Duration(milliseconds: 800)});
 
   @override
-  State<AppChart> createState() => _AppChartState();
+  State<ChartCircular> createState() => _ChartCircularState();
 }
 
-class _AppChartState extends State<AppChart> with SingleTickerProviderStateMixin {
+class _ChartCircularState extends State<ChartCircular> with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _animation;
 

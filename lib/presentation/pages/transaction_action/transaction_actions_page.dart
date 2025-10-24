@@ -6,7 +6,6 @@ import 'package:kmonie/core/di/di.dart';
 import 'package:kmonie/core/enums/enums.dart';
 import 'package:kmonie/core/navigation/navigation.dart';
 import 'package:kmonie/core/services/services.dart';
-import 'package:kmonie/core/services/budget.dart';
 import 'package:kmonie/core/utils/utils.dart';
 import 'package:kmonie/core/text_style/text_style.dart';
 import 'package:kmonie/entities/entities.dart';
@@ -187,7 +186,7 @@ class _TransactionActionsPageChildState extends State<TransactionActionsPageChil
                                             final endLocal = range.endUtc.toLocal();
                                             final spentSoFar = all.where((t) => t.transactionCategoryId == categoryId && t.transactionType == TransactionType.expense.typeIndex && !t.date.isBefore(startLocal) && t.date.isBefore(endLocal)).fold<int>(0, (p, t) => p + t.amount);
                                             final proposed = spentSoFar + amount;
-                                            if (proposed > amount) {
+                                            if (proposed > amount && context.mounted) {
                                               final proceed = await showDialog<bool>(
                                                 context: context,
                                                 builder: (ctx) => AlertDialog(
@@ -248,7 +247,9 @@ class _TransactionActionsPageChildState extends State<TransactionActionsPageChil
               if (context.read<TransactionActionsBloc>().state.isKeyboardVisible) {
                 context.read<TransactionActionsBloc>().add(const ToggleKeyboardVisibility());
                 Future.delayed(const Duration(milliseconds: 850), () {
-                  AppNavigator(context: context).pop();
+                  if (mounted) {
+                    AppNavigator(context: context).pop();
+                  }
                 });
                 return;
               }

@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:kmonie/core/constants/constants.dart';
+import 'package:kmonie/core/text_style/text_style.dart';
 import 'package:kmonie/core/utils/utils.dart';
+import 'package:kmonie/presentation/widgets/widgets.dart';
+import 'package:kmonie/core/navigation/navigation.dart';
 
 class DatePickerScreen extends StatefulWidget {
   final DateTime? initialDate;
@@ -22,8 +25,6 @@ class _DatePickerScreenState extends State<DatePickerScreen> {
     _displayMonth = DateTime(_selectedDate.year, _selectedDate.month);
   }
 
-  List<String> get _dayNames => ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN'];
-
   void _changeMonth(int delta) {
     setState(() {
       _displayMonth = DateTime(_displayMonth.year, _displayMonth.month + delta);
@@ -41,58 +42,46 @@ class _DatePickerScreenState extends State<DatePickerScreen> {
       backgroundColor: AppColorConstants.blackSemiTransparent,
       body: Center(
         child: Container(
-          margin: const EdgeInsets.all(24),
-          decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(20)),
+          margin: const EdgeInsets.all(AppUIConstants.defaultMargin),
+          decoration: BoxDecoration(color: AppColorConstants.white, borderRadius: BorderRadius.circular(AppUIConstants.largeBorderRadius)),
           child: Padding(
-            padding: const EdgeInsets.all(24),
+            padding: const EdgeInsets.all(AppUIConstants.defaultPadding),
             child: Column(
+              spacing: AppUIConstants.defaultSpacing,
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text(AppDateUtils.formatHeaderDate(_selectedDate), style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
-                const SizedBox(height: 24),
+                Text(AppDateUtils.formatHeaderDate(_selectedDate), style: AppTextStyle.blackS24Bold),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
+                    Row(children: [Text('${AppTextConstants.month} ${_displayMonth.month} ${AppTextConstants.year.toLowerCase()} ${_displayMonth.year}', style: AppTextStyle.blackS14)]),
                     Row(
-                      children: [
-                        Text('tháng ${_displayMonth.month} năm ${_displayMonth.year}', style: const TextStyle(fontSize: 16)),
-                        const SizedBox(width: 4),
-                        const Icon(Icons.arrow_drop_down, size: 24),
-                      ],
-                    ),
-                    Row(
-                      spacing: AppUIConstants.smallSpacing,
+                      spacing: AppUIConstants.defaultSpacing,
                       children: [
                         InkWell(
                           onTap: () {
                             _changeMonth(-1);
                           },
-                          child: const Icon(Icons.arrow_back_ios_new, size: 18),
+                          child: const Icon(Icons.arrow_back_ios_new, size: AppUIConstants.smallIconSize),
                         ),
                         InkWell(
                           onTap: () {
                             _changeMonth(1);
                           },
-                          child: const Icon(Icons.arrow_forward_ios, size: 18),
+                          child: const Icon(Icons.arrow_forward_ios, size: AppUIConstants.smallIconSize),
                         ),
                       ],
                     ),
                   ],
                 ),
-                const SizedBox(height: 16),
-                GridView.builder(
+                AppGrid(
+                  crossAxisCount: 7,
+                  itemCount: 7 + firstWeekday + daysInMonth,
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 7, mainAxisSpacing: 4, crossAxisSpacing: 4),
-                  itemCount: 7 + firstWeekday + daysInMonth,
                   itemBuilder: (context, index) {
                     if (index < 7) {
-                      return Center(
-                        child: Text(
-                          _dayNames[index],
-                          style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14, color: Colors.black87),
-                        ),
-                      );
+                      return Center(child: Text(AppDateUtils.weekdays[index], style: AppTextStyle.blackS14Medium));
                     }
 
                     final dayIndex = index - 7 - firstWeekday;
@@ -102,7 +91,7 @@ class _DatePickerScreenState extends State<DatePickerScreen> {
 
                     final day = dayIndex + 1;
                     final date = DateTime(_displayMonth.year, _displayMonth.month, day);
-                    final isSelected = date.year == _selectedDate.year && date.month == _selectedDate.month && date.day == _selectedDate.day;
+                    final isSelected = AppDateUtils.isSameDate(date, _selectedDate);
 
                     return GestureDetector(
                       onTap: () {
@@ -113,44 +102,65 @@ class _DatePickerScreenState extends State<DatePickerScreen> {
                         });
                       },
                       child: Container(
-                        decoration: BoxDecoration(color: isSelected ? const Color(0xFFDAA520) : Colors.transparent, shape: BoxShape.circle),
-                        child: Center(
-                          child: Text(
-                            '$day',
-                            style: TextStyle(fontSize: 18, fontWeight: isSelected ? FontWeight.bold : FontWeight.normal, color: isSelected ? Colors.black : Colors.black87),
-                          ),
-                        ),
+                        decoration: BoxDecoration(color: isSelected ? AppColorConstants.primary : Colors.transparent, shape: BoxShape.circle),
+                        child: Center(child: Text('$day', style: isSelected ? AppTextStyle.blackS14Bold : AppTextStyle.blackS14Medium)),
                       ),
                     );
                   },
                 ),
-                const SizedBox(height: 32),
+                // GridView.builder(
+                //   shrinkWrap: true,
+                //   physics: const NeverScrollableScrollPhysics(),
+                //   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 7, mainAxisSpacing: 4, crossAxisSpacing: 4),
+                //   itemCount: 7 + firstWeekday + daysInMonth,
+                //   itemBuilder: (context, index) {
+                //     if (index < 7) {
+                //       return Center(child: Text(AppDateUtils.weekdays[index], style: AppTextStyle.blackS14Medium));
+                //     }
+
+                //     final dayIndex = index - 7 - firstWeekday;
+                //     if (dayIndex < 0 || dayIndex >= daysInMonth) {
+                //       return const SizedBox();
+                //     }
+
+                //     final day = dayIndex + 1;
+                //     final date = DateTime(_displayMonth.year, _displayMonth.month, day);
+                //     final isSelected = AppDateUtils.isSameDate(date, _selectedDate);
+
+                //     return GestureDetector(
+                //       onTap: () {
+                //         final now = DateTime.now();
+                //         final date = DateTime(_displayMonth.year, _displayMonth.month, day, now.hour, now.minute, now.second, now.millisecond, now.microsecond);
+                //         setState(() {
+                //           _selectedDate = date;
+                //         });
+                //       },
+                //       child: Container(
+                //         decoration: BoxDecoration(color: isSelected ? AppColorConstants.primary : Colors.transparent, shape: BoxShape.circle),
+                //         child: Center(child: Text('$day', style: isSelected ? AppTextStyle.blackS14Bold : AppTextStyle.blackS14Medium)),
+                //       ),
+                //     );
+                //   },
+                // ),
                 Row(
+                  spacing: AppUIConstants.defaultSpacing,
                   children: [
                     Expanded(
-                      child: TextButton(
-                        onPressed: () {},
-                        style: TextButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 16)),
-                        child: const Text(
-                          'Hủy',
-                          style: TextStyle(color: Color(0xFFDAA520), fontSize: 18, fontWeight: FontWeight.w600),
-                        ),
+                      child: AppButton(
+                        text: AppTextConstants.cancel,
+                        onPressed: () {
+                          AppNavigator(context: context).pop();
+                        },
+                        backgroundColor: Colors.transparent,
                       ),
                     ),
-                    const SizedBox(width: 16),
                     Expanded(
-                      child: ElevatedButton(
+                      child: AppButton(
+                        text: AppTextConstants.confirm,
                         onPressed: () {
-                          Navigator.of(context).pop(_selectedDate);
+                          AppNavigator(context: context).pop(_selectedDate);
                         },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFFDAA520),
-                          foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(vertical: 16),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                          elevation: 0,
-                        ),
-                        child: const Text('Xác nhận', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
+                        backgroundColor: Colors.transparent,
                       ),
                     ),
                   ],

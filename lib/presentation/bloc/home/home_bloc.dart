@@ -20,7 +20,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   HomeBloc(this.transactionRepository, this.categoryRepository) : super(const HomeState()) {
     on<HomeLoadTransactions>(_onLoadTransactions);
     on<HomeChangeDate>(_onChangeDate);
-    on<HomeLoadMore>(_onLoadMore, transformer: restartableDebounce<HomeLoadMore>(AppConfigs.loadMoreDebounceDuration));
+    on<HomeLoadMore>(_onLoadMore, transformer: DebounceUtils.restartableDebounce<HomeLoadMore>(AppConfigs.loadMoreDebounceDuration));
     on<HomeDeleteTransaction>(_onDeleteTransaction);
     on<HomeInsertTransaction>(_onInsertTransaction);
     on<HomeUpdateTransaction>(_onUpdateTransaction);
@@ -57,7 +57,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
 
   bool _isTransactionInCurrentMonth(Transaction transaction) {
     final currentDate = state.selectedDate ?? DateTime.now();
-    return AppDateUtils.isTransactionInCurrentMonth(transaction, currentDate);
+    return AppDateUtils.isDateInCurrentMonth(transaction.date, currentDate);
   }
 
   Future<void> _onInsertTransaction(HomeInsertTransaction event, Emitter<HomeState> emit) async {

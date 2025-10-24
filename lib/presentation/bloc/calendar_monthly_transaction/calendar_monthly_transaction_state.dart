@@ -5,7 +5,7 @@ part 'calendar_monthly_transaction_state.freezed.dart';
 
 @freezed
 abstract class CalendarMonthTransactionState with _$CalendarMonthTransactionState {
-  const factory CalendarMonthTransactionState({@Default(false) bool isLoading, DateTime? selectedDate, @Default({}) Map<String, List<Transaction>> groupedTransactions, @Default({}) Map<int, TransactionCategory> categoriesMap}) = _CalendarMonthTransactionState;
+  const factory CalendarMonthTransactionState({@Default(false) bool isLoading, DateTime? selectedDate, @Default({}) Map<String, List<Transaction>> groupedTransactions, @Default({}) Map<int, TransactionCategory> categoriesMap, int? currentYear, int? currentMonth}) = _CalendarMonthTransactionState;
   const CalendarMonthTransactionState._();
 
   Map<int, DailyTransactionTotal> get dailyTotals {

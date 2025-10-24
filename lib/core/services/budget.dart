@@ -1,15 +1,13 @@
 import 'package:drift/drift.dart';
 import 'package:kmonie/database/database.dart';
 import 'package:kmonie/core/enums/enums.dart';
-import 'package:kmonie/core/helper/helper.dart';
+import 'package:kmonie/core/services/transaction.dart';
 
-class BudgetService with TransactionQueryHelper {
+class BudgetService {
   final KMonieDatabase _db;
+  final TransactionService _transactionService;
 
-  @override
-  KMonieDatabase get db => _db;
-
-  BudgetService(this._db);
+  BudgetService(this._db, this._transactionService);
 
   Future<Map<int, int>> getBudgetsForMonth(int year, int month) async {
     final q = _db.select(_db.budgetsTb)..where((t) => t.year.equals(year) & t.month.equals(month));
@@ -57,27 +55,22 @@ class BudgetService with TransactionQueryHelper {
     await _db.into(_db.monthlyBudgetsTb).insertOnConflictUpdate(companion);
   }
 
-  // ✅ SUPER REFACTORED: Use helper's calculateTotalAmountInMonth()
   Future<int> getTotalSpentForMonth({required int year, required int month}) async {
-    return await calculateTotalAmountInMonth(year: year, month: month, transactionType: TransactionType.expense.typeIndex);
+    return await _transactionService.calculateTotalAmountInMonth(year: year, month: month, transactionType: TransactionType.expense.typeIndex);
   }
 
-  // ✅ SUPER REFACTORED: Use helper's calculateTotalAmountInMonth()
   Future<int> getSpentForCategory({required int year, required int month, required int categoryId}) async {
-    return await calculateTotalAmountInMonth(year: year, month: month, transactionType: TransactionType.expense.typeIndex, categoryId: categoryId);
+    return await _transactionService.calculateTotalAmountInMonth(year: year, month: month, transactionType: TransactionType.expense.typeIndex, categoryId: categoryId);
   }
 
-  // ✅ NEW: Get total income for month
   Future<int> getTotalIncomeForMonth({required int year, required int month}) async {
-    return await calculateTotalAmountInMonth(year: year, month: month, transactionType: TransactionType.income.typeIndex);
+    return await _transactionService.calculateTotalAmountInMonth(year: year, month: month, transactionType: TransactionType.income.typeIndex);
   }
 
-  // ✅ NEW: Get income for specific category in month
   Future<int> getIncomeForCategory({required int year, required int month, required int categoryId}) async {
-    return await calculateTotalAmountInMonth(year: year, month: month, transactionType: TransactionType.income.typeIndex, categoryId: categoryId);
+    return await _transactionService.calculateTotalAmountInMonth(year: year, month: month, transactionType: TransactionType.income.typeIndex, categoryId: categoryId);
   }
 
-  // ✅ NEW: Get budget vs spent comparison with detailed breakdown
   Future<Map<int, ({int budget, int spent, double percentUsed})>> getBudgetComparison({required int year, required int month}) async {
     final budgets = await getBudgetsForMonth(year, month);
     final Map<int, ({int budget, int spent, double percentUsed})> result = {};
@@ -86,8 +79,7 @@ class BudgetService with TransactionQueryHelper {
       final categoryId = entry.key;
       final budgetAmount = entry.value;
 
-      // ✅ Use helper method
-      final spentAmount = await calculateTotalAmountInMonth(year: year, month: month, transactionType: TransactionType.expense.typeIndex, categoryId: categoryId);
+      final spentAmount = await _transactionService.calculateTotalAmountInMonth(year: year, month: month, transactionType: TransactionType.expense.typeIndex, categoryId: categoryId);
 
       final percentUsed = budgetAmount > 0 ? (spentAmount / budgetAmount) * 100 : 0.0;
 
@@ -97,7 +89,6 @@ class BudgetService with TransactionQueryHelper {
     return result;
   }
 
-  // ✅ NEW: Get monthly summary (income, expense, balance)
   Future<({int income, int expense, int balance})> getMonthlySummary({required int year, required int month}) async {
     final income = await getTotalIncomeForMonth(year: year, month: month);
     final expense = await getTotalSpentForMonth(year: year, month: month);
@@ -106,10 +97,8 @@ class BudgetService with TransactionQueryHelper {
     return (income: income, expense: expense, balance: balance);
   }
 
-  // ✅ NEW: Get category breakdown (all transactions for a category)
   Future<({List<TransactionsTbData> transactions, int totalSpent})> getCategoryBreakdown({required int year, required int month, required int categoryId}) async {
-    // ✅ Use helper's getTransactionsFiltered()
-    final transactions = await getTransactionsFiltered(year: year, month: month, transactionType: TransactionType.expense.typeIndex, categoryId: categoryId);
+    final transactions = await _transactionService.getTransactionsFiltered(year: year, month: month, transactionType: TransactionType.expense.typeIndex, categoryId: categoryId);
 
     final totalSpent = transactions.fold<int>(0, (sum, tx) => sum + tx.amount);
 

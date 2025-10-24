@@ -33,96 +33,56 @@ class SettingsPage extends StatelessWidget {
                     const Icon(Icons.chevron_right, color: AppColorConstants.grey),
                   ],
                 ),
-                onTap: () {
-                  // TODO: Navigate to password settings
-                },
+                onTap: () {},
               ),
               const AppDivider(),
               _buildSettingsItem(
                 iconAsset: Assets.svgsNotification,
                 title: 'Phím tắt thông báo',
-                trailing: Switch(
-                  value: true,
-                  onChanged: (value) {
-                    // TODO: Handle notification shortcut toggle
-                  },
-                  activeThumbColor: AppColorConstants.primary,
-                ),
-                onTap: () {
-                  // TODO: Handle notification shortcut toggle
-                },
+                trailing: Switch(value: true, onChanged: (value) {}, activeThumbColor: AppColorConstants.primary),
+                onTap: () {},
               ),
               const AppDivider(),
               _buildSettingsItem(
                 iconAsset: Assets.svgsMicro,
                 title: 'Hiệu ứng âm thanh',
-                trailing: Switch(
-                  value: true,
-                  onChanged: (value) {
-                    // TODO: Handle sound effects toggle
-                  },
-                  activeThumbColor: AppColorConstants.primary,
-                ),
-                onTap: () {
-                  // TODO: Handle sound effects toggle
-                },
+                trailing: Switch(value: true, onChanged: (value) {}, activeThumbColor: AppColorConstants.primary),
+                onTap: () {},
               ),
               const AppDivider(),
               _buildSettingsItem(
                 iconAsset: Assets.svgsDollar,
                 title: 'Dấu phân cách hàng nghìn',
-                trailing: Switch(
-                  value: true,
-                  onChanged: (value) {
-                    // TODO: Handle thousands separator toggle
-                  },
-                  activeThumbColor: AppColorConstants.primary,
-                ),
-                onTap: () {
-                  // TODO: Handle thousands separator toggle
-                },
+                trailing: Switch(value: true, onChanged: (value) {}, activeThumbColor: AppColorConstants.primary),
+                onTap: () {},
               ),
               const AppDivider(),
               _buildSettingsItem(
                 iconAsset: Assets.svgsDollar,
                 title: 'Dạng hiển thị số',
                 trailing: const Icon(Icons.chevron_right, color: AppColorConstants.grey),
-                onTap: () {
-                  // TODO: Navigate to number display format
-                },
+                onTap: () {},
               ),
               const AppDivider(),
               _buildSettingsItem(
                 iconAsset: Assets.svgsCalendar,
                 title: 'Lịch',
                 trailing: const Icon(Icons.chevron_right, color: AppColorConstants.grey),
-                onTap: () {
-                  // TODO: Navigate to calendar settings
-                },
+                onTap: () {},
               ),
               const AppDivider(),
               _buildSettingsItem(
                 iconAsset: Assets.svgsCommand,
                 title: 'Thanh công cụ nhập liệu AI',
-                trailing: Switch(
-                  value: false,
-                  onChanged: (value) {
-                    // TODO: Handle AI input toolbar toggle
-                  },
-                  activeThumbColor: AppColorConstants.primary,
-                ),
-                onTap: () {
-                  // TODO: Handle AI input toolbar toggle
-                },
+                trailing: Switch(value: false, onChanged: (value) {}, activeThumbColor: AppColorConstants.primary),
+                onTap: () {},
               ),
               const AppDivider(),
               _buildSettingsItem(
                 iconAsset: Assets.svgsReport,
                 title: 'Xóa tất cả dữ liệu',
                 trailing: const Icon(Icons.chevron_right, color: AppColorConstants.grey),
-                onTap: () {
-                  // TODO: Show delete all data confirmation
-                },
+                onTap: () {},
               ),
               const AppDivider(),
               _buildSettingsItem(
@@ -130,18 +90,14 @@ class SettingsPage extends StatelessWidget {
                 title: 'Dữ liệu được sao lưu tự động',
                 subtitle: '18 thg 10 8:58',
                 trailing: const Icon(Icons.chevron_right, color: AppColorConstants.grey),
-                onTap: () {
-                  // TODO: Navigate to backup settings
-                },
+                onTap: () {},
               ),
               const AppDivider(),
               _buildSettingsItem(
                 iconAsset: Assets.svgsTelephone,
                 title: 'Ngôn ngữ',
                 trailing: const Icon(Icons.chevron_right, color: AppColorConstants.grey),
-                onTap: () {
-                  // TODO: Navigate to language settings
-                },
+                onTap: () {},
               ),
               const AppDivider(),
               _buildSettingsItem(
@@ -159,45 +115,35 @@ class SettingsPage extends StatelessWidget {
                     const Icon(Icons.chevron_right, color: AppColorConstants.grey),
                   ],
                 ),
-                onTap: () {
-                  // TODO: Navigate to API settings
-                },
+                onTap: () {},
               ),
               const AppDivider(),
               _buildSettingsItem(
                 iconAsset: Assets.svgsNote,
                 title: 'Điều khoản sử dụng',
                 trailing: const Icon(Icons.chevron_right, color: AppColorConstants.grey),
-                onTap: () {
-                  // TODO: Navigate to terms of use
-                },
+                onTap: () {},
               ),
               const AppDivider(),
               _buildSettingsItem(
                 iconAsset: Assets.svgsLock,
                 title: 'Chính sách bảo mật',
                 trailing: const Icon(Icons.chevron_right, color: AppColorConstants.grey),
-                onTap: () {
-                  // TODO: Navigate to privacy policy
-                },
+                onTap: () {},
               ),
               const AppDivider(),
               _buildSettingsItem(
                 iconAsset: Assets.svgsGroup,
                 title: 'Về chúng tôi',
                 trailing: const Icon(Icons.chevron_right, color: AppColorConstants.grey),
-                onTap: () {
-                  // TODO: Navigate to about us
-                },
+                onTap: () {},
               ),
               const AppDivider(),
               _buildSettingsItem(
                 iconAsset: Assets.svgsNote,
                 title: 'Nhận xét',
                 trailing: const Icon(Icons.chevron_right, color: AppColorConstants.grey),
-                onTap: () {
-                  // TODO: Navigate to feedback
-                },
+                onTap: () {},
               ),
             ],
           ),

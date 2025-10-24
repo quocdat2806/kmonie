@@ -56,7 +56,7 @@ class _BudgetPageChildState extends State<_BudgetPageChild> {
       },
     );
 
-    if (result != null) {
+    if (result != null && mounted) {
       final newP = DateTime(result['year']!, result['month']!);
       context.read<BudgetBloc>().add(BudgetEvent.setSelectedPeriod(period: newP));
       context.read<BudgetBloc>().add(BudgetEvent.changePeriod(period: newP));
@@ -188,7 +188,7 @@ class _BudgetPageChildState extends State<_BudgetPageChild> {
         );
       },
     ).then((value) {
-      if (value is int) {
+      if (value is int && mounted) {
         final s = context.read<BudgetBloc>().state;
         final p = s.period ?? DateTime.now();
         context.read<BudgetBloc>().add(BudgetEvent.setBudget(period: DateTime(p.year, p.month), categoryId: category.id!, amount: value));

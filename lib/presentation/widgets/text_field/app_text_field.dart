@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import 'package:kmonie/core/constants/constants.dart';
 import 'package:kmonie/core/text_style/app_text_style.dart';
 
 class AppTextField extends StatelessWidget {

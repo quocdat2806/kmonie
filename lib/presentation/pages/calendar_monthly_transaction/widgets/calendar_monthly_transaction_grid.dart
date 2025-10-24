@@ -40,7 +40,7 @@ class CalendarGrid extends StatelessWidget {
         if (date == null) return const SizedBox();
 
         final total = dailyTotals[date.day];
-        final isSelected = date.day == selectedDate.day && date.month == selectedDate.month && date.year == selectedDate.year;
+        final isSelected = AppDateUtils.isSameDate(date, selectedDate);
 
         return CalendarDayCell(date: date, total: total, isSelected: isSelected, onTap: () => onDateSelected(date));
       },

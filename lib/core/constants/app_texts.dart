@@ -15,7 +15,6 @@ class AppTextConstants {
   static const String other = 'Khác';
   static const String select = 'Lựa chọn';
   static const String confirm = 'Đồng ý';
-  static const String openSetting = 'Mở cài đặt';
 
   static const String error = 'Lỗi';
   static const String cancel = 'Huỷ';
@@ -26,6 +25,7 @@ class AppTextConstants {
   static const String account = 'Tài khoản';
   static const String month = 'Tháng';
   static const String year = 'Năm';
+
   static const String balance = 'Số dư';
 
   static const String transactionAddedSuccess = 'Giao dịch đã được thêm thành công';
@@ -35,15 +35,6 @@ class AppTextConstants {
   static const String emptyTransaction = 'Chưa có giao dịch nào';
   static const String addTransactionAdvice = 'Hãy thêm giao dịch đầu tiên của bạn';
 
-  static const String changeToVipPackage = 'Chuyển sang gói Premium';
-  static const String unlockFeatureAndRemoveAds = 'Mở khoá mọi thứ và loại bỏ quảng cáo';
-  static const String moreTopicAndCustomize = 'Nhiều chủ đề đẹp hơn và có thể tuỳ chỉnh';
-  static const String makeLifeBeautiful = 'Làm cho cuôc sống bạn tốt hơn';
-  static const String feeForYear = '199.000 đ / hàng năm Huỷ bất cứ lúc nào';
-  static const String register = 'Đăng ký';
-  static const String termPolicy = 'Bằng cách đăng nhập bạn đồng ý với chính sách và quyền riêng tư';
-  static const String term = 'Điều khoản sử dung';
-  static const String policy = 'Chính sách bảo mật';
   static const String all = 'Tất cả';
   static const String search = 'Tìm kiếm';
 
@@ -79,7 +70,6 @@ class AppTextConstants {
   static const String interest = 'Tiền lãi';
   static const String incomeAndExpenditureBook = 'Sổ thu chi';
 
-  // Account related
   static const String addAccount = 'Thêm tài khoản';
   static const String manageAccount = 'Quản lý tài khoản';
   static const String accountName = 'Tên tài khoản';
@@ -88,9 +78,9 @@ class AppTextConstants {
   static const String accountNumberHint = 'Vui lòng nhập số tài khoản';
   static const String accountNameHint = 'Vui lòng nhập tên tài khoản';
   static const String accountType = 'Kiểu';
-  static const String accountTypeDefault = 'Mặc định';
-  static const String currency = 'Tiền tệ';
   static const String amount = 'Số tiền';
-  static const String icon = 'Biểu tượng';
-  static const String notes = 'Ghi chú';
+  static const String remaining = 'Còn lại';
+  static const String budget = 'Ngân sách';
+  static const String spent = 'Chi tiêu';
+  static const String overBudget = 'Vượt quá';
 }

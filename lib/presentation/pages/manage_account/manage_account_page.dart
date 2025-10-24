@@ -25,14 +25,7 @@ class _ManageAccountPageState extends State<ManageAccountPage> {
       create: (context) => AccountActionsBloc(sl<AccountRepository>())..add(const AccountActionsEvent.loadAccounts()),
       child: BlocListener<AccountActionsBloc, AccountActionsState>(
         listener: (context, state) {
-          state.when(
-            initial: () {},
-            loading: () {},
-            loaded: (accounts) {},
-            error: (message) {
-              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Lỗi: $message')));
-            },
-          );
+          state.when(initial: () {}, loading: () {}, loaded: (accounts) {}, error: (message) {});
         },
         child: Builder(builder: (context) => _buildScaffold(context)),
       ),
@@ -119,7 +112,7 @@ class _ManageAccountPageState extends State<ManageAccountPage> {
           decoration: BoxDecoration(
             color: AppColorConstants.white,
             borderRadius: BorderRadius.circular(8),
-            boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.1), blurRadius: 4, offset: const Offset(0, 2))],
+            boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.1), blurRadius: 4, offset: const Offset(0, 2))],
           ),
           child: Row(
             children: [
@@ -127,18 +120,29 @@ class _ManageAccountPageState extends State<ManageAccountPage> {
               Container(
                 width: 50,
                 height: 50,
-                decoration: BoxDecoration(color: AppColorConstants.primary.withOpacity(0.1), borderRadius: BorderRadius.circular(8)),
+                decoration: BoxDecoration(color: AppColorConstants.primary.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(8)),
                 child: Stack(
                   children: [
                     Center(
-                      child: (account.bank?.logo ?? '').isNotEmpty
-                          ? ClipRRect(
-                              borderRadius: BorderRadius.circular(8),
-                              child: Image.network(
-                                account.bank!.logo,
-                                fit: BoxFit.cover,
-                                errorBuilder: (context, error, stackTrace) => const Icon(Icons.account_balance, color: AppColorConstants.primary),
-                              ),
+                      child: account.bankId != null
+                          ? Builder(
+                              builder: (context) {
+                                final bank = BankConstants.vietNamBanks.firstWhere(
+                                  (b) => b.id == account.bankId,
+                                  orElse: () => Bank(id: account.bankId!, name: 'Unknown Bank', code: '', shortName: ''),
+                                );
+                                if (bank.logo.isNotEmpty) {
+                                  return ClipRRect(
+                                    borderRadius: BorderRadius.circular(8),
+                                    child: Image.network(
+                                      bank.logo,
+                                      fit: BoxFit.cover,
+                                      errorBuilder: (context, error, stackTrace) => const Icon(Icons.account_balance, color: AppColorConstants.primary),
+                                    ),
+                                  );
+                                }
+                                return const Icon(Icons.account_balance, color: AppColorConstants.primary);
+                              },
                             )
                           : const Icon(Icons.account_balance, color: AppColorConstants.primary),
                     ),
@@ -163,7 +167,18 @@ class _ManageAccountPageState extends State<ManageAccountPage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(account.name, style: AppTextStyle.blackS16Bold),
-                    if (account.bank != null) ...[const SizedBox(height: 4), Text(account.bank!.name, style: AppTextStyle.grayS12Medium)],
+                    if (account.bankId != null) ...[
+                      const SizedBox(height: 4),
+                      Builder(
+                        builder: (context) {
+                          final bank = BankConstants.vietNamBanks.firstWhere(
+                            (b) => b.id == account.bankId,
+                            orElse: () => Bank(id: account.bankId!, name: 'Unknown Bank', code: '', shortName: ''),
+                          );
+                          return Text(bank.name, style: AppTextStyle.grayS12Medium);
+                        },
+                      ),
+                    ],
                     if (account.accountNumber.isNotEmpty) ...[const SizedBox(height: 4), Text('Số TK: ${account.accountNumber}', style: AppTextStyle.grayS12Medium)],
                     const SizedBox(height: 4),
                     Text('Loại: ${account.type}', style: AppTextStyle.grayS12Medium),

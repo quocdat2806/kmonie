@@ -1,8 +1,9 @@
 import 'package:flutter/foundation.dart';
 
-LoggerUtils logger = LoggerUtils();
+final LoggerUtils logger = LoggerUtils._();
 
 class LoggerUtils {
+  LoggerUtils._();
   void v(dynamic message, {StackTrace? stackTrace}) {
     _print('🤍 VERBOSE: $message', stackTrace: stackTrace);
   }
@@ -35,11 +36,7 @@ class LoggerUtils {
     }
   }
 
-  void log(
-    dynamic message, {
-    bool printFullText = false,
-    StackTrace? stackTrace,
-  }) {
+  void log(dynamic message, {bool printFullText = false, StackTrace? stackTrace}) {
     if (printFullText) {
       _log(message);
     } else {

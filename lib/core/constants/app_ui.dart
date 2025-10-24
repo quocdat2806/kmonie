@@ -44,17 +44,11 @@ class AppUIConstants {
   static const double defaultGridCrossAxisSpacing = 8.0;
   static const double defaultGridMainAxisSpacing = 8.0;
   static const double smallGridSpacing = 4.0;
-  static const double zeroInsets = 0.0;
-  static const double oneInsets = 1.0;
-
-  static const double oneOpacity = 1.0;
 
   static const int defaultMaxLines = 2;
   static const int singleLine = 1;
 
   static const Duration shortAnimationDuration = Duration(milliseconds: 200);
-  static const Duration defaultAnimationDuration = Duration(milliseconds: 300);
-  static const Duration longAnimationDuration = Duration(milliseconds: 500);
   static const double keyboardSlideRatio = 0.35;
   static const double categoryItemSizeRatio = 0.55;
   static const double categoryIconSizeRatio = 0.30;
@@ -63,8 +57,6 @@ class AppUIConstants {
   static const double topAddTransactionButtonOffset = 30.0;
 
   static const double appBarHeight = 56.0;
-
-  static const double screenHeightPercentage = 0.85;
 
   static const double chartSelectorHeight = 40.0;
   static const double chartSelectorPadding = 12.0;
@@ -77,7 +69,10 @@ class AppUIConstants {
   static const double chartContentErrorTextSize = 16.0;
 
   static const double chartPieSize = 150.0;
-  static const double chartPieStrokeWidth = 30.0;
+  static const double chartPieSizeSmall = 80.0;
+  static const double chartPieStrokeWidth = 20.0;
+
+  static const double chartPieStrokeWidthSmall = 8.0;
   static const double chartLegendDotSize = 12.0;
 
   static const double chartCategoryIconSize = 40.0;

@@ -3,22 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:kmonie/core/constants/constants.dart';
 
 class AppButton extends StatelessWidget {
-  const AppButton({
-    super.key,
-    this.text,
-    this.backgroundColor = AppColorConstants.primary,
-    this.textColor = AppColorConstants.black,
-    required this.onPressed,
-    this.icon,
-    this.iconWidget,
-    this.height = AppUIConstants.defaultButtonHeight,
-    this.borderRadius = AppUIConstants.defaultBorderRadius,
-    this.width,
-    this.fontSize = 14,
-    this.fontWeight = FontWeight.w400,
-    this.borderColor,
-    this.disabled = false,
-  });
+  const AppButton({super.key, this.text, this.backgroundColor = AppColorConstants.primary, this.textColor = AppColorConstants.black, required this.onPressed, this.icon, this.iconWidget, this.height = AppUIConstants.defaultButtonHeight, this.borderRadius = AppUIConstants.defaultBorderRadius, this.width, this.fontSize = 14, this.fontWeight = FontWeight.w400, this.disabled = false});
 
   final String? text;
   final Color backgroundColor;
@@ -34,7 +19,6 @@ class AppButton extends StatelessWidget {
   final double? width;
   final double fontSize;
   final FontWeight fontWeight;
-  final Color? borderColor;
   final bool disabled;
 
   @override
@@ -45,20 +29,10 @@ class AppButton extends StatelessWidget {
       child: ElevatedButton(
         onPressed: disabled ? null : onPressed,
         style: ElevatedButton.styleFrom(
-          backgroundColor: disabled
-              ? backgroundColor.withAlpha(60)
-              : backgroundColor,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(borderRadius),
-            side: BorderSide(
-              color: borderColor ?? Colors.transparent,
-              width: borderColor != null ? 1 : 0,
-            ),
-          ),
+          backgroundColor: disabled ? backgroundColor.withAlpha(60) : backgroundColor,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(borderRadius)),
           elevation: 0,
-          padding: const EdgeInsets.symmetric(
-            horizontal: AppUIConstants.smallPadding,
-          ),
+          padding: const EdgeInsets.symmetric(horizontal: AppUIConstants.smallPadding),
         ),
         child: _buildContent(),
       ),
@@ -70,17 +44,13 @@ class AppButton extends StatelessWidget {
     final hasIcon = icon != null || iconWidget != null;
 
     if (hasIcon && !hasText) {
-      return iconWidget ?? Icon(icon, color: textColor, size: 18);
+      return iconWidget ?? Icon(icon, color: textColor, size: AppUIConstants.defaultIconSize);
     }
 
     if (!hasIcon && hasText) {
       return Text(
         text!,
-        style: TextStyle(
-          color: textColor,
-          fontSize: fontSize,
-          fontWeight: fontWeight,
-        ),
+        style: TextStyle(color: textColor, fontSize: fontSize, fontWeight: fontWeight),
       );
     }
 
@@ -89,14 +59,10 @@ class AppButton extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       spacing: AppUIConstants.smallSpacing,
       children: [
-        iconWidget ?? Icon(icon, color: textColor, size: 18),
+        iconWidget ?? Icon(icon, color: textColor, size: AppUIConstants.defaultIconSize),
         Text(
           text!,
-          style: TextStyle(
-            color: textColor,
-            fontSize: fontSize,
-            fontWeight: fontWeight,
-          ),
+          style: TextStyle(color: textColor, fontSize: fontSize, fontWeight: fontWeight),
         ),
       ],
     );

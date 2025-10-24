@@ -8,7 +8,6 @@ abstract class AccountRepository {
   Future<Either<Failure, Account>> createAccount(Account account);
   Future<Either<Failure, Account>> updateAccount(Account account);
   Future<Either<Failure, void>> deleteAccount(int accountId);
-  Future<Either<Failure, Account?>> getAccountById(int accountId);
   Future<Either<Failure, Account?>> getPinnedAccount();
   Future<Either<Failure, void>> pinAccount(int accountId);
   Future<Either<Failure, void>> unpinAccount(int accountId);
@@ -96,16 +95,6 @@ class AccountRepositoryImpl implements AccountRepository {
     try {
       await _accountService.updateAccountBalance(accountId, newBalance);
       return const Right(null);
-    } catch (e) {
-      return Left(Failure.cache(e.toString()));
-    }
-  }
-
-  @override
-  Future<Either<Failure, Account?>> getAccountById(int accountId) async {
-    try {
-      final account = await _accountService.getAccountById(accountId);
-      return Right(account);
     } catch (e) {
       return Left(Failure.cache(e.toString()));
     }

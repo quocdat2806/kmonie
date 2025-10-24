@@ -4,18 +4,7 @@ import 'package:kmonie/core/text_style/text_style.dart';
 import 'package:kmonie/core/navigation/navigation.dart';
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
-  const CustomAppBar({
-    super.key,
-    required this.title,
-    this.leading,
-    this.actions,
-    this.onLeadingTap,
-    this.backgroundColor = AppColorConstants.primary,
-    this.elevation = 0.0,
-    this.centerTitle = true,
-    this.titleTextStyle,
-    this.haveBackIcon = true,
-  });
+  const CustomAppBar({super.key, required this.title, this.leading, this.actions, this.onLeadingTap, this.backgroundColor = AppColorConstants.primary, this.elevation = 0.0, this.centerTitle = true});
 
   final dynamic title;
   final Widget? leading;
@@ -24,32 +13,21 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final Color backgroundColor;
   final double elevation;
   final bool centerTitle;
-  final TextStyle? titleTextStyle;
-  final bool haveBackIcon;
 
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      title: title is String
-          ? Text(
-              title as String,
-              style: titleTextStyle ?? AppTextStyle.blackS18Bold,
-            )
-          : title as Widget,
+      title: title is String ? Text(title as String, style: AppTextStyle.blackS18Bold) : title as Widget,
       centerTitle: centerTitle,
       backgroundColor: backgroundColor,
       titleSpacing: 0,
       elevation: elevation,
-      leading: haveBackIcon
-          ? (leading ??
-                IconButton(
-                  icon: const Icon(
-                    Icons.arrow_back,
-                    color: AppColorConstants.black,
-                  ),
-                  onPressed: onLeadingTap ?? () => _handleBack(context),
-                ))
-          : null,
+      leading:
+          leading ??
+          IconButton(
+            icon: const Icon(Icons.arrow_back, color: AppColorConstants.black),
+            onPressed: onLeadingTap ?? () => _handleBack(context),
+          ),
       actions: actions,
     );
   }

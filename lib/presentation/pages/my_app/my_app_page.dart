@@ -17,38 +17,11 @@ class MyAppPage extends StatelessWidget {
           padding: const EdgeInsets.all(AppUIConstants.defaultPadding),
           child: Column(
             children: [
-              _buildAppItem(
-                context: context,
-                icon:
-                    'https://play-lh.googleusercontent.com/8ddL1kuoNUB5vUvgDVjYY3_6HwQcrg1K2fd_R8soD-e2QYj8fT9cfhqr3CndW8sVfkxC=w240-h480-rw',
-                title: 'iTask - Thói quen & Lịch',
-                rating: 4.5,
-                onTap: () {
-                  // TODO: Open iTask app or store
-                },
-              ),
+              _buildAppItem(context: context, icon: 'https://play-lh.googleusercontent.com/8ddL1kuoNUB5vUvgDVjYY3_6HwQcrg1K2fd_R8soD-e2QYj8fT9cfhqr3CndW8sVfkxC=w240-h480-rw', title: 'iTask - Thói quen & Lịch', rating: 4.5, onTap: () {}),
               const SizedBox(height: AppUIConstants.defaultSpacing),
-              _buildAppItem(
-                context: context,
-                icon:
-                    'https://play-lh.googleusercontent.com/8ddL1kuoNUB5vUvgDVjYY3_6HwQcrg1K2fd_R8soD-e2QYj8fT9cfhqr3CndW8sVfkxC=w240-h480-rw',
-                title: 'Tử Vi Hàng Ngày-Cung Hoàng Đạo',
-                rating: 4.5,
-                onTap: () {
-                  // TODO: Open horoscope app or store
-                },
-              ),
+              _buildAppItem(context: context, icon: 'https://play-lh.googleusercontent.com/8ddL1kuoNUB5vUvgDVjYY3_6HwQcrg1K2fd_R8soD-e2QYj8fT9cfhqr3CndW8sVfkxC=w240-h480-rw', title: 'Tử Vi Hàng Ngày-Cung Hoàng Đạo', rating: 4.5, onTap: () {}),
               const SizedBox(height: AppUIConstants.defaultSpacing),
-              _buildAppItem(
-                context: context,
-                icon:
-                    'https://play-lh.googleusercontent.com/8ddL1kuoNUB5vUvgDVjYY3_6HwQcrg1K2fd_R8soD-e2QYj8fT9cfhqr3CndW8sVfkxC=w240-h480-rw',
-                title: 'Magic Quotes -daily motivation',
-                rating: 4.5,
-                onTap: () {
-                  // TODO: Open quotes app or store
-                },
-              ),
+              _buildAppItem(context: context, icon: 'https://play-lh.googleusercontent.com/8ddL1kuoNUB5vUvgDVjYY3_6HwQcrg1K2fd_R8soD-e2QYj8fT9cfhqr3CndW8sVfkxC=w240-h480-rw', title: 'Magic Quotes -daily motivation', rating: 4.5, onTap: () {}),
             ],
           ),
         ),
@@ -56,22 +29,14 @@ class MyAppPage extends StatelessWidget {
     );
   }
 
-  Widget _buildAppItem({
-    required BuildContext context,
-    required String icon,
-    required String title,
-    required double rating,
-    required VoidCallback onTap,
-  }) {
+  Widget _buildAppItem({required BuildContext context, required String icon, required String title, required double rating, required VoidCallback onTap}) {
     return InkWell(
       onTap: onTap,
       child: Container(
         padding: const EdgeInsets.all(AppUIConstants.defaultPadding),
         decoration: BoxDecoration(
           color: AppColorConstants.white,
-          borderRadius: BorderRadius.circular(
-            AppUIConstants.defaultBorderRadius,
-          ),
+          borderRadius: BorderRadius.circular(AppUIConstants.defaultBorderRadius),
           border: Border.all(color: AppColorConstants.greyWhite),
         ),
         child: Row(
@@ -107,11 +72,7 @@ class MyAppPage extends StatelessWidget {
           } else if (index == rating.floor() && rating % 1 != 0) {
             return const Icon(Icons.star_half, color: Colors.orange, size: 16);
           } else {
-            return const Icon(
-              Icons.star_border,
-              color: Colors.orange,
-              size: 16,
-            );
+            return const Icon(Icons.star_border, color: Colors.orange, size: 16);
           }
         }),
         const SizedBox(width: 4),

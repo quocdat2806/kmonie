@@ -9,12 +9,7 @@ class StatisticsHeader extends StatelessWidget {
   final double totalAmount;
   final int transactionCount;
 
-  const StatisticsHeader({
-    super.key,
-    required this.transactionType,
-    required this.totalAmount,
-    required this.transactionCount,
-  });
+  const StatisticsHeader({super.key, required this.transactionType, required this.totalAmount, required this.transactionCount});
 
   @override
   Widget build(BuildContext context) {
@@ -25,19 +20,9 @@ class StatisticsHeader extends StatelessWidget {
       margin: const EdgeInsets.all(AppUIConstants.smallPadding),
       padding: const EdgeInsets.all(AppUIConstants.defaultPadding),
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [_getPrimaryColor(), _getPrimaryColor().withOpacity(0.8)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
+        gradient: LinearGradient(colors: [_getPrimaryColor(), _getPrimaryColor().withValues(alpha: 0.8)], begin: Alignment.topLeft, end: Alignment.bottomRight),
         borderRadius: BorderRadius.circular(AppUIConstants.smallBorderRadius),
-        boxShadow: [
-          BoxShadow(
-            color: _getPrimaryColor().withOpacity(0.3),
-            blurRadius: 8,
-            offset: const Offset(0, 4),
-          ),
-        ],
+        boxShadow: [BoxShadow(color: _getPrimaryColor().withValues(alpha: 0.3), blurRadius: 8, offset: const Offset(0, 4))],
       ),
       child: Column(
         children: [
@@ -45,21 +30,7 @@ class StatisticsHeader extends StatelessWidget {
           const SizedBox(height: AppUIConstants.smallPadding),
           Text(_formatAmount(totalAmount), style: AppTextStyle.whiteS24Bold),
           const SizedBox(height: AppUIConstants.smallPadding / 2),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              _buildStatItem(
-                'Số giao dịch',
-                transactionCount.toString(),
-                Icons.receipt_long,
-              ),
-              _buildStatItem(
-                'Trung bình/ngày',
-                _calculateDailyAverage().toString(),
-                Icons.trending_up,
-              ),
-            ],
-          ),
+          Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [_buildStatItem('Số giao dịch', transactionCount.toString(), Icons.receipt_long), _buildStatItem('Trung bình/ngày', _calculateDailyAverage().toString(), Icons.trending_up)]),
         ],
       ),
     );

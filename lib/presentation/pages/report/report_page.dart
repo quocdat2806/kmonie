@@ -102,7 +102,7 @@ class _ReportPageChildState extends State<_ReportPageChild> {
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(AppUIConstants.defaultBorderRadius),
-          boxShadow: [BoxShadow(color: Colors.grey.withOpacity(0.1), spreadRadius: 1, blurRadius: 4, offset: const Offset(0, 2))],
+          boxShadow: [BoxShadow(color: Colors.grey.withValues(alpha: 0.1), spreadRadius: 1, blurRadius: 4, offset: const Offset(0, 2))],
         ),
         child: Column(
           children: [
@@ -165,7 +165,7 @@ class _ReportPageChildState extends State<_ReportPageChild> {
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(AppUIConstants.defaultBorderRadius),
-              boxShadow: [BoxShadow(color: Colors.grey.withOpacity(0.1), spreadRadius: 1, blurRadius: 4, offset: const Offset(0, 2))],
+              boxShadow: [BoxShadow(color: Colors.grey.withValues(alpha: 0.1), spreadRadius: 1, blurRadius: 4, offset: const Offset(0, 2))],
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -246,7 +246,7 @@ class _ReportPageChildState extends State<_ReportPageChild> {
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(AppUIConstants.defaultBorderRadius),
-              boxShadow: [BoxShadow(color: Colors.grey.withOpacity(0.1), spreadRadius: 1, blurRadius: 4, offset: const Offset(0, 2))],
+              boxShadow: [BoxShadow(color: Colors.grey.withValues(alpha: 0.1), spreadRadius: 1, blurRadius: 4, offset: const Offset(0, 2))],
             ),
             child: Column(
               children: [
@@ -264,7 +264,7 @@ class _ReportPageChildState extends State<_ReportPageChild> {
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(AppUIConstants.defaultBorderRadius),
-            boxShadow: [BoxShadow(color: Colors.grey.withOpacity(0.1), spreadRadius: 1, blurRadius: 4, offset: const Offset(0, 2))],
+            boxShadow: [BoxShadow(color: Colors.grey.withValues(alpha: 0.1), spreadRadius: 1, blurRadius: 4, offset: const Offset(0, 2))],
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -287,20 +287,36 @@ class _ReportPageChildState extends State<_ReportPageChild> {
       child: Row(
         children: [
           // Bank logo
-          if (account.bank?.logo.isNotEmpty == true) ...[
-            ClipRRect(
-              borderRadius: BorderRadius.circular(4),
-              child: Image.network(
-                account.bank!.logo,
-                width: 40,
-                height: 40,
-                errorBuilder: (context, error, stackTrace) => Container(
+          if (account.bankId != null) ...[
+            Builder(
+              builder: (context) {
+                final bank = BankConstants.vietNamBanks.firstWhere(
+                  (b) => b.id == account.bankId,
+                  orElse: () => Bank(id: account.bankId!, name: 'Unknown Bank', code: '', shortName: ''),
+                );
+                if (bank.logo.isNotEmpty) {
+                  return ClipRRect(
+                    borderRadius: BorderRadius.circular(4),
+                    child: Image.network(
+                      bank.logo,
+                      width: 40,
+                      height: 40,
+                      errorBuilder: (context, error, stackTrace) => Container(
+                        width: 40,
+                        height: 40,
+                        decoration: BoxDecoration(color: AppColorConstants.grey, borderRadius: BorderRadius.circular(4)),
+                        child: const Icon(Icons.account_balance, color: AppColorConstants.white),
+                      ),
+                    ),
+                  );
+                }
+                return Container(
                   width: 40,
                   height: 40,
                   decoration: BoxDecoration(color: AppColorConstants.grey, borderRadius: BorderRadius.circular(4)),
                   child: const Icon(Icons.account_balance, color: AppColorConstants.white),
-                ),
-              ),
+                );
+              },
             ),
             const SizedBox(width: AppUIConstants.defaultSpacing),
           ] else ...[
@@ -318,7 +334,16 @@ class _ReportPageChildState extends State<_ReportPageChild> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(account.name, style: AppTextStyle.blackS14Medium),
-                if (account.bank != null) Text(account.bank!.name, style: AppTextStyle.grayS12Medium),
+                if (account.bankId != null)
+                  Builder(
+                    builder: (context) {
+                      final bank = BankConstants.vietNamBanks.firstWhere(
+                        (b) => b.id == account.bankId,
+                        orElse: () => Bank(id: account.bankId!, name: 'Unknown Bank', code: '', shortName: ''),
+                      );
+                      return Text(bank.name, style: AppTextStyle.grayS12Medium);
+                    },
+                  ),
                 if (account.accountNumber.isNotEmpty) Text('Số TK: ${account.accountNumber}', style: AppTextStyle.grayS12Medium),
                 Text('Loại: ${account.type}', style: AppTextStyle.grayS12Medium),
               ],
@@ -366,7 +391,7 @@ class _ReportPageChildState extends State<_ReportPageChild> {
         decoration: BoxDecoration(
           color: AppColorConstants.white,
           borderRadius: BorderRadius.circular(AppUIConstants.defaultBorderRadius),
-          boxShadow: [BoxShadow(color: Colors.grey.withOpacity(0.1), spreadRadius: 1, blurRadius: 4, offset: const Offset(0, 2))],
+          boxShadow: [BoxShadow(color: Colors.grey.withValues(alpha: 0.1), spreadRadius: 1, blurRadius: 4, offset: const Offset(0, 2))],
         ),
         child: Center(child: Text(text, style: AppTextStyle.blackS14Medium)),
       ),

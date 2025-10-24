@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kmonie/core/constants/constants.dart';
 import 'package:kmonie/core/text_style/text_style.dart';
 import 'package:kmonie/presentation/widgets/widgets.dart';
-import 'package:kmonie/core/constants/banks.dart';
 import 'package:kmonie/core/di/injection_container.dart';
 import 'package:kmonie/presentation/bloc/account_actions/account_actions.dart';
 import 'package:kmonie/entities/entities.dart';
@@ -28,9 +27,10 @@ class _AccountActionsPageState extends State<AccountActionsPage> {
 
   String _selectedType = 'Tiết kiệm';
   Bank? _selectedBank;
+  int? _selectedBankId;
   bool _submitted = false;
 
-  final List<String> _accountTypes = [AppTextConstants.accountTypeDefault, 'Tiết kiệm', 'Đầu tư', 'Tín dụng'];
+  final List<String> _accountTypes = ['Tiết kiệm', 'Đầu tư', 'Tín dụng'];
   late final List<Bank> _banks;
 
   bool get _isEditMode => widget.args?.account != null;
@@ -50,7 +50,16 @@ class _AccountActionsPageState extends State<AccountActionsPage> {
       _accountNumberController.text = account.accountNumber;
       _balanceController.text = account.balance.toString();
       _selectedType = account.type;
-      _selectedBank = account.bank;
+      _selectedBankId = account.bankId;
+      // Find bank from bankId for UI display
+      if (account.bankId != null) {
+        _selectedBank = BankConstants.vietNamBanks.firstWhere(
+          (b) => b.id == account.bankId,
+          orElse: () => Bank(id: account.bankId!, name: 'Unknown Bank', code: '', shortName: ''),
+        );
+      } else {
+        _selectedBank = null;
+      }
     }
   }
 
@@ -76,14 +85,10 @@ class _AccountActionsPageState extends State<AccountActionsPage> {
             loaded: (accounts) {
               if (_submitted) {
                 _submitted = false;
-                ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(_isEditMode ? 'Tài khoản đã được cập nhật thành công' : 'Tài khoản đã được lưu thành công')));
                 Navigator.of(context).pop();
               }
             },
-            error: (message) {
-              print('error $message');
-              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Lỗi: $message')));
-            },
+            error: (message) {},
           );
         },
         child: Builder(builder: (context) => _buildScaffold(context)),
@@ -178,7 +183,7 @@ class _AccountActionsPageState extends State<AccountActionsPage> {
                 Container(
                   padding: const EdgeInsets.all(AppUIConstants.defaultPadding),
                   decoration: BoxDecoration(
-                    color: widget.args!.account!.isPinned ? Colors.orange.withOpacity(0.1) : AppColorConstants.greyWhite,
+                    color: widget.args!.account!.isPinned ? Colors.orange.withValues(alpha: 0.1) : AppColorConstants.greyWhite,
                     borderRadius: BorderRadius.circular(8),
                     border: Border.all(color: widget.args!.account!.isPinned ? Colors.orange : AppColorConstants.grey),
                   ),
@@ -243,7 +248,10 @@ class _AccountActionsPageState extends State<AccountActionsPage> {
                         title: Text(b.shortName, style: AppTextStyle.blackS14Medium),
                         subtitle: Text(b.code, style: AppTextStyle.grayS12Medium),
                         onTap: () {
-                          setState(() => _selectedBank = b);
+                          setState(() {
+                            _selectedBank = b;
+                            _selectedBankId = b.id;
+                          });
                           _clearFocus();
                           Navigator.pop(context);
                         },
@@ -300,11 +308,10 @@ class _AccountActionsPageState extends State<AccountActionsPage> {
 
   void _saveAccount(BuildContext context) {
     if (_nameController.text.trim().isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Vui lòng nhập tên tài khoản')));
       return;
     }
 
-    final account = Account(id: _isEditMode ? widget.args!.account!.id : null, name: _nameController.text.trim(), type: _selectedType, amount: int.tryParse(_amountController.text) ?? 0, balance: int.tryParse(_balanceController.text) ?? 0, accountNumber: _accountNumberController.text.trim(), bank: _selectedBank);
+    final account = Account(id: _isEditMode ? widget.args!.account!.id : null, name: _nameController.text.trim(), type: _selectedType, amount: int.tryParse(_amountController.text) ?? 0, balance: int.tryParse(_balanceController.text) ?? 0, accountNumber: _accountNumberController.text.trim(), bankId: _selectedBankId);
     _submitted = true;
     if (_isEditMode) {
       context.read<AccountActionsBloc>().add(AccountActionsEvent.updateAccount(account));

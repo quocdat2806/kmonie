@@ -8,15 +8,10 @@ class AppGrid extends StatelessWidget {
   final IndexedWidgetBuilder itemBuilder;
   final double mainAxisSpacing;
   final double crossAxisSpacing;
+  final bool shrinkWrap;
+  final ScrollPhysics? physics;
 
-  const AppGrid({
-    super.key,
-    required this.crossAxisCount,
-    required this.itemCount,
-    required this.itemBuilder,
-    this.mainAxisSpacing = AppUIConstants.defaultGridMainAxisSpacing,
-    this.crossAxisSpacing = AppUIConstants.defaultGridCrossAxisSpacing,
-  });
+  const AppGrid({super.key, required this.crossAxisCount, required this.itemCount, required this.itemBuilder, this.mainAxisSpacing = AppUIConstants.defaultGridMainAxisSpacing, this.crossAxisSpacing = AppUIConstants.defaultGridCrossAxisSpacing, this.shrinkWrap = false, this.physics});
 
   @override
   Widget build(BuildContext context) {
@@ -25,12 +20,9 @@ class AppGrid extends StatelessWidget {
         final itemWidth = constraints.maxWidth / crossAxisCount;
         final itemHeight = itemWidth * 1.2;
         return GridView.builder(
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: crossAxisCount,
-            mainAxisExtent: itemHeight,
-            crossAxisSpacing: crossAxisSpacing,
-            mainAxisSpacing: mainAxisSpacing,
-          ),
+          shrinkWrap: shrinkWrap,
+          physics: physics,
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: crossAxisCount, mainAxisExtent: itemHeight, crossAxisSpacing: crossAxisSpacing, mainAxisSpacing: mainAxisSpacing),
           itemCount: itemCount,
           itemBuilder: itemBuilder,
         );

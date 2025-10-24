@@ -20,8 +20,8 @@ class TransactionCategoryGrid extends StatelessWidget {
           builder: (context, constraints) {
             final itemWidth = constraints.maxWidth / AppUIConstants.defaultGridCrossAxisCount;
             return AppGrid(
-              mainAxisSpacing: AppUIConstants.zeroInsets,
-              crossAxisSpacing: AppUIConstants.zeroInsets,
+              mainAxisSpacing: 0,
+              crossAxisSpacing: 0,
               crossAxisCount: AppUIConstants.defaultGridCrossAxisCount,
               itemCount: data.categories.length,
               itemBuilder: (context, index) {

@@ -45,6 +45,7 @@ class DailyTransactionBloc extends Bloc<DailyTransactionEvent, DailyTransactionS
 
   void _onInsertTransaction(InsertTransaction event, Emitter<DailyTransactionState> emit) {
     final tx = event.transaction;
+
     if (!_isSameDate(tx.date, state.selectedDate!)) return;
 
     final dateKey = AppDateUtils.formatDateKey(tx.date);
@@ -102,7 +103,10 @@ class DailyTransactionBloc extends Bloc<DailyTransactionEvent, DailyTransactionS
   }
 
   bool _isSameDate(DateTime a, DateTime b) {
-    return a.year == b.year && a.month == b.month && a.day == b.day;
+    // Normalize dates to remove time component and timezone issues
+    final normalizedA = DateTime(a.year, a.month, a.day);
+    final normalizedB = DateTime(b.year, b.month, b.day);
+    return normalizedA == normalizedB;
   }
 
   @override

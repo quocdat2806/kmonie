@@ -21,7 +21,7 @@ class StatisticsList extends StatelessWidget {
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(AppUIConstants.smallBorderRadius),
-          boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 4, offset: const Offset(0, 2))],
+          boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 4, offset: const Offset(0, 2))],
         ),
         child: const Center(child: Text('Không có giao dịch nào')),
       );
@@ -50,7 +50,7 @@ class StatisticsList extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(AppUIConstants.smallBorderRadius),
-        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 4, offset: const Offset(0, 2))],
+        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 4, offset: const Offset(0, 2))],
       ),
       child: Column(
         children: [
@@ -58,7 +58,7 @@ class StatisticsList extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(AppUIConstants.smallPadding),
             decoration: BoxDecoration(
-              color: AppColorConstants.grey.withOpacity(0.1),
+              color: AppColorConstants.grey.withValues(alpha: 0.1),
               borderRadius: const BorderRadius.only(topLeft: Radius.circular(AppUIConstants.smallBorderRadius), topRight: Radius.circular(AppUIConstants.smallBorderRadius)),
             ),
             child: Row(
@@ -93,7 +93,7 @@ class StatisticsList extends StatelessWidget {
           Container(
             width: AppUIConstants.largeIconSize,
             height: AppUIConstants.largeIconSize,
-            decoration: BoxDecoration(color: _getCategoryColor(category).withOpacity(0.1), borderRadius: BorderRadius.circular(AppUIConstants.smallBorderRadius)),
+            decoration: BoxDecoration(color: _getCategoryColor(category).withValues(alpha: 0.1), borderRadius: BorderRadius.circular(AppUIConstants.smallBorderRadius)),
             child: Center(
               child: SvgPicture.asset(_getCategoryIcon(category), width: AppUIConstants.defaultIconSize, height: AppUIConstants.defaultIconSize, colorFilter: ColorFilter.mode(_getCategoryColor(category), BlendMode.srcIn)),
             ),

@@ -9,7 +9,7 @@ import 'package:kmonie/core/streams/streams.dart';
 import 'package:kmonie/entities/entities.dart';
 import 'package:kmonie/core/utils/utils.dart';
 import 'package:kmonie/core/tools/tools.dart';
-import 'package:kmonie/presentation/widgets/chart/app_chart.dart';
+import 'package:kmonie/presentation/widgets/chart_circular/chart_circular.dart';
 import 'chart_event.dart';
 import 'chart_state.dart';
 
@@ -197,9 +197,9 @@ class ChartBloc extends Bloc<ChartEvent, ChartState> {
   bool _isTransactionInCurrentPeriod(Transaction transaction) {
     if (state.selectedPeriodType == IncomeType.month && state.selectedMonth != null) {
       final selectedMonth = state.selectedMonth!;
-      return transaction.date.year == selectedMonth.year && transaction.date.month == selectedMonth.month;
+      return AppDateUtils.isDateInCurrentMonth(transaction.date, selectedMonth);
     } else if (state.selectedPeriodType == IncomeType.year && state.selectedYear != null) {
-      return transaction.date.year == state.selectedYear;
+      return AppDateUtils.isYearInCurrentYear(transaction.date, DateTime(state.selectedYear!));
     }
     return false;
   }

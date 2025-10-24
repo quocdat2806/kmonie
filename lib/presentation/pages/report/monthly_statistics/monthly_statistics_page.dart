@@ -45,8 +45,9 @@ class _MonthlyStatisticsView extends StatelessWidget {
                   ),
                 ),
               );
-              // null -> all
-              context.read<MonthlyStatisticsBloc>().add(MonthlyStatisticsEvent.load(year: chosen));
+              if (context.mounted) {
+                context.read<MonthlyStatisticsBloc>().add(MonthlyStatisticsEvent.load(year: chosen));
+              }
             },
             child: BlocBuilder<MonthlyStatisticsBloc, MonthlyStatisticsState>(
               builder: (context, state) => Row(

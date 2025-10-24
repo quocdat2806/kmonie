@@ -2,7 +2,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 
 import 'package:kmonie/core/enums/enums.dart';
 import 'package:kmonie/entities/entities.dart';
-import 'package:kmonie/presentation/widgets/chart/app_chart.dart';
+import 'package:kmonie/presentation/widgets/chart_circular/chart_circular.dart';
 
 part 'chart_state.freezed.dart';
 

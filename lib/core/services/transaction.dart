@@ -4,8 +4,7 @@ import 'package:kmonie/database/database.dart';
 import 'package:kmonie/entities/entities.dart';
 import 'package:kmonie/core/config/config.dart';
 import 'package:kmonie/core/utils/utils.dart';
-import 'package:kmonie/core/helper/helper.dart';
-import 'package:kmonie/core/di/di.dart';
+import 'package:kmonie/core/enums/enums.dart';
 
 class PagedTransactionResult {
   final List<Transaction> transactions;
@@ -14,29 +13,96 @@ class PagedTransactionResult {
   PagedTransactionResult({required this.transactions, required this.totalRecords});
 }
 
-class TransactionService with TransactionQueryHelper {
+class TransactionService {
   final KMonieDatabase _db;
+  final AccountService _accountService;
+  TransactionService(this._db, this._accountService);
 
-  // ✅ Override for mixin
-  @override
-  KMonieDatabase get db => _db;
-
-  // ✅ FIX: LRU cache với size limit
   final _LRUCache<String, Map<String, List<Transaction>>> _groupCache = _LRUCache(maxSize: 10);
 
-  // ✅ FIX: Year cache + invalidation tracking
   final Map<int, List<Transaction>> _yearCache = {};
   final Set<int> _dirtyYears = {};
-
-  TransactionService(this._db);
 
   Transaction _mapRow(TransactionsTbData row) {
     return Transaction(id: row.id, amount: row.amount, date: row.date.toLocal(), transactionCategoryId: row.transactionCategoryId, content: row.content, transactionType: row.transactionType, createdAt: row.createdAt.toLocal(), updatedAt: row.updatedAt.toLocal());
   }
 
-  // ✅ REMOVED: _dateInRange() - now using mixin's dateInMonthRange() and dateInYearRange()
+  Expression<bool> _dateInMonthRange(Expression<DateTime> dateCol, int year, int month) {
+    final r = AppDateUtils.monthRangeUtc(year, month);
+    return dateCol.isBiggerOrEqualValue(r.startUtc) & dateCol.isSmallerThanValue(r.endUtc);
+  }
 
-  // ✅ Helper: Invalidate all caches
+  Expression<bool> _dateInYearRange(Expression<DateTime> dateCol, int year) {
+    final r = AppDateUtils.yearRangeUtc(year);
+    return dateCol.isBiggerOrEqualValue(r.startUtc) & dateCol.isSmallerThanValue(r.endUtc);
+  }
+
+  Future<int> calculateTotalAmountInMonth({required int year, required int month, int? transactionType, int? categoryId}) async {
+    final transactions = await _getTransactionsInMonth(year, month, transactionType, categoryId);
+    return TransactionCalculator.calculateTotalAmount(transactions);
+  }
+
+  Future<int> calculateTotalAmountInYear({required int year, int? transactionType, int? categoryId}) async {
+    final transactions = await _getTransactionsInYear(year, transactionType, categoryId);
+    return TransactionCalculator.calculateTotalAmount(transactions);
+  }
+
+  Future<List<TransactionsTbData>> getTransactionsFiltered({int? year, int? month, int? transactionType, int? categoryId, int? limit, int? offset}) async {
+    final q = _db.select(_db.transactionsTb);
+
+    if (year != null && month != null) {
+      q.where((t) => _dateInMonthRange(t.date, year, month));
+    } else if (year != null) {
+      q.where((t) => _dateInYearRange(t.date, year));
+    }
+
+    if (transactionType != null) {
+      q.where((t) => t.transactionType.equals(transactionType));
+    }
+
+    if (categoryId != null) {
+      q.where((t) => t.transactionCategoryId.equals(categoryId));
+    }
+
+    q.orderBy([(t) => OrderingTerm.desc(t.date)]);
+
+    if (limit != null) {
+      q.limit(limit, offset: offset ?? 0);
+    }
+
+    return await q.get();
+  }
+
+  Future<List<Transaction>> _getTransactionsInMonth(int year, int month, int? transactionType, int? categoryId) async {
+    final q = _db.select(_db.transactionsTb)..where((t) => _dateInMonthRange(t.date, year, month));
+
+    if (transactionType != null) {
+      q.where((t) => t.transactionType.equals(transactionType));
+    }
+
+    if (categoryId != null) {
+      q.where((t) => t.transactionCategoryId.equals(categoryId));
+    }
+
+    final rows = await q.get();
+    return rows.map(_mapRow).toList();
+  }
+
+  Future<List<Transaction>> _getTransactionsInYear(int year, int? transactionType, int? categoryId) async {
+    final q = _db.select(_db.transactionsTb)..where((t) => _dateInYearRange(t.date, year));
+
+    if (transactionType != null) {
+      q.where((t) => t.transactionType.equals(transactionType));
+    }
+
+    if (categoryId != null) {
+      q.where((t) => t.transactionCategoryId.equals(categoryId));
+    }
+
+    final rows = await q.get();
+    return rows.map(_mapRow).toList();
+  }
+
   void _invalidateAllCaches([int? transactionYear]) {
     _groupCache.clear();
 
@@ -55,10 +121,8 @@ class TransactionService with TransactionQueryHelper {
 
       final id = await _db.into(_db.transactionsTb).insert(TransactionsTbCompanion.insert(amount: amount, date: utc, transactionCategoryId: transactionCategoryId, content: Value(content), transactionType: Value(transactionType)));
 
-      // ✅ FIX: Invalidate cache after create
       _invalidateAllCaches(date.year);
 
-      // Update pinned account balance if exists
       await _updatePinnedAccountBalance(amount, transactionType);
 
       return Transaction(id: id, amount: amount, date: utc.toLocal(), transactionCategoryId: transactionCategoryId, content: content, transactionType: transactionType, createdAt: DateTime.now(), updatedAt: DateTime.now());
@@ -70,27 +134,22 @@ class TransactionService with TransactionQueryHelper {
 
   Future<void> _updatePinnedAccountBalance(int amount, int transactionType) async {
     try {
-      final accountService = sl<AccountService>();
-      final pinnedAccount = await accountService.getPinnedAccount();
+      final pinnedAccount = await _accountService.getPinnedAccount();
 
       if (pinnedAccount != null && pinnedAccount.id != null) {
         int newBalance = pinnedAccount.balance;
 
-        // TransactionType: 0 = Expense (chi), 1 = Income (thu)
-        if (transactionType == 0) {
-          // Expense: subtract from balance
+        if (transactionType == TransactionType.expense.typeIndex) {
           newBalance -= amount;
-        } else if (transactionType == 1) {
-          // Income: add to balance
+        } else if (transactionType == TransactionType.income.typeIndex) {
           newBalance += amount;
         }
 
-        // Ensure balance doesn't go negative
         if (newBalance < 0) {
           newBalance = 0;
         }
 
-        await accountService.updateAccountBalance(pinnedAccount.id!, newBalance);
+        await _accountService.updateAccountBalance(pinnedAccount.id!, newBalance);
         logger.i('Updated pinned account balance: ${pinnedAccount.name} -> $newBalance VND');
       }
     } catch (e) {
@@ -119,10 +178,8 @@ class TransactionService with TransactionQueryHelper {
     return sortedGrouped;
   }
 
-  // ✅ FIX: Add pagination
   Future<PagedTransactionResult> searchByContent({String? keyword, int? transactionType, int pageSize = AppConfigs.defaultPageSize, int pageIndex = AppConfigs.defaultPageIndex}) async {
     try {
-      // Count query
       final countExp = _db.transactionsTb.id.count();
       final countQ = _db.selectOnly(_db.transactionsTb)..addColumns([countExp]);
 
@@ -136,7 +193,6 @@ class TransactionService with TransactionQueryHelper {
 
       final totalRecords = (await countQ.getSingle()).read(countExp) ?? 0;
 
-      // Data query with pagination
       final q = _db.select(_db.transactionsTb);
       if (keyword?.trim().isNotEmpty == true) {
         final like = '%${keyword!.trim()}%';
@@ -160,7 +216,6 @@ class TransactionService with TransactionQueryHelper {
     }
   }
 
-  // ✅ FIX: Remove single-item cache, SQLite handles this
   Future<Transaction?> getTransactionById(int id) async {
     final row = await (_db.select(_db.transactionsTb)..where((t) => t.id.equals(id))).getSingleOrNull();
 
@@ -169,14 +224,12 @@ class TransactionService with TransactionQueryHelper {
 
   Future<Transaction?> updateTransaction({required int id, int? amount, DateTime? date, int? transactionCategoryId, String? content}) async {
     try {
-      // ✅ Get old transaction to know which year to invalidate
       final oldTx = await getTransactionById(id);
 
       final companion = TransactionsTbCompanion(amount: amount != null ? Value(amount) : const Value.absent(), date: date != null ? Value(date.toUtc()) : const Value.absent(), transactionCategoryId: transactionCategoryId != null ? Value(transactionCategoryId) : const Value.absent(), content: content != null ? Value(content) : const Value.absent());
 
       await (_db.update(_db.transactionsTb)..where((t) => t.id.equals(id))).write(companion);
 
-      // ✅ Invalidate caches for affected years
       final affectedYears = <int>{};
       if (oldTx != null) affectedYears.add(oldTx.date.year);
       if (date != null) affectedYears.add(date.year);
@@ -194,7 +247,6 @@ class TransactionService with TransactionQueryHelper {
 
   Future<bool> deleteTransaction(int id) async {
     try {
-      // ✅ Get transaction to know which year to invalidate
       final tx = await getTransactionById(id);
 
       final deletedRows = await (_db.delete(_db.transactionsTb)..where((t) => t.id.equals(id))).go();
@@ -224,14 +276,13 @@ class TransactionService with TransactionQueryHelper {
     try {
       final totalCountExp = _db.transactionsTb.id.count();
       final totalCountQuery = _db.selectOnly(_db.transactionsTb)
-        ..where(dateInMonthRange(_db.transactionsTb.date, year, month))
+        ..where(_dateInMonthRange(_db.transactionsTb.date, year, month))
         ..addColumns([totalCountExp]);
 
       final totalRecords = (await totalCountQuery.getSingle()).read(totalCountExp) ?? 0;
 
-      // Data
       final query = _db.select(_db.transactionsTb)
-        ..where((t) => dateInMonthRange(t.date, year, month))
+        ..where((t) => _dateInMonthRange(t.date, year, month))
         ..orderBy([(t) => OrderingTerm.desc(t.date)])
         ..limit(pageSize, offset: pageIndex * pageSize);
 
@@ -246,7 +297,6 @@ class TransactionService with TransactionQueryHelper {
   }
 
   Future<List<Transaction>> getTransactionsInYear(int year, {bool forceRefresh = false}) async {
-    // ✅ Check if year is dirty
     if (_dirtyYears.contains(year)) {
       _yearCache.remove(year);
       _dirtyYears.remove(year);
@@ -258,10 +308,9 @@ class TransactionService with TransactionQueryHelper {
     }
 
     try {
-      // ✅ REFACTORED: Use mixin's dateInYearRange()
       final rows =
           await (_db.select(_db.transactionsTb)
-                ..where((t) => dateInYearRange(t.date, year))
+                ..where((t) => _dateInYearRange(t.date, year))
                 ..orderBy([(t) => OrderingTerm.desc(t.date)]))
               .get();
 
@@ -295,7 +344,6 @@ class TransactionService with TransactionQueryHelper {
   }
 }
 
-// ✅ Simple LRU Cache implementation
 class _LRUCache<K, V> {
   final int maxSize;
   final Map<K, V> _cache = {};
@@ -306,7 +354,6 @@ class _LRUCache<K, V> {
   V? get(K key) {
     if (!_cache.containsKey(key)) return null;
 
-    // Move to end (most recently used)
     _accessOrder
       ..remove(key)
       ..add(key);
@@ -317,7 +364,6 @@ class _LRUCache<K, V> {
     if (_cache.containsKey(key)) {
       _accessOrder.remove(key);
     } else if (_cache.length >= maxSize) {
-      // Remove least recently used
       final oldest = _accessOrder.removeAt(0);
       _cache.remove(oldest);
     }
