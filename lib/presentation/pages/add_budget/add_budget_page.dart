@@ -33,7 +33,6 @@ class _AddBudgetPageChild extends StatefulWidget {
 }
 
 class _AddBudgetPageChildState extends State<_AddBudgetPageChild> {
-  // no longer needed when using app-wide streams
   // ignore: unused_field
   bool _hasChanges = false;
 

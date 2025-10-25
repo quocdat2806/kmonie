@@ -67,7 +67,6 @@ class _ReportPageChildState extends State<_ReportPageChild> {
               ],
             ),
           ),
-          // Content
           Expanded(
             child: SingleChildScrollView(
               padding: const EdgeInsets.all(AppUIConstants.defaultPadding),
@@ -187,8 +186,6 @@ class _ReportPageChildState extends State<_ReportPageChild> {
     );
   }
 
-  // removed duplicate budget info/format helpers (now shared via MonthlyBudgetSummary)
-
   Widget _buildNetWorthCard() {
     return BlocBuilder<ReportBloc, ReportState>(
       buildWhen: (previous, current) => previous.accounts != current.accounts,
@@ -286,7 +283,6 @@ class _ReportPageChildState extends State<_ReportPageChild> {
       decoration: BoxDecoration(color: AppColorConstants.greyWhite, borderRadius: BorderRadius.circular(AppUIConstants.defaultBorderRadius)),
       child: Row(
         children: [
-          // Bank logo
           if (account.bankId != null) ...[
             Builder(
               builder: (context) {
@@ -328,7 +324,6 @@ class _ReportPageChildState extends State<_ReportPageChild> {
             ),
             const SizedBox(width: AppUIConstants.defaultSpacing),
           ],
-          // Account info
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -349,7 +344,6 @@ class _ReportPageChildState extends State<_ReportPageChild> {
               ],
             ),
           ),
-          // Amount
           Column(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [Text('${FormatUtils.formatCurrency(account.balance)} VND', style: AppTextStyle.blackS14Medium)],

@@ -12,11 +12,9 @@ import 'package:kmonie/presentation/blocs/budget/budget_state.dart';
 import 'package:kmonie/presentation/widgets/widgets.dart';
 import 'package:kmonie/core/navigation/router_path.dart';
 import 'package:go_router/go_router.dart';
-// import 'package:kmonie/core/tools/tools.dart';
 
 import '../../../entities/transaction_category/transaction_category.dart';
 import 'widgets/budget_category_card.dart';
-import 'widgets/budget_monthly_card.dart';
 
 class BudgetPage extends StatelessWidget {
   const BudgetPage({super.key});
@@ -102,7 +100,6 @@ class _BudgetPageChildState extends State<_BudgetPageChild> {
                     child: Column(children: [...state.expenseCategories.where((TransactionCategory c) => (state.categoryBudgets[c.id!] ?? 0) > 0).map((TransactionCategory c) => _buildCategoryCard(c, state))]),
                   ),
                 ),
-                // Bottom button
                 Padding(
                   padding: const EdgeInsets.all(AppUIConstants.defaultPadding),
                   child: AppButton(
@@ -121,28 +118,10 @@ class _BudgetPageChildState extends State<_BudgetPageChild> {
     );
   }
 
-  // Widget extracted to widgets/budget_monthly_card.dart
-  // ignore: unused_element
-  Widget _buildMonthlyBudgetCard(BudgetState state) {
-    return BudgetMonthlyCard(monthlyBudget: state.monthlyBudget, totalSpent: state.totalSpent);
-  }
-
   Widget _buildCategoryCard(TransactionCategory category, BudgetState state) {
     final budget = state.categoryBudgets[category.id!] ?? 0;
     final spent = state.categorySpent[category.id!] ?? 0;
     return BudgetCategoryCard(category: category, budget: budget, spent: spent, onEdit: () => _showBudgetDialog(category));
-  }
-
-  // kept for small inline rows
-  // ignore: unused_element
-  Widget _buildBudgetInfoItem(String label, String value, {bool isOverBudget = false}) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text(label, style: AppTextStyle.blackS12Medium),
-        Text(value, style: AppTextStyle.blackS12.copyWith(color: isOverBudget ? AppColorConstants.red : AppColorConstants.black)),
-      ],
-    );
   }
 
   void _showBudgetDialog(TransactionCategory category) async {
@@ -194,42 +173,5 @@ class _BudgetPageChildState extends State<_BudgetPageChild> {
         context.read<BudgetBloc>().add(BudgetEvent.setBudget(period: DateTime(p.year, p.month), categoryId: category.id!, amount: value));
       }
     });
-  }
-
-  // small formatter used in this file
-  // ignore: unused_element
-  String _formatAmount(int amount) {
-    if (amount == 0) return '0';
-    return amount.toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]}.');
-  }
-
-  // ignore: unused_element
-  Widget _buildEmptyBudgetMessage() {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(AppUIConstants.defaultPadding * 2),
-      decoration: BoxDecoration(
-        color: Colors.grey.withValues(alpha: 0.05),
-        borderRadius: BorderRadius.circular(AppUIConstants.defaultBorderRadius),
-        border: Border.all(color: Colors.grey.withValues(alpha: 0.2)),
-      ),
-      child: Column(
-        children: [
-          Icon(Icons.account_balance_wallet_outlined, size: 48, color: Colors.grey.withValues(alpha: 0.6)),
-          const SizedBox(height: AppUIConstants.defaultSpacing),
-          Text(
-            'Chưa có ngân sách nào được thiết lập',
-            style: AppTextStyle.blackS16Bold.copyWith(color: Colors.grey.withValues(alpha: 0.8)),
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: AppUIConstants.smallSpacing),
-          Text(
-            'Nhấn nút "Cài đặt ngân sách" bên dưới để bắt đầu',
-            style: AppTextStyle.blackS14.copyWith(color: Colors.grey.withValues(alpha: 0.6)),
-            textAlign: TextAlign.center,
-          ),
-        ],
-      ),
-    );
   }
 }

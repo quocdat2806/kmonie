@@ -42,7 +42,6 @@ class TransactionActionsBloc extends Bloc<TransactionActionsEvent, TransactionAc
   }
 
   Future<void> _onInitialize(Initialize e, Emitter<TransactionActionsState> emit) async {
-    // Load separated categories once for all tabs
     final categoriesResult = await categoryRepository.getAll();
 
     await categoriesResult.fold(
@@ -63,7 +62,6 @@ class TransactionActionsBloc extends Bloc<TransactionActionsEvent, TransactionAc
       return;
     }
 
-    // Set initial date from args or default to now
     final initialDate = args?.selectedDate ?? DateTime.now();
     emit(state.copyWith(date: initialDate));
   }
@@ -180,7 +178,6 @@ class TransactionActionsBloc extends Bloc<TransactionActionsEvent, TransactionAc
   Future<void> _onCheckOverBudget(CheckOverBudget e, Emitter<TransactionActionsState> emit) async {
     final categoryId = state.selectedCategoryIdFor(state.currentType);
     if (categoryId == null || state.amount <= 0) {
-      // Submit transaction without budget check
       add(const SubmitTransaction());
       return;
     }
@@ -194,7 +191,6 @@ class TransactionActionsBloc extends Bloc<TransactionActionsEvent, TransactionAc
       final budgetAmount = budgetResult.fold((failure) => 0, (budget) => budget);
 
       if (budgetAmount <= 0) {
-        // No budget set, submit transaction
         add(const SubmitTransaction());
         return;
       }
@@ -211,14 +207,11 @@ class TransactionActionsBloc extends Bloc<TransactionActionsEvent, TransactionAc
       final proposed = spentSoFar + state.amount;
 
       if (proposed > budgetAmount) {
-        // Over budget, show dialog
         emit(state.copyWith(overBudgetState: OverBudgetState.showOverBudgetDialog));
       } else {
-        // Within budget, submit transaction
         add(const SubmitTransaction());
       }
     } catch (e) {
-      // Error occurred, submit transaction anyway
       add(const SubmitTransaction());
     }
   }
