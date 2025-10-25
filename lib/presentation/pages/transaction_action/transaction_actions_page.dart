@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:kmonie/core/constants/constants.dart';
@@ -50,7 +51,8 @@ class _TransactionActionsPageChildState extends State<TransactionActionsPageChil
   final FocusNode _noteFocusNode = FocusNode();
   late AnimationController _animationController;
   late Animation<double> _slideAnimation;
-  double _previousKeyboardHeight = 0;
+  late ScrollController _scrollController;
+  final GlobalKey _gridKey = GlobalKey();
 
   @override
   void initState() {
@@ -58,6 +60,7 @@ class _TransactionActionsPageChildState extends State<TransactionActionsPageChil
     _noteController.text = widget.args?.transaction?.content ?? '';
     _animationController = AnimationController(duration: AppUIConstants.shortAnimationDuration, vsync: this);
     _slideAnimation = Tween<double>(begin: 0, end: 1).animate(CurvedAnimation(parent: _animationController, curve: Curves.easeOutQuart));
+    _scrollController = ScrollController();
     WidgetsBinding.instance.addObserver(this);
   }
 
@@ -67,6 +70,7 @@ class _TransactionActionsPageChildState extends State<TransactionActionsPageChil
     _animationController.dispose();
     _noteController.dispose();
     _noteFocusNode.dispose();
+    _scrollController.dispose();
     super.dispose();
   }
 
@@ -77,9 +81,11 @@ class _TransactionActionsPageChildState extends State<TransactionActionsPageChil
 
     final view = View.of(context);
     final keyboardHeight = view.viewInsets.bottom / view.devicePixelRatio;
+    final currentState = context.read<TransactionActionsBloc>().state;
 
-    if (keyboardHeight == _previousKeyboardHeight) return;
-    _previousKeyboardHeight = keyboardHeight;
+    if (keyboardHeight == currentState.previousKeyboardHeight) return;
+
+    context.read<TransactionActionsBloc>().add(TransactionActionsEvent.updateKeyboardHeight(keyboardHeight));
 
     if (keyboardHeight > 0) {
       _animationController.forward();
@@ -93,26 +99,39 @@ class _TransactionActionsPageChildState extends State<TransactionActionsPageChil
     final keyboardHeight = MediaQuery.of(context).viewInsets.bottom;
     return BlocListener<TransactionActionsBloc, TransactionActionsState>(
       listener: (context, state) {
-        // Handle success state
         if (state.loadStatus == LoadStatus.success) {
           AppNavigator(context: context).pop();
         }
 
-        // Handle select date state
         if (state.selectDateState == SelectDateState.showDatePicker) {
           _showDatePicker(context);
           context.read<TransactionActionsBloc>().add(const ClearSelectDateState());
         }
 
-        // Handle over budget state
         if (state.overBudgetState == OverBudgetState.showOverBudgetDialog) {
           _showOverBudgetDialog(context);
           context.read<TransactionActionsBloc>().add(const ClearOverBudgetState());
         }
+
+        if (state.isKeyboardVisible && state.shouldScroll && !state.hasScrolledOnce) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (_scrollController.hasClients && _gridKey.currentContext != null) {
+              final RenderBox gridRenderBox = _gridKey.currentContext!.findRenderObject() as RenderBox;
+              final gridHeight = gridRenderBox.size.height;
+              final targetPosition = gridHeight / 2;
+              _scrollController.animateTo(targetPosition, duration: const Duration(milliseconds: 300), curve: Curves.easeOut);
+              context.read<TransactionActionsBloc>().add(const TransactionActionsEvent.setHasScrolledOnce(true));
+            }
+          });
+        }
+
+        if (!state.isKeyboardVisible) {
+          context.read<TransactionActionsBloc>().add(const TransactionActionsEvent.resetScrollState());
+        }
       },
       child: Scaffold(
         resizeToAvoidBottomInset: false,
-        backgroundColor: AppColorConstants.primary,
+        backgroundColor: AppColorConstants.white,
         body: SizedBox.expand(
           child: SafeArea(
             child: Stack(
@@ -121,13 +140,51 @@ class _TransactionActionsPageChildState extends State<TransactionActionsPageChil
                 Positioned.fill(
                   child: Column(
                     children: [
-                      _buildAppBar(),
-                      const TransactionActionsTabBar(),
-                      const SizedBox(height: AppUIConstants.defaultPadding),
-                      const Expanded(
-                        child: ColoredBox(
-                          color: AppColorConstants.white,
-                          child: Padding(padding: EdgeInsets.all(AppUIConstants.smallPadding), child: TransactionCategoryGrid()),
+                      ColoredBox(
+                        color: AppColorConstants.primary,
+                        child: Column(
+                          children: [
+                            _buildAppBar(),
+                            const TransactionActionsTabBar(),
+                            const SizedBox(height: AppUIConstants.defaultPadding),
+                          ],
+                        ),
+                      ),
+                      Expanded(
+                        child: BlocBuilder<TransactionActionsBloc, TransactionActionsState>(
+                          buildWhen: (prev, curr) => prev.isKeyboardVisible != curr.isKeyboardVisible,
+                          builder: (context, state) {
+                            return CustomScrollView(
+                              controller: _scrollController,
+                              physics: const AlwaysScrollableScrollPhysics(),
+                              slivers: [
+                                SliverToBoxAdapter(
+                                  child: Container(
+                                    key: _gridKey,
+                                    color: AppColorConstants.white,
+                                    padding: const EdgeInsets.all(AppUIConstants.smallPadding),
+                                    child: TransactionCategoryGrid(
+                                      onItemClick: () {
+                                        context.read<TransactionActionsBloc>().add(const TransactionActionsEvent.setShouldScroll(true));
+                                        if (!state.hasScrolledOnce) {
+                                          WidgetsBinding.instance.addPostFrameCallback((_) {
+                                            if (_scrollController.hasClients && _gridKey.currentContext != null) {
+                                              final RenderBox gridRenderBox = _gridKey.currentContext!.findRenderObject() as RenderBox;
+                                              final gridHeight = gridRenderBox.size.height;
+                                              final targetPosition = gridHeight / 2;
+                                              _scrollController.animateTo(targetPosition, duration: const Duration(milliseconds: 300), curve: Curves.easeOut);
+                                              context.read<TransactionActionsBloc>().add(const TransactionActionsEvent.setHasScrolledOnce(true));
+                                            }
+                                          });
+                                        }
+                                      },
+                                    ),
+                                  ),
+                                ),
+                                SliverPadding(padding: EdgeInsets.only(bottom: state.isKeyboardVisible ? 420 : 0)),
+                              ],
+                            );
+                          },
                         ),
                       ),
                     ],
@@ -197,14 +254,14 @@ class _TransactionActionsPageChildState extends State<TransactionActionsPageChil
           decoration: const ShapeDecoration(shape: StadiumBorder()),
           child: InkWell(
             customBorder: const StadiumBorder(),
-            onTap: () {
+            onTap: () async {
               if (context.read<TransactionActionsBloc>().state.isKeyboardVisible) {
                 context.read<TransactionActionsBloc>().add(const ToggleKeyboardVisibility());
-                Future.delayed(const Duration(milliseconds: 850), () {
-                  if (mounted) {
-                    AppNavigator(context: context).pop();
-                  }
-                });
+                await SystemChannels.textInput.invokeMethod('TextInput.hide');
+                await Future<void>.delayed(const Duration(milliseconds: 350));
+                if (mounted) {
+                  AppNavigator(context: context).pop();
+                }
                 return;
               }
               AppNavigator(context: context).pop();
@@ -236,7 +293,7 @@ class _TransactionActionsPageChildState extends State<TransactionActionsPageChil
       builder: (ctx) => AppExceedBudgetDialog(onConfirm: () => Navigator.of(ctx).pop(true)),
     );
 
-    if (proceed == true) {
+    if (proceed == true && context.mounted) {
       context.read<TransactionActionsBloc>().add(const SubmitTransaction());
     }
   }

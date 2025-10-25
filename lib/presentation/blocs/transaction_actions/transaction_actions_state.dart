@@ -14,8 +14,21 @@ enum OverBudgetState { none, showOverBudgetDialog }
 abstract class TransactionActionsState with _$TransactionActionsState {
   const TransactionActionsState._();
 
-  const factory TransactionActionsState({@Default(0) int selectedIndex, SeparatedCategories? separatedCategories, @Default(<TransactionType, int?>{}) Map<TransactionType, int?> selectedCategoryIdByType, @Default(false) bool isKeyboardVisible, @Default('') String note, @Default(0) int amount, @Default(LoadStatus.initial) LoadStatus loadStatus, DateTime? date, @Default(SelectDateState.none) SelectDateState selectDateState, @Default(OverBudgetState.none) OverBudgetState overBudgetState}) =
-      _TransactionActionsState;
+  const factory TransactionActionsState({
+    @Default(0) int selectedIndex,
+    SeparatedCategories? separatedCategories,
+    @Default(<TransactionType, int?>{}) Map<TransactionType, int?> selectedCategoryIdByType,
+    @Default(false) bool isKeyboardVisible,
+    @Default('') String note,
+    @Default(0) int amount,
+    @Default(LoadStatus.initial) LoadStatus loadStatus,
+    DateTime? date,
+    @Default(SelectDateState.none) SelectDateState selectDateState,
+    @Default(OverBudgetState.none) OverBudgetState overBudgetState,
+    @Default(false) bool shouldScroll,
+    @Default(false) bool hasScrolledOnce,
+    @Default(0.0) double previousKeyboardHeight,
+  }) = _TransactionActionsState;
 
   TransactionType get currentType => TransactionType.fromIndex(selectedIndex);
 

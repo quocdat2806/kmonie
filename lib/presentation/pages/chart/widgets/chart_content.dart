@@ -25,9 +25,9 @@ class ChartContent extends StatelessWidget {
           child: Column(
             children: [
               _buildChartSection(context, state.chartData),
-              const SizedBox(height: AppUIConstants.largeSpacing),
+              const SizedBox(height: AppUIConstants.defaultSpacing),
               _buildDetailedList(state.chartData),
-              const SizedBox(height: AppUIConstants.largeSpacing),
+              const SizedBox(height: AppUIConstants.defaultSpacing),
             ],
           ),
         );

@@ -31,6 +31,10 @@ class TransactionActionsBloc extends Bloc<TransactionActionsEvent, TransactionAc
     on<CheckOverBudget>(_onCheckOverBudget);
     on<ClearSelectDateState>(_onClearSelectDateState);
     on<ClearOverBudgetState>(_onClearOverBudgetState);
+    on<SetShouldScroll>(_onSetShouldScroll);
+    on<SetHasScrolledOnce>(_onSetHasScrolledOnce);
+    on<ResetScrollState>(_onResetScrollState);
+    on<UpdateKeyboardHeight>(_onUpdateKeyboardHeight);
     add(const Initialize());
   }
   void _onSelectDateChange(SelectDateChange e, Emitter<TransactionActionsState> emit) {
@@ -225,5 +229,21 @@ class TransactionActionsBloc extends Bloc<TransactionActionsEvent, TransactionAc
 
   void _onClearOverBudgetState(ClearOverBudgetState e, Emitter<TransactionActionsState> emit) {
     emit(state.copyWith(overBudgetState: OverBudgetState.none));
+  }
+
+  void _onSetShouldScroll(SetShouldScroll e, Emitter<TransactionActionsState> emit) {
+    emit(state.copyWith(shouldScroll: e.shouldScroll));
+  }
+
+  void _onSetHasScrolledOnce(SetHasScrolledOnce e, Emitter<TransactionActionsState> emit) {
+    emit(state.copyWith(hasScrolledOnce: e.hasScrolledOnce));
+  }
+
+  void _onResetScrollState(ResetScrollState e, Emitter<TransactionActionsState> emit) {
+    emit(state.copyWith(shouldScroll: false, hasScrolledOnce: false));
+  }
+
+  void _onUpdateKeyboardHeight(UpdateKeyboardHeight e, Emitter<TransactionActionsState> emit) {
+    emit(state.copyWith(previousKeyboardHeight: e.height));
   }
 }

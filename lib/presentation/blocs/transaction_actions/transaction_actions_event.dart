@@ -23,4 +23,8 @@ class TransactionActionsEvent with _$TransactionActionsEvent {
   const factory TransactionActionsEvent.clearSelectDateState() = ClearSelectDateState;
   const factory TransactionActionsEvent.clearOverBudgetState() = ClearOverBudgetState;
   const factory TransactionActionsEvent.initialize() = Initialize;
+  const factory TransactionActionsEvent.setShouldScroll(bool shouldScroll) = SetShouldScroll;
+  const factory TransactionActionsEvent.setHasScrolledOnce(bool hasScrolledOnce) = SetHasScrolledOnce;
+  const factory TransactionActionsEvent.resetScrollState() = ResetScrollState;
+  const factory TransactionActionsEvent.updateKeyboardHeight(double height) = UpdateKeyboardHeight;
 }

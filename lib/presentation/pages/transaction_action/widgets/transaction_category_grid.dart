@@ -5,11 +5,12 @@ import 'package:kmonie/core/constants/constants.dart';
 import 'package:kmonie/core/enums/enums.dart';
 import 'package:kmonie/entities/entities.dart';
 import 'package:kmonie/presentation/blocs/transaction_actions/transaction_actions.dart';
-import 'package:kmonie/presentation/widgets/widgets.dart';
 import 'transaction_category_item.dart';
 
 class TransactionCategoryGrid extends StatelessWidget {
-  const TransactionCategoryGrid({super.key});
+  final VoidCallback? onItemClick;
+
+  const TransactionCategoryGrid({super.key, this.onItemClick});
 
   @override
   Widget build(BuildContext context) {
@@ -19,10 +20,10 @@ class TransactionCategoryGrid extends StatelessWidget {
         return LayoutBuilder(
           builder: (context, constraints) {
             final itemWidth = constraints.maxWidth / AppUIConstants.defaultGridCrossAxisCount;
-            return AppGrid(
-              mainAxisSpacing: 0,
-              crossAxisSpacing: 0,
-              crossAxisCount: AppUIConstants.defaultGridCrossAxisCount,
+            return GridView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: AppUIConstants.defaultGridCrossAxisCount),
               itemCount: data.categories.length,
               itemBuilder: (context, index) {
                 final category = data.categories[index];
@@ -31,6 +32,11 @@ class TransactionCategoryGrid extends StatelessWidget {
                   isSelected: category.id == data.selectedId,
                   itemWidth: itemWidth,
                   onTap: () {
+                    final totalItems = data.categories.length;
+                    final halfPoint = totalItems / 2;
+                    if (index > halfPoint) {
+                      onItemClick?.call();
+                    }
                     context.read<TransactionActionsBloc>().add(CategoryChanged(type: data.type, categoryId: category.id!));
                   },
                 );
