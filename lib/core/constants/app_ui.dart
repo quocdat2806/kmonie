@@ -23,6 +23,7 @@ class AppUIConstants {
   static const double mediumIconSize = 24.0;
   static const double largeIconSize = 28.0;
   static const double extraLargeIconSize = 32.0;
+  static const double extraLargeIconSize2 = 64.0;
 
   static const double defaultButtonHeight = 44.0;
   static const double smallButtonHeight = 36.0;

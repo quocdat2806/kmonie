@@ -45,11 +45,12 @@ class _BudgetPageChildState extends State<_BudgetPageChild> {
   }
 
   void _showMonthPicker() async {
+    final bloc = context.read<BudgetBloc>();
+    final sp = bloc.state.selectedPeriod ?? DateTime.now();
+
     final result = await showDialog<Map<String, int>>(
       context: context,
       builder: (context) {
-        final s = context.read<BudgetBloc>().state;
-        final sp = s.selectedPeriod ?? DateTime.now();
         return MonthPickerDialog(initialMonth: sp.month, initialYear: sp.year);
       },
     );
@@ -90,29 +91,31 @@ class _BudgetPageChildState extends State<_BudgetPageChild> {
         ],
       ),
       body: SafeArea(
-        child: BlocBuilder<BudgetBloc, BudgetState>(
-          builder: (context, state) {
-            return Column(
-              children: [
-                Expanded(
-                  child: SingleChildScrollView(
+        child: Stack(
+          children: [
+            Positioned.fill(
+              child: BlocBuilder<BudgetBloc, BudgetState>(
+                builder: (context, state) {
+                  return SingleChildScrollView(
                     padding: const EdgeInsets.all(AppUIConstants.defaultPadding),
                     child: Column(children: [...state.expenseCategories.where((TransactionCategory c) => (state.categoryBudgets[c.id!] ?? 0) > 0).map((TransactionCategory c) => _buildCategoryCard(c, state))]),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(AppUIConstants.defaultPadding),
-                  child: AppButton(
-                    text: '+ Cài đặt ngân sách',
-                    onPressed: () {
-                      context.push(RouterPath.addBudget);
-                    },
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ],
-            );
-          },
+                  );
+                },
+              ),
+            ),
+            Positioned(
+              bottom: 20,
+              left: AppUIConstants.defaultPadding,
+              right: AppUIConstants.defaultPadding,
+              child: AppButton(
+                text: '+ Cài đặt ngân sách',
+                onPressed: () {
+                  context.push(RouterPath.addBudget);
+                },
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -125,53 +128,57 @@ class _BudgetPageChildState extends State<_BudgetPageChild> {
   }
 
   void _showBudgetDialog(TransactionCategory category) async {
-    await showModalBottomSheet<int>(
+    final bloc = context.read<BudgetBloc>()..add(const BudgetEvent.resetInput());
+
+    final result = await showModalBottomSheet<int>(
       context: context,
       isScrollControlled: true,
-      builder: (_) {
-        context.read<BudgetBloc>().add(const BudgetEvent.resetInput());
-        return Padding(
-          padding: const EdgeInsets.all(AppUIConstants.defaultPadding),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text('Nhập ngân sách cho ${category.title}', style: AppTextStyle.blackS16Bold),
-              const SizedBox(height: AppUIConstants.smallSpacing),
-              StatefulBuilder(
-                builder: (context, setSheet) => Column(
-                  children: [
-                    Builder(
-                      builder: (context) {
-                        final input = context.select((BudgetBloc b) => b.state.currentInput);
-                        return Text('$input', style: AppTextStyle.blackS20);
-                      },
-                    ),
-                    const SizedBox(height: AppUIConstants.smallSpacing),
-                    AppKeyboard(
-                      onValueChanged: (v) {
-                        if (v == 'DONE') {
-                          final val = context.read<BudgetBloc>().state.currentInput;
-                          Navigator.of(context).pop(val);
-                          return;
-                        }
-                        context.read<BudgetBloc>().add(BudgetEvent.inputKey(key: v));
-                        setSheet(() {});
-                      },
-                    ),
-                  ],
+      builder: (bottomSheetContext) {
+        return BlocProvider.value(
+          value: bloc,
+          child: Padding(
+            padding: const EdgeInsets.all(AppUIConstants.defaultPadding),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('Nhập ngân sách cho ${category.title}', style: AppTextStyle.blackS16Bold),
+                const SizedBox(height: AppUIConstants.smallSpacing),
+                StatefulBuilder(
+                  builder: (context, setSheet) => Column(
+                    children: [
+                      Builder(
+                        builder: (context) {
+                          final input = context.select((BudgetBloc b) => b.state.currentInput);
+                          return Text('$input', style: AppTextStyle.blackS20);
+                        },
+                      ),
+                      const SizedBox(height: AppUIConstants.smallSpacing),
+                      AppKeyboard(
+                        onValueChanged: (v) {
+                          if (v == 'DONE') {
+                            final val = context.read<BudgetBloc>().state.currentInput;
+                            Navigator.of(context).pop(val);
+                            return;
+                          }
+                          context.read<BudgetBloc>().add(BudgetEvent.inputKey(key: v));
+                          setSheet(() {});
+                        },
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         );
       },
-    ).then((value) {
-      if (value is int && mounted) {
-        final s = context.read<BudgetBloc>().state;
-        final p = s.period ?? DateTime.now();
-        context.read<BudgetBloc>().add(BudgetEvent.setBudget(period: DateTime(p.year, p.month), categoryId: category.id!, amount: value));
-      }
-    });
+    );
+
+    if (result is int && mounted) {
+      final s = context.read<BudgetBloc>().state;
+      final p = s.period ?? DateTime.now();
+      context.read<BudgetBloc>().add(BudgetEvent.setBudget(period: DateTime(p.year, p.month), categoryId: category.id!, amount: result));
+    }
   }
 }

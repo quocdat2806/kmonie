@@ -28,24 +28,8 @@ class ProfilePage extends StatelessWidget {
     return ColoredBox(
       color: AppColorConstants.primary,
       child: Padding(
-        padding: const EdgeInsets.all(AppUIConstants.defaultPadding),
-        child: Row(
-          children: [
-            // const AppCircleImage(
-            //   fallbackIcon: Icon(Icons.person, color: AppColorConstants.black),
-            //   imageUrl: 'https://hoanghamobile.com/tin-tuc/wp-content/uploads/2024/11/tai-hinh-nen-dep-mien-phi.jpg',
-            // ),
-            const SizedBox(width: AppUIConstants.defaultSpacing),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('Quốc ĐẠT', style: AppTextStyle.blackS18Bold),
-                const SizedBox(height: 2),
-                Text('ID:1959355', style: AppTextStyle.grayS12),
-              ],
-            ),
-          ],
-        ),
+        padding: const EdgeInsets.all(AppUIConstants.largePadding),
+        child: Row(children: [Text('KMonie - Xin chào', style: AppTextStyle.blackS20Bold)]),
       ),
     );
   }
@@ -53,8 +37,6 @@ class ProfilePage extends StatelessWidget {
   Widget _buildBody(BuildContext context) {
     return Column(
       children: [
-        const MenuItem(iconAsset: Assets.svgsKing, title: 'Thành viên premium Chặn quảng cáo'),
-        const AppDivider(),
         const MenuItem(iconAsset: Assets.svgsLike, title: 'Giới thiệu cho bạn bè'),
         const AppDivider(),
         MenuItem(iconAsset: Assets.svgsSetting, title: 'Cài đặt', onTap: () => context.push(RouterPath.settings)),

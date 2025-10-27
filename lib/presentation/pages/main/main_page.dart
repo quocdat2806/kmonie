@@ -44,7 +44,12 @@ class MainPage extends StatelessWidget {
                       onTabSelected: (i) => _onTabSelected(context: context, index: i),
                     ),
                   ),
-                  const Positioned(bottom: 0 + AppUIConstants.topAddTransactionButtonOffset, left: 0, right: 0, child: AddTransactionButton()),
+                  const Positioned(
+                    bottom: 0 + AppUIConstants.topAddTransactionButtonOffset,
+                    left: 0,
+                    right: 0,
+                    child: Center(child: AddTransactionButton()),
+                  ),
                 ],
               ),
             ),

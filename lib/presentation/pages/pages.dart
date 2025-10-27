@@ -15,6 +15,6 @@ export 'budget/budget_page.dart';
 export 'add_budget/add_budget_page.dart';
 export 'account_actions/account_actions_page.dart';
 export 'manage_account/manage_account_page.dart';
-export 'report/monthly_statistics/monthly_statistics_page.dart';
+export 'monthly_statistics/monthly_statistics_page.dart';
 export 'my_app/my_app_page.dart';
 export 'settings/settings_page.dart';

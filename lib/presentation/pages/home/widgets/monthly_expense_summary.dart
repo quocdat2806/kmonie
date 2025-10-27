@@ -57,44 +57,16 @@ class MonthlyExpenseSummary extends StatelessWidget {
         final year = selectedDate.year;
         final month = selectedDate.month;
 
-        return Row(
-          children: <Widget>[
-            Expanded(
-              child: InkWell(
-                onTap: () => _onSelectDateTap(context, year, month),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Text('$year', style: AppTextStyle.blackS14),
-                    Row(
-                      children: <Widget>[
-                        Text('${AppTextConstants.month} $month', style: AppTextStyle.blackS14),
-                        SvgUtils.icon(assetPath: Assets.svgsArrowDown, size: SvgSizeType.medium),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            Expanded(child: _buildSummaryItem(AppTextConstants.expense, FormatUtils.formatCurrency(data.totalExpense.toInt()))),
-            Expanded(child: _buildSummaryItem(AppTextConstants.income, FormatUtils.formatCurrency(data.totalIncome.toInt()))),
-            Expanded(child: _buildSummaryItem(AppTextConstants.balance, FormatUtils.formatCurrency(data.totalBalance.toInt()))),
-          ],
+        return MonthlySummaryItem(
+          year: year,
+          month: month,
+          expense: data.totalExpense.toInt(),
+          income: data.totalIncome.toInt(),
+          balance: data.totalBalance.toInt(),
+          onTap: () => _onSelectDateTap(context, year, month),
+          suffix: SvgUtils.icon(assetPath: Assets.svgsArrowDown, size: SvgSizeType.medium),
         );
       },
-    );
-  }
-
-  Widget _buildSummaryItem(String label, String value) {
-    return Column(
-      children: <Widget>[
-        Text(label, style: AppTextStyle.blackS14),
-        Text(
-          value,
-          maxLines: AppUIConstants.singleLine,
-          style: AppTextStyle.blackS14.copyWith(overflow: TextOverflow.ellipsis),
-        ),
-      ],
     );
   }
 

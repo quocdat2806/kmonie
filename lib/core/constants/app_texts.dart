@@ -40,6 +40,14 @@ class AppTextConstants {
   static const String emptyTransaction = 'Chưa có giao dịch nào';
   static const String addTransactionAdvice = 'Hãy thêm giao dịch đầu tiên của bạn';
   static const String noData = 'Không có dữ liệu để hiển thị';
+  static const String monthlyStatistics = 'Thống kê hàng tháng';
+  static const String netWorth = 'Giá trị ròng';
+  static const String asset = 'Tài sản';
+  static const String debt = 'Nợ phải trả';
+  static const String accountList = 'Danh sách tài khoản';
+  static const String accountNumberLabel = 'Số TK';
+  static const String accountTypeLabel = 'Loại';
+  static const String accountBalanceLabel = 'Số dư';
 
   static const String all = 'Tất cả';
   static const String search = 'Tìm kiếm';
@@ -78,8 +86,10 @@ class AppTextConstants {
 
   static const String addAccount = 'Thêm tài khoản';
   static const String manageAccount = 'Quản lý tài khoản';
+  static const String currency = 'VND';
   static const String accountName = 'Tên tài khoản';
   static const String accountNumber = 'Số tài khoản';
+  static const String monthlyBudget = 'Ngân sách hàng tháng';
 
   static const String accountNumberHint = 'Vui lòng nhập số tài khoản';
   static const String accountNameHint = 'Vui lòng nhập tên tài khoản';

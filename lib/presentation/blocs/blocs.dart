@@ -7,3 +7,5 @@ export 'main/main.dart';
 export 'statistics/statistics.dart';
 export 'monthly_statistics/monthly_statistics.dart';
 export 'calendar_monthly_transaction/calendar_monthly_transaction.dart';
+export 'report/report.dart';
+export 'add_budget/add_budget.dart';

@@ -1,1 +1,1 @@
-enum SvgSizeType { defaultSize, small, medium, large, extra }
+enum SvgSizeType { defaultSize, small, medium, large, extra, extraLarge }

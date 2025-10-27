@@ -12,9 +12,10 @@ class AddTransactionButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
+    return GestureDetector(
       onTap: () => _navigateToAddTransactionPage(context),
-      child: DecoratedBox(
+      behavior: HitTestBehavior.deferToChild,
+      child: Container(
         decoration: const BoxDecoration(shape: BoxShape.circle, color: AppColorConstants.primary),
         child: Padding(
           padding: const EdgeInsets.all(AppUIConstants.defaultPadding),

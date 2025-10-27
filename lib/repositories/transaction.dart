@@ -4,6 +4,7 @@ import 'package:kmonie/entities/entities.dart';
 import 'package:kmonie/core/services/services.dart';
 import 'package:kmonie/core/utils/utils.dart';
 import 'package:kmonie/core/enums/enums.dart';
+import 'package:kmonie/presentation/blocs/blocs.dart';
 
 abstract class TransactionRepository {
   Future<Either<Failure, Transaction>> createTransaction({required int amount, required DateTime date, required int transactionCategoryId, String content, required int transactionType});
@@ -35,6 +36,8 @@ abstract class TransactionRepository {
   void clearYearCache([int? year]);
 
   void clearAllGroupCache();
+
+  Future<Either<Failure, List<MonthlyAgg>>> getAllMonthlyStatistics({int? year});
 }
 
 class TransactionRepositoryImpl implements TransactionRepository {
@@ -167,5 +170,37 @@ class TransactionRepositoryImpl implements TransactionRepository {
   @override
   DailyTransactionTotal calculateDailyTotal(List<Transaction> transactions) {
     return TransactionCalculator.calculateDailyTotal(transactions);
+  }
+
+  @override
+  Future<Either<Failure, List<MonthlyAgg>>> getAllMonthlyStatistics({int? year}) async {
+    try {
+      final allTransactions = await _transactionService.getAllTransactions();
+
+      final transactions = year != null ? allTransactions.where((t) => t.date.year == year).toList() : allTransactions;
+
+      final Map<String, MonthlyAgg> monthlyAggMap = {};
+
+      for (final transaction in transactions) {
+        final key = '${transaction.date.year}-${transaction.date.month}';
+        final existing = monthlyAggMap[key] ?? MonthlyAgg(year: transaction.date.year, month: transaction.date.month);
+        if (transaction.transactionType == TransactionType.income.typeIndex) {
+          monthlyAggMap[key] = MonthlyAgg(year: existing.year, month: existing.month, income: existing.income + transaction.amount.toDouble(), expense: existing.expense);
+        } else if (transaction.transactionType == TransactionType.expense.typeIndex) {
+          monthlyAggMap[key] = MonthlyAgg(year: existing.year, month: existing.month, income: existing.income, expense: existing.expense + transaction.amount.toDouble());
+        }
+      }
+
+      final result = monthlyAggMap.values.toList();
+      return Right(
+        result..sort((a, b) {
+          final yearCompare = b.year.compareTo(a.year);
+          if (yearCompare != 0) return yearCompare;
+          return b.month.compareTo(a.month);
+        }),
+      );
+    } catch (e) {
+      return Left(Failure.cache(e.toString()));
+    }
   }
 }
