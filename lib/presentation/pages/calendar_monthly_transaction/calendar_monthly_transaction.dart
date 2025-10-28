@@ -1,26 +1,33 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:kmonie/core/di/di.dart';
+import 'package:kmonie/core/constants/constants.dart';
 import 'package:kmonie/core/navigation/navigation.dart';
 import 'package:kmonie/core/text_style/text_style.dart';
-import 'package:kmonie/repositories/repositories.dart';
-import 'package:kmonie/core/constants/constants.dart';
 import 'package:kmonie/core/utils/utils.dart';
 import 'package:kmonie/presentation/blocs/blocs.dart';
-import 'package:kmonie/presentation/widgets/widgets.dart';
 import 'package:kmonie/presentation/pages/pages.dart';
+import 'package:kmonie/presentation/widgets/widgets.dart';
 
-import 'widgets/weekday_header.dart';
 import 'widgets/calendar_monthly_transaction_grid.dart';
+import 'widgets/weekday_header.dart';
 
-class CalendarMonthlyTransaction extends StatefulWidget {
-  const CalendarMonthlyTransaction({super.key});
+class CalendarMonthlyTransactionPage extends StatelessWidget {
+  const CalendarMonthlyTransactionPage({super.key});
 
   @override
-  State<CalendarMonthlyTransaction> createState() => _CalendarMonthlyTransactionState();
+  Widget build(BuildContext context) {
+    return const CalendarMonthlyTransactionPageChild();
+  }
 }
 
-class _CalendarMonthlyTransactionState extends State<CalendarMonthlyTransaction> {
+class CalendarMonthlyTransactionPageChild extends StatefulWidget {
+  const CalendarMonthlyTransactionPageChild({super.key});
+
+  @override
+  State<CalendarMonthlyTransactionPageChild> createState() => _CalendarMonthlyTransactionPageChildState();
+}
+
+class _CalendarMonthlyTransactionPageChildState extends State<CalendarMonthlyTransactionPageChild> {
   void _showMonthPicker(BuildContext context, DateTime currentDate) async {
     final bloc = context.read<CalendarMonthlyTransactionBloc>();
     final result = await showDialog<Map<String, int>>(
@@ -35,56 +42,54 @@ class _CalendarMonthlyTransactionState extends State<CalendarMonthlyTransaction>
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) => CalendarMonthlyTransactionBloc(sl<TransactionRepository>(), sl<TransactionCategoryRepository>()),
-      child: BlocBuilder<CalendarMonthlyTransactionBloc, CalendarMonthTransactionState>(
-        builder: (context, state) {
-          final selectedDate = state.selectedDate ?? DateTime.now();
-          return Scaffold(
-            appBar: CustomAppBar(
-              title: AppTextConstants.calendar,
-              centerTitle: false,
-              actions: [
-                InkWell(
-                  onTap: () => _showMonthPicker(context, selectedDate),
-                  child: Row(
-                    children: [
-                      Text('${AppTextConstants.month} ${selectedDate.month} ${AppTextConstants.year.toLowerCase()} ${selectedDate.year}', style: AppTextStyle.blackS14Medium),
-                      const Icon(Icons.keyboard_arrow_down),
-                      const SizedBox(width: AppUIConstants.smallSpacing),
-                    ],
+    return BlocBuilder<CalendarMonthlyTransactionBloc, CalendarMonthTransactionState>(
+      builder: (context, state) {
+        final selectedDate = state.selectedDate ?? DateTime.now();
+        return Scaffold(
+          appBar: CustomAppBar(
+            title: AppTextConstants.calendar,
+            centerTitle: false,
+            actions: [
+              InkWell(
+                splashColor: Colors.transparent,
+                onTap: () => _showMonthPicker(context, selectedDate),
+                child: Row(
+                  children: [
+                    Text('${AppTextConstants.month} ${selectedDate.month} ${AppTextConstants.year.toLowerCase()} ${selectedDate.year}', style: AppTextStyle.blackS14Medium),
+                    const Icon(Icons.keyboard_arrow_down),
+                    const SizedBox(width: AppUIConstants.smallSpacing),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          body: SafeArea(
+            child: Column(
+              children: [
+                const WeekdayHeader(),
+                Expanded(
+                  child: CalendarGrid(
+                    selectedDate: selectedDate,
+                    dailyTotals: state.dailyTotals,
+                    onDateSelected: (date) {
+                      final bloc = context.read<CalendarMonthlyTransactionBloc>();
+                      final state = bloc.state;
+                      bloc.add(CalendarMonthlyTransactionEvent.changeSelectedDate(date));
+                      final dateKey = AppDateUtils.formatDateKey(date);
+                      final transactions = state.groupedTransactions[dateKey] ?? [];
+                      AppNavigator(context: context).push(
+                        RouterPath.dailyTransactions,
+                        extra: DailyTransactionPageArgs(selectedDate: date, groupedTransactions: {dateKey: transactions}, categoriesMap: state.categoriesMap),
+                      );
+                    },
                   ),
                 ),
               ],
             ),
-            body: SafeArea(
-              child: Column(
-                children: [
-                  const WeekdayHeader(),
-                  Expanded(
-                    child: CalendarGrid(
-                      selectedDate: selectedDate,
-                      dailyTotals: state.dailyTotals,
-                      onDateSelected: (date) {
-                        final bloc = context.read<CalendarMonthlyTransactionBloc>();
-                        final state = bloc.state;
-                        bloc.add(CalendarMonthlyTransactionEvent.changeSelectedDate(date));
-                        final dateKey = AppDateUtils.formatDateKey(date);
-                        final transactions = state.groupedTransactions[dateKey] ?? [];
-                        AppNavigator(context: context).push(
-                          RouterPath.dailyTransactions,
-                          extra: DailyTransactionPageArgs(selectedDate: date, groupedTransactions: {dateKey: transactions}, categoriesMap: state.categoriesMap),
-                        );
-                      },
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            floatingActionButton: AddTransactionButton(initialDate: selectedDate),
-          );
-        },
-      ),
+          ),
+          floatingActionButton: AddTransactionButton(initialDate: selectedDate),
+        );
+      },
     );
   }
 }

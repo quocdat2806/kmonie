@@ -58,7 +58,6 @@ dependencies:
   timezone: ^0.10.1
   firebase_crashlytics: ^5.0.2
   firebase_analytics: ^12.0.2
-  flutter_dotenv: ^6.0.0
   flutter_slidable: ^4.0.3
   share_plus: ^12.0.0
   google_mobile_ads: ^6.0.0
@@ -126,7 +125,6 @@ flutter:
     - assets/svgs/
     - assets/fonts/
     - assets/images/
-    - .env
   fonts:
     - family: OpenSans
       fonts:

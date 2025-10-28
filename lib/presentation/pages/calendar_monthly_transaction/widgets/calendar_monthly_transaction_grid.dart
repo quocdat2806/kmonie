@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import 'package:kmonie/core/constants/constants.dart';
 import 'package:kmonie/core/text_style/text_style.dart';
 import 'package:kmonie/core/utils/utils.dart';
@@ -23,7 +22,6 @@ class CalendarGrid extends StatelessWidget {
         if (date == null) return const SizedBox();
         final total = dailyTotals[date.day];
         final isSelected = AppDateUtils.isSameDate(date, selectedDate);
-
         return CalendarDayCell(date: date, total: total, isSelected: isSelected, onTap: () => onDateSelected(date));
       },
     );
@@ -41,9 +39,10 @@ class CalendarDayCell extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return InkWell(
+      splashColor: Colors.transparent,
       onTap: onTap,
       child: Container(
-        margin: const EdgeInsets.all(AppUIConstants.extraSmallSpacingMin),
+        margin: const EdgeInsets.all(AppUIConstants.extraSmallSpacing),
         decoration: BoxDecoration(color: isSelected ? AppColorConstants.green.withAlpha(60) : AppColorConstants.greyWhite.withAlpha(60), borderRadius: BorderRadius.circular(AppUIConstants.smallBorderRadius)),
         child: Column(
           children: [

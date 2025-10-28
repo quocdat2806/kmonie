@@ -1,24 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
 import 'package:kmonie/core/constants/constants.dart';
-import 'package:kmonie/core/utils/utils.dart';
-import 'package:kmonie/core/di/di.dart';
 import 'package:kmonie/core/enums/enums.dart';
 import 'package:kmonie/core/navigation/navigation.dart';
-import 'package:kmonie/repositories/repositories.dart';
 import 'package:kmonie/core/text_style/text_style.dart';
+import 'package:kmonie/core/utils/utils.dart';
 import 'package:kmonie/entities/entities.dart';
 import 'package:kmonie/generated/generated.dart';
-import 'package:kmonie/presentation/widgets/widgets.dart';
 import 'package:kmonie/presentation/blocs/blocs.dart';
+import 'package:kmonie/presentation/widgets/widgets.dart';
 
 class SearchTransactionPage extends StatelessWidget {
   const SearchTransactionPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider<SearchTransactionBloc>(create: (_) => SearchTransactionBloc(sl<TransactionRepository>(), sl<TransactionCategoryRepository>()), child: const SearchTransactionPageChild());
+    return const SearchTransactionPageChild();
   }
 }
 
@@ -106,30 +103,39 @@ class _SearchTransactionPageChildState extends State<SearchTransactionPageChild>
   Widget _buildSearchCategoryButtons() {
     return Padding(
       padding: const EdgeInsets.all(AppUIConstants.defaultPadding),
-      child: SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        child: BlocBuilder<SearchTransactionBloc, SearchTransactionState>(
-          buildWhen: (previous, current) => previous.selectedType != current.selectedType,
-          builder: (context, state) {
-            return Row(
-              spacing: AppUIConstants.smallSpacing,
-              children: [
-                Text(AppTextConstants.type, style: AppTextStyle.blackS14Bold),
-                ...searchCategories.map((item) {
-                  final bool isSelected = state.selectedType == item['type'];
-                  return AppButton(
-                    text: item['label'] as String,
-                    backgroundColor: isSelected ? AppColorConstants.primary : AppColorConstants.grey.withAlpha(50),
-                    textColor: isSelected ? AppColorConstants.white : AppColorConstants.black,
-                    onPressed: () {
-                      context.read<SearchTransactionBloc>().add(SearchTransactionEvent.typeChanged(item['type'] as TransactionType?));
+      child: BlocBuilder<SearchTransactionBloc, SearchTransactionState>(
+        buildWhen: (previous, current) => previous.selectedType != current.selectedType,
+        builder: (context, state) {
+          return Row(
+            spacing: AppUIConstants.smallSpacing,
+            children: [
+              Text(AppTextConstants.type, style: AppTextStyle.blackS14Bold),
+              Expanded(
+                child: SizedBox(
+                  height: AppUIConstants.defaultButtonHeight,
+                  child: ListView.separated(
+                    scrollDirection: Axis.horizontal,
+                    padding: const EdgeInsets.symmetric(horizontal: AppUIConstants.smallPadding),
+                    itemCount: searchCategories.length,
+                    separatorBuilder: (_, _) => const SizedBox(width: AppUIConstants.smallSpacing),
+                    itemBuilder: (context, index) {
+                      final item = searchCategories[index];
+                      final bool isSelected = state.selectedType == item['type'];
+                      return AppButton(
+                        text: item['label'] as String,
+                        backgroundColor: isSelected ? AppColorConstants.primary : AppColorConstants.grey.withAlpha(50),
+                        textColor: isSelected ? AppColorConstants.white : AppColorConstants.black,
+                        onPressed: () {
+                          context.read<SearchTransactionBloc>().add(SearchTransactionEvent.typeChanged(item['type'] as TransactionType?));
+                        },
+                      );
                     },
-                  );
-                }),
-              ],
-            );
-          },
-        ),
+                  ),
+                ),
+              ),
+            ],
+          );
+        },
       ),
     );
   }
@@ -146,7 +152,7 @@ class _SearchTransactionPageChildState extends State<SearchTransactionPageChild>
   }
 
   Widget _buildEmptyResult() {
-    return Center(child: Text('Không có kết quả', style: AppTextStyle.blackS14));
+    return Center(child: Text(AppTextConstants.noResultsFound, style: AppTextStyle.blackS14));
   }
 
   Widget _buildActionButton() {

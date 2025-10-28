@@ -11,19 +11,17 @@ class AppUIConstants {
   static const double largeMargin = 24.0;
   static const double extraLargeMargin = 32.0;
 
-  static const double defaultBlurRadius = 8.0;
   static const double smallBorderRadius = 4.0;
   static const double defaultBorderRadius = 8.0;
   static const double largeBorderRadius = 12.0;
   static const double extraLargeBorderRadius = 20.0;
-  static const double maxBorderRadius = 9999;
 
   static const double smallIconSize = 16.0;
   static const double defaultIconSize = 20.0;
   static const double mediumIconSize = 24.0;
   static const double largeIconSize = 28.0;
   static const double extraLargeIconSize = 32.0;
-  static const double extraLargeIconSize2 = 64.0;
+  static const double superExtraLargeIconSize = 64.0;
 
   static const double defaultButtonHeight = 44.0;
   static const double smallButtonHeight = 36.0;
@@ -34,7 +32,6 @@ class AppUIConstants {
   static const double largeContainerSize = 60.0;
   static const double extraLargeContainerSize = 80.0;
 
-  static const double extraSmallSpacingMin = 2.0;
   static const double extraSmallSpacing = 4.0;
   static const double smallSpacing = 8.0;
   static const double defaultSpacing = 16.0;
@@ -50,6 +47,8 @@ class AppUIConstants {
   static const int singleLine = 1;
 
   static const Duration shortAnimationDuration = Duration(milliseconds: 200);
+  static const Duration loadMoreDebounceDuration = Duration(milliseconds: 100);
+
   static const double keyboardSlideRatio = 0.35;
   static const double categoryItemSizeRatio = 0.55;
   static const double categoryIconSizeRatio = 0.30;

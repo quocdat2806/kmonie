@@ -47,10 +47,12 @@ class AppTextConstants {
   static const String accountList = 'Danh sách tài khoản';
   static const String accountNumberLabel = 'Số TK';
   static const String accountTypeLabel = 'Loại';
+  static const String accountNameLabel = 'Tên TK';
   static const String accountBalanceLabel = 'Số dư';
 
   static const String all = 'Tất cả';
   static const String search = 'Tìm kiếm';
+  static const String noResultsFound = 'Không có kết quả';
 
   static const String shopping = 'Mua sắm';
   static const String food = 'Đồ ăn';
@@ -85,7 +87,9 @@ class AppTextConstants {
   static const String incomeAndExpenditureBook = 'Sổ thu chi';
 
   static const String addAccount = 'Thêm tài khoản';
+  static const String editAccount = 'Sửa tài khoản';
   static const String manageAccount = 'Quản lý tài khoản';
+  static const String editAccountText = 'Sửa';
   static const String currency = 'VND';
   static const String accountName = 'Tên tài khoản';
   static const String accountNumber = 'Số tài khoản';

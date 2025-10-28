@@ -7,7 +7,7 @@ import 'account_actions_event.dart';
 import 'account_actions_state.dart';
 
 class AccountActionsBloc extends Bloc<AccountActionsEvent, AccountActionsState> {
-  AccountActionsBloc(this._accountRepository) : super(const AccountActionsState.initial()) {
+  AccountActionsBloc(this._accountRepository) : super(const AccountActionsState()) {
     on<LoadAccounts>(_onLoadAccounts);
     on<CreateAccount>(_onCreateAccount);
     on<UpdateAccount>(_onUpdateAccount);
@@ -26,48 +26,73 @@ class AccountActionsBloc extends Bloc<AccountActionsEvent, AccountActionsState> 
   StreamSubscription<List<Account>>? _accountsSub;
 
   Future<void> _onLoadAccounts(LoadAccounts event, Emitter<AccountActionsState> emit) async {
-    emit(const AccountActionsState.loading());
     final result = await _accountRepository.getAllAccounts();
-    result.fold((f) => emit(AccountActionsState.error(f.message)), (accounts) => emit(AccountActionsState.loaded(accounts)));
+    result.fold((f) => emit(const AccountActionsState()), (accounts) => emit(AccountActionsState(accounts: accounts)));
   }
 
   Future<void> _onCreateAccount(CreateAccount event, Emitter<AccountActionsState> emit) async {
-    emit(const AccountActionsState.loading());
     final result = await _accountRepository.createAccount(event.account);
-    result.fold((f) => emit(AccountActionsState.error(f.message)), (_) => add(const LoadAccounts()));
+    result.fold((f) {}, (_) => add(const LoadAccounts()));
   }
 
   Future<void> _onUpdateAccount(UpdateAccount event, Emitter<AccountActionsState> emit) async {
-    emit(const AccountActionsState.loading());
     final result = await _accountRepository.updateAccount(event.account);
-    result.fold((f) => emit(AccountActionsState.error(f.message)), (_) => add(const LoadAccounts()));
+    result.fold((f) {}, (_) => add(const LoadAccounts()));
   }
 
   Future<void> _onDeleteAccount(DeleteAccount event, Emitter<AccountActionsState> emit) async {
-    emit(const AccountActionsState.loading());
     final result = await _accountRepository.deleteAccount(event.accountId);
-    result.fold((f) => emit(AccountActionsState.error(f.message)), (_) => add(const LoadAccounts()));
+    result.fold((f) {}, (_) => add(const LoadAccounts()));
   }
 
   Future<void> _onPinAccount(PinAccount event, Emitter<AccountActionsState> emit) async {
-    emit(const AccountActionsState.loading());
+    // Update local state ngay lập tức
+    final updatedAccounts = state.accounts.map((Account acc) {
+      // Unpin tất cả accounts khác
+      if (acc.id != null && acc.id != event.accountId && acc.isPinned) {
+        return Account(id: acc.id, name: acc.name, type: acc.type, amount: acc.amount, balance: acc.balance, accountNumber: acc.accountNumber, bankId: acc.bankId);
+      }
+      // Pin account được chọn
+      if (acc.id == event.accountId) {
+        return Account(id: acc.id, name: acc.name, type: acc.type, amount: acc.amount, balance: acc.balance, accountNumber: acc.accountNumber, bankId: acc.bankId, isPinned: true);
+      }
+      return acc;
+    }).toList();
+    emit(AccountActionsState(accounts: updatedAccounts));
+
+    // Update database ở background
     final result = await _accountRepository.pinAccount(event.accountId);
-    result.fold((f) => emit(AccountActionsState.error(f.message)), (_) => add(const LoadAccounts()));
+    result.fold((f) {
+      // Rollback nếu lỗi - reload lại từ database
+      add(const LoadAccounts());
+    }, (_) {});
   }
 
   Future<void> _onUnpinAccount(UnpinAccount event, Emitter<AccountActionsState> emit) async {
-    emit(const AccountActionsState.loading());
+    // Update local state ngay lập tức
+    final updatedAccounts = state.accounts.map((Account acc) {
+      if (acc.id == event.accountId) {
+        return Account(id: acc.id, name: acc.name, type: acc.type, amount: acc.amount, balance: acc.balance, accountNumber: acc.accountNumber, bankId: acc.bankId);
+      }
+      return acc;
+    }).toList();
+    emit(AccountActionsState(accounts: updatedAccounts));
+
+    // Update database ở background
     final result = await _accountRepository.unpinAccount(event.accountId);
-    result.fold((f) => emit(AccountActionsState.error(f.message)), (_) => add(const LoadAccounts()));
+    result.fold((f) {
+      // Rollback nếu lỗi - reload lại từ database
+      add(const LoadAccounts());
+    }, (_) {});
   }
 
   Future<void> _onUpdateAccountBalance(UpdateAccountBalance event, Emitter<AccountActionsState> emit) async {
     final result = await _accountRepository.updateAccountBalance(event.accountId, event.newBalance);
-    result.fold((f) => emit(AccountActionsState.error(f.message)), (_) => add(const LoadAccounts()));
+    result.fold((f) {}, (_) => add(const LoadAccounts()));
   }
 
   void _onAccountsStreamUpdated(AccountsStreamUpdated event, Emitter<AccountActionsState> emit) {
-    emit(AccountActionsState.loaded(event.accounts));
+    emit(AccountActionsState(accounts: event.accounts));
   }
 
   @override

@@ -32,9 +32,18 @@ class BudgetService {
       return;
     }
 
+    // Check if budget exists
+    final existing = await (_db.select(_db.budgetsTb)..where((t) => t.year.equals(year) & t.month.equals(month) & t.transactionCategoryId.equals(categoryId))).getSingleOrNull();
+
     final companion = BudgetsTbCompanion(year: Value(year), month: Value(month), transactionCategoryId: Value(categoryId), amount: Value(amount));
 
-    await _db.into(_db.budgetsTb).insertOnConflictUpdate(companion);
+    if (existing != null) {
+      // Update existing budget
+      await (_db.update(_db.budgetsTb)..where((t) => t.id.equals(existing.id))).write(companion);
+    } else {
+      // Insert new budget
+      await _db.into(_db.budgetsTb).insert(companion);
+    }
   }
 
   Future<int> getMonthlyBudget({required int year, required int month}) async {
@@ -50,9 +59,18 @@ class BudgetService {
       return;
     }
 
+    // Check if monthly budget exists
+    final existing = await (_db.select(_db.monthlyBudgetsTb)..where((t) => t.year.equals(year) & t.month.equals(month))).getSingleOrNull();
+
     final companion = MonthlyBudgetsTbCompanion(year: Value(year), month: Value(month), totalAmount: Value(amount));
 
-    await _db.into(_db.monthlyBudgetsTb).insertOnConflictUpdate(companion);
+    if (existing != null) {
+      // Update existing monthly budget
+      await (_db.update(_db.monthlyBudgetsTb)..where((t) => t.id.equals(existing.id))).write(companion);
+    } else {
+      // Insert new monthly budget
+      await _db.into(_db.monthlyBudgetsTb).insert(companion);
+    }
   }
 
   Future<int> getTotalSpentForMonth({required int year, required int month}) async {

@@ -1,14 +1,14 @@
 import 'dart:async';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:kmonie/core/config/app_config.dart';
-
+import 'package:kmonie/core/constants/constants.dart';
 import 'package:kmonie/core/enums/enums.dart';
 import 'package:kmonie/core/services/services.dart';
-import 'package:kmonie/repositories/repositories.dart';
 import 'package:kmonie/core/streams/streams.dart';
 import 'package:kmonie/core/utils/utils.dart';
 import 'package:kmonie/entities/entities.dart';
+import 'package:kmonie/repositories/repositories.dart';
+
 import 'home_event.dart';
 import 'home_state.dart';
 
@@ -20,7 +20,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   HomeBloc(this.transactionRepository, this.categoryRepository) : super(const HomeState()) {
     on<HomeLoadTransactions>(_onLoadTransactions);
     on<HomeChangeDate>(_onChangeDate);
-    on<HomeLoadMore>(_onLoadMore, transformer: DebounceUtils.restartableDebounce<HomeLoadMore>(AppConfigs.loadMoreDebounceDuration));
+    on<HomeLoadMore>(_onLoadMore, transformer: DebounceUtils.restartableDebounce<HomeLoadMore>(AppUIConstants.loadMoreDebounceDuration));
     on<HomeDeleteTransaction>(_onDeleteTransaction);
     on<HomeInsertTransaction>(_onInsertTransaction);
     on<HomeUpdateTransaction>(_onUpdateTransaction);
@@ -70,31 +70,19 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   Future<void> _onUpdateTransaction(HomeUpdateTransaction event, Emitter<HomeState> emit) async {
     final updatedTransaction = event.transaction;
 
-    // Find the old transaction in current state
     final oldTransaction = state.transactions.where((t) => t.id == updatedTransaction.id).firstOrNull;
     final wasOldInCurrentMonth = oldTransaction != null;
     final isNewInCurrentMonth = _isTransactionInCurrentMonth(updatedTransaction);
 
-    List<Transaction> updatedTransactions;
+    List<Transaction> updatedTransactions = [];
 
     if (wasOldInCurrentMonth && isNewInCurrentMonth) {
-      // Case 1: Old transaction was in current month, new transaction is also in current month
-      // → Update the transaction
       updatedTransactions = state.transactions.map((t) => t.id == updatedTransaction.id ? updatedTransaction : t).toList();
     } else if (wasOldInCurrentMonth && !isNewInCurrentMonth) {
-      // Case 2: Old transaction was in current month, new transaction is NOT in current month
-      // → Remove the transaction from current month
       updatedTransactions = state.transactions.where((t) => t.id != updatedTransaction.id).toList();
     } else if (!wasOldInCurrentMonth && isNewInCurrentMonth) {
-      // Case 3: Old transaction was NOT in current month, new transaction is in current month
-      // → Add the transaction to current month
       updatedTransactions = [updatedTransaction, ...state.transactions];
-    } else {
-      // Case 4: Both old and new transactions are NOT in current month
-      // → No change needed
-      return;
     }
-
     final grouped = transactionRepository.groupByDate(updatedTransactions);
 
     emit(state.copyWith(transactions: updatedTransactions, groupedTransactions: grouped));
@@ -119,6 +107,10 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   }
 
   Future<void> _onChangeDate(HomeChangeDate event, Emitter<HomeState> emit) async {
+    final selectedDate = state.selectedDate ?? DateTime.now();
+    if (selectedDate.year == event.date.year && selectedDate.month == event.date.month) {
+      return;
+    }
     emit(state.copyWith(selectedDate: event.date, transactions: [], groupedTransactions: {}, totalRecords: 0, pageIndex: 0, isLoadingMore: false));
     add(const HomeLoadTransactions());
   }
@@ -136,7 +128,6 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     try {
       final resultEither = await transactionRepository.getTransactionsInMonth(year: date.year, month: date.month, pageIndex: nextPage);
       if (resultEither.isLeft()) {
-        logger.e('HomeBloc: Error loading more transactions: ${resultEither.fold((l) => l.message, (r) => '')}');
         emit(state.copyWith(isLoadingMore: false));
         return;
       }
@@ -161,14 +152,8 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
 
   Future<void> _onDeleteTransaction(HomeDeleteTransaction event, Emitter<HomeState> emit) async {
     try {
-      logger.d('HomeBloc: Deleting transaction: ${event.transactionId}');
       final transactionToDelete = state.transactions.where((t) => t.id == event.transactionId).firstOrNull;
       if (transactionToDelete == null) return;
-
-      final either = await transactionRepository.deleteTransaction(event.transactionId);
-      final success = either.getOrElse(() => false);
-      if (!success) return;
-
       final updated = state.transactions.where((t) => t.id != event.transactionId).toList();
       final grouped = transactionRepository.groupByDate(updated);
 

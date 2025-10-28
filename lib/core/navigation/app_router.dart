@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-
+import 'package:kmonie/core/di/di.dart';
+import 'package:kmonie/presentation/blocs/blocs.dart';
 import 'package:kmonie/presentation/pages/pages.dart';
+import 'package:kmonie/repositories/repositories.dart';
+
 import './router_path.dart';
 
 class AppRouter {
@@ -14,9 +18,19 @@ class AppRouter {
     routes: <RouteBase>[
       GoRoute(name: RouterPath.splash, path: RouterPath.splash, builder: (_, _) => const SplashPage()),
       GoRoute(name: RouterPath.main, path: RouterPath.main, builder: (_, _) => const MainPage()),
-      GoRoute(path: RouterPath.searchTransaction, builder: (_, _) => const SearchTransactionPage()),
+      GoRoute(
+        path: RouterPath.searchTransaction,
+        builder: (_, _) {
+          return BlocProvider<SearchTransactionBloc>(create: (_) => SearchTransactionBloc(sl<TransactionRepository>(), sl<TransactionCategoryRepository>()), child: const SearchTransactionPage());
+        },
+      ),
 
-      GoRoute(path: RouterPath.calendarMonthlyTransaction, builder: (_, _) => const CalendarMonthlyTransaction()),
+      GoRoute(
+        path: RouterPath.calendarMonthlyTransaction,
+        builder: (_, _) {
+          return BlocProvider<CalendarMonthlyTransactionBloc>(create: (_) => CalendarMonthlyTransactionBloc(sl<TransactionRepository>(), sl<TransactionCategoryRepository>()), child: const CalendarMonthlyTransactionPage());
+        },
+      ),
       GoRoute(
         path: RouterPath.transactionActions,
         builder: (_, GoRouterState state) {

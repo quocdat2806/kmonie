@@ -13,7 +13,6 @@ import 'package:kmonie/repositories/repositories.dart';
 import 'widgets/report_tab_bar.dart';
 import 'widgets/monthly_statistics_card.dart';
 import 'widgets/net_worth_card.dart';
-import 'widgets/accounts_list.dart';
 
 class ReportPage extends StatelessWidget {
   const ReportPage({super.key});

@@ -34,7 +34,7 @@ class MonthlyStatisticsCard extends StatelessWidget {
               buildWhen: (previous, current) => previous.totalIncome != current.totalIncome || previous.totalExpense != current.totalExpense || previous.totalBalance != current.totalBalance,
               builder: (context, state) {
                 final now = DateTime.now();
-                return MonthlySummaryItem(year: now.year, month: now.month, expense: state.totalExpense.toInt(), income: state.totalIncome.toInt(), balance: state.totalBalance.toInt());
+                return SpendingSummarySection(year: now.year, month: now.month, expense: state.totalExpense.toInt(), income: state.totalIncome.toInt(), balance: state.totalBalance.toInt());
               },
             ),
           ],

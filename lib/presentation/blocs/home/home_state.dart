@@ -1,7 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-
-import 'package:kmonie/entities/entities.dart';
 import 'package:kmonie/core/utils/utils.dart';
+import 'package:kmonie/entities/entities.dart';
 
 part 'home_state.freezed.dart';
 
@@ -18,6 +17,7 @@ abstract class HomeState with _$HomeState {
   double get totalTransfer => TransactionCalculator.calculateTransfer(transactions);
 
   double get totalBalance => TransactionCalculator.calculateBalance(transactions);
+
   Map<String, DailyTransactionTotal> get dailyTotals {
     return groupedTransactions.map((dateKey, txList) => MapEntry(dateKey, TransactionCalculator.calculateDailyTotal(txList)));
   }

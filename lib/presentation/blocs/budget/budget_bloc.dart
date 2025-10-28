@@ -24,7 +24,7 @@ class BudgetBloc extends Bloc<BudgetEvent, BudgetState> {
 
     _refreshSubscription = AppStreamEvent.eventStreamStatic.listen((data) {
       if (data.event == AppEvent.budgetChanged) {
-        final p = state.period ?? DateTime.now();
+        final p = state.selectedPeriod ?? state.period ?? DateTime.now();
         add(BudgetEvent.changePeriod(period: DateTime(p.year, p.month)));
       }
     });
@@ -83,7 +83,7 @@ class BudgetBloc extends Bloc<BudgetEvent, BudgetState> {
       categorySpent[category.id!] = spent;
     }
 
-    emit(state.copyWith(expenseCategories: expenseCategories, categoryBudgets: categoryBudgets, monthlyBudget: monthlyBudget, totalSpent: totalSpent, categorySpent: categorySpent, period: period));
+    emit(state.copyWith(expenseCategories: expenseCategories, categoryBudgets: categoryBudgets, monthlyBudget: monthlyBudget, totalSpent: totalSpent, categorySpent: categorySpent, period: period, selectedPeriod: period));
   }
 
   void _onResetInput(BudgetEventResetInput event, Emitter<BudgetState> emit) {

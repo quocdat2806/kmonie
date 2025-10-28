@@ -3,22 +3,36 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kmonie/core/constants/constants.dart';
 import 'package:kmonie/core/text_style/text_style.dart';
 import 'package:kmonie/presentation/widgets/widgets.dart';
-import 'package:kmonie/core/di/injection_container.dart';
+import 'package:kmonie/core/di/di.dart';
 import 'package:kmonie/presentation/blocs/account_actions/account_actions.dart';
 import 'package:kmonie/entities/entities.dart';
-import 'package:kmonie/presentation/pages/manage_account/manage_account_page.dart';
 import 'package:kmonie/repositories/repositories.dart';
+import 'package:kmonie/presentation/pages/manage_account/manage_account_page.dart';
 
-class AccountActionsPage extends StatefulWidget {
+class AccountActionsPage extends StatelessWidget {
   final AccountActionsPageArgs? args;
 
   const AccountActionsPage({super.key, this.args});
 
   @override
-  State<AccountActionsPage> createState() => _AccountActionsPageState();
+  Widget build(BuildContext context) {
+    return BlocProvider<AccountActionsBloc>(
+      create: (_) => AccountActionsBloc(sl<AccountRepository>()),
+      child: AccountActionsPageChild(args: args),
+    );
+  }
 }
 
-class _AccountActionsPageState extends State<AccountActionsPage> {
+class AccountActionsPageChild extends StatefulWidget {
+  final AccountActionsPageArgs? args;
+
+  const AccountActionsPageChild({super.key, this.args});
+
+  @override
+  State<AccountActionsPageChild> createState() => _AccountActionsPageState();
+}
+
+class _AccountActionsPageState extends State<AccountActionsPageChild> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _amountController = TextEditingController();
   final TextEditingController _balanceController = TextEditingController();
@@ -51,7 +65,6 @@ class _AccountActionsPageState extends State<AccountActionsPage> {
       _balanceController.text = account.balance.toString();
       _selectedType = account.type;
       _selectedBankId = account.bankId;
-      // Find bank from bankId for UI display
       if (account.bankId != null) {
         _selectedBank = BankConstants.vietNamBanks.firstWhere(
           (b) => b.id == account.bankId,
@@ -75,24 +88,15 @@ class _AccountActionsPageState extends State<AccountActionsPage> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => AccountActionsBloc(sl<AccountRepository>()),
-      child: BlocListener<AccountActionsBloc, AccountActionsState>(
-        listener: (context, state) {
-          state.when(
-            initial: () {},
-            loading: () {},
-            loaded: (accounts) {
-              if (_submitted) {
-                _submitted = false;
-                Navigator.of(context).pop();
-              }
-            },
-            error: (message) {},
-          );
-        },
-        child: Builder(builder: (context) => _buildScaffold(context)),
-      ),
+    return BlocListener<AccountActionsBloc, AccountActionsState>(
+      listener: (context, state) {
+        // Listen to accounts changes
+        if (_submitted && state.accounts.isNotEmpty) {
+          _submitted = false;
+          Navigator.of(context).pop();
+        }
+      },
+      child: _buildScaffold(context),
     );
   }
 
@@ -100,7 +104,7 @@ class _AccountActionsPageState extends State<AccountActionsPage> {
     return Scaffold(
       backgroundColor: AppColorConstants.greyWhite,
       appBar: CustomAppBar(
-        title: _isEditMode ? 'Sửa tài khoản' : AppTextConstants.addAccount,
+        title: _isEditMode ? AppTextConstants.editAccount : AppTextConstants.addAccount,
         actions: [
           IconButton(
             onPressed: () => _saveAccount(context),
@@ -113,6 +117,7 @@ class _AccountActionsPageState extends State<AccountActionsPage> {
           padding: const EdgeInsets.all(AppUIConstants.defaultPadding),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
+            spacing: AppUIConstants.defaultSpacing,
             children: [
               _buildInputField(
                 label: AppTextConstants.accountName,
@@ -120,13 +125,13 @@ class _AccountActionsPageState extends State<AccountActionsPage> {
               ),
               _buildInputField(
                 label: AppTextConstants.accountNumber,
-                child: AppTextField(controller: _accountNumberController, hintText: AppTextConstants.accountNumberHint, filledColor: AppColorConstants.white),
+                child: AppTextField(controller: _accountNumberController, keyboardType: TextInputType.number, hintText: AppTextConstants.accountNumberHint, filledColor: AppColorConstants.white),
               ),
               _buildInputField(
                 label: 'Số dư',
-                child: AppTextField(controller: _balanceController, hintText: 'Nhập số dư tài khoản', filledColor: AppColorConstants.white),
+                child: AppTextField(controller: _balanceController, keyboardType: TextInputType.number, hintText: 'Nhập số dư tài khoản', filledColor: AppColorConstants.white),
               ),
-              const SizedBox(height: AppUIConstants.defaultSpacing),
+              // const SizedBox(height: AppUIConstants.defaultSpacing),
               _buildInputField(
                 label: AppTextConstants.accountType,
                 child: GestureDetector(
@@ -147,7 +152,6 @@ class _AccountActionsPageState extends State<AccountActionsPage> {
                   ),
                 ),
               ),
-              const SizedBox(height: AppUIConstants.defaultSpacing),
               _buildInputField(
                 label: 'Ngân hàng',
                 child: GestureDetector(
@@ -177,29 +181,29 @@ class _AccountActionsPageState extends State<AccountActionsPage> {
                   ),
                 ),
               ),
-              const SizedBox(height: AppUIConstants.defaultSpacing),
-              // Pinned status indicator (only show in edit mode)
-              if (_isEditMode) ...[
-                Container(
-                  padding: const EdgeInsets.all(AppUIConstants.defaultPadding),
-                  decoration: BoxDecoration(
-                    color: widget.args!.account!.isPinned ? Colors.orange.withValues(alpha: 0.1) : AppColorConstants.greyWhite,
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: widget.args!.account!.isPinned ? Colors.orange : AppColorConstants.grey),
-                  ),
-                  child: Row(
-                    children: [
-                      Icon(widget.args!.account!.isPinned ? Icons.push_pin : Icons.push_pin_outlined, color: widget.args!.account!.isPinned ? Colors.orange : AppColorConstants.grey, size: 20),
-                      const SizedBox(width: 8),
-                      Text(
-                        widget.args!.account!.isPinned ? 'Tài khoản đã được ghim' : 'Tài khoản chưa được ghim',
-                        style: TextStyle(color: widget.args!.account!.isPinned ? Colors.orange : AppColorConstants.grey, fontWeight: FontWeight.w500),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: AppUIConstants.defaultSpacing),
-              ],
+              // const SizedBox(height: AppUIConstants.defaultSpacing),
+              // // Pinned status indicator (only show in edit mode)
+              // if (_isEditMode) ...[
+              //   Container(
+              //     padding: const EdgeInsets.all(AppUIConstants.defaultPadding),
+              //     decoration: BoxDecoration(
+              //       color: widget.args!.account!.isPinned ? Colors.orange.withValues(alpha: 0.1) : AppColorConstants.greyWhite,
+              //       borderRadius: BorderRadius.circular(8),
+              //       border: Border.all(color: widget.args!.account!.isPinned ? Colors.orange : AppColorConstants.grey),
+              //     ),
+              //     child: Row(
+              //       children: [
+              //         Icon(widget.args!.account!.isPinned ? Icons.push_pin : Icons.push_pin_outlined, color: widget.args!.account!.isPinned ? Colors.orange : AppColorConstants.grey, size: 20),
+              //         const SizedBox(width: 8),
+              //         Text(
+              //           widget.args!.account!.isPinned ? 'Tài khoản đã được ghim' : 'Tài khoản chưa được ghim',
+              //           style: TextStyle(color: widget.args!.account!.isPinned ? Colors.orange : AppColorConstants.grey, fontWeight: FontWeight.w500),
+              //         ),
+              //       ],
+              //     ),
+              //   ),
+              //   const SizedBox(height: AppUIConstants.defaultSpacing),
+              // ],
             ],
           ),
         ),
@@ -211,13 +215,7 @@ class _AccountActionsPageState extends State<AccountActionsPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          children: [
-            const SizedBox(width: 8),
-            Text(label, style: AppTextStyle.blackS14Medium),
-          ],
-        ),
-        const SizedBox(height: 8),
+        Text(label, style: AppTextStyle.blackS14Medium),
         child,
       ],
     );

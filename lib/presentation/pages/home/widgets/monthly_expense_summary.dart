@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
 import 'package:kmonie/core/constants/constants.dart';
 import 'package:kmonie/core/enums/enums.dart';
 import 'package:kmonie/core/navigation/navigation.dart';
@@ -44,6 +43,7 @@ class MonthlyExpenseSummary extends StatelessWidget {
 
   Widget _buildIcon({required BuildContext context, required String path, required String routerPath}) {
     return InkWell(
+      splashColor: Colors.transparent,
       onTap: () => AppNavigator(context: context).push(routerPath),
       child: SvgUtils.icon(assetPath: path, size: SvgSizeType.medium),
     );
@@ -56,8 +56,7 @@ class MonthlyExpenseSummary extends StatelessWidget {
         final selectedDate = data.selectedDate ?? DateTime.now();
         final year = selectedDate.year;
         final month = selectedDate.month;
-
-        return MonthlySummaryItem(
+        return SpendingSummarySection(
           year: year,
           month: month,
           expense: data.totalExpense.toInt(),

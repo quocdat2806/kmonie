@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import 'package:kmonie/core/constants/constants.dart';
 import 'package:kmonie/core/text_style/text_style.dart';
 import 'package:kmonie/presentation/widgets/widgets.dart';
@@ -65,11 +64,15 @@ class _MonthPickerDialogState extends State<MonthPickerDialog> {
                 crossAxisCount: AppUIConstants.defaultGridCrossAxisCount,
                 itemCount: 12,
                 shrinkWrap: true,
+                itemHeightFactor: 1,
                 physics: const NeverScrollableScrollPhysics(),
                 itemBuilder: (context, index) {
                   final month = index + 1;
                   final isSelected = month == selectedMonth;
                   return InkWell(
+                    focusColor: Colors.transparent,
+                    hoverColor: Colors.transparent,
+                    splashColor: Colors.transparent,
                     onTap: () => setState(() => selectedMonth = month),
                     child: Center(
                       child: DecoratedBox(

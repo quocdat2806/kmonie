@@ -3,7 +3,7 @@ import 'package:kmonie/core/constants/constants.dart';
 import 'package:kmonie/core/text_style/text_style.dart';
 import 'package:kmonie/core/utils/utils.dart';
 
-class MonthlySummaryItem extends StatelessWidget {
+class SpendingSummarySection extends StatelessWidget {
   final int year;
   final int month;
   final int expense;
@@ -12,7 +12,7 @@ class MonthlySummaryItem extends StatelessWidget {
   final VoidCallback? onTap;
   final Widget? suffix;
 
-  const MonthlySummaryItem({super.key, required this.year, required this.month, required this.expense, required this.income, required this.balance, this.onTap, this.suffix});
+  const SpendingSummarySection({super.key, required this.year, required this.month, required this.expense, required this.income, required this.balance, this.onTap, this.suffix});
 
   @override
   Widget build(BuildContext context) {

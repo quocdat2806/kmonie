@@ -177,7 +177,7 @@ class _BudgetPageChildState extends State<_BudgetPageChild> {
 
     if (result is int && mounted) {
       final s = context.read<BudgetBloc>().state;
-      final p = s.period ?? DateTime.now();
+      final p = s.selectedPeriod ?? DateTime.now();
       context.read<BudgetBloc>().add(BudgetEvent.setBudget(period: DateTime(p.year, p.month), categoryId: category.id!, amount: result));
     }
   }

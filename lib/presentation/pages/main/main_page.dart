@@ -1,19 +1,124 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
 import 'package:kmonie/core/constants/constants.dart';
+import 'package:kmonie/core/di/di.dart';
 import 'package:kmonie/presentation/blocs/blocs.dart';
 import 'package:kmonie/presentation/pages/pages.dart';
-import 'widgets/bottom_navigation_bar.dart';
 import 'package:kmonie/presentation/widgets/widgets.dart';
+import 'package:kmonie/repositories/repositories.dart';
 
-final List<Widget> pageList = const <Widget>[HomePage(), ChartPage(), ReportPage(), ProfilePage()];
+import 'widgets/bottom_navigation_bar.dart';
 
-class MainPage extends StatelessWidget {
+//
+// final List<Widget> pageList = const <Widget>[HomePage(), ChartPage(), ReportPage(), ProfilePage()];
+//
+// class MainPage extends StatelessWidget {
+//   const MainPage({super.key});
+//
+//   void _onTabSelected({required BuildContext context, required int index}) {
+//     context.read<MainBloc>().add(MainSwitchTab(index));
+//   }
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     return BlocProvider<MainBloc>(
+//       create: (_) => MainBloc(),
+//       child: BlocBuilder<MainBloc, MainState>(
+//         builder: (context, state) {
+//           final int currentIndex = state.selectedIndex;
+//           return Scaffold(
+//             backgroundColor: AppColorConstants.primary,
+//             body: SafeArea(
+//               child: Stack(
+//                 clipBehavior: Clip.none,
+//                 children: [
+//                   Positioned.fill(
+//                     child: Padding(
+//                       padding: const EdgeInsets.only(bottom: AppUIConstants.bottomNavigationHeight),
+//                       child: IndexedStack(children: pageList),
+//                     ),
+//                   ),
+//                   Positioned(
+//                     bottom: 0,
+//                     left: 0,
+//                     right: 0,
+//                     child: MainBottomNavigationBar(
+//                       currentIndex: currentIndex,
+//                       onTabSelected: (i) => _onTabSelected(context: context, index: i),
+//                     ),
+//                   ),
+//                   const Positioned(
+//                     bottom: AppUIConstants.topAddTransactionButtonOffset,
+//                     left: 0,
+//                     right: 0,
+//                     child: Center(child: AddTransactionButton()),
+//                   ),
+//                 ],
+//               ),
+//             ),
+//           );
+//         },
+//       ),
+//     );
+//   }
+// }
+
+class MainPage extends StatefulWidget {
   const MainPage({super.key});
 
-  void _onTabSelected({required BuildContext context, required int index}) {
-    context.read<MainBloc>().add(MainSwitchTab(index));
+  @override
+  State<MainPage> createState() => _MainPageState();
+}
+
+class _MainPageState extends State<MainPage> {
+  final Map<int, Widget> _pageCache = {};
+
+  final Set<int> _initializedPages = {};
+
+  Widget _buildPage(int index) {
+    // Nếu đã cache, trả về luôn
+    if (_pageCache.containsKey(index)) {
+      return _pageCache[index]!;
+    }
+
+    // Chưa cache, tạo mới và lưu vào cache
+    Widget page;
+    switch (index) {
+      case 0:
+        page = BlocProvider(
+          create: (_) {
+            print('🟢 HomeBloc created'); // Chỉ in khi vào tab lần đầu
+            return HomeBloc(sl<TransactionRepository>(), sl<TransactionCategoryRepository>());
+          },
+          child: const _KeepAliveWrapper(child: HomePage()),
+        );
+        break;
+      case 1:
+        page = BlocProvider(
+          create: (_) {
+            return ChartBloc(sl<TransactionRepository>(), sl<TransactionCategoryRepository>());
+          },
+          child: const _KeepAliveWrapper(child: ChartPage()),
+        );
+        break;
+      case 2:
+        page = BlocProvider(
+          create: (_) {
+            return ReportBloc(sl<BudgetRepository>(), sl<TransactionRepository>(), sl<TransactionCategoryRepository>(), sl<AccountRepository>());
+          },
+          child: const _KeepAliveWrapper(child: ReportPage()),
+        );
+        break;
+      case 3:
+        page = const _KeepAliveWrapper(child: ProfilePage());
+        break;
+      default:
+        page = const SizedBox.shrink();
+    }
+
+    _pageCache[index] = page;
+    _initializedPages.add(index);
+    return page;
   }
 
   @override
@@ -32,7 +137,15 @@ class MainPage extends StatelessWidget {
                   Positioned.fill(
                     child: Padding(
                       padding: const EdgeInsets.only(bottom: AppUIConstants.bottomNavigationHeight),
-                      child: pageList[currentIndex],
+                      child: IndexedStack(
+                        index: currentIndex,
+                        children: List.generate(4, (index) {
+                          if (index == currentIndex || _initializedPages.contains(index)) {
+                            return _buildPage(index);
+                          }
+                          return const SizedBox.shrink();
+                        }),
+                      ),
                     ),
                   ),
                   Positioned(
@@ -41,11 +154,13 @@ class MainPage extends StatelessWidget {
                     right: 0,
                     child: MainBottomNavigationBar(
                       currentIndex: currentIndex,
-                      onTabSelected: (i) => _onTabSelected(context: context, index: i),
+                      onTabSelected: (i) {
+                        context.read<MainBloc>().add(MainSwitchTab(i));
+                      },
                     ),
                   ),
                   const Positioned(
-                    bottom: 0 + AppUIConstants.topAddTransactionButtonOffset,
+                    bottom: AppUIConstants.topAddTransactionButtonOffset,
                     left: 0,
                     right: 0,
                     child: Center(child: AddTransactionButton()),
@@ -57,5 +172,26 @@ class MainPage extends StatelessWidget {
         },
       ),
     );
+  }
+}
+
+// Wrapper để giữ state khi chuyển tab
+class _KeepAliveWrapper extends StatefulWidget {
+  final Widget child;
+
+  const _KeepAliveWrapper({required this.child});
+
+  @override
+  State<_KeepAliveWrapper> createState() => _KeepAliveWrapperState();
+}
+
+class _KeepAliveWrapperState extends State<_KeepAliveWrapper> with AutomaticKeepAliveClientMixin {
+  @override
+  bool get wantKeepAlive => true;
+
+  @override
+  Widget build(BuildContext context) {
+    super.build(context); // ⚠️ Bắt buộc gọi
+    return widget.child;
   }
 }

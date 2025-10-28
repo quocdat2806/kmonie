@@ -1,14 +1,14 @@
 import 'dart:async';
 
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:dartz/dartz.dart';
-
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kmonie/core/enums/enums.dart';
 import 'package:kmonie/core/error/failure.dart';
-import 'package:kmonie/repositories/repositories.dart';
 import 'package:kmonie/core/streams/streams.dart';
 import 'package:kmonie/core/utils/utils.dart';
 import 'package:kmonie/entities/entities.dart';
+import 'package:kmonie/repositories/repositories.dart';
+
 import 'search_transaction_event.dart';
 import 'search_transaction_state.dart';
 
@@ -94,18 +94,15 @@ class SearchTransactionBloc extends Bloc<SearchTransactionEvent, SearchTransacti
   void _onUpdateTransaction(SearchTransactionUpdateTransaction event, Emitter<SearchTransactionState> emit) {
     final updatedTransaction = event.transaction;
 
-    // Check if the updated transaction still matches the current search criteria
     final stillMatches = _matchesSearchCriteria(updatedTransaction);
 
     List<Transaction> updatedResults;
 
     if (stillMatches) {
-      // Transaction still matches → update it
       updatedResults = state.results.map((t) {
         return t.id == updatedTransaction.id ? updatedTransaction : t;
       }).toList();
     } else {
-      // Transaction no longer matches → remove it
       updatedResults = state.results.where((t) => t.id != updatedTransaction.id).toList();
     }
 
@@ -114,13 +111,10 @@ class SearchTransactionBloc extends Bloc<SearchTransactionEvent, SearchTransacti
   }
 
   bool _matchesSearchCriteria(Transaction transaction) {
-    // Check content match
     if (state.query.isNotEmpty) {
       final contentMatch = transaction.content.toLowerCase().contains(state.query.toLowerCase());
       if (!contentMatch) return false;
     }
-
-    // Check type match
     if (state.selectedType != null) {
       if (transaction.transactionType != state.selectedType!.typeIndex) return false;
     }

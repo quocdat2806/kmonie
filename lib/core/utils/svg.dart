@@ -12,7 +12,7 @@ class SvgUtils {
       SvgSizeType.medium => AppUIConstants.mediumIconSize,
       SvgSizeType.large => AppUIConstants.largeIconSize,
       SvgSizeType.extra => AppUIConstants.extraLargeIconSize,
-      SvgSizeType.extraLarge => AppUIConstants.extraLargeIconSize2,
+      SvgSizeType.extraLarge => AppUIConstants.superExtraLargeIconSize,
       _ => AppUIConstants.defaultIconSize,
     };
 

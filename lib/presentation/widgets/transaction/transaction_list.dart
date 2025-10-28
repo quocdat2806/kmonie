@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
-
 import 'package:kmonie/core/constants/constants.dart';
+import 'package:kmonie/core/di/di.dart';
 import 'package:kmonie/core/enums/enums.dart';
 import 'package:kmonie/core/navigation/navigation.dart';
 import 'package:kmonie/core/streams/streams.dart';
 import 'package:kmonie/core/text_style/text_style.dart';
 import 'package:kmonie/entities/entities.dart';
 import 'package:kmonie/presentation/pages/pages.dart';
+import 'package:kmonie/repositories/repositories.dart';
+
 import '../divider/app_divider.dart';
 import 'transaction_item.dart';
 
@@ -57,7 +59,10 @@ class TransactionList extends StatelessWidget {
                           extra: DetailTransactionArgs(transaction: transaction, category: category!),
                         ),
                         child: TransactionItem(
-                          onConfirmDelete: () => AppStreamEvent.deleteTransactionStatic(transaction.id!),
+                          onConfirmDelete: () async {
+                            await sl<TransactionRepository>().deleteTransaction(transaction.id!);
+                            AppStreamEvent.deleteTransactionStatic(transaction.id!);
+                          },
                           onEdit: () => AppNavigator(context: context).push(
                             RouterPath.transactionActions,
                             extra: TransactionActionsPageArgs(mode: ActionsMode.edit, transaction: transaction),

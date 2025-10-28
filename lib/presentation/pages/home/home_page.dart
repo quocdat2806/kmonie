@@ -1,15 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
 import 'package:kmonie/core/config/config.dart';
 import 'package:kmonie/core/constants/constants.dart';
-import 'package:kmonie/core/di/di.dart';
-import 'package:kmonie/repositories/repositories.dart';
 import 'package:kmonie/core/text_style/text_style.dart';
 import 'package:kmonie/core/utils/utils.dart';
 import 'package:kmonie/entities/entities.dart';
 import 'package:kmonie/presentation/blocs/blocs.dart';
 import 'package:kmonie/presentation/widgets/widgets.dart';
+
 import 'widgets/monthly_expense_summary.dart';
 
 class HomePage extends StatelessWidget {
@@ -17,7 +15,7 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider<HomeBloc>(create: (_) => HomeBloc(sl<TransactionRepository>(), sl<TransactionCategoryRepository>()), child: const HomePageChild());
+    return const HomePageChild();
   }
 }
 
