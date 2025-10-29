@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
-import 'package:kmonie/core/utils/utils.dart';
 import 'package:kmonie/core/constants/constants.dart';
 import 'package:kmonie/core/text_style/text_style.dart';
+import 'package:kmonie/core/utils/utils.dart';
 import 'package:kmonie/entities/entities.dart';
-import 'package:kmonie/presentation/widgets/widgets.dart';
 import 'package:kmonie/presentation/blocs/blocs.dart';
+import 'package:kmonie/presentation/widgets/widgets.dart';
 
 class DailyTransactionPageArgs {
   final DateTime selectedDate;
@@ -17,27 +16,20 @@ class DailyTransactionPageArgs {
 }
 
 class DailyTransactionPage extends StatelessWidget {
-  final DateTime selectedDate;
-  final Map<String, List<Transaction>> groupedTransactions;
-  final Map<int, TransactionCategory> categoriesMap;
+  final DailyTransactionPageArgs args;
 
-  const DailyTransactionPage({super.key, required this.selectedDate, required this.groupedTransactions, required this.categoriesMap});
+  const DailyTransactionPage({super.key, required this.args});
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) => DailyTransactionBloc(),
-      child: DailyTransactionPageChild(selectedDate: selectedDate, groupedTransactions: groupedTransactions, categoriesMap: categoriesMap),
-    );
+    return DailyTransactionPageChild(args: args);
   }
 }
 
 class DailyTransactionPageChild extends StatefulWidget {
-  final DateTime selectedDate;
-  final Map<String, List<Transaction>> groupedTransactions;
-  final Map<int, TransactionCategory> categoriesMap;
+  final DailyTransactionPageArgs args;
 
-  const DailyTransactionPageChild({super.key, required this.selectedDate, required this.groupedTransactions, required this.categoriesMap});
+  const DailyTransactionPageChild({super.key, required this.args});
 
   @override
   State<DailyTransactionPageChild> createState() => _DailyTransactionPageChildState();
@@ -47,7 +39,8 @@ class _DailyTransactionPageChildState extends State<DailyTransactionPageChild> {
   @override
   void initState() {
     super.initState();
-    context.read<DailyTransactionBloc>().add(DailyTransactionEvent.loadDailyTransactions(selectedDate: widget.selectedDate, groupedTransactions: widget.groupedTransactions, categoriesMap: widget.categoriesMap));
+    final a = widget.args;
+    context.read<DailyTransactionBloc>().add(DailyTransactionEvent.loadDailyTransactions(selectedDate: a.selectedDate, groupedTransactions: a.groupedTransactions, categoriesMap: a.categoriesMap));
   }
 
   @override
@@ -59,7 +52,7 @@ class _DailyTransactionPageChildState extends State<DailyTransactionPageChild> {
         }
 
         return Scaffold(
-          appBar: CustomAppBar(title: 'Giao dịch ${AppDateUtils.formatDate(widget.selectedDate)}'),
+          appBar: CustomAppBar(title: 'Giao dịch ${AppDateUtils.formatDate(widget.args.selectedDate)}'),
           body: SafeArea(
             child: state.isEmpty
                 ? _buildEmptyState(context)
@@ -73,7 +66,7 @@ class _DailyTransactionPageChildState extends State<DailyTransactionPageChild> {
                     },
                   ),
           ),
-          floatingActionButton: AddTransactionButton(initialDate: widget.selectedDate),
+          floatingActionButton: AddTransactionButton(initialDate: widget.args.selectedDate),
         );
       },
     );

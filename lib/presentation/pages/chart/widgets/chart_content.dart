@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
-import 'package:kmonie/core/text_style/text_style.dart';
 import 'package:kmonie/core/constants/constants.dart';
+import 'package:kmonie/core/enums/enums.dart';
+import 'package:kmonie/core/text_style/text_style.dart';
 import 'package:kmonie/core/tools/tools.dart';
 import 'package:kmonie/core/utils/utils.dart';
-import 'package:kmonie/core/enums/enums.dart';
 import 'package:kmonie/presentation/blocs/chart/chart.dart';
 import 'package:kmonie/presentation/widgets/widgets.dart';
 
@@ -54,12 +53,10 @@ class ChartContent extends StatelessWidget {
                       Container(
                         width: AppUIConstants.chartLegendDotSize,
                         height: AppUIConstants.chartLegendDotSize,
-                        decoration: BoxDecoration(shape: BoxShape.circle, gradient: data.gradientColors != null && data.gradientColors!.isNotEmpty ? GradientHelper.fromColorHexList(data.gradientColors!) : null, color: data.gradientColors == null || data.gradientColors!.isEmpty ? data.color : null),
+                        decoration: BoxDecoration(shape: BoxShape.circle, gradient: GradientHelper.fromColorHexList(data.gradientColors!)),
                       ),
                       const SizedBox(width: AppUIConstants.smallSpacing),
-                      Expanded(
-                        child: Text('${data.label} ${data.value.toStringAsFixed(1)}%', style: const TextStyle(fontSize: AppUIConstants.chartContentTextSize)),
-                      ),
+                      Expanded(child: Text('${data.label} ${data.value.toStringAsFixed(1)}%', style: AppTextStyle.blackS14Medium)),
                     ],
                   ),
                 );
@@ -78,13 +75,7 @@ class ChartContent extends StatelessWidget {
         separatorBuilder: (_, _) => const SizedBox(height: AppUIConstants.defaultSpacing),
         itemBuilder: (context, index) {
           final data = chartData[index];
-          return Row(
-            children: [
-              _buildCategoryIcon(data),
-              const SizedBox(width: AppUIConstants.chartCategorySpacing),
-              _buildCategoryInfo(data),
-            ],
-          );
+          return Row(spacing: AppUIConstants.smallSpacing, children: [_buildCategoryIcon(data), _buildCategoryInfo(data)]);
         },
       ),
     );
@@ -94,10 +85,10 @@ class ChartContent extends StatelessWidget {
     return Container(
       width: AppUIConstants.chartCategoryIconSize,
       height: AppUIConstants.chartCategoryIconSize,
-      decoration: BoxDecoration(shape: BoxShape.circle, gradient: data.gradientColors != null && data.gradientColors!.isNotEmpty ? GradientHelper.fromColorHexList(data.gradientColors!) : null, color: data.gradientColors == null || data.gradientColors!.isEmpty ? data.color.withValues(alpha: 0.2) : null),
+      decoration: BoxDecoration(shape: BoxShape.circle, gradient: GradientHelper.fromColorHexList(data.gradientColors!)),
       child: Padding(
         padding: const EdgeInsets.all(AppUIConstants.smallPadding),
-        child: data.category?.pathAsset != null && data.category!.pathAsset.isNotEmpty ? SvgUtils.icon(assetPath: data.category!.pathAsset, size: SvgSizeType.medium) : const SizedBox(),
+        child: SvgUtils.icon(assetPath: data.category!.pathAsset, size: SvgSizeType.medium),
       ),
     );
   }
@@ -108,11 +99,7 @@ class ChartContent extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
-            children: [
-              Expanded(
-                child: Text('${data.label} ${data.value.toStringAsFixed(1)}%', style: const TextStyle(fontWeight: FontWeight.w600)),
-              ),
-            ],
+            children: [Expanded(child: Text('${data.label} ${data.value.toStringAsFixed(1)}%', style: AppTextStyle.blackS14Medium))],
           ),
           const SizedBox(height: AppUIConstants.chartCategoryTextSpacing),
           ClipRRect(

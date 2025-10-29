@@ -35,7 +35,10 @@ class AppRouter {
         path: RouterPath.transactionActions,
         builder: (_, GoRouterState state) {
           final TransactionActionsPageArgs? args = state.extra as TransactionActionsPageArgs?;
-          return TransactionActionsPage(args: args);
+          return BlocProvider<TransactionActionsBloc>(
+            create: (_) => TransactionActionsBloc(sl<TransactionCategoryRepository>(), sl<TransactionRepository>(), sl<BudgetRepository>(), args),
+            child: TransactionActionsPage(args: args),
+          );
         },
       ),
       GoRoute(
@@ -49,7 +52,10 @@ class AppRouter {
         path: RouterPath.dailyTransactions,
         builder: (_, GoRouterState state) {
           final DailyTransactionPageArgs args = state.extra as DailyTransactionPageArgs;
-          return DailyTransactionPage(selectedDate: args.selectedDate, groupedTransactions: args.groupedTransactions, categoriesMap: args.categoriesMap);
+          return BlocProvider<DailyTransactionBloc>(
+            create: (_) => DailyTransactionBloc(),
+            child: DailyTransactionPage(args: args),
+          );
         },
       ),
       GoRoute(path: RouterPath.budget, builder: (_, GoRouterState state) => const BudgetPage()),

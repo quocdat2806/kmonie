@@ -1,20 +1,24 @@
+import 'dart:async';
+
+import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
 import 'package:kmonie/core/enums/enums.dart';
-import 'package:kmonie/repositories/repositories.dart';
-import 'package:kmonie/entities/entities.dart';
-import 'package:kmonie/core/utils/utils.dart';
-import 'package:kmonie/core/tools/tools.dart';
-import 'package:kmonie/presentation/widgets/chart_circular/chart_circular.dart';
 import 'package:kmonie/core/error/failure.dart';
-import 'package:dartz/dartz.dart';
+import 'package:kmonie/core/streams/streams.dart';
+import 'package:kmonie/core/tools/tools.dart';
+import 'package:kmonie/core/utils/utils.dart';
+import 'package:kmonie/entities/entities.dart';
+import 'package:kmonie/presentation/widgets/chart_circular/chart_circular.dart';
+import 'package:kmonie/repositories/repositories.dart';
+
 import 'chart_event.dart';
 import 'chart_state.dart';
 
 class ChartBloc extends Bloc<ChartEvent, ChartState> {
   final TransactionRepository transactionRepository;
   final TransactionCategoryRepository categoryRepository;
+  StreamSubscription<AppStreamData>? _refreshSubscription;
 
   ChartBloc(this.transactionRepository, this.categoryRepository) : super(const ChartState()) {
     on<LoadInitialData>(_onLoadInitialData);
@@ -27,21 +31,31 @@ class ChartBloc extends Bloc<ChartEvent, ChartState> {
     on<RefreshChart>(_onRefreshChart);
 
     add(const LoadInitialData());
+    _refreshSubscription = AppStreamEvent.eventStreamStatic.listen((data) {
+      switch (data.event) {
+        case AppEvent.updateTransaction:
+        case AppEvent.insertTransaction:
+        case AppEvent.deleteTransaction:
+          add(const LoadInitialData());
+          break;
+        default:
+          break;
+      }
+    });
   }
 
   Future<void> _onLoadInitialData(LoadInitialData event, Emitter<ChartState> emit) async {
-    emit(state.copyWith(isLoading: true));
-
+    emit(state.copyWith(loadStatus: LoadStatus.loading));
     try {
       final months = AppDateUtils.generateRecentMonths();
       final years = AppDateUtils.generateRecentYears();
 
-      emit(state.copyWith(months: months, years: years, selectedMonthIndex: months.length - 1, selectedYearIndex: years.length - 1, isLoading: false));
+      emit(state.copyWith(months: months, years: years, selectedMonthIndex: months.length - 1, selectedYearIndex: years.length - 1, loadStatus: LoadStatus.success));
 
       add(const RefreshChart());
     } catch (e) {
       logger.e('❤️ ERROR: ChartBloc error: $e');
-      emit(state.copyWith(isLoading: false));
+      emit(state.copyWith(loadStatus: LoadStatus.error));
     }
   }
 
@@ -81,37 +95,35 @@ class ChartBloc extends Bloc<ChartEvent, ChartState> {
   }
 
   Future<void> _onRefreshChart(RefreshChart event, Emitter<ChartState> emit) async {
-    if (state.isLoading) return;
-    emit(state.copyWith(isLoading: true));
+    if (state.loadStatus == LoadStatus.loading) return;
+    emit(state.copyWith(loadStatus: LoadStatus.loading));
 
     try {
-      // Lấy transactions theo period và type
       final transactionsResult = await _getTransactionsForCurrentPeriod();
 
       await transactionsResult.fold(
         (failure) async {
           logger.e('Failed to load transactions: ${failure.message}');
-          emit(state.copyWith(chartData: [], isLoading: false));
+          emit(state.copyWith(chartData: [], loadStatus: LoadStatus.error));
         },
         (transactions) async {
-          // Lấy categories để map tên
           final categoriesResult = await categoryRepository.getAll();
 
           await categoriesResult.fold(
             (failure) async {
               logger.e('Failed to load categories: ${failure.message}');
-              emit(state.copyWith(chartData: [], isLoading: false));
+              emit(state.copyWith(chartData: [], loadStatus: LoadStatus.error));
             },
             (categories) async {
               final chartData = _calculateChartData(transactions, categories);
-              emit(state.copyWith(chartData: chartData, isLoading: false));
+              emit(state.copyWith(chartData: chartData, loadStatus: LoadStatus.loading));
             },
           );
         },
       );
     } catch (e) {
       logger.e('❤️ ERROR: ChartBloc error: $e');
-      emit(state.copyWith(chartData: [], isLoading: false));
+      emit(state.copyWith(chartData: [], loadStatus: LoadStatus.error));
     }
   }
 
@@ -127,19 +139,12 @@ class ChartBloc extends Bloc<ChartEvent, ChartState> {
     return GradientHelper.generateCategoryColor(categoryId);
   }
 
-  /// Lấy transactions theo period hiện tại
   Future<Either<Failure, List<Transaction>>> _getTransactionsForCurrentPeriod() async {
     if (state.selectedPeriodType == IncomeType.month && state.selectedMonth != null) {
       final selectedMonth = state.selectedMonth!;
       logger.d('ChartBloc: Loading transactions for month ${selectedMonth.year}/${selectedMonth.month}');
 
-      // Lấy tất cả transactions với page size lớn để không bị phân trang
-      final result = await transactionRepository.getTransactionsInMonth(
-        year: selectedMonth.year,
-        month: selectedMonth.month,
-        pageSize: 10000, // Page size lớn để lấy tất cả
-        pageIndex: 0,
-      );
+      final result = await transactionRepository.getTransactionsInMonth(year: selectedMonth.year, month: selectedMonth.month, pageSize: 1000, pageIndex: 0);
 
       return result.map((data) {
         return data.transactions;
@@ -175,7 +180,6 @@ class ChartBloc extends Bloc<ChartEvent, ChartState> {
 
     logger.d('ChartBloc: Category totals: $categoryTotals');
 
-    // Tạo chart data
     final totalAmount = categoryTotals.values.fold(0.0, (sum, amount) => sum + amount);
     final List<ChartData> chartData = [];
 
@@ -187,10 +191,15 @@ class ChartBloc extends Bloc<ChartEvent, ChartState> {
       logger.d('ChartBloc: Chart data - Category: ${category?.title}, Amount: ${entry.value}, Percentage: ${percentage.toStringAsFixed(2)}%');
     }
 
-    // Sort theo percentage desc
     chartData.sort((a, b) => b.value.compareTo(a.value));
 
     logger.d('ChartBloc: Final chart data count: ${chartData.length}');
     return chartData;
+  }
+
+  @override
+  Future<void> close() {
+    _refreshSubscription?.cancel();
+    return super.close();
   }
 }

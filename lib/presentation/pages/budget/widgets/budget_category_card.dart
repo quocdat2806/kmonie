@@ -1,20 +1,18 @@
 import 'package:flutter/material.dart';
-
 import 'package:kmonie/core/constants/constants.dart';
-import 'package:kmonie/core/text_style/text_style.dart';
-import 'package:kmonie/core/utils/utils.dart';
-import 'package:kmonie/core/tools/tools.dart';
 import 'package:kmonie/core/enums/enums.dart';
-import 'package:kmonie/generated/generated.dart';
+import 'package:kmonie/core/text_style/text_style.dart';
+import 'package:kmonie/core/tools/tools.dart';
+import 'package:kmonie/core/utils/utils.dart';
 import 'package:kmonie/entities/transaction_category/transaction_category.dart';
+import 'package:kmonie/generated/generated.dart';
 
 class BudgetCategoryCard extends StatelessWidget {
-  const BudgetCategoryCard({super.key, required this.category, required this.budget, required this.spent, required this.onEdit});
+  const BudgetCategoryCard({super.key, required this.category, required this.budget, required this.spent});
 
   final TransactionCategory category;
   final int budget;
   final int spent;
-  final VoidCallback onEdit;
 
   @override
   Widget build(BuildContext context) {
@@ -40,7 +38,7 @@ class BudgetCategoryCard extends StatelessWidget {
                   Container(
                     width: 40,
                     height: 40,
-                    decoration: BoxDecoration(shape: BoxShape.circle, gradient: category.gradientColors.isNotEmpty ? GradientHelper.fromColorHexList(category.gradientColors) : null, color: category.gradientColors.isEmpty ? AppColorConstants.primary : null),
+                    decoration: BoxDecoration(shape: BoxShape.circle, gradient: GradientHelper.fromColorHexList(category.gradientColors)),
                     child: Padding(
                       padding: const EdgeInsets.all(AppUIConstants.smallPadding),
                       child: SvgUtils.icon(assetPath: category.pathAsset.isNotEmpty ? category.pathAsset : Assets.svgsNote, size: SvgSizeType.medium),
@@ -49,10 +47,6 @@ class BudgetCategoryCard extends StatelessWidget {
                   const SizedBox(width: AppUIConstants.smallSpacing),
                   Text(category.title, style: AppTextStyle.blackS16Bold),
                 ],
-              ),
-              TextButton(
-                onPressed: onEdit,
-                child: Text('Sửa', style: AppTextStyle.blueS14Medium),
               ),
             ],
           ),

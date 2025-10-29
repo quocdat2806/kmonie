@@ -1,36 +1,33 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kmonie/core/constants/constants.dart';
-import 'package:kmonie/core/di/di.dart';
-import 'package:kmonie/core/text_style/text_style.dart';
 import 'package:kmonie/core/enums/enums.dart';
-import 'package:kmonie/presentation/blocs/blocs.dart';
-
 import 'package:kmonie/core/navigation/navigation.dart';
+import 'package:kmonie/core/text_style/text_style.dart';
+import 'package:kmonie/presentation/blocs/blocs.dart';
 import 'package:kmonie/presentation/widgets/widgets.dart';
-import 'package:kmonie/repositories/repositories.dart';
 
-import 'widgets/report_tab_bar.dart';
 import 'widgets/monthly_statistics_card.dart';
 import 'widgets/net_worth_card.dart';
+import 'widgets/report_tab_bar.dart';
 
 class ReportPage extends StatelessWidget {
   const ReportPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider<ReportBloc>(create: (_) => ReportBloc(sl<BudgetRepository>(), sl<TransactionRepository>(), sl<TransactionCategoryRepository>(), sl<AccountRepository>()), child: const _ReportPageChild());
+    return const ReportPageChild();
   }
 }
 
-class _ReportPageChild extends StatefulWidget {
-  const _ReportPageChild();
+class ReportPageChild extends StatefulWidget {
+  const ReportPageChild({super.key});
 
   @override
-  State<_ReportPageChild> createState() => _ReportPageChildState();
+  State<ReportPageChild> createState() => _ReportPageChildState();
 }
 
-class _ReportPageChildState extends State<_ReportPageChild> {
+class _ReportPageChildState extends State<ReportPageChild> {
   @override
   Widget build(BuildContext context) {
     return ColoredBox(
@@ -39,17 +36,19 @@ class _ReportPageChildState extends State<_ReportPageChild> {
         children: [
           ColoredBox(
             color: AppColorConstants.primary,
-            child: Column(
-              spacing: AppUIConstants.defaultSpacing,
-              children: [
-                const SizedBox.shrink(),
-                Text(AppTextConstants.report, style: AppTextStyle.blackS18Bold),
-                const ReportTabBar(),
-                const SizedBox.shrink(),
-              ],
+            child: Padding(
+              padding: const EdgeInsets.all(AppUIConstants.defaultPadding),
+              child: Column(
+                spacing: AppUIConstants.defaultSpacing,
+                children: [
+                  Text(AppTextConstants.report, style: AppTextStyle.blackS18Bold),
+                  const ReportTabBar(),
+                ],
+              ),
             ),
           ),
           BlocBuilder<ReportBloc, ReportState>(
+            buildWhen: (prev, current) => prev.selectedTabIndex != current.selectedTabIndex || prev.monthlyBudget != current.monthlyBudget || prev.totalExpense != current.totalExpense,
             builder: (context, state) {
               if (state.selectedTabIndex == ReportType.account.typeIndex) {
                 return Expanded(
@@ -68,6 +67,7 @@ class _ReportPageChildState extends State<_ReportPageChild> {
               final monthlyBudget = state.monthlyBudget;
               final totalSpent = state.totalExpense;
               return InkWell(
+                splashColor: Colors.transparent,
                 onTap: () {
                   AppNavigator(context: context).push(RouterPath.budget);
                 },

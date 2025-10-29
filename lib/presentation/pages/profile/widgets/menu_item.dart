@@ -12,6 +12,8 @@ class MenuItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return InkWell(
+      splashColor: Colors.transparent,
+
       onTap: onTap,
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: AppUIConstants.extraLargePadding, vertical: AppUIConstants.defaultPadding),

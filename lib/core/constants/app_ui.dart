@@ -33,6 +33,7 @@ class AppUIConstants {
   static const double extraLargeContainerSize = 80.0;
 
   static const double extraSmallSpacing = 4.0;
+  static const double superExtraSmallSpacing = 1;
   static const double smallSpacing = 8.0;
   static const double defaultSpacing = 16.0;
   static const double largeSpacing = 24.0;

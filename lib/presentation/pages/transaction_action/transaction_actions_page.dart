@@ -1,16 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
 import 'package:kmonie/core/constants/constants.dart';
-import 'package:kmonie/core/di/di.dart';
 import 'package:kmonie/core/enums/enums.dart';
 import 'package:kmonie/core/navigation/navigation.dart';
-import 'package:kmonie/repositories/repositories.dart';
 import 'package:kmonie/core/text_style/text_style.dart';
 import 'package:kmonie/entities/entities.dart';
 import 'package:kmonie/presentation/blocs/blocs.dart';
 import 'package:kmonie/presentation/widgets/widgets.dart';
+
 import 'widgets/transaction_actions_input_header.dart';
 import 'widgets/transaction_category_grid.dart';
 import 'widgets/transaction_tab_bar.dart';
@@ -30,10 +28,7 @@ class TransactionActionsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider<TransactionActionsBloc>(
-      create: (_) => TransactionActionsBloc(sl<TransactionCategoryRepository>(), sl<TransactionRepository>(), args),
-      child: TransactionActionsPageChild(args: args),
-    );
+    return TransactionActionsPageChild(args: args);
   }
 }
 
@@ -250,24 +245,22 @@ class _TransactionActionsPageChildState extends State<TransactionActionsPageChil
       title: AppTextConstants.add,
       leading: ConstrainedBox(
         constraints: const BoxConstraints(minWidth: AppUIConstants.mediumContainerSize, minHeight: AppUIConstants.mediumContainerSize),
-        child: Ink(
-          decoration: const ShapeDecoration(shape: StadiumBorder()),
-          child: InkWell(
-            customBorder: const StadiumBorder(),
-            onTap: () async {
-              if (context.read<TransactionActionsBloc>().state.isKeyboardVisible) {
-                context.read<TransactionActionsBloc>().add(const ToggleKeyboardVisibility());
-                await SystemChannels.textInput.invokeMethod('TextInput.hide');
-                await Future<void>.delayed(const Duration(milliseconds: 350));
-                if (mounted) {
-                  AppNavigator(context: context).pop();
-                }
-                return;
+        child: InkWell(
+          splashColor: Colors.transparent,
+          customBorder: const StadiumBorder(),
+          onTap: () async {
+            if (context.read<TransactionActionsBloc>().state.isKeyboardVisible) {
+              context.read<TransactionActionsBloc>().add(const ToggleKeyboardVisibility());
+              await SystemChannels.textInput.invokeMethod('TextInput.hide');
+              await Future<void>.delayed(const Duration(milliseconds: 350));
+              if (mounted) {
+                AppNavigator(context: context).pop();
               }
-              AppNavigator(context: context).pop();
-            },
-            child: Center(child: Text(AppTextConstants.cancel, style: AppTextStyle.blackS14Medium)),
-          ),
+              return;
+            }
+            AppNavigator(context: context).pop();
+          },
+          child: Center(child: Text(AppTextConstants.cancel, style: AppTextStyle.blackS14Medium)),
         ),
       ),
     );

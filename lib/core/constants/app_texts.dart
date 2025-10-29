@@ -30,6 +30,7 @@ class AppTextConstants {
   static const String type = 'Kiểu';
 
   static const String balance = 'Số dư';
+  static const String overBudgetWarning = 'Bạn đã vượt quá ngân sách hàng tháng ! Bạn có chắc chắn muốn thêm giao dịch này?';
 
   static const String detailTransaction = 'Chi tiết giao dịch';
   static const String date = 'Ngày';

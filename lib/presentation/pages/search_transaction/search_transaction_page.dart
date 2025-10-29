@@ -64,6 +64,8 @@ class _SearchTransactionPageChildState extends State<SearchTransactionPageChild>
             Row(
               children: <Widget>[
                 InkWell(
+                  splashColor: Colors.transparent,
+
                   child: const Icon(Icons.arrow_back),
                   onTap: () => AppNavigator(context: context).pop(),
                 ),

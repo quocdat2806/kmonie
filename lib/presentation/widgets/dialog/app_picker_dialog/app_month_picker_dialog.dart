@@ -49,11 +49,15 @@ class _MonthPickerDialogState extends State<MonthPickerDialog> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     InkWell(
+                      splashColor: Colors.transparent,
+
                       onTap: () => _changeYear(-1),
                       child: const Icon(Icons.arrow_back_ios, size: AppUIConstants.smallIconSize),
                     ),
                     Text('$selectedYear', style: AppTextStyle.blackS14Medium),
                     InkWell(
+                      splashColor: Colors.transparent,
+
                       onTap: () => _changeYear(1),
                       child: const Icon(Icons.arrow_forward_ios, size: AppUIConstants.smallIconSize),
                     ),

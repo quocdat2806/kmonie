@@ -1,14 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-
-import 'package:kmonie/core/di/di.dart';
-import 'package:kmonie/core/enums/enums.dart';
-import 'package:kmonie/repositories/repositories.dart';
 import 'package:kmonie/core/constants/constants.dart';
-import 'package:kmonie/presentation/blocs/blocs.dart';
-import 'widgets/chart_tab_bar.dart';
-import 'widgets/chart_period_selector.dart';
+
 import 'widgets/chart_content.dart';
+import 'widgets/chart_period_selector.dart';
+import 'widgets/chart_tab_bar.dart';
 import 'widgets/chart_transaction_type_dropdown.dart';
 
 class ChartPage extends StatelessWidget {
@@ -16,18 +11,18 @@ class ChartPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(create: (context) => ChartBloc(sl<TransactionRepository>(), sl<TransactionCategoryRepository>()), child: const _ChartPageView());
+    return const ChartPageChild();
   }
 }
 
-class _ChartPageView extends StatefulWidget {
-  const _ChartPageView();
+class ChartPageChild extends StatefulWidget {
+  const ChartPageChild({super.key});
 
   @override
-  State<_ChartPageView> createState() => _ChartPageViewState();
+  State<ChartPageChild> createState() => _ChartPageChildState();
 }
 
-class _ChartPageViewState extends State<_ChartPageView> {
+class _ChartPageChildState extends State<ChartPageChild> {
   final GlobalKey _dropdownKey = GlobalKey();
 
   @override
@@ -38,27 +33,24 @@ class _ChartPageViewState extends State<_ChartPageView> {
         children: [
           ColoredBox(
             color: AppColorConstants.primary,
-            child: Column(
-              spacing: AppUIConstants.defaultSpacing,
-              children: [
-                const SizedBox(),
-                ChartTransactionTypeDropdown(dropdownKey: _dropdownKey),
-                const ChartTabBar(),
-                const SizedBox(),
-              ],
+            child: Padding(
+              padding: const EdgeInsets.all(AppUIConstants.defaultPadding),
+              child: Column(
+                spacing: AppUIConstants.defaultSpacing,
+                children: [
+                  ChartTransactionTypeDropdown(dropdownKey: _dropdownKey),
+                  const ChartTabBar(),
+                ],
+              ),
             ),
           ),
-          BlocBuilder<ChartBloc, ChartState>(
-            builder: (context, state) {
-              return Expanded(
-                child: Column(
-                  children: [
-                    ChartPeriodSelector(periodType: state.selectedPeriodType == IncomeType.month ? PeriodType.month : PeriodType.year),
-                    const Expanded(child: ChartContent()),
-                  ],
-                ),
-              );
-            },
+          const Expanded(
+            child: Column(
+              children: [
+                ChartPeriodSelector(),
+                Expanded(child: ChartContent()),
+              ],
+            ),
           ),
         ],
       ),

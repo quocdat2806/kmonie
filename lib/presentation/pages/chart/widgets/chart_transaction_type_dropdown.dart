@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:kmonie/core/text_style/text_style.dart';
-import 'package:kmonie/core/enums/enums.dart';
 import 'package:kmonie/core/constants/constants.dart';
+import 'package:kmonie/core/enums/enums.dart';
+import 'package:kmonie/core/text_style/text_style.dart';
 import 'package:kmonie/core/utils/utils.dart';
+import 'package:kmonie/generated/generated.dart';
 import 'package:kmonie/presentation/blocs/blocs.dart';
 import 'package:kmonie/presentation/widgets/widgets.dart';
-import 'package:kmonie/generated/generated.dart';
 
 class ChartTransactionTypeDropdown extends StatelessWidget {
   final GlobalKey dropdownKey;
@@ -19,6 +19,7 @@ class ChartTransactionTypeDropdown extends StatelessWidget {
       buildWhen: (previous, current) => previous.selectedTransactionType != current.selectedTransactionType,
       builder: (context, state) {
         return InkWell(
+          splashColor: Colors.transparent,
           key: dropdownKey,
           onTap: () => _showTransactionTypeDropdown(context),
           child: Row(

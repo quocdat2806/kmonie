@@ -54,6 +54,7 @@ class TransactionList extends StatelessWidget {
                       final transaction = transactions[index];
                       final category = categoriesMap[transaction.transactionCategoryId];
                       return InkWell(
+                        splashColor: Colors.transparent,
                         onTap: () => AppNavigator(context: context).push(
                           RouterPath.detailTransaction,
                           extra: DetailTransactionArgs(transaction: transaction, category: category!),

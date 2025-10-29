@@ -1,24 +1,24 @@
 import 'dart:async';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
-
 import 'package:kmonie/core/enums/enums.dart';
 import 'package:kmonie/core/services/services.dart';
 import 'package:kmonie/core/streams/streams.dart';
+import 'package:kmonie/core/utils/utils.dart';
+import 'package:kmonie/entities/entities.dart';
 import 'package:kmonie/presentation/pages/pages.dart';
 import 'package:kmonie/repositories/repositories.dart';
-import 'package:kmonie/entities/entities.dart';
-import 'package:kmonie/core/di/di.dart';
-import 'package:kmonie/core/utils/utils.dart';
+
 import 'transaction_actions_event.dart';
 import 'transaction_actions_state.dart';
 
 class TransactionActionsBloc extends Bloc<TransactionActionsEvent, TransactionActionsState> {
   final TransactionCategoryRepository categoryRepository;
   final TransactionRepository transactionRepository;
+  final BudgetRepository budgetRepository;
   final TransactionActionsPageArgs? args;
 
-  TransactionActionsBloc(this.categoryRepository, this.transactionRepository, this.args) : super(const TransactionActionsState()) {
+  TransactionActionsBloc(this.categoryRepository, this.transactionRepository, this.budgetRepository, this.args) : super(const TransactionActionsState()) {
     on<Initialize>(_onInitialize);
     on<SwitchTab>(_onSwitchTab);
     on<CategoryChanged>(_onCategoryChanged);
@@ -139,14 +139,11 @@ class TransactionActionsBloc extends Bloc<TransactionActionsEvent, TransactionAc
     final tx = args!.transaction!;
     final updateResult = await transactionRepository.updateTransaction(id: tx.id!, amount: state.amount, content: state.note, date: state.date ?? tx.date, transactionCategoryId: state.selectedCategoryIdFor(state.currentType));
 
-    updateResult.fold(
-      (failure) => null, // Handle error if needed
-      (updatedTx) {
-        if (updatedTx != null) {
-          AppStreamEvent.updateTransactionStatic(updatedTx);
-        }
-      },
-    );
+    updateResult.fold((failure) => null, (updatedTx) {
+      if (updatedTx != null) {
+        AppStreamEvent.updateTransactionStatic(updatedTx);
+      }
+    });
   }
 
   SeparatedCategories _separateCategories(List<TransactionCategory> all) {
@@ -187,32 +184,20 @@ class TransactionActionsBloc extends Bloc<TransactionActionsEvent, TransactionAc
     final month = date.month;
 
     try {
-      final budgetResult = await sl<BudgetRepository>().getBudgetForCategory(year: year, month: month, categoryId: categoryId);
+      final budgetResult = await budgetRepository.getBudgetForCategory(year: year, month: month, categoryId: categoryId);
       final budgetAmount = budgetResult.fold((failure) => 0, (budget) => budget);
 
       if (budgetAmount <= 0) {
         add(const SubmitTransaction());
         return;
       }
-
-      final allResult = await transactionRepository.getAllTransactions();
-      final all = allResult.fold((failure) => <Transaction>[], (transactions) => transactions);
-
-      final range = AppDateUtils.monthRangeUtc(year, month);
-      final startLocal = range.startUtc.toLocal();
-      final endLocal = range.endUtc.toLocal();
-
-      final spentSoFar = all.where((t) => t.transactionCategoryId == categoryId && t.transactionType == TransactionType.expense.typeIndex && !t.date.isBefore(startLocal) && t.date.isBefore(endLocal)).fold<int>(0, (p, t) => p + t.amount);
-
-      final proposed = spentSoFar + state.amount;
-
-      if (proposed > budgetAmount) {
+      if (state.amount > budgetAmount) {
         emit(state.copyWith(overBudgetState: OverBudgetState.showOverBudgetDialog));
-      } else {
-        add(const SubmitTransaction());
+        return;
       }
-    } catch (e) {
       add(const SubmitTransaction());
+    } catch (e) {
+      logger.e('Error checking over budget: $e');
     }
   }
 

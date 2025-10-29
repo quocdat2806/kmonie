@@ -1,5 +1,4 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-
 import 'package:kmonie/entities/entities.dart';
 
 part 'budget_state.freezed.dart';

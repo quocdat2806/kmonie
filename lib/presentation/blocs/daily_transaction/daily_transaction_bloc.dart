@@ -1,9 +1,11 @@
 import 'dart:async';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kmonie/core/enums/enums.dart';
 import 'package:kmonie/core/streams/streams.dart';
 import 'package:kmonie/core/utils/utils.dart';
 import 'package:kmonie/entities/entities.dart';
+
 import 'daily_transaction_event.dart';
 import 'daily_transaction_state.dart';
 
@@ -66,14 +68,12 @@ class DailyTransactionBloc extends Bloc<DailyTransactionEvent, DailyTransactionS
     final updatedGroupedTransactions = Map<String, List<Transaction>>.from(state.groupedTransactions);
 
     if (!isSameDay) {
-      // Remove transaction from all groups if date changed
       for (final key in updatedGroupedTransactions.keys) {
         final list = updatedGroupedTransactions[key]!;
         updatedGroupedTransactions[key] = list.where((e) => e.id != tx.id).toList();
       }
       updatedGroupedTransactions.removeWhere((_, list) => list.isEmpty);
     } else {
-      // Update transaction in the same day
       final key = AppDateUtils.formatDateKey(tx.date);
       final list = updatedGroupedTransactions[key];
       if (list != null) {
@@ -103,7 +103,6 @@ class DailyTransactionBloc extends Bloc<DailyTransactionEvent, DailyTransactionS
   }
 
   bool _isSameDate(DateTime a, DateTime b) {
-    // Normalize dates to remove time component and timezone issues
     final normalizedA = DateTime(a.year, a.month, a.day);
     final normalizedB = DateTime(b.year, b.month, b.day);
     return normalizedA == normalizedB;

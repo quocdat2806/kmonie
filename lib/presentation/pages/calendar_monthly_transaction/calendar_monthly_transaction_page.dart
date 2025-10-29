@@ -42,15 +42,15 @@ class _CalendarMonthlyTransactionPageChildState extends State<CalendarMonthlyTra
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<CalendarMonthlyTransactionBloc, CalendarMonthTransactionState>(
-      builder: (context, state) {
-        final selectedDate = state.selectedDate ?? DateTime.now();
-        return Scaffold(
-          appBar: CustomAppBar(
-            title: AppTextConstants.calendar,
-            centerTitle: false,
-            actions: [
-              InkWell(
+    return Scaffold(
+      appBar: CustomAppBar(
+        title: AppTextConstants.calendar,
+        centerTitle: false,
+        actions: [
+          BlocSelector<CalendarMonthlyTransactionBloc, CalendarMonthTransactionState, DateTime>(
+            selector: (state) => state.selectedDate ?? DateTime.now(),
+            builder: (context, selectedDate) {
+              return InkWell(
                 splashColor: Colors.transparent,
                 onTap: () => _showMonthPicker(context, selectedDate),
                 child: Row(
@@ -60,36 +60,38 @@ class _CalendarMonthlyTransactionPageChildState extends State<CalendarMonthlyTra
                     const SizedBox(width: AppUIConstants.smallSpacing),
                   ],
                 ),
+              );
+            },
+          ),
+        ],
+      ),
+      body: SafeArea(
+        child: Column(
+          children: [
+            const WeekdayHeader(),
+            Expanded(
+              child: CalendarGrid(
+                onDateSelected: (date) {
+                  final bloc = context.read<CalendarMonthlyTransactionBloc>()..add(CalendarMonthlyTransactionEvent.changeSelectedDate(date));
+                  final dateKey = AppDateUtils.formatDateKey(date);
+                  final currentState = bloc.state;
+                  final transactions = currentState.groupedTransactions[dateKey] ?? [];
+                  AppNavigator(context: context).push(
+                    RouterPath.dailyTransactions,
+                    extra: DailyTransactionPageArgs(selectedDate: date, groupedTransactions: {dateKey: transactions}, categoriesMap: currentState.categoriesMap),
+                  );
+                },
               ),
-            ],
-          ),
-          body: SafeArea(
-            child: Column(
-              children: [
-                const WeekdayHeader(),
-                Expanded(
-                  child: CalendarGrid(
-                    selectedDate: selectedDate,
-                    dailyTotals: state.dailyTotals,
-                    onDateSelected: (date) {
-                      final bloc = context.read<CalendarMonthlyTransactionBloc>();
-                      final state = bloc.state;
-                      bloc.add(CalendarMonthlyTransactionEvent.changeSelectedDate(date));
-                      final dateKey = AppDateUtils.formatDateKey(date);
-                      final transactions = state.groupedTransactions[dateKey] ?? [];
-                      AppNavigator(context: context).push(
-                        RouterPath.dailyTransactions,
-                        extra: DailyTransactionPageArgs(selectedDate: date, groupedTransactions: {dateKey: transactions}, categoriesMap: state.categoriesMap),
-                      );
-                    },
-                  ),
-                ),
-              ],
             ),
-          ),
-          floatingActionButton: AddTransactionButton(initialDate: selectedDate),
-        );
-      },
+          ],
+        ),
+      ),
+      floatingActionButton: BlocSelector<CalendarMonthlyTransactionBloc, CalendarMonthTransactionState, DateTime>(
+        selector: (state) => state.selectedDate ?? DateTime.now(),
+        builder: (context, selectedDate) {
+          return AddTransactionButton(initialDate: selectedDate);
+        },
+      ),
     );
   }
 }

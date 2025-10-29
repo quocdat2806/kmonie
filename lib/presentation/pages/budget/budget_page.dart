@@ -1,17 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
+import 'package:go_router/go_router.dart';
 import 'package:kmonie/core/constants/constants.dart';
 import 'package:kmonie/core/di/di.dart';
-import 'package:kmonie/core/services/budget.dart';
-import 'package:kmonie/core/services/transaction_category.dart';
+import 'package:kmonie/core/navigation/router_path.dart';
+import 'package:kmonie/repositories/repositories.dart';
 import 'package:kmonie/core/text_style/text_style.dart';
 import 'package:kmonie/presentation/blocs/budget/budget_bloc.dart';
 import 'package:kmonie/presentation/blocs/budget/budget_event.dart';
 import 'package:kmonie/presentation/blocs/budget/budget_state.dart';
 import 'package:kmonie/presentation/widgets/widgets.dart';
-import 'package:kmonie/core/navigation/router_path.dart';
-import 'package:go_router/go_router.dart';
 
 import '../../../entities/transaction_category/transaction_category.dart';
 import 'widgets/budget_category_card.dart';
@@ -23,7 +21,7 @@ class BudgetPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final now = DateTime(DateTime.now().year, DateTime.now().month);
     return BlocProvider<BudgetBloc>(
-      create: (_) => BudgetBloc(sl<TransactionCategoryService>(), sl<BudgetService>())..add(BudgetEvent.init(period: now)),
+      create: (_) => BudgetBloc(sl<TransactionCategoryRepository>(), sl<BudgetRepository>())..add(BudgetEvent.init(period: now)),
       child: const _BudgetPageChild(),
     );
   }
@@ -124,61 +122,6 @@ class _BudgetPageChildState extends State<_BudgetPageChild> {
   Widget _buildCategoryCard(TransactionCategory category, BudgetState state) {
     final budget = state.categoryBudgets[category.id!] ?? 0;
     final spent = state.categorySpent[category.id!] ?? 0;
-    return BudgetCategoryCard(category: category, budget: budget, spent: spent, onEdit: () => _showBudgetDialog(category));
-  }
-
-  void _showBudgetDialog(TransactionCategory category) async {
-    final bloc = context.read<BudgetBloc>()..add(const BudgetEvent.resetInput());
-
-    final result = await showModalBottomSheet<int>(
-      context: context,
-      isScrollControlled: true,
-      builder: (bottomSheetContext) {
-        return BlocProvider.value(
-          value: bloc,
-          child: Padding(
-            padding: const EdgeInsets.all(AppUIConstants.defaultPadding),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('Nhập ngân sách cho ${category.title}', style: AppTextStyle.blackS16Bold),
-                const SizedBox(height: AppUIConstants.smallSpacing),
-                StatefulBuilder(
-                  builder: (context, setSheet) => Column(
-                    children: [
-                      Builder(
-                        builder: (context) {
-                          final input = context.select((BudgetBloc b) => b.state.currentInput);
-                          return Text('$input', style: AppTextStyle.blackS20);
-                        },
-                      ),
-                      const SizedBox(height: AppUIConstants.smallSpacing),
-                      AppKeyboard(
-                        onValueChanged: (v) {
-                          if (v == 'DONE') {
-                            final val = context.read<BudgetBloc>().state.currentInput;
-                            Navigator.of(context).pop(val);
-                            return;
-                          }
-                          context.read<BudgetBloc>().add(BudgetEvent.inputKey(key: v));
-                          setSheet(() {});
-                        },
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-
-    if (result is int && mounted) {
-      final s = context.read<BudgetBloc>().state;
-      final p = s.selectedPeriod ?? DateTime.now();
-      context.read<BudgetBloc>().add(BudgetEvent.setBudget(period: DateTime(p.year, p.month), categoryId: category.id!, amount: result));
-    }
+    return BudgetCategoryCard(category: category, budget: budget, spent: spent);
   }
 }

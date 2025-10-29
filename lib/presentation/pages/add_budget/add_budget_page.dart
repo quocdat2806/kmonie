@@ -1,16 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
 import 'package:kmonie/core/constants/constants.dart';
 import 'package:kmonie/core/di/di.dart';
-import 'package:kmonie/core/services/services.dart';
+import 'package:kmonie/core/enums/enums.dart';
+import 'package:kmonie/repositories/repositories.dart';
 import 'package:kmonie/core/text_style/text_style.dart';
-import 'package:kmonie/presentation/blocs/blocs.dart';
-import 'package:kmonie/entities/entities.dart';
 import 'package:kmonie/core/tools/tools.dart';
 import 'package:kmonie/core/utils/utils.dart';
-import 'package:kmonie/core/enums/enums.dart';
+import 'package:kmonie/entities/entities.dart';
 import 'package:kmonie/generated/generated.dart';
+import 'package:kmonie/presentation/blocs/blocs.dart';
 import 'package:kmonie/presentation/widgets/widgets.dart';
 
 class AddBudgetPage extends StatelessWidget {
@@ -18,7 +17,7 @@ class AddBudgetPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider<AddBudgetBloc>(create: (_) => AddBudgetBloc(sl<TransactionCategoryService>(), sl<BudgetService>())..add(const AddBudgetEvent.init()), child: const _AddBudgetPageChild());
+    return BlocProvider<AddBudgetBloc>(create: (_) => AddBudgetBloc(sl<TransactionCategoryRepository>(), sl<BudgetRepository>())..add(const AddBudgetEvent.init()), child: const _AddBudgetPageChild());
   }
 }
 
@@ -74,6 +73,8 @@ class _AddBudgetPageChildState extends State<_AddBudgetPageChild> {
     final bool hasAmount = currentAmount.isNotEmpty && currentAmount != 'Sửa';
 
     return InkWell(
+      splashColor: Colors.transparent,
+
       onTap: onTap,
       child: Container(
         padding: const EdgeInsets.all(AppUIConstants.smallPadding),

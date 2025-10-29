@@ -87,7 +87,6 @@ class _MainPageState extends State<MainPage> {
       case 0:
         page = BlocProvider(
           create: (_) {
-            print('🟢 HomeBloc created'); // Chỉ in khi vào tab lần đầu
             return HomeBloc(sl<TransactionRepository>(), sl<TransactionCategoryRepository>());
           },
           child: const _KeepAliveWrapper(child: HomePage()),
