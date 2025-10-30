@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import 'package:kmonie/core/constants/constants.dart';
 import 'package:kmonie/core/text_style/text_style.dart';
 import 'package:kmonie/core/utils/utils.dart';
@@ -51,6 +50,7 @@ class AppKeyboard extends StatelessWidget {
           itemBuilder: (context, index) {
             final spec = items[index];
             return InkWell(
+              splashColor: Colors.transparent,
               onTap: () => onValueChanged?.call(spec.value),
               child: _KeyButton(spec: spec),
             );

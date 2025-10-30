@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+import 'package:kmonie/core/constants/constants.dart';
 import 'package:kmonie/core/tools/tools.dart';
 import 'package:kmonie/entities/entities.dart';
 
@@ -16,11 +17,8 @@ class ChartData {
 
 class ChartCircular extends StatefulWidget {
   final List<ChartData> data;
-  final double size;
-  final double strokeWidth;
-  final Duration duration;
 
-  const ChartCircular({super.key, required this.data, this.size = 200, this.strokeWidth = 40, this.duration = const Duration(milliseconds: 800)});
+  const ChartCircular({super.key, required this.data});
 
   @override
   State<ChartCircular> createState() => _ChartCircularState();
@@ -33,7 +31,7 @@ class _ChartCircularState extends State<ChartCircular> with SingleTickerProvider
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(vsync: this, duration: widget.duration);
+    _controller = AnimationController(vsync: this, duration: AppUIConstants.chartInitDuration);
     _animation = CurvedAnimation(parent: _controller, curve: Curves.easeOutCubic);
     _controller.forward();
   }
@@ -51,10 +49,10 @@ class _ChartCircularState extends State<ChartCircular> with SingleTickerProvider
         animation: _animation,
         builder: (context, child) {
           return SizedBox(
-            width: widget.size,
-            height: widget.size,
+            width: AppUIConstants.superExtraLargeContainerSize,
+            height: AppUIConstants.superExtraLargeContainerSize,
             child: CustomPaint(
-              painter: AppChartPainter(data: widget.data, strokeWidth: widget.strokeWidth, progress: _animation.value),
+              painter: AppChartPainter(data: widget.data, strokeWidth: AppUIConstants.strokeWidthDefault, progress: _animation.value),
             ),
           );
         },

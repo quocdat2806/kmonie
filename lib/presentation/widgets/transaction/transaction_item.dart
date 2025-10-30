@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
-
 import 'package:kmonie/core/constants/constants.dart';
-import 'package:kmonie/core/text_style/text_style.dart';
-import 'package:kmonie/core/navigation/navigation.dart';
 import 'package:kmonie/core/enums/enums.dart';
+import 'package:kmonie/core/navigation/navigation.dart';
+import 'package:kmonie/core/text_style/text_style.dart';
 import 'package:kmonie/core/tools/tools.dart';
 import 'package:kmonie/core/utils/utils.dart';
 import 'package:kmonie/entities/entities.dart';
-import 'package:kmonie/presentation/widgets/dialog/app_delete_dialog/app_delete_dialog.dart';
+import 'package:kmonie/presentation/widgets/dialog/dialogs.dart';
 
 class TransactionItem extends StatelessWidget {
   final Transaction transaction;

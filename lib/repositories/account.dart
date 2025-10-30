@@ -1,7 +1,7 @@
 import 'package:dartz/dartz.dart';
-import 'package:kmonie/core/error/failure.dart';
-import 'package:kmonie/entities/entities.dart';
+import 'package:kmonie/core/error/error.dart';
 import 'package:kmonie/core/services/services.dart';
+import 'package:kmonie/entities/entities.dart';
 
 abstract class AccountRepository {
   Future<Either<Failure, List<Account>>> getAllAccounts();

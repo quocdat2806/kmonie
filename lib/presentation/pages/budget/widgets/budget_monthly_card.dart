@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-
 import 'package:kmonie/core/constants/constants.dart';
 import 'package:kmonie/core/text_style/text_style.dart';
-import 'package:kmonie/presentation/widgets/budget/monthly_budget_summary.dart';
+import 'package:kmonie/presentation/widgets/widgets.dart';
 
 class BudgetMonthlyCard extends StatelessWidget {
   const BudgetMonthlyCard({super.key, required this.monthlyBudget, required this.totalSpent});
@@ -33,7 +32,7 @@ class BudgetMonthlyCard extends StatelessWidget {
             ],
           ),
           const SizedBox(height: AppUIConstants.defaultSpacing),
-          MonthlyBudgetSummary(monthlyBudget: monthlyBudget, totalSpent: totalSpent),
+          BudgetProcessIndicator(moneyBudget: monthlyBudget, totalSpent: totalSpent),
         ],
       ),
     );

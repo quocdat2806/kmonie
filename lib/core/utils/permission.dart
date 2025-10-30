@@ -1,5 +1,5 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:kmonie/core/di/di.dart' show sl;
+import 'package:kmonie/core/di/di.dart';
 import 'package:kmonie/core/services/services.dart';
 
 class PermissionUtils {

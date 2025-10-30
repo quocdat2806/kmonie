@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:kmonie/core/constants/constants.dart';
+import 'package:kmonie/core/navigation/navigation.dart';
 import 'package:kmonie/core/text_style/text_style.dart';
 import 'package:kmonie/core/utils/utils.dart';
 import 'package:kmonie/presentation/widgets/widgets.dart';
-import 'package:kmonie/core/navigation/navigation.dart';
 
 class DatePickerScreen extends StatefulWidget {
   final DateTime? initialDate;
@@ -59,12 +59,14 @@ class _DatePickerScreenState extends State<DatePickerScreen> {
                       spacing: AppUIConstants.defaultSpacing,
                       children: [
                         InkWell(
+                          splashColor: Colors.transparent,
                           onTap: () {
                             _changeMonth(-1);
                           },
                           child: const Icon(Icons.arrow_back_ios_new, size: AppUIConstants.smallIconSize),
                         ),
                         InkWell(
+                          splashColor: Colors.transparent,
                           onTap: () {
                             _changeMonth(1);
                           },
@@ -75,6 +77,7 @@ class _DatePickerScreenState extends State<DatePickerScreen> {
                   ],
                 ),
                 AppGrid(
+                  itemHeightFactor: 0.9,
                   crossAxisCount: 7,
                   itemCount: 7 + firstWeekday + daysInMonth,
                   shrinkWrap: true,
@@ -93,7 +96,8 @@ class _DatePickerScreenState extends State<DatePickerScreen> {
                     final date = DateTime(_displayMonth.year, _displayMonth.month, day);
                     final isSelected = AppDateUtils.isSameDate(date, _selectedDate);
 
-                    return GestureDetector(
+                    return InkWell(
+                      splashColor: Colors.transparent,
                       onTap: () {
                         final now = DateTime.now();
                         final date = DateTime(_displayMonth.year, _displayMonth.month, day, now.hour, now.minute, now.second, now.millisecond, now.microsecond);
@@ -114,18 +118,14 @@ class _DatePickerScreenState extends State<DatePickerScreen> {
                     Expanded(
                       child: AppButton(
                         text: AppTextConstants.cancel,
-                        onPressed: () {
-                          AppNavigator(context: context).pop();
-                        },
+                        onPressed: () => AppNavigator(context: context).pop(),
                         backgroundColor: Colors.transparent,
                       ),
                     ),
                     Expanded(
                       child: AppButton(
                         text: AppTextConstants.confirm,
-                        onPressed: () {
-                          AppNavigator(context: context).pop(_selectedDate);
-                        },
+                        onPressed: () => AppNavigator(context: context).pop(_selectedDate),
                         backgroundColor: Colors.transparent,
                       ),
                     ),

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-
+import 'package:kmonie/core/constants/constants.dart';
 import 'package:kmonie/core/text_style/app_text_style.dart';
 
 class AppTextField extends StatelessWidget {
@@ -81,13 +81,13 @@ class AppTextField extends StatelessWidget {
       suffixIcon: Row(mainAxisSize: MainAxisSize.min, children: <Widget>[if (suffixIcon != null) suffixIcon!]),
       prefixIconConstraints: const BoxConstraints(),
       suffixIconConstraints: const BoxConstraints(),
-      border: border ?? OutlineInputBorder(borderRadius: BorderRadius.circular(4), borderSide: BorderSide.none),
-      enabledBorder: border ?? OutlineInputBorder(borderRadius: BorderRadius.circular(4), borderSide: BorderSide.none),
-      focusedBorder: border ?? OutlineInputBorder(borderRadius: BorderRadius.circular(4), borderSide: BorderSide.none),
-      disabledBorder: border ?? OutlineInputBorder(borderRadius: BorderRadius.circular(4), borderSide: BorderSide.none),
-      errorBorder: border ?? OutlineInputBorder(borderRadius: BorderRadius.circular(4), borderSide: BorderSide.none),
-      focusedErrorBorder: border ?? OutlineInputBorder(borderRadius: BorderRadius.circular(4), borderSide: BorderSide.none),
-      contentPadding: contentPadding ?? const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      border: border ?? OutlineInputBorder(borderRadius: BorderRadius.circular(AppUIConstants.smallBorderRadius), borderSide: BorderSide.none),
+      enabledBorder: border ?? OutlineInputBorder(borderRadius: BorderRadius.circular(AppUIConstants.smallBorderRadius), borderSide: BorderSide.none),
+      focusedBorder: border ?? OutlineInputBorder(borderRadius: BorderRadius.circular(AppUIConstants.smallBorderRadius), borderSide: BorderSide.none),
+      disabledBorder: border ?? OutlineInputBorder(borderRadius: BorderRadius.circular(AppUIConstants.smallBorderRadius), borderSide: BorderSide.none),
+      errorBorder: border ?? OutlineInputBorder(borderRadius: BorderRadius.circular(AppUIConstants.smallBorderRadius), borderSide: BorderSide.none),
+      focusedErrorBorder: border ?? OutlineInputBorder(borderRadius: BorderRadius.circular(AppUIConstants.smallBorderRadius), borderSide: BorderSide.none),
+      contentPadding: contentPadding ?? const EdgeInsets.symmetric(horizontal: AppUIConstants.defaultPadding, vertical: AppUIConstants.smallPadding),
     );
   }
 }

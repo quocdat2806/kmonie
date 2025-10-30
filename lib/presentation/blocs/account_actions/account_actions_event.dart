@@ -5,7 +5,7 @@ part 'account_actions_event.freezed.dart';
 
 @freezed
 abstract class AccountActionsEvent with _$AccountActionsEvent {
-  const factory AccountActionsEvent.loadAccounts() = LoadAccounts;
+  const factory AccountActionsEvent.loadAllAccounts() = LoadAllAccounts;
   const factory AccountActionsEvent.createAccount(Account account) = CreateAccount;
   const factory AccountActionsEvent.updateAccount(Account account) = UpdateAccount;
   const factory AccountActionsEvent.deleteAccount(int accountId) = DeleteAccount;

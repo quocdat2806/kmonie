@@ -2,10 +2,10 @@ import 'dart:async';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kmonie/core/enums/enums.dart';
-import 'package:kmonie/repositories/repositories.dart';
-import 'package:kmonie/entities/entities.dart';
 import 'package:kmonie/core/streams/streams.dart';
 import 'package:kmonie/core/utils/utils.dart';
+import 'package:kmonie/entities/entities.dart';
+import 'package:kmonie/repositories/repositories.dart';
 
 import 'budget_event.dart';
 import 'budget_state.dart';
@@ -29,6 +29,7 @@ class BudgetBloc extends Bloc<BudgetEvent, BudgetState> {
         add(BudgetEvent.changePeriod(period: DateTime(p.year, p.month)));
       }
     });
+    add(BudgetEventInit(period: DateTime(DateTime.now().year, DateTime.now().month)));
   }
 
   Future<void> _onInit(BudgetEventInit event, Emitter<BudgetState> emit) async {

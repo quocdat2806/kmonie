@@ -1,9 +1,8 @@
 import 'package:dartz/dartz.dart';
-import 'package:kmonie/core/error/failure.dart';
-import 'package:kmonie/entities/entities.dart';
-import 'package:kmonie/core/services/services.dart';
 import 'package:kmonie/core/enums/enums.dart';
-import 'package:kmonie/core/utils/logger.dart';
+import 'package:kmonie/core/error/error.dart';
+import 'package:kmonie/core/services/services.dart';
+import 'package:kmonie/entities/entities.dart';
 
 abstract class TransactionCategoryRepository {
   Future<Either<Failure, List<TransactionCategory>>> getAll({bool forceRefresh});
@@ -22,7 +21,6 @@ class TransactionCategoryRepositoryImpl implements TransactionCategoryRepository
   Future<Either<Failure, List<TransactionCategory>>> getAll({bool forceRefresh = false}) async {
     try {
       final categories = await _categoryService.getAll(forceRefresh: forceRefresh);
-      logger.d('TransactionCategoryRepositoryImpl: Categories: $categories');
       return Right(categories);
     } catch (e) {
       return Left(Failure.cache(e.toString()));

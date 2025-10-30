@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:kmonie/core/constants/constants.dart';
+import 'package:kmonie/core/navigation/app_navigation.dart';
 import 'package:kmonie/core/text_style/text_style.dart';
 import 'package:kmonie/presentation/widgets/widgets.dart';
 
@@ -74,8 +75,6 @@ class _MonthPickerDialogState extends State<MonthPickerDialog> {
                   final month = index + 1;
                   final isSelected = month == selectedMonth;
                   return InkWell(
-                    focusColor: Colors.transparent,
-                    hoverColor: Colors.transparent,
                     splashColor: Colors.transparent,
                     onTap: () => setState(() => selectedMonth = month),
                     child: Center(
@@ -97,11 +96,13 @@ class _MonthPickerDialogState extends State<MonthPickerDialog> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
-                  AppButton(onPressed: () => Navigator.pop(context), text: AppTextConstants.cancel, backgroundColor: Colors.transparent),
                   AppButton(
-                    onPressed: () {
-                      Navigator.pop(context, {'month': selectedMonth, 'year': selectedYear});
-                    },
+                    onPressed: () => AppNavigator(context: context).pop(),
+                    text: AppTextConstants.cancel,
+                    backgroundColor: Colors.transparent,
+                  ),
+                  AppButton(
+                    onPressed: () => AppNavigator(context: context).pop({'month': selectedMonth, 'year': selectedYear}),
                     text: AppTextConstants.confirm,
                     backgroundColor: Colors.transparent,
                   ),

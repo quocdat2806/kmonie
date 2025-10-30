@@ -3,27 +3,27 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kmonie/core/constants/constants.dart';
 import 'package:kmonie/core/text_style/text_style.dart';
 import 'package:kmonie/core/utils/utils.dart';
+import 'package:kmonie/generated/generated.dart';
 import 'package:kmonie/presentation/blocs/blocs.dart';
 import 'package:kmonie/presentation/widgets/widgets.dart';
-import 'package:kmonie/generated/generated.dart';
 
 class MonthlyStatisticsPage extends StatelessWidget {
   const MonthlyStatisticsPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(create: (_) => MonthlyStatisticsBloc()..add(const MonthlyStatisticsEvent.load()), child: const _MonthlyStatisticsView());
+    return const MonthlyStatisticsPageChild();
   }
 }
 
-class _MonthlyStatisticsView extends StatefulWidget {
-  const _MonthlyStatisticsView();
+class MonthlyStatisticsPageChild extends StatefulWidget {
+  const MonthlyStatisticsPageChild({super.key});
 
   @override
-  State<_MonthlyStatisticsView> createState() => _MonthlyStatisticsViewState();
+  State<MonthlyStatisticsPageChild> createState() => _MonthlyStatisticsPageChildState();
 }
 
-class _MonthlyStatisticsViewState extends State<_MonthlyStatisticsView> {
+class _MonthlyStatisticsPageChildState extends State<MonthlyStatisticsPageChild> {
   final _dropdownKey = GlobalKey();
 
   String _getSelectedText(int? selectedYear) {

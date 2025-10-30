@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import 'package:kmonie/core/constants/constants.dart';
 import 'package:kmonie/core/text_style/text_style.dart';
 
@@ -15,12 +14,12 @@ class ChartListSelector extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: AppUIConstants.chartSelectorHeight,
+      height: AppUIConstants.mediumHeight,
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         reverse: true,
         itemCount: itemCount + 1,
-        cacheExtent: AppUIConstants.chartSelectorHeight,
+        cacheExtent: AppUIConstants.mediumHeight,
         separatorBuilder: (_, _) => const SizedBox(width: AppUIConstants.smallSpacing),
         itemBuilder: (context, index) {
           if (index == itemCount) {
@@ -39,7 +38,7 @@ class ChartListSelector extends StatelessWidget {
             onTap: () => onSelect(actualIndex),
             child: Container(
               decoration: BoxDecoration(border: border),
-              padding: const EdgeInsets.symmetric(horizontal: AppUIConstants.chartSelectorPadding, vertical: AppUIConstants.smallPadding),
+              padding: const EdgeInsets.symmetric(horizontal: AppUIConstants.defaultPadding, vertical: AppUIConstants.smallPadding),
               child: Text(labelBuilder(actualIndex), style: textStyle),
             ),
           );

@@ -17,7 +17,13 @@ class AppRouter {
     errorBuilder: (_, GoRouterState state) => const Scaffold(body: Center(child: Text('Page not found'))),
     routes: <RouteBase>[
       GoRoute(name: RouterPath.splash, path: RouterPath.splash, builder: (_, _) => const SplashPage()),
-      GoRoute(name: RouterPath.main, path: RouterPath.main, builder: (_, _) => const MainPage()),
+      GoRoute(
+        name: RouterPath.main,
+        path: RouterPath.main,
+        builder: (_, _) {
+          return BlocProvider<MainBloc>(create: (_) => MainBloc(), child: const MainPage());
+        },
+      ),
       GoRoute(
         path: RouterPath.searchTransaction,
         builder: (_, _) {
@@ -58,18 +64,35 @@ class AppRouter {
           );
         },
       ),
-      GoRoute(path: RouterPath.budget, builder: (_, GoRouterState state) => const BudgetPage()),
+      GoRoute(
+        path: RouterPath.budget,
+        builder: (_, GoRouterState state) {
+          return BlocProvider<BudgetBloc>(create: (_) => BudgetBloc(sl<TransactionCategoryRepository>(), sl<BudgetRepository>()), child: const BudgetPage());
+        },
+      ),
       GoRoute(name: RouterPath.addBudget, path: RouterPath.addBudget, builder: (_, GoRouterState state) => const AddBudgetPage()),
       GoRoute(
         path: RouterPath.addAccount,
         builder: (_, GoRouterState state) {
           final AccountActionsPageArgs? args = state.extra as AccountActionsPageArgs?;
-          return AccountActionsPage(args: args);
+          return BlocProvider<AccountActionsBloc>(
+            create: (_) => AccountActionsBloc(sl<AccountRepository>()),
+            child: AccountActionsPage(args: args),
+          );
         },
       ),
-      GoRoute(path: RouterPath.manageAccount, builder: (_, GoRouterState state) => const ManageAccountPage()),
-      GoRoute(path: RouterPath.monthlyStatistics, builder: (_, GoRouterState state) => const MonthlyStatisticsPage()),
-      GoRoute(name: RouterPath.myApp, path: RouterPath.myApp, builder: (_, GoRouterState state) => const MyAppPage()),
+      GoRoute(
+        path: RouterPath.manageAccount,
+        builder: (_, GoRouterState state) {
+          return BlocProvider<AccountActionsBloc>(create: (context) => AccountActionsBloc(sl<AccountRepository>()), child: const ManageAccountPage());
+        },
+      ),
+      GoRoute(
+        path: RouterPath.monthlyStatistics,
+        builder: (_, GoRouterState state) {
+          return BlocProvider<MonthlyStatisticsBloc>(create: (_) => MonthlyStatisticsBloc(), child: const MonthlyStatisticsPage());
+        },
+      ),
       GoRoute(name: RouterPath.settings, path: RouterPath.settings, builder: (_, GoRouterState state) => const SettingsPage()),
     ],
   );

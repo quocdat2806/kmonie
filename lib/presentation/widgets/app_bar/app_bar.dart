@@ -1,17 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:kmonie/core/constants/constants.dart';
-import 'package:kmonie/core/text_style/text_style.dart';
 import 'package:kmonie/core/navigation/navigation.dart';
+import 'package:kmonie/core/text_style/text_style.dart';
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
-  const CustomAppBar({super.key, required this.title, this.leading, this.actions, this.onLeadingTap, this.backgroundColor = AppColorConstants.primary, this.elevation = 0.0, this.centerTitle = true});
+  const CustomAppBar({super.key, required this.title, this.leading, this.actions, this.onLeadingTap, this.centerTitle = true});
 
   final dynamic title;
   final Widget? leading;
   final List<Widget>? actions;
   final VoidCallback? onLeadingTap;
-  final Color backgroundColor;
-  final double elevation;
   final bool centerTitle;
 
   @override
@@ -19,9 +17,9 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
     return AppBar(
       title: title is String ? Text(title as String, style: AppTextStyle.blackS18Bold) : title as Widget,
       centerTitle: centerTitle,
-      backgroundColor: backgroundColor,
+      backgroundColor: AppColorConstants.primary,
       titleSpacing: 0,
-      elevation: elevation,
+      elevation: 0,
       leading:
           leading ??
           IconButton(

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import 'package:kmonie/core/constants/constants.dart';
 
 class AppDropdown {
@@ -34,6 +33,7 @@ class AppDropdown {
                     shrinkWrap: true,
                     children: items.map((item) {
                       return InkWell(
+                        splashColor: Colors.transparent,
                         onTap: () {
                           onItemSelected(item);
                           _remove();

@@ -94,7 +94,7 @@ class _ReportPageChildState extends State<ReportPageChild> {
                                 const Icon(Icons.arrow_forward_ios, size: AppUIConstants.smallIconSize, color: AppColorConstants.grey),
                               ],
                             ),
-                            MonthlyBudgetSummary(monthlyBudget: monthlyBudget.toInt(), totalSpent: totalSpent.toInt(), useOverBudgetColors: true, alignRight: false),
+                            BudgetProcessIndicator(moneyBudget: monthlyBudget.toInt(), totalSpent: totalSpent.toInt()),
                           ],
                         ),
                       ),

@@ -1,7 +1,8 @@
 import 'package:drift/drift.dart';
-import 'package:kmonie/database/database.dart';
 import 'package:kmonie/core/enums/enums.dart';
-import 'package:kmonie/core/services/transaction.dart';
+import 'package:kmonie/database/database.dart';
+
+import './transaction.dart';
 
 class BudgetService {
   final KMonieDatabase _db;
@@ -27,23 +28,14 @@ class BudgetService {
   }
 
   Future<void> setBudgetForCategory({required int year, required int month, required int categoryId, required int amount}) async {
-    if (amount <= 0) {
-      await (_db.delete(_db.budgetsTb)..where((t) => t.year.equals(year) & t.month.equals(month) & t.transactionCategoryId.equals(categoryId))).go();
+    if (amount < 0) return;
+    final existing = await (_db.select(_db.budgetsTb)..where((t) => t.year.equals(year) & t.month.equals(month) & t.transactionCategoryId.equals(categoryId))).getSingleOrNull();
+    final companion = BudgetsTbCompanion(year: Value(year), month: Value(month), transactionCategoryId: Value(categoryId), amount: Value(amount));
+    if (existing != null) {
+      await (_db.update(_db.budgetsTb)..where((t) => t.id.equals(existing.id))).write(companion);
       return;
     }
-
-    // Check if budget exists
-    final existing = await (_db.select(_db.budgetsTb)..where((t) => t.year.equals(year) & t.month.equals(month) & t.transactionCategoryId.equals(categoryId))).getSingleOrNull();
-
-    final companion = BudgetsTbCompanion(year: Value(year), month: Value(month), transactionCategoryId: Value(categoryId), amount: Value(amount));
-
-    if (existing != null) {
-      // Update existing budget
-      await (_db.update(_db.budgetsTb)..where((t) => t.id.equals(existing.id))).write(companion);
-    } else {
-      // Insert new budget
-      await _db.into(_db.budgetsTb).insert(companion);
-    }
+    await _db.into(_db.budgetsTb).insert(companion);
   }
 
   Future<int> getMonthlyBudget({required int year, required int month}) async {
@@ -55,22 +47,18 @@ class BudgetService {
 
   Future<void> setMonthlyBudget({required int year, required int month, required int amount}) async {
     if (amount <= 0) {
-      await (_db.delete(_db.monthlyBudgetsTb)..where((t) => t.year.equals(year) & t.month.equals(month))).go();
       return;
     }
 
-    // Check if monthly budget exists
     final existing = await (_db.select(_db.monthlyBudgetsTb)..where((t) => t.year.equals(year) & t.month.equals(month))).getSingleOrNull();
 
     final companion = MonthlyBudgetsTbCompanion(year: Value(year), month: Value(month), totalAmount: Value(amount));
 
     if (existing != null) {
-      // Update existing monthly budget
       await (_db.update(_db.monthlyBudgetsTb)..where((t) => t.id.equals(existing.id))).write(companion);
-    } else {
-      // Insert new monthly budget
-      await _db.into(_db.monthlyBudgetsTb).insert(companion);
+      return;
     }
+    await _db.into(_db.monthlyBudgetsTb).insert(companion);
   }
 
   Future<int> getTotalSpentForMonth({required int year, required int month}) async {

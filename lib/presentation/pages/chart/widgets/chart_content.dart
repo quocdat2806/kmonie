@@ -39,7 +39,7 @@ class ChartContent extends StatelessWidget {
       height: MediaQuery.of(context).size.height * 0.25,
       child: Row(
         children: [
-          ChartCircular(data: chartData, size: AppUIConstants.chartPieSize, strokeWidth: AppUIConstants.chartPieStrokeWidth),
+          ChartCircular(data: chartData),
           const SizedBox(width: AppUIConstants.defaultSpacing),
           Expanded(
             child: ListView.builder(
@@ -47,12 +47,12 @@ class ChartContent extends StatelessWidget {
               itemBuilder: (context, index) {
                 final data = chartData[index];
                 return Padding(
-                  padding: const EdgeInsets.symmetric(vertical: AppUIConstants.chartContentVerticalSpacing),
+                  padding: const EdgeInsets.symmetric(vertical: AppUIConstants.smallPadding),
                   child: Row(
                     children: [
                       Container(
-                        width: AppUIConstants.chartLegendDotSize,
-                        height: AppUIConstants.chartLegendDotSize,
+                        width: AppUIConstants.superSmallContainerSize,
+                        height: AppUIConstants.superSmallContainerSize,
                         decoration: BoxDecoration(shape: BoxShape.circle, gradient: GradientHelper.fromColorHexList(data.gradientColors!)),
                       ),
                       const SizedBox(width: AppUIConstants.smallSpacing),
@@ -83,8 +83,8 @@ class ChartContent extends StatelessWidget {
 
   Widget _buildCategoryIcon(ChartData data) {
     return Container(
-      width: AppUIConstants.chartCategoryIconSize,
-      height: AppUIConstants.chartCategoryIconSize,
+      width: AppUIConstants.mediumContainerSize,
+      height: AppUIConstants.mediumContainerSize,
       decoration: BoxDecoration(shape: BoxShape.circle, gradient: GradientHelper.fromColorHexList(data.gradientColors!)),
       child: Padding(
         padding: const EdgeInsets.all(AppUIConstants.smallPadding),
@@ -101,10 +101,10 @@ class ChartContent extends StatelessWidget {
           Row(
             children: [Expanded(child: Text('${data.label} ${data.value.toStringAsFixed(1)}%', style: AppTextStyle.blackS14Medium))],
           ),
-          const SizedBox(height: AppUIConstants.chartCategoryTextSpacing),
+          const SizedBox(height: AppUIConstants.smallSpacing),
           ClipRRect(
-            borderRadius: BorderRadius.circular(AppUIConstants.chartCategoryProgressRadius),
-            child: LinearProgressIndicator(value: data.value / 100, backgroundColor: AppColorConstants.greyWhite, color: data.color, minHeight: AppUIConstants.chartCategoryProgressHeight),
+            borderRadius: BorderRadius.circular(AppUIConstants.defaultBorderRadius),
+            child: LinearProgressIndicator(value: data.value / 100, backgroundColor: AppColorConstants.greyWhite, color: data.color, minHeight: AppUIConstants.superSmallHeight),
           ),
         ],
       ),

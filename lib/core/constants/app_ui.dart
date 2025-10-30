@@ -1,3 +1,7 @@
+import 'package:flutter/material.dart';
+
+import 'app_colors.dart';
+
 class AppUIConstants {
   AppUIConstants._();
 
@@ -27,10 +31,13 @@ class AppUIConstants {
   static const double smallButtonHeight = 36.0;
   static const double largeButtonHeight = 52.0;
 
+  static const double superSmallContainerSize = 12.0;
+  static const double extraSmallContainerSize = 24.0;
   static const double smallContainerSize = 32.0;
   static const double mediumContainerSize = 48.0;
   static const double largeContainerSize = 60.0;
   static const double extraLargeContainerSize = 80.0;
+  static const double superExtraLargeContainerSize = 150.0;
 
   static const double extraSmallSpacing = 4.0;
   static const double superExtraSmallSpacing = 1;
@@ -49,6 +56,7 @@ class AppUIConstants {
 
   static const Duration shortAnimationDuration = Duration(milliseconds: 200);
   static const Duration loadMoreDebounceDuration = Duration(milliseconds: 100);
+  static const Duration chartInitDuration = Duration(milliseconds: 800);
 
   static const double keyboardSlideRatio = 0.35;
   static const double categoryItemSizeRatio = 0.55;
@@ -58,29 +66,17 @@ class AppUIConstants {
   static const double topAddTransactionButtonOffset = 30.0;
 
   static const double appBarHeight = 56.0;
+  static const double superSmallHeight = 6.0;
+  static const double mediumHeight = 40.0;
+  static const int largeHeight = 80;
 
-  static const double chartSelectorHeight = 40.0;
-  static const double chartSelectorPadding = 12.0;
-  static const double chartSelectorBorderRadius = 20.0;
-  static const double chartSelectorTextSize = 12.0;
-  static const double chartSelectorIconSpacing = 4.0;
-
-  static const double chartContentVerticalSpacing = 4.0;
-  static const double chartContentTextSize = 14.0;
-  static const double chartContentErrorTextSize = 16.0;
-
-  static const double chartPieSize = 150.0;
-  static const double chartPieSizeSmall = 80.0;
-  static const double chartPieStrokeWidth = 20.0;
-
-  static const double chartPieStrokeWidthSmall = 8.0;
-  static const double chartLegendDotSize = 12.0;
-
-  static const double chartCategoryIconSize = 40.0;
-  static const double chartCategorySpacing = 12.0;
-  static const double chartCategoryTextSpacing = 6.0;
-  static const double chartCategoryProgressHeight = 6.0;
-  static const double chartCategoryProgressRadius = 6.0;
-
-  static const double chartDropdownPadding = 12.0;
+  static const double strokeWidthDefault = 20.0;
+  static const double strokeWidthSmall = 8.0;
+  static BoxDecoration defaultShadow({Color color = Colors.grey}) {
+    return BoxDecoration(
+      color: AppColorConstants.white,
+      borderRadius: BorderRadius.circular(AppUIConstants.defaultBorderRadius),
+      boxShadow: [BoxShadow(color: color.withValues(alpha: 0.4), spreadRadius: 1, blurRadius: 4, offset: const Offset(0, 2))],
+    );
+  }
 }

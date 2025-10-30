@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:kmonie/core/constants/constants.dart';
+import 'package:kmonie/core/navigation/navigation.dart';
 import 'package:kmonie/core/text_style/text_style.dart';
 import 'package:kmonie/presentation/widgets/widgets.dart';
 
@@ -18,7 +19,11 @@ class AppExceedBudgetDialog extends StatelessWidget {
           spacing: AppUIConstants.smallSpacing,
           children: [
             Expanded(
-              child: AppButton(onPressed: () => Navigator.of(context).pop(), text: AppTextConstants.cancel, backgroundColor: Colors.transparent),
+              child: AppButton(
+                onPressed: () => AppNavigator(context: context).pop(),
+                text: AppTextConstants.cancel,
+                backgroundColor: Colors.transparent,
+              ),
             ),
             Expanded(
               child: AppButton(onPressed: onConfirm ?? () {}, text: AppTextConstants.confirm, backgroundColor: Colors.transparent),

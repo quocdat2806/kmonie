@@ -7,9 +7,9 @@ import 'package:kmonie/core/streams/streams.dart';
 import 'package:kmonie/core/text_style/text_style.dart';
 import 'package:kmonie/entities/entities.dart';
 import 'package:kmonie/presentation/pages/pages.dart';
+import 'package:kmonie/presentation/widgets/divider/app_divider.dart';
 import 'package:kmonie/repositories/repositories.dart';
 
-import '../divider/app_divider.dart';
 import 'transaction_item.dart';
 
 class TransactionList extends StatelessWidget {

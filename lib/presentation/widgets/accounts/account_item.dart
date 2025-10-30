@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:kmonie/core/constants/constants.dart';
 import 'package:kmonie/core/text_style/text_style.dart';
@@ -22,41 +23,27 @@ class AccountItem extends StatelessWidget {
       orElse: () => Bank(id: account.bankId!, name: 'Unknown Bank', code: '', shortName: ''),
     );
     return Container(
-      margin: const EdgeInsets.only(bottom: AppUIConstants.defaultSpacing, top: AppUIConstants.smallSpacing),
-      decoration: BoxDecoration(
-        color: AppColorConstants.white,
-        borderRadius: BorderRadius.circular(AppUIConstants.defaultBorderRadius),
-        boxShadow: [BoxShadow(color: Colors.grey.withValues(alpha: 0.4), spreadRadius: 1, blurRadius: 4, offset: const Offset(0, 2))],
-      ),
+      margin: const EdgeInsets.only(bottom: AppUIConstants.defaultSpacing, top: AppUIConstants.smallMargin),
+      decoration: AppUIConstants.defaultShadow(),
       child: Row(
         spacing: AppUIConstants.smallSpacing,
         children: [
-          // Bank logo with pinned indicator - có thể click để pinned/unpinned
-          GestureDetector(
+          InkWell(
+            splashColor: Colors.transparent,
             onTap: onPinTap,
             child: SizedBox(
               width: 80,
               height: 80,
               child: Stack(
                 children: [
-                  bank.logo.isNotEmpty
-                      ? Image.network(
-                          bank.logo,
-                          width: 80,
-                          height: 80,
-                          fit: BoxFit.contain,
-                          errorBuilder: (context, error, stackTrace) => const Icon(Icons.account_balance, size: 40, color: AppColorConstants.primary),
-                        )
-                      : const Icon(Icons.account_balance, size: 40, color: AppColorConstants.primary),
+                  CachedNetworkImage(imageUrl: bank.logo, maxWidthDiskCache: 80, maxHeightDiskCache: 80, width: 80, height: 80),
                   if (showPinned || showUnpinnedIcon)
                     Positioned(
                       top: 0,
                       right: 0,
                       child: AnimatedContainer(
-                        duration: const Duration(milliseconds: 200),
-                        padding: const EdgeInsets.all(2),
-                        decoration: BoxDecoration(color: account.isPinned ? Colors.orange : AppColorConstants.grey, shape: BoxShape.circle),
-                        child: const Icon(Icons.push_pin, size: 12, color: AppColorConstants.white),
+                        duration: AppUIConstants.shortAnimationDuration,
+                        child: Icon(Icons.push_pin, size: AppUIConstants.smallIconSize, color: account.isPinned ? AppColorConstants.primary : AppColorConstants.grey),
                       ),
                     ),
                 ],
@@ -64,30 +51,28 @@ class AccountItem extends StatelessWidget {
             ),
           ),
           Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              spacing: AppUIConstants.smallSpacing,
-              children: [
-                const SizedBox(height: AppUIConstants.smallSpacing),
-                Text('${AppTextConstants.accountNameLabel}: ${account.name}', style: AppTextStyle.grayS12Medium),
-                Text(bank.name, style: AppTextStyle.grayS12Medium),
-                if (account.accountNumber.isNotEmpty) Text('${AppTextConstants.accountNumberLabel}: ${account.accountNumber}', style: AppTextStyle.grayS12Medium),
-                Text('${AppTextConstants.accountTypeLabel}: ${account.type}', style: AppTextStyle.grayS12Medium),
-                Text('${AppTextConstants.accountBalanceLabel}: ${FormatUtils.formatCurrency(account.balance)} ${AppTextConstants.currency}', style: AppTextStyle.grayS12Medium),
-                const SizedBox.shrink(),
-                const SizedBox.shrink(),
-              ],
+            child: Padding(
+              padding: const EdgeInsets.all(AppUIConstants.smallPadding),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                spacing: AppUIConstants.smallSpacing,
+                children: [
+                  Text('${AppTextConstants.accountNameLabel}: ${account.name}', style: AppTextStyle.grayS12Medium),
+                  Text(bank.name, style: AppTextStyle.grayS12Medium),
+                  Text('${AppTextConstants.accountNumberLabel}: ${account.accountNumber}', style: AppTextStyle.grayS12Medium),
+                  Text('${AppTextConstants.accountTypeLabel}: ${account.type}', style: AppTextStyle.grayS12Medium),
+                  Text('${AppTextConstants.accountBalanceLabel}: ${FormatUtils.formatCurrency(account.balance)} ${AppTextConstants.currency}', style: AppTextStyle.grayS12Medium),
+                ],
+              ),
             ),
           ),
           if (showEditButton)
-            GestureDetector(
+            InkWell(
+              splashColor: Colors.transparent,
               onTap: onEditTap,
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                decoration: BoxDecoration(color: AppColorConstants.primary, borderRadius: BorderRadius.circular(4)),
-                child: Text(AppTextConstants.editAccountText, style: AppTextStyle.whiteS12Medium),
-              ),
+              child: Text(AppTextConstants.editAccountText, style: AppTextStyle.blackS14Medium),
             ),
+          const SizedBox(width: AppUIConstants.smallSpacing),
         ],
       ),
     );

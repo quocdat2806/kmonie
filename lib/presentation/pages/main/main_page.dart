@@ -2,66 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kmonie/core/constants/constants.dart';
 import 'package:kmonie/core/di/di.dart';
+import 'package:kmonie/core/enums/enums.dart';
 import 'package:kmonie/presentation/blocs/blocs.dart';
 import 'package:kmonie/presentation/pages/pages.dart';
 import 'package:kmonie/presentation/widgets/widgets.dart';
 import 'package:kmonie/repositories/repositories.dart';
 
 import 'widgets/bottom_navigation_bar.dart';
-
-//
-// final List<Widget> pageList = const <Widget>[HomePage(), ChartPage(), ReportPage(), ProfilePage()];
-//
-// class MainPage extends StatelessWidget {
-//   const MainPage({super.key});
-//
-//   void _onTabSelected({required BuildContext context, required int index}) {
-//     context.read<MainBloc>().add(MainSwitchTab(index));
-//   }
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return BlocProvider<MainBloc>(
-//       create: (_) => MainBloc(),
-//       child: BlocBuilder<MainBloc, MainState>(
-//         builder: (context, state) {
-//           final int currentIndex = state.selectedIndex;
-//           return Scaffold(
-//             backgroundColor: AppColorConstants.primary,
-//             body: SafeArea(
-//               child: Stack(
-//                 clipBehavior: Clip.none,
-//                 children: [
-//                   Positioned.fill(
-//                     child: Padding(
-//                       padding: const EdgeInsets.only(bottom: AppUIConstants.bottomNavigationHeight),
-//                       child: IndexedStack(children: pageList),
-//                     ),
-//                   ),
-//                   Positioned(
-//                     bottom: 0,
-//                     left: 0,
-//                     right: 0,
-//                     child: MainBottomNavigationBar(
-//                       currentIndex: currentIndex,
-//                       onTabSelected: (i) => _onTabSelected(context: context, index: i),
-//                     ),
-//                   ),
-//                   const Positioned(
-//                     bottom: AppUIConstants.topAddTransactionButtonOffset,
-//                     left: 0,
-//                     right: 0,
-//                     child: Center(child: AddTransactionButton()),
-//                   ),
-//                 ],
-//               ),
-//             ),
-//           );
-//         },
-//       ),
-//     );
-//   }
-// }
 
 class MainPage extends StatefulWidget {
   const MainPage({super.key});
@@ -76,12 +23,10 @@ class _MainPageState extends State<MainPage> {
   final Set<int> _initializedPages = {};
 
   Widget _buildPage(int index) {
-    // Nếu đã cache, trả về luôn
     if (_pageCache.containsKey(index)) {
       return _pageCache[index]!;
     }
 
-    // Chưa cache, tạo mới và lưu vào cache
     Widget page;
     switch (index) {
       case 0:
@@ -122,59 +67,55 @@ class _MainPageState extends State<MainPage> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider<MainBloc>(
-      create: (_) => MainBloc(),
-      child: BlocBuilder<MainBloc, MainState>(
-        builder: (context, state) {
-          final int currentIndex = state.selectedIndex;
-          return Scaffold(
-            backgroundColor: AppColorConstants.primary,
-            body: SafeArea(
-              child: Stack(
-                clipBehavior: Clip.none,
-                children: [
-                  Positioned.fill(
-                    child: Padding(
-                      padding: const EdgeInsets.only(bottom: AppUIConstants.bottomNavigationHeight),
-                      child: IndexedStack(
-                        index: currentIndex,
-                        children: List.generate(4, (index) {
-                          if (index == currentIndex || _initializedPages.contains(index)) {
-                            return _buildPage(index);
-                          }
-                          return const SizedBox.shrink();
-                        }),
-                      ),
+    return BlocBuilder<MainBloc, MainState>(
+      builder: (context, state) {
+        final int currentIndex = state.selectedIndex;
+        return Scaffold(
+          backgroundColor: AppColorConstants.primary,
+          body: SafeArea(
+            child: Stack(
+              clipBehavior: Clip.none,
+              children: [
+                Positioned.fill(
+                  child: Padding(
+                    padding: const EdgeInsets.only(bottom: AppUIConstants.bottomNavigationHeight),
+                    child: IndexedStack(
+                      index: currentIndex,
+                      children: List.generate(MainTabs.totalTypes, (index) {
+                        if (index == currentIndex || _initializedPages.contains(index)) {
+                          return _buildPage(index);
+                        }
+                        return const SizedBox.shrink();
+                      }),
                     ),
                   ),
-                  Positioned(
-                    bottom: 0,
-                    left: 0,
-                    right: 0,
-                    child: MainBottomNavigationBar(
-                      currentIndex: currentIndex,
-                      onTabSelected: (i) {
-                        context.read<MainBloc>().add(MainSwitchTab(i));
-                      },
-                    ),
+                ),
+                Positioned(
+                  bottom: 0,
+                  left: 0,
+                  right: 0,
+                  child: MainBottomNavigationBar(
+                    currentIndex: currentIndex,
+                    onTabSelected: (i) {
+                      context.read<MainBloc>().add(MainSwitchTab(i));
+                    },
                   ),
-                  const Positioned(
-                    bottom: AppUIConstants.topAddTransactionButtonOffset,
-                    left: 0,
-                    right: 0,
-                    child: Center(child: AddTransactionButton()),
-                  ),
-                ],
-              ),
+                ),
+                const Positioned(
+                  bottom: AppUIConstants.topAddTransactionButtonOffset,
+                  left: 0,
+                  right: 0,
+                  child: Center(child: AddTransactionButton()),
+                ),
+              ],
             ),
-          );
-        },
-      ),
+          ),
+        );
+      },
     );
   }
 }
 
-// Wrapper để giữ state khi chuyển tab
 class _KeepAliveWrapper extends StatefulWidget {
   final Widget child;
 
@@ -190,7 +131,7 @@ class _KeepAliveWrapperState extends State<_KeepAliveWrapper> with AutomaticKeep
 
   @override
   Widget build(BuildContext context) {
-    super.build(context); // ⚠️ Bắt buộc gọi
+    super.build(context);
     return widget.child;
   }
 }

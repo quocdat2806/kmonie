@@ -1,10 +1,10 @@
 import 'package:drift/drift.dart';
-import 'package:kmonie/core/services/account.dart';
+import 'package:kmonie/core/config/config.dart';
+import 'package:kmonie/core/enums/enums.dart';
+import 'package:kmonie/core/services/services.dart';
+import 'package:kmonie/core/utils/utils.dart';
 import 'package:kmonie/database/database.dart';
 import 'package:kmonie/entities/entities.dart';
-import 'package:kmonie/core/config/config.dart';
-import 'package:kmonie/core/utils/utils.dart';
-import 'package:kmonie/core/enums/enums.dart';
 
 class PagedTransactionResult {
   final List<Transaction> transactions;
@@ -18,7 +18,7 @@ class TransactionService {
   final AccountService _accountService;
   TransactionService(this._db, this._accountService);
 
-  final _LRUCache<String, Map<String, List<Transaction>>> _groupCache = _LRUCache(maxSize: 10);
+  final _LRUCache<String, Map<String, List<Transaction>>> _groupCache = _LRUCache(maxSize: 15);
 
   final Map<int, List<Transaction>> _yearCache = {};
   final Set<int> _dirtyYears = {};
@@ -52,7 +52,8 @@ class TransactionService {
 
     if (year != null && month != null) {
       q.where((t) => _dateInMonthRange(t.date, year, month));
-    } else if (year != null) {
+    }
+    if (year != null) {
       q.where((t) => _dateInYearRange(t.date, year));
     }
 
@@ -109,10 +110,10 @@ class TransactionService {
     if (transactionYear != null) {
       _yearCache.remove(transactionYear);
       _dirtyYears.add(transactionYear);
-    } else {
-      _yearCache.clear();
-      _dirtyYears.clear();
+      return;
     }
+    _yearCache.clear();
+    _dirtyYears.clear();
   }
 
   Future<Transaction> createTransaction({required int amount, required DateTime date, required int transactionCategoryId, String content = '', required int transactionType}) async {
@@ -138,15 +139,10 @@ class TransactionService {
 
       if (pinnedAccount != null && pinnedAccount.id != null) {
         int newBalance = pinnedAccount.balance;
-
         if (transactionType == TransactionType.expense.typeIndex) {
           newBalance -= amount;
         } else if (transactionType == TransactionType.income.typeIndex) {
           newBalance += amount;
-        }
-
-        if (newBalance < 0) {
-          newBalance = 0;
         }
 
         await _accountService.updateAccountBalance(pinnedAccount.id!, newBalance);
@@ -325,9 +321,9 @@ class TransactionService {
   void clearYearCache([int? year]) {
     if (year != null) {
       _yearCache.remove(year);
-    } else {
-      _yearCache.clear();
+      return;
     }
+    _yearCache.clear();
   }
 
   void clearAllGroupCache() {

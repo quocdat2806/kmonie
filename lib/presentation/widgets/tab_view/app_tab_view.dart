@@ -25,6 +25,7 @@ class AppTabView<T> extends StatelessWidget {
 
         return Expanded(
           child: InkWell(
+            splashColor: Colors.transparent,
             onTap: () => onTabSelected(index),
             child: DecoratedBox(
               decoration: BoxDecoration(

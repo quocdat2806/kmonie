@@ -1,5 +1,5 @@
 import 'package:dartz/dartz.dart';
-import 'package:kmonie/core/error/failure.dart';
+import 'package:kmonie/core/error/error.dart';
 import 'package:kmonie/core/services/services.dart';
 
 abstract class BudgetRepository {
