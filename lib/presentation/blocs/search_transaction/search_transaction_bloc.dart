@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:dartz/dartz.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kmonie/core/enums/enums.dart';
-import 'package:kmonie/core/error/failure.dart';
+import 'package:kmonie/core/error/error.dart';
 import 'package:kmonie/core/streams/streams.dart';
 import 'package:kmonie/core/utils/utils.dart';
 import 'package:kmonie/entities/entities.dart';
@@ -102,9 +102,9 @@ class SearchTransactionBloc extends Bloc<SearchTransactionEvent, SearchTransacti
       updatedResults = state.results.map((t) {
         return t.id == updatedTransaction.id ? updatedTransaction : t;
       }).toList();
-    } else {
-      updatedResults = state.results.where((t) => t.id != updatedTransaction.id).toList();
+      return;
     }
+    updatedResults = state.results.where((t) => t.id != updatedTransaction.id).toList();
 
     final grouped = transactionRepository.groupByDate(updatedResults);
     emit(state.copyWith(results: updatedResults, groupedResults: grouped));

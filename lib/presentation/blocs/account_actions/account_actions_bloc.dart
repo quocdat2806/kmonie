@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:kmonie/core/utils/utils.dart';
 import 'package:kmonie/entities/entities.dart';
 import 'package:kmonie/repositories/repositories.dart';
 
@@ -35,17 +36,23 @@ class AccountActionsBloc extends Bloc<AccountActionsEvent, AccountActionsState> 
 
   Future<void> _onCreateAccount(CreateAccount event, Emitter<AccountActionsState> emit) async {
     final result = await _accountRepository.createAccount(event.account);
-    result.fold((f) {}, (_) => add(const LoadAllAccounts()));
+    result.fold((f) {
+      logger.e('Error creating account: ${f.message}');
+    }, (_) => add(const LoadAllAccounts()));
   }
 
   Future<void> _onUpdateAccount(UpdateAccount event, Emitter<AccountActionsState> emit) async {
     final result = await _accountRepository.updateAccount(event.account);
-    result.fold((f) {}, (_) => add(const LoadAllAccounts()));
+    result.fold((f) {
+      logger.e('Error update account: ${f.message}');
+    }, (_) => add(const LoadAllAccounts()));
   }
 
   Future<void> _onDeleteAccount(DeleteAccount event, Emitter<AccountActionsState> emit) async {
     final result = await _accountRepository.deleteAccount(event.accountId);
-    result.fold((f) {}, (_) => add(const LoadAllAccounts()));
+    result.fold((f) {
+      logger.e('Error delete account: ${f.message}');
+    }, (_) => add(const LoadAllAccounts()));
   }
 
   Future<void> _onPinAccount(PinAccount event, Emitter<AccountActionsState> emit) async {
@@ -83,7 +90,9 @@ class AccountActionsBloc extends Bloc<AccountActionsEvent, AccountActionsState> 
 
   Future<void> _onUpdateAccountBalance(UpdateAccountBalance event, Emitter<AccountActionsState> emit) async {
     final result = await _accountRepository.updateAccountBalance(event.accountId, event.newBalance);
-    result.fold((f) {}, (_) => add(const LoadAllAccounts()));
+    result.fold((f) {
+      logger.e('Error when update balance account: ${f.message}');
+    }, (_) => add(const LoadAllAccounts()));
   }
 
   void _onAccountsStreamUpdated(AccountsStreamUpdated event, Emitter<AccountActionsState> emit) {
