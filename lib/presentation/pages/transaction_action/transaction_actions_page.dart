@@ -18,7 +18,11 @@ class TransactionActionsPageArgs {
   final Transaction? transaction;
   final DateTime? selectedDate;
 
-  TransactionActionsPageArgs({this.mode = ActionsMode.add, this.transaction, this.selectedDate});
+  TransactionActionsPageArgs({
+    this.mode = ActionsMode.add,
+    this.transaction,
+    this.selectedDate,
+  });
 }
 
 class TransactionActionsPage extends StatelessWidget {
@@ -38,10 +42,13 @@ class TransactionActionsPageChild extends StatefulWidget {
   const TransactionActionsPageChild({super.key, this.args});
 
   @override
-  State<TransactionActionsPageChild> createState() => _TransactionActionsPageChildState();
+  State<TransactionActionsPageChild> createState() =>
+      _TransactionActionsPageChildState();
 }
 
-class _TransactionActionsPageChildState extends State<TransactionActionsPageChild> with SingleTickerProviderStateMixin, WidgetsBindingObserver {
+class _TransactionActionsPageChildState
+    extends State<TransactionActionsPageChild>
+    with SingleTickerProviderStateMixin, WidgetsBindingObserver {
   final TextEditingController _noteController = TextEditingController();
   final FocusNode _noteFocusNode = FocusNode();
   late AnimationController _animationController;
@@ -53,8 +60,13 @@ class _TransactionActionsPageChildState extends State<TransactionActionsPageChil
   void initState() {
     super.initState();
     _noteController.text = widget.args?.transaction?.content ?? '';
-    _animationController = AnimationController(duration: AppUIConstants.shortAnimationDuration, vsync: this);
-    _slideAnimation = Tween<double>(begin: 0, end: 1).animate(CurvedAnimation(parent: _animationController, curve: Curves.easeOutQuart));
+    _animationController = AnimationController(
+      duration: AppUIConstants.shortAnimationDuration,
+      vsync: this,
+    );
+    _slideAnimation = Tween<double>(begin: 0, end: 1).animate(
+      CurvedAnimation(parent: _animationController, curve: Curves.easeOutQuart),
+    );
     _scrollController = ScrollController();
     WidgetsBinding.instance.addObserver(this);
   }
@@ -80,7 +92,9 @@ class _TransactionActionsPageChildState extends State<TransactionActionsPageChil
 
     if (keyboardHeight == currentState.previousKeyboardHeight) return;
 
-    context.read<TransactionActionsBloc>().add(TransactionActionsEvent.updateKeyboardHeight(keyboardHeight));
+    context.read<TransactionActionsBloc>().add(
+      TransactionActionsEvent.updateKeyboardHeight(keyboardHeight),
+    );
 
     if (keyboardHeight > 0) {
       _animationController.forward();
@@ -94,34 +108,55 @@ class _TransactionActionsPageChildState extends State<TransactionActionsPageChil
     final keyboardHeight = MediaQuery.of(context).viewInsets.bottom;
     return BlocListener<TransactionActionsBloc, TransactionActionsState>(
       listener: (context, state) {
-        if (state.loadStatus == LoadStatus.success) {
-          AppNavigator(context: context).pop();
+        if (state.loadStatus == LoadStatus.success && !state.hasPopped) {
+          if (AppNavigator(context: context).canPop()) {
+            context.read<TransactionActionsBloc>().add(
+              const TransactionActionsEvent.setHasPopped(true),
+            );
+            AppNavigator(context: context).pop();
+          }
         }
 
         if (state.selectDateState == SelectDateState.showDatePicker) {
           _showDatePicker(context);
-          context.read<TransactionActionsBloc>().add(const ClearSelectDateState());
+          context.read<TransactionActionsBloc>().add(
+            const ClearSelectDateState(),
+          );
         }
 
         if (state.overBudgetState == OverBudgetState.showOverBudgetDialog) {
           _showOverBudgetDialog(context);
-          context.read<TransactionActionsBloc>().add(const ClearOverBudgetState());
+          context.read<TransactionActionsBloc>().add(
+            const ClearOverBudgetState(),
+          );
         }
 
-        if (state.isKeyboardVisible && state.shouldScroll && !state.hasScrolledOnce) {
+        if (state.isKeyboardVisible &&
+            state.shouldScroll &&
+            !state.hasScrolledOnce) {
           WidgetsBinding.instance.addPostFrameCallback((_) {
-            if (_scrollController.hasClients && _gridKey.currentContext != null) {
-              final RenderBox gridRenderBox = _gridKey.currentContext!.findRenderObject() as RenderBox;
+            if (_scrollController.hasClients &&
+                _gridKey.currentContext != null) {
+              final RenderBox gridRenderBox =
+                  _gridKey.currentContext!.findRenderObject() as RenderBox;
               final gridHeight = gridRenderBox.size.height;
               final targetPosition = gridHeight / 2;
-              _scrollController.animateTo(targetPosition, duration: const Duration(milliseconds: 300), curve: Curves.easeOut);
-              context.read<TransactionActionsBloc>().add(const TransactionActionsEvent.setHasScrolledOnce(true));
+              _scrollController.animateTo(
+                targetPosition,
+                duration: const Duration(milliseconds: 300),
+                curve: Curves.easeOut,
+              );
+              context.read<TransactionActionsBloc>().add(
+                const TransactionActionsEvent.setHasScrolledOnce(true),
+              );
             }
           });
         }
 
         if (!state.isKeyboardVisible) {
-          context.read<TransactionActionsBloc>().add(const TransactionActionsEvent.resetScrollState());
+          context.read<TransactionActionsBloc>().add(
+            const TransactionActionsEvent.resetScrollState(),
+          );
         }
       },
       child: Scaffold(
@@ -141,13 +176,16 @@ class _TransactionActionsPageChildState extends State<TransactionActionsPageChil
                           children: [
                             _buildAppBar(),
                             const TransactionActionsTabBar(),
-                            const SizedBox(height: AppUIConstants.defaultPadding),
+                            const SizedBox(
+                              height: AppUIConstants.defaultPadding,
+                            ),
                           ],
                         ),
                       ),
                       Expanded(
                         child: BlocBuilder<TransactionActionsBloc, TransactionActionsState>(
-                          buildWhen: (prev, curr) => prev.isKeyboardVisible != curr.isKeyboardVisible,
+                          buildWhen: (prev, curr) =>
+                              prev.isKeyboardVisible != curr.isKeyboardVisible,
                           builder: (context, state) {
                             return CustomScrollView(
                               controller: _scrollController,
@@ -157,26 +195,60 @@ class _TransactionActionsPageChildState extends State<TransactionActionsPageChil
                                   child: Container(
                                     key: _gridKey,
                                     color: AppColorConstants.white,
-                                    padding: const EdgeInsets.all(AppUIConstants.smallPadding),
+                                    padding: const EdgeInsets.all(
+                                      AppUIConstants.smallPadding,
+                                    ),
                                     child: TransactionCategoryGrid(
                                       onItemClick: () {
-                                        context.read<TransactionActionsBloc>().add(const TransactionActionsEvent.setShouldScroll(true));
+                                        context.read<TransactionActionsBloc>().add(
+                                          const TransactionActionsEvent.setShouldScroll(
+                                            true,
+                                          ),
+                                        );
                                         if (!state.hasScrolledOnce) {
-                                          WidgetsBinding.instance.addPostFrameCallback((_) {
-                                            if (_scrollController.hasClients && _gridKey.currentContext != null) {
-                                              final RenderBox gridRenderBox = _gridKey.currentContext!.findRenderObject() as RenderBox;
-                                              final gridHeight = gridRenderBox.size.height;
-                                              final targetPosition = gridHeight / 2;
-                                              _scrollController.animateTo(targetPosition, duration: const Duration(milliseconds: 300), curve: Curves.easeOut);
-                                              context.read<TransactionActionsBloc>().add(const TransactionActionsEvent.setHasScrolledOnce(true));
-                                            }
-                                          });
+                                          WidgetsBinding.instance
+                                              .addPostFrameCallback((_) {
+                                                if (_scrollController
+                                                        .hasClients &&
+                                                    _gridKey.currentContext !=
+                                                        null) {
+                                                  final RenderBox
+                                                  gridRenderBox =
+                                                      _gridKey.currentContext!
+                                                              .findRenderObject()
+                                                          as RenderBox;
+                                                  final gridHeight =
+                                                      gridRenderBox.size.height;
+                                                  final targetPosition =
+                                                      gridHeight / 2;
+                                                  _scrollController.animateTo(
+                                                    targetPosition,
+                                                    duration: const Duration(
+                                                      milliseconds: 300,
+                                                    ),
+                                                    curve: Curves.easeOut,
+                                                  );
+                                                  context
+                                                      .read<
+                                                        TransactionActionsBloc
+                                                      >()
+                                                      .add(
+                                                        const TransactionActionsEvent.setHasScrolledOnce(
+                                                          true,
+                                                        ),
+                                                      );
+                                                }
+                                              });
                                         }
                                       },
                                     ),
                                   ),
                                 ),
-                                SliverPadding(padding: EdgeInsets.only(bottom: state.isKeyboardVisible ? 420 : 0)),
+                                SliverPadding(
+                                  padding: EdgeInsets.only(
+                                    bottom: state.isKeyboardVisible ? 420 : 0,
+                                  ),
+                                ),
                               ],
                             );
                           },
@@ -185,32 +257,52 @@ class _TransactionActionsPageChildState extends State<TransactionActionsPageChil
                     ],
                   ),
                 ),
-                BlocSelector<TransactionActionsBloc, TransactionActionsState, bool>(
+                BlocSelector<
+                  TransactionActionsBloc,
+                  TransactionActionsState,
+                  bool
+                >(
                   selector: (state) => state.isKeyboardVisible,
                   builder: (context, isKeyboardVisible) {
                     if (!isKeyboardVisible) return const SizedBox.shrink();
                     return AnimatedBuilder(
                       animation: _slideAnimation,
                       builder: (context, child) {
-                        final slideOffset = _slideAnimation.value * keyboardHeight * AppUIConstants.keyboardSlideRatio;
-                        return Transform.translate(offset: Offset(0, -slideOffset), child: child);
+                        final slideOffset =
+                            _slideAnimation.value *
+                            keyboardHeight *
+                            AppUIConstants.keyboardSlideRatio;
+                        return Transform.translate(
+                          offset: Offset(0, -slideOffset),
+                          child: child,
+                        );
                       },
                       child: RepaintBoundary(
                         child: ColoredBox(
                           color: AppColorConstants.greyWhite,
                           child: Padding(
-                            padding: const EdgeInsets.all(AppUIConstants.smallPadding),
+                            padding: const EdgeInsets.all(
+                              AppUIConstants.smallPadding,
+                            ),
                             child: Column(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                TransactionActionsInputHeader(noteController: _noteController, noteFocusNode: _noteFocusNode),
-                                BlocBuilder<TransactionActionsBloc, TransactionActionsState>(
-                                  buildWhen: (pre, curr) => pre.date != curr.date,
+                                TransactionActionsInputHeader(
+                                  noteController: _noteController,
+                                  noteFocusNode: _noteFocusNode,
+                                ),
+                                BlocBuilder<
+                                  TransactionActionsBloc,
+                                  TransactionActionsState
+                                >(
+                                  buildWhen: (pre, curr) =>
+                                      pre.date != curr.date,
                                   builder: (context, state) {
                                     return AppKeyboard(
                                       selectDate: state.date,
                                       onValueChanged: (value) {
-                                        final bloc = context.read<TransactionActionsBloc>();
+                                        final bloc = context
+                                            .read<TransactionActionsBloc>();
                                         if (value == 'SELECT_DATE') {
                                           bloc.add(const RequestSelectDate());
                                           return;
@@ -244,13 +336,21 @@ class _TransactionActionsPageChildState extends State<TransactionActionsPageChil
     return CustomAppBar(
       title: AppTextConstants.add,
       leading: ConstrainedBox(
-        constraints: const BoxConstraints(minWidth: AppUIConstants.mediumContainerSize, minHeight: AppUIConstants.mediumContainerSize),
+        constraints: const BoxConstraints(
+          minWidth: AppUIConstants.mediumContainerSize,
+          minHeight: AppUIConstants.mediumContainerSize,
+        ),
         child: InkWell(
           splashColor: Colors.transparent,
           customBorder: const StadiumBorder(),
           onTap: () async {
-            if (context.read<TransactionActionsBloc>().state.isKeyboardVisible) {
-              context.read<TransactionActionsBloc>().add(const ToggleKeyboardVisibility());
+            if (context
+                .read<TransactionActionsBloc>()
+                .state
+                .isKeyboardVisible) {
+              context.read<TransactionActionsBloc>().add(
+                const ToggleKeyboardVisibility(),
+              );
               await SystemChannels.textInput.invokeMethod('TextInput.hide');
               await Future<void>.delayed(const Duration(milliseconds: 350));
               if (mounted) {
@@ -260,7 +360,12 @@ class _TransactionActionsPageChildState extends State<TransactionActionsPageChil
             }
             AppNavigator(context: context).pop();
           },
-          child: Center(child: Text(AppTextConstants.cancel, style: AppTextStyle.blackS14Medium)),
+          child: Center(
+            child: Text(
+              AppTextConstants.cancel,
+              style: AppTextStyle.blackS14Medium,
+            ),
+          ),
         ),
       ),
     );
@@ -283,7 +388,8 @@ class _TransactionActionsPageChildState extends State<TransactionActionsPageChil
   Future<void> _showOverBudgetDialog(BuildContext context) async {
     final proceed = await showDialog<bool>(
       context: context,
-      builder: (ctx) => AppExceedBudgetDialog(onConfirm: () => Navigator.of(ctx).pop(true)),
+      builder: (ctx) =>
+          AppExceedBudgetDialog(onConfirm: () => Navigator.of(ctx).pop(true)),
     );
 
     if (proceed == true && context.mounted) {

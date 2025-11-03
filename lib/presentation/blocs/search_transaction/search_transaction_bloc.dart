@@ -12,12 +12,14 @@ import 'package:kmonie/repositories/repositories.dart';
 import 'search_transaction_event.dart';
 import 'search_transaction_state.dart';
 
-class SearchTransactionBloc extends Bloc<SearchTransactionEvent, SearchTransactionState> {
+class SearchTransactionBloc
+    extends Bloc<SearchTransactionEvent, SearchTransactionState> {
   final TransactionRepository transactionRepository;
   final TransactionCategoryRepository categoryRepository;
   StreamSubscription<AppStreamData>? _subscription;
 
-  SearchTransactionBloc(this.transactionRepository, this.categoryRepository) : super(const SearchTransactionState()) {
+  SearchTransactionBloc(this.transactionRepository, this.categoryRepository)
+    : super(const SearchTransactionState()) {
     on<SearchTransactionQueryChanged>(_onQueryChanged);
     on<SearchTransactionTypeChanged>(_onTypeChanged);
     on<SearchTransactionReset>(_onReset);
@@ -45,53 +47,107 @@ class SearchTransactionBloc extends Bloc<SearchTransactionEvent, SearchTransacti
     });
   }
 
-  void _onQueryChanged(SearchTransactionQueryChanged event, Emitter<SearchTransactionState> emit) {
+  void _onQueryChanged(
+    SearchTransactionQueryChanged event,
+    Emitter<SearchTransactionState> emit,
+  ) {
     emit(state.copyWith(query: event.value));
   }
 
-  void _onTypeChanged(SearchTransactionTypeChanged event, Emitter<SearchTransactionState> emit) {
+  void _onTypeChanged(
+    SearchTransactionTypeChanged event,
+    Emitter<SearchTransactionState> emit,
+  ) {
     if (state.selectedType == event.type) return;
     emit(state.copyWith(selectedType: event.type));
   }
 
-  void _onReset(SearchTransactionReset event, Emitter<SearchTransactionState> emit) {
-    emit(state.copyWith(query: '', selectedType: null, results: [], groupedResults: {}, categoriesMap: {}));
+  void _onReset(
+    SearchTransactionReset event,
+    Emitter<SearchTransactionState> emit,
+  ) {
+    emit(
+      state.copyWith(
+        query: '',
+        selectedType: null,
+        results: [],
+        groupedResults: {},
+        categoriesMap: {},
+      ),
+    );
   }
 
-  Future<void> _onApply(SearchTransactionApply event, Emitter<SearchTransactionState> emit) async {
+  Future<void> _onApply(
+    SearchTransactionApply event,
+    Emitter<SearchTransactionState> emit,
+  ) async {
     if (state.query.isEmpty) return;
+    final searchResult = await _filter(
+      content: state.query,
+      transactionType: state.selectedType,
+    );
 
-    final searchResult = await _filter(content: state.query, transactionType: state.selectedType);
+    if (emit.isDone) return;
 
-    searchResult.fold(
+    final result = searchResult.fold((failure) {
+      logger.e(
+        'SearchTransactionBloc: error when applying search: ${failure.message}',
+      );
+      return const <Transaction>[];
+    }, (data) => data);
+
+    if (emit.isDone) return;
+
+    final grouped = transactionRepository.groupByDate(result);
+    final categoriesResult = await categoryRepository.getAll();
+
+    if (emit.isDone) return;
+
+    categoriesResult.fold(
       (failure) {
-        logger.e('SearchTransactionBloc: error when applying search: ${failure.message}');
-        emit(state.copyWith(results: [], groupedResults: {}, categoriesMap: {}));
-      },
-      (data) async {
-        final grouped = transactionRepository.groupByDate(data);
-        final categoriesResult = await categoryRepository.getAll();
-
-        categoriesResult.fold(
-          (failure) {
-            logger.e('SearchTransactionBloc: error getting categories: ${failure.message}');
-            emit(state.copyWith(results: data, groupedResults: grouped, categoriesMap: {}));
-          },
-          (allCategories) {
-            final categoriesMap = {for (final cat in allCategories) cat.id!: cat};
-            emit(state.copyWith(results: data, groupedResults: grouped, categoriesMap: categoriesMap));
-          },
+        logger.e(
+          'SearchTransactionBloc: error getting categories: ${failure.message}',
         );
+        if (!emit.isDone) {
+          emit(
+            state.copyWith(
+              results: result,
+              groupedResults: grouped,
+              categoriesMap: {},
+            ),
+          );
+        }
+      },
+      (allCategories) {
+        final categoriesMap = {for (final cat in allCategories) cat.id!: cat};
+        if (!emit.isDone) {
+          emit(
+            state.copyWith(
+              results: result,
+              groupedResults: grouped,
+              categoriesMap: categoriesMap,
+            ),
+          );
+        }
       },
     );
   }
 
-  Future<Either<Failure, List<Transaction>>> _filter({String? content, TransactionType? transactionType}) async {
-    final result = await transactionRepository.searchByContent(keyword: content, transactionType: transactionType?.typeIndex);
+  Future<Either<Failure, List<Transaction>>> _filter({
+    String? content,
+    TransactionType? transactionType,
+  }) async {
+    final result = await transactionRepository.searchByContent(
+      keyword: content,
+      transactionType: transactionType?.typeIndex,
+    );
     return result.map((pagedResult) => pagedResult.transactions);
   }
 
-  void _onUpdateTransaction(SearchTransactionUpdateTransaction event, Emitter<SearchTransactionState> emit) {
+  void _onUpdateTransaction(
+    SearchTransactionUpdateTransaction event,
+    Emitter<SearchTransactionState> emit,
+  ) {
     final updatedTransaction = event.transaction;
 
     final stillMatches = _matchesSearchCriteria(updatedTransaction);
@@ -104,7 +160,9 @@ class SearchTransactionBloc extends Bloc<SearchTransactionEvent, SearchTransacti
       }).toList();
       return;
     }
-    updatedResults = state.results.where((t) => t.id != updatedTransaction.id).toList();
+    updatedResults = state.results
+        .where((t) => t.id != updatedTransaction.id)
+        .toList();
 
     final grouped = transactionRepository.groupByDate(updatedResults);
     emit(state.copyWith(results: updatedResults, groupedResults: grouped));
@@ -112,17 +170,23 @@ class SearchTransactionBloc extends Bloc<SearchTransactionEvent, SearchTransacti
 
   bool _matchesSearchCriteria(Transaction transaction) {
     if (state.query.isNotEmpty) {
-      final contentMatch = transaction.content.toLowerCase().contains(state.query.toLowerCase());
+      final contentMatch = transaction.content.toLowerCase().contains(
+        state.query.toLowerCase(),
+      );
       if (!contentMatch) return false;
     }
     if (state.selectedType != null) {
-      if (transaction.transactionType != state.selectedType!.typeIndex) return false;
+      if (transaction.transactionType != state.selectedType!.typeIndex)
+        return false;
     }
 
     return true;
   }
 
-  void _onDeleteTransaction(SearchTransactionDeleteTransaction event, Emitter<SearchTransactionState> emit) {
+  void _onDeleteTransaction(
+    SearchTransactionDeleteTransaction event,
+    Emitter<SearchTransactionState> emit,
+  ) {
     final updated = state.results.where((t) => t.id != event.id).toList();
     final grouped = transactionRepository.groupByDate(updated);
     emit(state.copyWith(results: updated, groupedResults: grouped));

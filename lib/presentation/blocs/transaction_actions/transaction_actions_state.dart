@@ -17,7 +17,8 @@ abstract class TransactionActionsState with _$TransactionActionsState {
   const factory TransactionActionsState({
     @Default(0) int selectedIndex,
     SeparatedCategories? separatedCategories,
-    @Default(<TransactionType, int?>{}) Map<TransactionType, int?> selectedCategoryIdByType,
+    @Default(<TransactionType, int?>{})
+    Map<TransactionType, int?> selectedCategoryIdByType,
     @Default(false) bool isKeyboardVisible,
     @Default('') String note,
     @Default(0) int amount,
@@ -28,6 +29,7 @@ abstract class TransactionActionsState with _$TransactionActionsState {
     @Default(false) bool shouldScroll,
     @Default(false) bool hasScrolledOnce,
     @Default(0.0) double previousKeyboardHeight,
+    @Default(false) bool hasPopped,
   }) = _TransactionActionsState;
 
   TransactionType get currentType => TransactionType.fromIndex(selectedIndex);

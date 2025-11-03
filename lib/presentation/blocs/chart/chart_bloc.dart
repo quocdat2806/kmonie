@@ -116,7 +116,7 @@ class ChartBloc extends Bloc<ChartEvent, ChartState> {
             },
             (categories) async {
               final chartData = _calculateChartData(transactions, categories);
-              emit(state.copyWith(chartData: chartData, loadStatus: LoadStatus.loading));
+              emit(state.copyWith(chartData: chartData, loadStatus: LoadStatus.success));
             },
           );
         },

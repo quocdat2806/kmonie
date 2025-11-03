@@ -12,13 +12,19 @@ import 'package:kmonie/repositories/repositories.dart';
 import 'transaction_actions_event.dart';
 import 'transaction_actions_state.dart';
 
-class TransactionActionsBloc extends Bloc<TransactionActionsEvent, TransactionActionsState> {
+class TransactionActionsBloc
+    extends Bloc<TransactionActionsEvent, TransactionActionsState> {
   final TransactionCategoryRepository categoryRepository;
   final TransactionRepository transactionRepository;
   final BudgetRepository budgetRepository;
   final TransactionActionsPageArgs? args;
 
-  TransactionActionsBloc(this.categoryRepository, this.transactionRepository, this.budgetRepository, this.args) : super(const TransactionActionsState()) {
+  TransactionActionsBloc(
+    this.categoryRepository,
+    this.transactionRepository,
+    this.budgetRepository,
+    this.args,
+  ) : super(const TransactionActionsState()) {
     on<Initialize>(_onInitialize);
     on<SwitchTab>(_onSwitchTab);
     on<CategoryChanged>(_onCategoryChanged);
@@ -35,13 +41,20 @@ class TransactionActionsBloc extends Bloc<TransactionActionsEvent, TransactionAc
     on<SetHasScrolledOnce>(_onSetHasScrolledOnce);
     on<ResetScrollState>(_onResetScrollState);
     on<UpdateKeyboardHeight>(_onUpdateKeyboardHeight);
+    on<SetHasPopped>(_onSetHasPopped);
     add(const Initialize());
   }
-  void _onSelectDateChange(SelectDateChange e, Emitter<TransactionActionsState> emit) {
+  void _onSelectDateChange(
+    SelectDateChange e,
+    Emitter<TransactionActionsState> emit,
+  ) {
     emit(state.copyWith(date: e.date));
   }
 
-  Future<void> _onInitialize(Initialize e, Emitter<TransactionActionsState> emit) async {
+  Future<void> _onInitialize(
+    Initialize e,
+    Emitter<TransactionActionsState> emit,
+  ) async {
     final categoriesResult = await categoryRepository.getAll();
 
     await categoriesResult.fold(
@@ -58,7 +71,16 @@ class TransactionActionsBloc extends Bloc<TransactionActionsEvent, TransactionAc
     if (args != null && args!.mode == ActionsMode.edit) {
       final tx = args!.transaction!;
       final type = TransactionType.fromIndex(tx.transactionType);
-      emit(state.copyWith(selectedIndex: type.index, isKeyboardVisible: true, date: tx.date, note: tx.content, amount: tx.amount, selectedCategoryIdByType: {type: tx.transactionCategoryId}));
+      emit(
+        state.copyWith(
+          selectedIndex: type.index,
+          isKeyboardVisible: true,
+          date: tx.date,
+          note: tx.content,
+          amount: tx.amount,
+          selectedCategoryIdByType: {type: tx.transactionCategoryId},
+        ),
+      );
       return;
     }
 
@@ -66,11 +88,17 @@ class TransactionActionsBloc extends Bloc<TransactionActionsEvent, TransactionAc
     emit(state.copyWith(date: initialDate));
   }
 
-  void _onKeyboardVisibilityChanged(ToggleKeyboardVisibility e, Emitter<TransactionActionsState> emit) {
+  void _onKeyboardVisibilityChanged(
+    ToggleKeyboardVisibility e,
+    Emitter<TransactionActionsState> emit,
+  ) {
     emit(state.copyWith(isKeyboardVisible: !state.isKeyboardVisible));
   }
 
-  void _onAmountChanged(AmountChanged e, Emitter<TransactionActionsState> emit) {
+  void _onAmountChanged(
+    AmountChanged e,
+    Emitter<TransactionActionsState> emit,
+  ) {
     final value = e.value;
 
     if (value == '+' || value == '-') return;
@@ -79,7 +107,9 @@ class TransactionActionsBloc extends Bloc<TransactionActionsEvent, TransactionAc
 
     if (value == 'CLEAR') {
       final str = newAmount.toString();
-      newAmount = str.length > 1 ? int.parse(str.substring(0, str.length - 1)) : 0;
+      newAmount = str.length > 1
+          ? int.parse(str.substring(0, str.length - 1))
+          : 0;
       emit(state.copyWith(amount: newAmount));
       return;
     }
@@ -101,19 +131,26 @@ class TransactionActionsBloc extends Bloc<TransactionActionsEvent, TransactionAc
     emit(state.copyWith(selectedIndex: e.index));
   }
 
-  void _onCategoryChanged(CategoryChanged e, Emitter<TransactionActionsState> emit) {
-    final next = Map<TransactionType, int?>.from(state.selectedCategoryIdByType)..[e.type] = e.categoryId;
+  void _onCategoryChanged(
+    CategoryChanged e,
+    Emitter<TransactionActionsState> emit,
+  ) {
+    final next = Map<TransactionType, int?>.from(state.selectedCategoryIdByType)
+      ..[e.type] = e.categoryId;
     emit(state.copyWith(selectedCategoryIdByType: next));
 
     if (!state.isKeyboardVisible) add(const ToggleKeyboardVisibility());
   }
 
-  Future<void> _onSubmitTransaction(SubmitTransaction e, Emitter<TransactionActionsState> emit) async {
+  Future<void> _onSubmitTransaction(
+    SubmitTransaction e,
+    Emitter<TransactionActionsState> emit,
+  ) async {
     add(const ToggleKeyboardVisibility());
 
     if (args != null && args!.mode == ActionsMode.edit) {
       await _updateExistingTransaction();
-      emit(state.copyWith(loadStatus: LoadStatus.success));
+      emit(state.copyWith(loadStatus: LoadStatus.success, hasPopped: false));
       return;
     }
     if (state.amount <= 0) {
@@ -127,17 +164,32 @@ class TransactionActionsBloc extends Bloc<TransactionActionsEvent, TransactionAc
       return;
     }
 
-    final createResult = await transactionRepository.createTransaction(amount: state.amount, date: state.date ?? DateTime.now(), transactionCategoryId: categoryId, content: state.note, transactionType: state.currentType.typeIndex);
+    final createResult = await transactionRepository.createTransaction(
+      amount: state.amount,
+      date: state.date ?? DateTime.now(),
+      transactionCategoryId: categoryId,
+      content: state.note,
+      transactionType: state.currentType.typeIndex,
+    );
 
-    createResult.fold((failure) => emit(state.copyWith(loadStatus: LoadStatus.error)), (newTx) {
-      AppStreamEvent.insertTransactionStatic(newTx);
-      emit(state.copyWith(loadStatus: LoadStatus.success));
-    });
+    createResult.fold(
+      (failure) => emit(state.copyWith(loadStatus: LoadStatus.error)),
+      (newTx) {
+        AppStreamEvent.insertTransactionStatic(newTx);
+        emit(state.copyWith(loadStatus: LoadStatus.success, hasPopped: false));
+      },
+    );
   }
 
   Future<void> _updateExistingTransaction() async {
     final tx = args!.transaction!;
-    final updateResult = await transactionRepository.updateTransaction(id: tx.id!, amount: state.amount, content: state.note, date: state.date ?? tx.date, transactionCategoryId: state.selectedCategoryIdFor(state.currentType));
+    final updateResult = await transactionRepository.updateTransaction(
+      id: tx.id!,
+      amount: state.amount,
+      content: state.note,
+      date: state.date ?? tx.date,
+      transactionCategoryId: state.selectedCategoryIdFor(state.currentType),
+    );
 
     updateResult.fold((failure) => null, (updatedTx) {
       if (updatedTx != null) {
@@ -165,14 +217,24 @@ class TransactionActionsBloc extends Bloc<TransactionActionsEvent, TransactionAc
       }
     }
 
-    return SeparatedCategories(expense: expense, income: income, transfer: transfer);
+    return SeparatedCategories(
+      expense: expense,
+      income: income,
+      transfer: transfer,
+    );
   }
 
-  void _onRequestSelectDate(RequestSelectDate e, Emitter<TransactionActionsState> emit) {
+  void _onRequestSelectDate(
+    RequestSelectDate e,
+    Emitter<TransactionActionsState> emit,
+  ) {
     emit(state.copyWith(selectDateState: SelectDateState.showDatePicker));
   }
 
-  Future<void> _onCheckOverBudget(CheckOverBudget e, Emitter<TransactionActionsState> emit) async {
+  Future<void> _onCheckOverBudget(
+    CheckOverBudget e,
+    Emitter<TransactionActionsState> emit,
+  ) async {
     final categoryId = state.selectedCategoryIdFor(state.currentType);
     if (categoryId == null || state.amount <= 0) {
       add(const SubmitTransaction());
@@ -184,15 +246,24 @@ class TransactionActionsBloc extends Bloc<TransactionActionsEvent, TransactionAc
     final month = date.month;
 
     try {
-      final budgetResult = await budgetRepository.getBudgetForCategory(year: year, month: month, categoryId: categoryId);
-      final budgetAmount = budgetResult.fold((failure) => 0, (budget) => budget);
+      final budgetResult = await budgetRepository.getBudgetForCategory(
+        year: year,
+        month: month,
+        categoryId: categoryId,
+      );
+      final budgetAmount = budgetResult.fold(
+        (failure) => 0,
+        (budget) => budget,
+      );
 
       if (budgetAmount <= 0) {
         add(const SubmitTransaction());
         return;
       }
       if (state.amount > budgetAmount) {
-        emit(state.copyWith(overBudgetState: OverBudgetState.showOverBudgetDialog));
+        emit(
+          state.copyWith(overBudgetState: OverBudgetState.showOverBudgetDialog),
+        );
         return;
       }
       add(const SubmitTransaction());
@@ -201,27 +272,49 @@ class TransactionActionsBloc extends Bloc<TransactionActionsEvent, TransactionAc
     }
   }
 
-  void _onClearSelectDateState(ClearSelectDateState e, Emitter<TransactionActionsState> emit) {
+  void _onClearSelectDateState(
+    ClearSelectDateState e,
+    Emitter<TransactionActionsState> emit,
+  ) {
     emit(state.copyWith(selectDateState: SelectDateState.none));
   }
 
-  void _onClearOverBudgetState(ClearOverBudgetState e, Emitter<TransactionActionsState> emit) {
+  void _onClearOverBudgetState(
+    ClearOverBudgetState e,
+    Emitter<TransactionActionsState> emit,
+  ) {
     emit(state.copyWith(overBudgetState: OverBudgetState.none));
   }
 
-  void _onSetShouldScroll(SetShouldScroll e, Emitter<TransactionActionsState> emit) {
+  void _onSetShouldScroll(
+    SetShouldScroll e,
+    Emitter<TransactionActionsState> emit,
+  ) {
     emit(state.copyWith(shouldScroll: e.shouldScroll));
   }
 
-  void _onSetHasScrolledOnce(SetHasScrolledOnce e, Emitter<TransactionActionsState> emit) {
+  void _onSetHasScrolledOnce(
+    SetHasScrolledOnce e,
+    Emitter<TransactionActionsState> emit,
+  ) {
     emit(state.copyWith(hasScrolledOnce: e.hasScrolledOnce));
   }
 
-  void _onResetScrollState(ResetScrollState e, Emitter<TransactionActionsState> emit) {
+  void _onResetScrollState(
+    ResetScrollState e,
+    Emitter<TransactionActionsState> emit,
+  ) {
     emit(state.copyWith(shouldScroll: false, hasScrolledOnce: false));
   }
 
-  void _onUpdateKeyboardHeight(UpdateKeyboardHeight e, Emitter<TransactionActionsState> emit) {
+  void _onUpdateKeyboardHeight(
+    UpdateKeyboardHeight e,
+    Emitter<TransactionActionsState> emit,
+  ) {
     emit(state.copyWith(previousKeyboardHeight: e.height));
+  }
+
+  void _onSetHasPopped(SetHasPopped e, Emitter<TransactionActionsState> emit) {
+    emit(state.copyWith(hasPopped: e.hasPopped));
   }
 }
