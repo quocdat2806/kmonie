@@ -7,11 +7,9 @@ import 'package:kmonie/core/streams/streams.dart';
 import 'package:kmonie/core/text_style/text_style.dart';
 import 'package:kmonie/entities/entities.dart';
 import 'package:kmonie/presentation/pages/pages.dart';
-import 'package:kmonie/presentation/widgets/divider/app_divider.dart';
+import 'package:kmonie/presentation/widgets/widgets.dart';
 import 'package:kmonie/repositories/repositories.dart';
-
-import 'transaction_item.dart';
-
+import 'package:kmonie/args/args.dart';
 class TransactionList extends StatelessWidget {
   final Map<String, List<Transaction>> groupedTransactions;
   final Map<int, TransactionCategory> categoriesMap;
@@ -19,7 +17,15 @@ class TransactionList extends StatelessWidget {
   final Widget Function(String dateKey)? dailyTotalWidgetBuilder;
 
   final ScrollController? scrollController;
-  const TransactionList({super.key, required this.groupedTransactions, required this.categoriesMap, this.emptyWidget, this.dailyTotalWidgetBuilder, this.scrollController});
+
+  const TransactionList({
+    super.key,
+    required this.groupedTransactions,
+    required this.categoriesMap,
+    this.emptyWidget,
+    this.dailyTotalWidgetBuilder,
+    this.scrollController,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -41,7 +47,8 @@ class TransactionList extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(dateKey, style: AppTextStyle.blackS12),
-                      if (dailyTotalWidgetBuilder != null) dailyTotalWidgetBuilder!(dateKey),
+                      if (dailyTotalWidgetBuilder != null)
+                        dailyTotalWidgetBuilder!(dateKey),
                     ],
                   ),
                   const SizedBox(height: AppUIConstants.smallSpacing),
@@ -52,21 +59,32 @@ class TransactionList extends StatelessWidget {
                     itemCount: transactions.length,
                     itemBuilder: (context, index) {
                       final transaction = transactions[index];
-                      final category = categoriesMap[transaction.transactionCategoryId];
+                      final category =
+                          categoriesMap[transaction.transactionCategoryId];
                       return InkWell(
                         splashColor: Colors.transparent,
                         onTap: () => AppNavigator(context: context).push(
                           RouterPath.detailTransaction,
-                          extra: DetailTransactionArgs(transaction: transaction, category: category!),
+                          extra: DetailTransactionArgs(
+                            transaction: transaction,
+                            category: category!,
+                          ),
                         ),
                         child: TransactionItem(
                           onConfirmDelete: () async {
-                            await sl<TransactionRepository>().deleteTransaction(transaction.id!);
-                            AppStreamEvent.deleteTransactionStatic(transaction.id!);
+                            await sl<TransactionRepository>().deleteTransaction(
+                              transaction.id!,
+                            );
+                            AppStreamEvent.deleteTransactionStatic(
+                              transaction.id!,
+                            );
                           },
                           onEdit: () => AppNavigator(context: context).push(
                             RouterPath.transactionActions,
-                            extra: TransactionActionsPageArgs(mode: ActionsMode.edit, transaction: transaction),
+                            extra: TransactionActionsPageArgs(
+                              mode: ActionsMode.edit,
+                              transaction: transaction,
+                            ),
                           ),
                           transaction: transaction,
                           category: category,

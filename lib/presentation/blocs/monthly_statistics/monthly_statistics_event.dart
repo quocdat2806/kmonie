@@ -4,5 +4,6 @@ part 'monthly_statistics_event.freezed.dart';
 
 @freezed
 abstract class MonthlyStatisticsEvent with _$MonthlyStatisticsEvent {
-  const factory MonthlyStatisticsEvent.load({int? year}) = LoadMonthlyStatistics;
+  const factory MonthlyStatisticsEvent.load({int? year}) =
+      LoadMonthlyStatistics;
 }

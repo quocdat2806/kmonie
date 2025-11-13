@@ -1,1 +1,7 @@
-enum AppEvent { insertTransaction, updateTransaction, deleteTransaction, budgetChanged }
+enum AppEvent {
+  insertTransaction,
+  updateTransaction,
+  deleteTransaction,
+  budgetChanged,
+  accountChanged
+}

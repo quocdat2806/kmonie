@@ -5,11 +5,20 @@ part 'daily_transaction_event.freezed.dart';
 
 @freezed
 abstract class DailyTransactionEvent with _$DailyTransactionEvent {
-  const factory DailyTransactionEvent.loadDailyTransactions({required DateTime selectedDate, required Map<String, List<Transaction>> groupedTransactions, required Map<int, TransactionCategory> categoriesMap}) = LoadDailyTransactions;
+  const factory DailyTransactionEvent.loadDailyTransactions({
+    required DateTime selectedDate,
+    required Map<String, List<Transaction>> groupedTransactions,
+    required Map<int, TransactionCategory> categoriesMap,
+  }) = LoadDailyTransactions;
 
-  const factory DailyTransactionEvent.insertTransaction(Transaction transaction) = InsertTransaction;
+  const factory DailyTransactionEvent.insertTransaction(
+    Transaction transaction,
+  ) = InsertTransaction;
 
-  const factory DailyTransactionEvent.updateTransaction(Transaction transaction) = UpdateTransaction;
+  const factory DailyTransactionEvent.updateTransaction(
+    Transaction transaction,
+  ) = UpdateTransaction;
 
-  const factory DailyTransactionEvent.deleteTransaction(int transactionId) = DeleteTransaction;
+  const factory DailyTransactionEvent.deleteTransaction(int transactionId) =
+      DeleteTransaction;
 }

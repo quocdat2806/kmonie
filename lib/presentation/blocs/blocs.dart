@@ -9,5 +9,4 @@ export 'main/main.dart';
 export 'monthly_statistics/monthly_statistics.dart';
 export 'report/report.dart';
 export 'search_transaction/search_transaction.dart';
-export 'statistics/statistics.dart';
 export 'transaction_actions/transaction_actions.dart';

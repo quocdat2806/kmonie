@@ -2,13 +2,11 @@ import 'dart:async';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kmonie/core/enums/enums.dart';
-import 'package:kmonie/core/services/services.dart';
 import 'package:kmonie/core/streams/streams.dart';
 import 'package:kmonie/core/utils/utils.dart';
 import 'package:kmonie/entities/entities.dart';
-import 'package:kmonie/presentation/pages/pages.dart';
 import 'package:kmonie/repositories/repositories.dart';
-
+import 'package:kmonie/args/args.dart';
 import 'transaction_actions_event.dart';
 import 'transaction_actions_state.dart';
 
@@ -44,6 +42,7 @@ class TransactionActionsBloc
     on<SetHasPopped>(_onSetHasPopped);
     add(const Initialize());
   }
+
   void _onSelectDateChange(
     SelectDateChange e,
     Emitter<TransactionActionsState> emit,
@@ -135,6 +134,7 @@ class TransactionActionsBloc
     CategoryChanged e,
     Emitter<TransactionActionsState> emit,
   ) {
+
     final next = Map<TransactionType, int?>.from(state.selectedCategoryIdByType)
       ..[e.type] = e.categoryId;
     emit(state.copyWith(selectedCategoryIdByType: next));

@@ -3,20 +3,12 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:kmonie/core/constants/constants.dart';
 import 'package:kmonie/core/tools/tools.dart';
-import 'package:kmonie/entities/entities.dart';
+import 'package:kmonie/args/args.dart';
 
-class ChartData {
-  final String label;
-  final double value;
-  final Color color;
-  final List<String>? gradientColors;
-  final TransactionCategory? category;
 
-  ChartData(this.label, this.value, this.color, {this.gradientColors, this.category});
-}
 
 class ChartCircular extends StatefulWidget {
-  final List<ChartData> data;
+  final List<ChartDataArgs> data;
 
   const ChartCircular({super.key, required this.data});
 
@@ -62,7 +54,7 @@ class _ChartCircularState extends State<ChartCircular> with SingleTickerProvider
 }
 
 class AppChartPainter extends CustomPainter {
-  final List<ChartData> data;
+  final List<ChartDataArgs> data;
   final double strokeWidth;
   final double progress;
 

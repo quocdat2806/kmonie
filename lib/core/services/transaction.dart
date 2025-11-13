@@ -6,19 +6,13 @@ import 'package:kmonie/core/utils/utils.dart';
 import 'package:kmonie/database/database.dart';
 import 'package:kmonie/entities/entities.dart';
 
-class PagedTransactionResult {
-  final List<Transaction> transactions;
-  final int totalRecords;
-
-  PagedTransactionResult({required this.transactions, required this.totalRecords});
-}
 
 class TransactionService {
   final KMonieDatabase _db;
   final AccountService _accountService;
   TransactionService(this._db, this._accountService);
 
-  final _LRUCache<String, Map<String, List<Transaction>>> _groupCache = _LRUCache(maxSize: 15);
+  final LRUCache<String, Map<String, List<Transaction>>> _groupCache = LRUCache(maxSize: 15);
 
   final Map<int, List<Transaction>> _yearCache = {};
   final Set<int> _dirtyYears = {};
@@ -339,36 +333,3 @@ class TransactionService {
   }
 }
 
-class _LRUCache<K, V> {
-  final int maxSize;
-  final Map<K, V> _cache = {};
-  final List<K> _accessOrder = [];
-
-  _LRUCache({required this.maxSize});
-
-  V? get(K key) {
-    if (!_cache.containsKey(key)) return null;
-
-    _accessOrder
-      ..remove(key)
-      ..add(key);
-    return _cache[key];
-  }
-
-  void put(K key, V value) {
-    if (_cache.containsKey(key)) {
-      _accessOrder.remove(key);
-    } else if (_cache.length >= maxSize) {
-      final oldest = _accessOrder.removeAt(0);
-      _cache.remove(oldest);
-    }
-
-    _cache[key] = value;
-    _accessOrder.add(key);
-  }
-
-  void clear() {
-    _cache.clear();
-    _accessOrder.clear();
-  }
-}

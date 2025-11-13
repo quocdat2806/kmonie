@@ -9,12 +9,19 @@ class WeekdayHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: AppUIConstants.smallSpacing),
+      padding: const EdgeInsets.symmetric(
+        vertical: AppUIConstants.smallPadding,
+      ),
       child: Row(
         children: List.generate(
           AppDateUtils.weekdays.length,
           (index) => Expanded(
-            child: Center(child: Text(AppDateUtils.weekdays[index], style: AppTextStyle.blackS12)),
+            child: Center(
+              child: Text(
+                AppDateUtils.weekdays[index],
+                style: AppTextStyle.blackS12,
+              ),
+            ),
           ),
         ),
       ),

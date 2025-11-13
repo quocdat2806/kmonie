@@ -16,7 +16,8 @@ class ChartTransactionTypeDropdown extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<ChartBloc, ChartState>(
-      buildWhen: (previous, current) => previous.selectedTransactionType != current.selectedTransactionType,
+      buildWhen: (previous, current) =>
+          previous.selectedTransactionType != current.selectedTransactionType,
       builder: (context, state) {
         return InkWell(
           splashColor: Colors.transparent,
@@ -26,8 +27,14 @@ class ChartTransactionTypeDropdown extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             spacing: AppUIConstants.smallSpacing,
             children: [
-              Text(state.selectedTransactionType.displayName, style: AppTextStyle.blackS18Bold),
-              SvgUtils.icon(assetPath: Assets.svgsArrowDown, size: SvgSizeType.medium),
+              Text(
+                state.selectedTransactionType.displayName,
+                style: AppTextStyle.blackS18Bold,
+              ),
+              SvgUtils.icon(
+                assetPath: Assets.svgsArrowDown,
+                size: SvgSizeType.medium,
+              ),
             ],
           ),
         );
@@ -37,7 +44,10 @@ class ChartTransactionTypeDropdown extends StatelessWidget {
 
   void _showTransactionTypeDropdown(BuildContext context) {
     const allowedTypes = [TransactionType.expense, TransactionType.income];
-    final options = List<String>.generate(allowedTypes.length, (index) => allowedTypes[index].displayName);
+    final options = List<String>.generate(
+      allowedTypes.length,
+      (index) => allowedTypes[index].displayName,
+    );
 
     AppDropdown.show<String>(
       context: context,
@@ -48,7 +58,10 @@ class ChartTransactionTypeDropdown extends StatelessWidget {
         child: Text(item, style: AppTextStyle.blackS14Medium),
       ),
       onItemSelected: (value) {
-        final selectedType = allowedTypes.firstWhere((t) => t.displayName == value, orElse: () => TransactionType.expense);
+        final selectedType = allowedTypes.firstWhere(
+          (t) => t.displayName == value,
+          orElse: () => TransactionType.expense,
+        );
         context.read<ChartBloc>().add(ChangeTransactionType(selectedType));
       },
     );

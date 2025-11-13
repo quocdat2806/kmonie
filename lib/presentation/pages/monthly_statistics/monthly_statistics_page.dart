@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kmonie/core/constants/constants.dart';
+import 'package:kmonie/core/enums/enums.dart';
 import 'package:kmonie/core/text_style/text_style.dart';
 import 'package:kmonie/core/utils/utils.dart';
 import 'package:kmonie/generated/generated.dart';
@@ -20,14 +21,16 @@ class MonthlyStatisticsPageChild extends StatefulWidget {
   const MonthlyStatisticsPageChild({super.key});
 
   @override
-  State<MonthlyStatisticsPageChild> createState() => _MonthlyStatisticsPageChildState();
+  State<MonthlyStatisticsPageChild> createState() =>
+      _MonthlyStatisticsPageChildState();
 }
 
-class _MonthlyStatisticsPageChildState extends State<MonthlyStatisticsPageChild> {
+class _MonthlyStatisticsPageChildState
+    extends State<MonthlyStatisticsPageChild> {
   final _dropdownKey = GlobalKey();
 
   String _getSelectedText(int? selectedYear) {
-    if (selectedYear == null) return 'Tất cả';
+    if (selectedYear == null) return AppTextConstants.all;
     return selectedYear.toString();
   }
 
@@ -40,7 +43,9 @@ class _MonthlyStatisticsPageChildState extends State<MonthlyStatisticsPageChild>
           BlocBuilder<MonthlyStatisticsBloc, MonthlyStatisticsState>(
             builder: (context, state) {
               return Container(
-                margin: const EdgeInsets.only(right: AppUIConstants.smallSpacing),
+                margin: const EdgeInsets.only(
+                  right: AppUIConstants.smallSpacing,
+                ),
                 child: GestureDetector(
                   key: _dropdownKey,
                   onTap: () {
@@ -50,11 +55,19 @@ class _MonthlyStatisticsPageChildState extends State<MonthlyStatisticsPageChild>
                       targetKey: _dropdownKey,
                       items: <int?>[null, ...state.availableYears],
                       itemBuilder: (year) => Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: AppUIConstants.defaultPadding, vertical: AppUIConstants.smallSpacing),
-                        child: Text(year == null ? 'Tất cả' : year.toString(), style: AppTextStyle.blackS14Medium),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: AppUIConstants.defaultPadding,
+                          vertical: AppUIConstants.smallSpacing,
+                        ),
+                        child: Text(
+                          year == null ? AppTextConstants.all : year.toString(),
+                          style: AppTextStyle.blackS14Medium,
+                        ),
                       ),
                       onItemSelected: (year) {
-                        context.read<MonthlyStatisticsBloc>().add(MonthlyStatisticsEvent.load(year: year));
+                        context.read<MonthlyStatisticsBloc>().add(
+                          MonthlyStatisticsEvent.load(year: year),
+                        );
                       },
                     );
                   },
@@ -63,7 +76,10 @@ class _MonthlyStatisticsPageChildState extends State<MonthlyStatisticsPageChild>
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text(_getSelectedText(state.selectedYear), style: AppTextStyle.blackS14Medium),
+                        Text(
+                          _getSelectedText(state.selectedYear),
+                          style: AppTextStyle.blackS14Medium,
+                        ),
                         const SizedBox(width: 4),
                         SvgUtils.icon(assetPath: Assets.svgsArrowDown),
                       ],
@@ -77,7 +93,7 @@ class _MonthlyStatisticsPageChildState extends State<MonthlyStatisticsPageChild>
       ),
       body: BlocBuilder<MonthlyStatisticsBloc, MonthlyStatisticsState>(
         builder: (context, state) {
-          if (state.isLoading) {
+          if (state.loadStatus==LoadStatus.loading) {
             return const SizedBox();
           }
 
@@ -87,49 +103,32 @@ class _MonthlyStatisticsPageChildState extends State<MonthlyStatisticsPageChild>
               children: [
                 Container(
                   color: AppColorConstants.primary,
-                  padding: const EdgeInsets.all(AppUIConstants.defaultPadding),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: Column(
-                          children: [
-                            Text('Thu nhập', style: AppTextStyle.blackS16Bold),
-                            Text(FormatUtils.formatCurrency(state.totalIncome.toInt()), style: AppTextStyle.blackS14Medium),
-                          ],
-                        ),
-                      ),
-                      Expanded(
-                        child: Column(
-                          children: [
-                            Text('Chi tiêu', style: AppTextStyle.blackS16Bold),
-                            Text(FormatUtils.formatCurrency(state.totalExpense.toInt()), style: AppTextStyle.blackS14Medium),
-                          ],
-                        ),
-                      ),
-                      Expanded(
-                        child: Column(
-                          children: [
-                            Text('Số dư', style: AppTextStyle.blackS16Bold),
-                            Text(FormatUtils.formatCurrency((state.totalIncome - state.totalExpense).toInt()), style: AppTextStyle.blackS14Medium),
-                          ],
-                        ),
-                      ),
-                    ],
+                  padding: const EdgeInsets.only(
+                    bottom: AppUIConstants.defaultPadding,
+                  ),
+                  child: SpendingSummarySection(
+                    expense: state.totalExpense.toInt(),
+                    income: state.totalIncome.toInt(),
+                    balance: state.totalBalance.toInt(),
                   ),
                 ),
-                // const SizedBox(height: 8),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: AppUIConstants.defaultPadding, vertical: AppUIConstants.smallSpacing),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppUIConstants.defaultPadding,
+                    vertical: AppUIConstants.smallPadding,
+                  ),
                   decoration: const BoxDecoration(
                     color: Colors.white,
-                    border: Border(bottom: BorderSide(color: AppColorConstants.greyWhite)),
+                    border: Border(
+                      bottom: BorderSide(color: AppColorConstants.greyWhite),
+                    ),
                   ),
                   child: Row(
                     children: [
-                      Expanded(child: Text('Tháng', style: AppTextStyle.blackS14Medium)),
-                      Expanded(child: Text('Chi', style: AppTextStyle.blackS14Medium)),
-                      Expanded(child: Text('Thu', style: AppTextStyle.blackS14Medium)),
-                      Expanded(child: Text('Số dư', style: AppTextStyle.blackS14Medium)),
+                      _buildRow(label: AppTextConstants.month),
+                      _buildRow(label: AppTextConstants.expense),
+                      _buildRow(label: AppTextConstants.income),
+                      _buildRow(label: AppTextConstants.accountBalanceLabel),
                     ],
                   ),
                 ),
@@ -143,8 +142,14 @@ class _MonthlyStatisticsPageChildState extends State<MonthlyStatisticsPageChild>
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: AppUIConstants.defaultPadding, vertical: 8),
-                            child: Text(year.toString(), style: AppTextStyle.blackS14Medium),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: AppUIConstants.defaultPadding,
+                              vertical: AppUIConstants.smallPadding,
+                            ),
+                            child: Text(
+                              year.toString(),
+                              style: AppTextStyle.blackS14Medium,
+                            ),
                           ),
                           ListView.builder(
                             shrinkWrap: true,
@@ -153,13 +158,27 @@ class _MonthlyStatisticsPageChildState extends State<MonthlyStatisticsPageChild>
                             itemBuilder: (_, monthIndex) {
                               final m = yearMonths[monthIndex];
                               return Container(
-                                padding: const EdgeInsets.symmetric(horizontal: AppUIConstants.defaultPadding, vertical: AppUIConstants.defaultSpacing),
+                                padding: const EdgeInsets.all(
+                                  AppUIConstants.defaultPadding,
+                                ),
                                 child: Row(
                                   children: [
-                                    Expanded(child: Text('Tháng ${m.month}', style: AppTextStyle.blackS14Medium)),
-                                    Expanded(child: Text(FormatUtils.formatCurrency(m.expense.toInt()), style: AppTextStyle.blackS14Medium)),
-                                    Expanded(child: Text(FormatUtils.formatCurrency(m.income.toInt()), style: AppTextStyle.blackS14Medium)),
-                                    Expanded(child: Text(FormatUtils.formatCurrency((m.income - m.expense).toInt()), style: AppTextStyle.blackS14Medium)),
+                                    _buildRow(label: 'Tháng ${m.month}'),
+                                    _buildRow(
+                                      label: FormatUtils.formatCurrency(
+                                        m.expense.toInt(),
+                                      ),
+                                    ),
+                                    _buildRow(
+                                      label: FormatUtils.formatCurrency(
+                                        m.income.toInt(),
+                                      ),
+                                    ),
+                                    _buildRow(
+                                      label: FormatUtils.formatCurrency(
+                                        (m.income - m.expense).toInt(),
+                                      ),
+                                    ),
                                   ],
                                 ),
                               );
@@ -176,5 +195,9 @@ class _MonthlyStatisticsPageChildState extends State<MonthlyStatisticsPageChild>
         },
       ),
     );
+  }
+
+  Widget _buildRow({required String label}) {
+    return Expanded(child: Text(label, style: AppTextStyle.blackS14Medium));
   }
 }

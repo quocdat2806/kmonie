@@ -11,6 +11,14 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'app.dart';
 import 'core/di/di.dart' as di;
 import 'core/services/services.dart';
+import 'package:workmanager/workmanager.dart';
+
+@pragma('vm:entry-point')
+void callbackDispatcher() {
+  Workmanager().executeTask((task, inputData) async {
+    return Future.value(true);
+  });
+}
 
 Future<void> main() async {
   return runZonedGuarded(
@@ -18,7 +26,10 @@ Future<void> main() async {
       WidgetsFlutterBinding.ensureInitialized();
       await initializeDateFormatting('vi_VN');
       await Firebase.initializeApp();
-      FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterFatalError;
+      Workmanager().initialize(callbackDispatcher);
+
+      FlutterError.onError =
+          FirebaseCrashlytics.instance.recordFlutterFatalError;
       PlatformDispatcher.instance.onError = (error, stack) {
         FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
         return true;

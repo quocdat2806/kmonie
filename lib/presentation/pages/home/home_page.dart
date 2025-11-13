@@ -40,7 +40,9 @@ class _HomePageChildState extends State<HomePageChild> {
     final position = _scrollController.position;
     if (position.maxScrollExtent == 0) return;
     final scrollPercent = position.pixels / position.maxScrollExtent;
-    if (scrollPercent >= AppConfigs.scrollThreshold && !position.outOfRange && !context.read<HomeBloc>().state.isLoadingMore) {
+    if (scrollPercent >= AppConfigs.scrollThreshold &&
+        !position.outOfRange &&
+        !context.read<HomeBloc>().state.isLoadingMore) {
       context.read<HomeBloc>().add(const HomeEvent.loadMore());
     }
   }
@@ -62,26 +64,50 @@ class _HomePageChildState extends State<HomePageChild> {
               context.read<HomeBloc>().add(HomeEvent.changeDate(selectedDate));
             },
           ),
-          Expanded(
-            child: BlocSelector<HomeBloc, HomeState, ({Map<String, List<Transaction>> groupedTransactions, Map<int, TransactionCategory> categoriesMap, Map<String, DailyTransactionTotal> dailyTotals})>(
-              selector: (state) => (groupedTransactions: state.groupedTransactions, categoriesMap: state.categoriesMap, dailyTotals: state.dailyTotals),
-              builder: (context, data) {
-                return TransactionList(
-                  scrollController: _scrollController,
-                  dailyTotalWidgetBuilder: (dateKey) {
-                    final daily = data.dailyTotals[dateKey];
-                    if (daily == null) return const SizedBox();
-                    return Text(FormatUtils.formatDailyTransactionTotal(daily.income, daily.expense, daily.transfer), style: AppTextStyle.blackS12);
-                  },
-                  emptyWidget: _buildEmptyState(),
-                  groupedTransactions: data.groupedTransactions,
-                  categoriesMap: data.categoriesMap,
-                );
-              },
-            ),
-          ),
+          _buildListTransaction(),
         ],
       ),
+    );
+  }
+
+  Widget _buildListTransaction() {
+    return Expanded(
+      child:
+          BlocSelector<
+            HomeBloc,
+            HomeState,
+            ({
+              Map<String, List<Transaction>> groupedTransactions,
+              Map<int, TransactionCategory> categoriesMap,
+              Map<String, DailyTransactionTotal> dailyTotals,
+            })
+          >(
+            selector: (state) => (
+              groupedTransactions: state.groupedTransactions,
+              categoriesMap: state.categoriesMap,
+              dailyTotals: state.dailyTotals,
+            ),
+            builder: (context, data) {
+              return TransactionList(
+                scrollController: _scrollController,
+                dailyTotalWidgetBuilder: (dateKey) {
+                  final daily = data.dailyTotals[dateKey];
+                  if (daily == null) return const SizedBox();
+                  return Text(
+                    FormatUtils.formatDailyTransactionTotal(
+                      daily.income,
+                      daily.expense,
+                      daily.transfer,
+                    ),
+                    style: AppTextStyle.blackS12,
+                  );
+                },
+                emptyWidget: _buildEmptyState(),
+                groupedTransactions: data.groupedTransactions,
+                categoriesMap: data.categoriesMap,
+              );
+            },
+          ),
     );
   }
 
@@ -92,7 +118,10 @@ class _HomePageChildState extends State<HomePageChild> {
         spacing: AppUIConstants.smallSpacing,
         children: [
           Text(AppTextConstants.emptyTransaction, style: AppTextStyle.greyS14),
-          Text(AppTextConstants.addTransactionAdvice, style: AppTextStyle.greyS12),
+          Text(
+            AppTextConstants.addTransactionAdvice,
+            style: AppTextStyle.greyS12,
+          ),
         ],
       ),
     );

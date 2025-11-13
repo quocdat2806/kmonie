@@ -39,6 +39,10 @@ class AppStreamEvent {
     triggerEvent(AppEvent.budgetChanged);
   }
 
+  void accountChanged() {
+    triggerEvent(AppEvent.accountChanged);
+  }
+
   void dispose() {
     _eventController.close();
   }
@@ -57,6 +61,10 @@ class AppStreamEvent {
 
   static void budgetChangedStatic() {
     _instance.budgetChanged();
+  }
+
+  static void accountChangedStatic() {
+    _instance.accountChanged();
   }
 
   static Stream<AppStreamData> get eventStreamStatic => _instance.eventStream;

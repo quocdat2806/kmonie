@@ -4,14 +4,13 @@ import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kmonie/core/enums/enums.dart';
-import 'package:kmonie/core/error/failure.dart';
+import 'package:kmonie/core/error/error.dart';
 import 'package:kmonie/core/streams/streams.dart';
 import 'package:kmonie/core/tools/tools.dart';
 import 'package:kmonie/core/utils/utils.dart';
 import 'package:kmonie/entities/entities.dart';
-import 'package:kmonie/presentation/widgets/chart_circular/chart_circular.dart';
 import 'package:kmonie/repositories/repositories.dart';
-
+import 'package:kmonie/args/args.dart';
 import 'chart_event.dart';
 import 'chart_state.dart';
 
@@ -20,7 +19,8 @@ class ChartBloc extends Bloc<ChartEvent, ChartState> {
   final TransactionCategoryRepository categoryRepository;
   StreamSubscription<AppStreamData>? _refreshSubscription;
 
-  ChartBloc(this.transactionRepository, this.categoryRepository) : super(const ChartState()) {
+  ChartBloc(this.transactionRepository, this.categoryRepository)
+    : super(const ChartState()) {
     on<LoadInitialData>(_onLoadInitialData);
     on<ChangeTransactionType>(_onChangeTransactionType);
     on<ChangePeriodType>(_onChangePeriodType);
@@ -44,13 +44,24 @@ class ChartBloc extends Bloc<ChartEvent, ChartState> {
     });
   }
 
-  Future<void> _onLoadInitialData(LoadInitialData event, Emitter<ChartState> emit) async {
+  Future<void> _onLoadInitialData(
+    LoadInitialData event,
+    Emitter<ChartState> emit,
+  ) async {
     emit(state.copyWith(loadStatus: LoadStatus.loading));
     try {
       final months = AppDateUtils.generateRecentMonths();
       final years = AppDateUtils.generateRecentYears();
 
-      emit(state.copyWith(months: months, years: years, selectedMonthIndex: months.length - 1, selectedYearIndex: years.length - 1, loadStatus: LoadStatus.success));
+      emit(
+        state.copyWith(
+          months: months,
+          years: years,
+          selectedMonthIndex: months.length - 1,
+          selectedYearIndex: years.length - 1,
+          loadStatus: LoadStatus.success,
+        ),
+      );
 
       add(const RefreshChart());
     } catch (e) {
@@ -59,23 +70,29 @@ class ChartBloc extends Bloc<ChartEvent, ChartState> {
     }
   }
 
-  void _onChangeTransactionType(ChangeTransactionType event, Emitter<ChartState> emit) {
+  void _onChangeTransactionType(
+    ChangeTransactionType event,
+    Emitter<ChartState> emit,
+  ) {
     if (state.selectedTransactionType == event.transactionType) return;
     emit(state.copyWith(selectedTransactionType: event.transactionType));
     add(const RefreshChart());
   }
 
   void _onChangePeriodType(ChangePeriodType event, Emitter<ChartState> emit) {
+    if (state.selectedPeriodType == event.periodType) return;
     emit(state.copyWith(selectedPeriodType: event.periodType));
     add(const RefreshChart());
   }
 
   void _onSelectMonth(SelectMonth event, Emitter<ChartState> emit) {
+    if (event.monthIndex == state.selectedMonthIndex) return;
     emit(state.copyWith(selectedMonthIndex: event.monthIndex));
     add(const RefreshChart());
   }
 
   void _onSelectYear(SelectYear event, Emitter<ChartState> emit) {
+    if (event.yearIndex == state.selectedYearIndex) return;
     emit(state.copyWith(selectedYearIndex: event.yearIndex));
     add(const RefreshChart());
   }
@@ -84,17 +101,32 @@ class ChartBloc extends Bloc<ChartEvent, ChartState> {
     final newMonths = _generateMoreMonths(state.months);
     final currentSelectedIndex = state.selectedMonthIndex;
 
-    emit(state.copyWith(months: newMonths, selectedMonthIndex: currentSelectedIndex + (newMonths.length - state.months.length)));
+    emit(
+      state.copyWith(
+        months: newMonths,
+        selectedMonthIndex:
+            currentSelectedIndex + (newMonths.length - state.months.length),
+      ),
+    );
   }
 
   void _onLoadMoreYears(LoadMoreYears event, Emitter<ChartState> emit) {
     final newYears = _generateMoreYears(state.years);
     final currentSelectedIndex = state.selectedYearIndex;
 
-    emit(state.copyWith(years: newYears, selectedYearIndex: currentSelectedIndex + (newYears.length - state.years.length)));
+    emit(
+      state.copyWith(
+        years: newYears,
+        selectedYearIndex:
+            currentSelectedIndex + (newYears.length - state.years.length),
+      ),
+    );
   }
 
-  Future<void> _onRefreshChart(RefreshChart event, Emitter<ChartState> emit) async {
+  Future<void> _onRefreshChart(
+    RefreshChart event,
+    Emitter<ChartState> emit,
+  ) async {
     if (state.loadStatus == LoadStatus.loading) return;
     emit(state.copyWith(loadStatus: LoadStatus.loading));
 
@@ -116,7 +148,12 @@ class ChartBloc extends Bloc<ChartEvent, ChartState> {
             },
             (categories) async {
               final chartData = _calculateChartData(transactions, categories);
-              emit(state.copyWith(chartData: chartData, loadStatus: LoadStatus.success));
+              emit(
+                state.copyWith(
+                  chartData: chartData,
+                  loadStatus: LoadStatus.success,
+                ),
+              );
             },
           );
         },
@@ -139,56 +176,92 @@ class ChartBloc extends Bloc<ChartEvent, ChartState> {
     return GradientHelper.generateCategoryColor(categoryId);
   }
 
-  Future<Either<Failure, List<Transaction>>> _getTransactionsForCurrentPeriod() async {
-    if (state.selectedPeriodType == IncomeType.month && state.selectedMonth != null) {
+  Future<Either<Failure, List<Transaction>>>
+  _getTransactionsForCurrentPeriod() async {
+    if (state.selectedPeriodType == IncomeType.month &&
+        state.selectedMonth != null) {
       final selectedMonth = state.selectedMonth!;
-      logger.d('ChartBloc: Loading transactions for month ${selectedMonth.year}/${selectedMonth.month}');
+      logger.d(
+        'ChartBloc: Loading transactions for month ${selectedMonth.year}/${selectedMonth.month}',
+      );
 
-      final result = await transactionRepository.getTransactionsInMonth(year: selectedMonth.year, month: selectedMonth.month, pageSize: 1000, pageIndex: 0);
+      final result = await transactionRepository.getTransactionsInMonth(
+        year: selectedMonth.year,
+        month: selectedMonth.month,
+        pageSize: 1000,
+        pageIndex: 0,
+      );
 
       return result.map((data) {
         return data.transactions;
       });
-    } else if (state.selectedPeriodType == IncomeType.year && state.selectedYear != null) {
-      return await transactionRepository.getTransactionsInYear(state.selectedYear!);
+    } else if (state.selectedPeriodType == IncomeType.year &&
+        state.selectedYear != null) {
+      return await transactionRepository.getTransactionsInYear(
+        state.selectedYear!,
+      );
     }
 
     return const Right([]);
   }
 
-  List<ChartData> _calculateChartData(List<Transaction> transactions, List<TransactionCategory> categories) {
+  List<ChartDataArgs> _calculateChartData(
+    List<Transaction> transactions,
+    List<TransactionCategory> categories,
+  ) {
     final categoriesMap = {for (final cat in categories) cat.id!: cat};
 
     final filteredTransactions = transactions.where((transaction) {
       final category = categoriesMap[transaction.transactionCategoryId];
-      final matches = category?.transactionType == state.selectedTransactionType;
+      final matches =
+          category?.transactionType == state.selectedTransactionType;
 
       if (transaction.transactionType == TransactionType.income.typeIndex) {
-        logger.d('ChartBloc: Income transaction - Category: ${category?.title}, Matches: $matches, TransactionType: ${transaction.transactionType}, CategoryType: ${category?.transactionType}');
+        logger.d(
+          'ChartBloc: Income transaction - Category: ${category?.title}, Matches: $matches, TransactionType: ${transaction.transactionType}, CategoryType: ${category?.transactionType}',
+        );
       }
 
       return matches;
     }).toList();
 
-    logger.d('ChartBloc: Filtered transactions: ${filteredTransactions.length}');
+    logger.d(
+      'ChartBloc: Filtered transactions: ${filteredTransactions.length}',
+    );
 
     final Map<int, double> categoryTotals = {};
     for (final transaction in filteredTransactions) {
       final catId = transaction.transactionCategoryId;
-      categoryTotals[catId] = (categoryTotals[catId] ?? 0) + transaction.amount.toDouble();
+      categoryTotals[catId] =
+          (categoryTotals[catId] ?? 0) + transaction.amount.toDouble();
     }
 
     logger.d('ChartBloc: Category totals: $categoryTotals');
 
-    final totalAmount = categoryTotals.values.fold(0.0, (sum, amount) => sum + amount);
-    final List<ChartData> chartData = [];
+    final totalAmount = categoryTotals.values.fold(
+      0.0,
+      (sum, amount) => sum + amount,
+    );
+    final List<ChartDataArgs> chartData = [];
 
     for (final entry in categoryTotals.entries) {
       final category = categoriesMap[entry.key];
-      final percentage = totalAmount > 0 ? (entry.value / totalAmount) * 100 : 0;
-      chartData.add(ChartData(category?.title ?? 'Khác', percentage.toDouble(), _getCategoryColor(category?.id ?? 0), gradientColors: category?.gradientColors, category: category));
+      final percentage = totalAmount > 0
+          ? (entry.value / totalAmount) * 100
+          : 0;
+      chartData.add(
+        ChartDataArgs(
+          category?.title ?? 'Khác',
+          percentage.toDouble(),
+          _getCategoryColor(category?.id ?? 0),
+          gradientColors: category?.gradientColors,
+          category: category,
+        ),
+      );
 
-      logger.d('ChartBloc: Chart data - Category: ${category?.title}, Amount: ${entry.value}, Percentage: ${percentage.toStringAsFixed(2)}%');
+      logger.d(
+        'ChartBloc: Chart data - Category: ${category?.title}, Amount: ${entry.value}, Percentage: ${percentage.toStringAsFixed(2)}%',
+      );
     }
 
     chartData.sort((a, b) => b.value.compareTo(a.value));

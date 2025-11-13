@@ -7,7 +7,7 @@ import 'package:kmonie/core/text_style/text_style.dart';
 import 'package:kmonie/core/tools/tools.dart';
 import 'package:kmonie/core/utils/utils.dart';
 import 'package:kmonie/entities/entities.dart';
-import 'package:kmonie/presentation/widgets/dialog/dialogs.dart';
+import 'package:kmonie/presentation/widgets/widgets.dart';
 
 class TransactionItem extends StatelessWidget {
   final Transaction transaction;
@@ -17,7 +17,13 @@ class TransactionItem extends StatelessWidget {
 
   final VoidCallback? onConfirmDelete;
 
-  const TransactionItem({super.key, required this.transaction, this.category, this.onEdit, this.onConfirmDelete});
+  const TransactionItem({
+    super.key,
+    required this.transaction,
+    this.category,
+    this.onEdit,
+    this.onConfirmDelete,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -56,19 +62,41 @@ class TransactionItem extends StatelessWidget {
         ],
       ),
       child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: AppUIConstants.smallPadding),
+        padding: const EdgeInsets.symmetric(
+          vertical: AppUIConstants.smallPadding,
+        ),
         child: Row(
           spacing: AppUIConstants.smallSpacing,
           children: [
             DecoratedBox(
-              decoration: BoxDecoration(shape: BoxShape.circle, gradient: GradientHelper.fromColorHexList(category!.gradientColors)),
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: GradientHelper.fromColorHexList(
+                  category!.gradientColors,
+                ),
+              ),
               child: Padding(
                 padding: const EdgeInsets.all(AppUIConstants.smallPadding),
-                child: SvgUtils.icon(assetPath: category!.pathAsset, size: SvgSizeType.medium),
+                child: SvgUtils.icon(
+                  assetPath: category!.pathAsset,
+                  size: SvgSizeType.medium,
+                ),
               ),
             ),
-            Expanded(child: Text(transaction.content.isNotEmpty ? transaction.content : category!.title, style: AppTextStyle.blackS14)),
-            Text(transaction.transactionType == TransactionType.expense.typeIndex ? '-${FormatUtils.formatCurrency(transaction.amount)}' : FormatUtils.formatCurrency(transaction.amount), style: AppTextStyle.blackS14),
+            Expanded(
+              child: Text(
+                transaction.content.isNotEmpty
+                    ? transaction.content
+                    : category!.title,
+                style: AppTextStyle.blackS14,
+              ),
+            ),
+            Text(
+              transaction.transactionType == TransactionType.expense.typeIndex
+                  ? '-${FormatUtils.formatCurrency(transaction.amount)}'
+                  : FormatUtils.formatCurrency(transaction.amount),
+              style: AppTextStyle.blackS14,
+            ),
           ],
         ),
       ),

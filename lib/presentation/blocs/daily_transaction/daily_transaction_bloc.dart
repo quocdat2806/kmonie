@@ -9,7 +9,8 @@ import 'package:kmonie/entities/entities.dart';
 import 'daily_transaction_event.dart';
 import 'daily_transaction_state.dart';
 
-class DailyTransactionBloc extends Bloc<DailyTransactionEvent, DailyTransactionState> {
+class DailyTransactionBloc
+    extends Bloc<DailyTransactionEvent, DailyTransactionState> {
   StreamSubscription<AppStreamData>? _streamSub;
 
   DailyTransactionBloc() : super(const DailyTransactionState()) {
@@ -21,19 +22,13 @@ class DailyTransactionBloc extends Bloc<DailyTransactionEvent, DailyTransactionS
     _streamSub = AppStreamEvent.eventStreamStatic.listen((data) {
       switch (data.event) {
         case AppEvent.insertTransaction:
-          if (data.payload is Transaction) {
-            add(InsertTransaction(data.payload as Transaction));
-          }
+          add(InsertTransaction(data.payload as Transaction));
           break;
         case AppEvent.updateTransaction:
-          if (data.payload is Transaction) {
-            add(UpdateTransaction(data.payload as Transaction));
-          }
+          add(UpdateTransaction(data.payload as Transaction));
           break;
         case AppEvent.deleteTransaction:
-          if (data.payload is int) {
-            add(DeleteTransaction(data.payload as int));
-          }
+          add(DeleteTransaction(data.payload as int));
           break;
         default:
           break;
@@ -41,17 +36,31 @@ class DailyTransactionBloc extends Bloc<DailyTransactionEvent, DailyTransactionS
     });
   }
 
-  void _onLoadDailyTransactions(LoadDailyTransactions event, Emitter<DailyTransactionState> emit) {
-    emit(state.copyWith(selectedDate: event.selectedDate, groupedTransactions: Map.of(event.groupedTransactions), categoriesMap: Map.of(event.categoriesMap)));
+  void _onLoadDailyTransactions(
+    LoadDailyTransactions event,
+    Emitter<DailyTransactionState> emit,
+  ) {
+    emit(
+      state.copyWith(
+        selectedDate: event.selectedDate,
+        groupedTransactions: Map.of(event.groupedTransactions),
+        categoriesMap: Map.of(event.categoriesMap),
+      ),
+    );
   }
 
-  void _onInsertTransaction(InsertTransaction event, Emitter<DailyTransactionState> emit) {
+  void _onInsertTransaction(
+    InsertTransaction event,
+    Emitter<DailyTransactionState> emit,
+  ) {
     final tx = event.transaction;
 
     if (!_isSameDate(tx.date, state.selectedDate!)) return;
 
     final dateKey = AppDateUtils.formatDateKey(tx.date);
-    final updatedGroupedTransactions = Map<String, List<Transaction>>.from(state.groupedTransactions);
+    final updatedGroupedTransactions = Map<String, List<Transaction>>.from(
+      state.groupedTransactions,
+    );
 
     final list = updatedGroupedTransactions[dateKey] ?? [];
     if (!list.any((e) => e.id == tx.id)) {
@@ -62,15 +71,22 @@ class DailyTransactionBloc extends Bloc<DailyTransactionEvent, DailyTransactionS
     emit(state.copyWith(groupedTransactions: updatedGroupedTransactions));
   }
 
-  void _onUpdateTransaction(UpdateTransaction event, Emitter<DailyTransactionState> emit) {
+  void _onUpdateTransaction(
+    UpdateTransaction event,
+    Emitter<DailyTransactionState> emit,
+  ) {
     final tx = event.transaction;
     final isSameDay = _isSameDate(tx.date, state.selectedDate!);
-    final updatedGroupedTransactions = Map<String, List<Transaction>>.from(state.groupedTransactions);
+    final updatedGroupedTransactions = Map<String, List<Transaction>>.from(
+      state.groupedTransactions,
+    );
 
     if (!isSameDay) {
       for (final key in updatedGroupedTransactions.keys) {
         final list = updatedGroupedTransactions[key]!;
-        updatedGroupedTransactions[key] = list.where((e) => e.id != tx.id).toList();
+        updatedGroupedTransactions[key] = list
+            .where((e) => e.id != tx.id)
+            .toList();
       }
       updatedGroupedTransactions.removeWhere((_, list) => list.isEmpty);
     } else {
@@ -88,9 +104,14 @@ class DailyTransactionBloc extends Bloc<DailyTransactionEvent, DailyTransactionS
     emit(state.copyWith(groupedTransactions: updatedGroupedTransactions));
   }
 
-  void _onDeleteTransaction(DeleteTransaction event, Emitter<DailyTransactionState> emit) {
+  void _onDeleteTransaction(
+    DeleteTransaction event,
+    Emitter<DailyTransactionState> emit,
+  ) {
     final transactionId = event.transactionId;
-    final updatedGroupedTransactions = Map<String, List<Transaction>>.from(state.groupedTransactions);
+    final updatedGroupedTransactions = Map<String, List<Transaction>>.from(
+      state.groupedTransactions,
+    );
 
     for (final key in updatedGroupedTransactions.keys) {
       final list = updatedGroupedTransactions[key]!;

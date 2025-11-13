@@ -18,7 +18,12 @@ class NetWorthCard extends StatelessWidget {
         final totalAccountBalance = state.totalAccountBalance;
         return Container(
           padding: const EdgeInsets.all(AppUIConstants.defaultPadding),
-          decoration: BoxDecoration(color: AppColorConstants.primary, borderRadius: BorderRadius.circular(AppUIConstants.defaultBorderRadius)),
+          decoration: BoxDecoration(
+            color: AppColorConstants.primary,
+            borderRadius: BorderRadius.circular(
+              AppUIConstants.defaultBorderRadius,
+            ),
+          ),
           child: Column(
             children: [
               Row(
@@ -28,18 +33,36 @@ class NetWorthCard extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       spacing: AppUIConstants.smallSpacing,
                       children: [
-                        Text(AppTextConstants.netWorth, style: AppTextStyle.greyS14Medium),
-                        Text(FormatUtils.formatCurrency(totalAccountBalance), style: AppTextStyle.blackS18Bold),
-                        Text(AppTextConstants.asset, style: AppTextStyle.greyS14Medium),
-                        Text(FormatUtils.formatCurrency(totalAccountBalance), style: AppTextStyle.blackS18Bold),
+                        Text(
+                          AppTextConstants.netWorth,
+                          style: AppTextStyle.greyS14Medium,
+                        ),
+                        Text(
+                          FormatUtils.formatCurrency(totalAccountBalance),
+                          style: AppTextStyle.blackS18Bold,
+                        ),
+                        Text(
+                          AppTextConstants.asset,
+                          style: AppTextStyle.greyS14Medium,
+                        ),
+                        Text(
+                          FormatUtils.formatCurrency(totalAccountBalance),
+                          style: AppTextStyle.blackS18Bold,
+                        ),
                       ],
                     ),
                   ),
                   Column(
                     spacing: AppUIConstants.smallSpacing,
                     children: [
-                      SvgUtils.icon(assetPath: Assets.svgsMoney, size: SvgSizeType.extraLarge),
-                      Text(AppTextConstants.debt, style: AppTextStyle.greyS14Medium),
+                      SvgUtils.icon(
+                        assetPath: Assets.svgsMoney,
+                        size: SvgSizeType.extraLarge,
+                      ),
+                      Text(
+                        AppTextConstants.debt,
+                        style: AppTextStyle.greyS14Medium,
+                      ),
                       Text('0', style: AppTextStyle.blackS18Bold),
                     ],
                   ),

@@ -4,7 +4,7 @@ import 'package:kmonie/core/enums/enums.dart';
 import 'package:kmonie/core/text_style/text_style.dart';
 import 'package:kmonie/core/tools/tools.dart';
 import 'package:kmonie/core/utils/utils.dart';
-import 'package:kmonie/entities/transaction_category/transaction_category.dart';
+import 'package:kmonie/entities/entities.dart';
 import 'package:kmonie/generated/generated.dart';
 
 class BudgetCategoryCard extends StatelessWidget {

@@ -1,7 +1,7 @@
 export 'accounts/account_item.dart';
 export 'accounts/accounts_list.dart';
 export 'app_bar/app_bar.dart';
-export 'budget_progress_indicator/budget_process_indicator.dart';
+export 'budget_monthly_section/budget_monthly_section.dart';
 export 'button/app_button.dart';
 export 'chart_circular/chart_circular.dart';
 export 'dialog/dialogs.dart';

@@ -3,8 +3,8 @@ import 'package:kmonie/core/constants/constants.dart';
 import 'package:kmonie/core/text_style/text_style.dart';
 import 'package:kmonie/core/utils/utils.dart';
 
-class BudgetProcessIndicator extends StatelessWidget {
-  const BudgetProcessIndicator({super.key, required this.moneyBudget, required this.totalSpent});
+class BudgetMonthlySection extends StatelessWidget {
+  const BudgetMonthlySection({super.key, required this.moneyBudget, required this.totalSpent});
 
   final int moneyBudget;
   final int totalSpent;

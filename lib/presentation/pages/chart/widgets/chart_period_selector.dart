@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kmonie/core/enums/enums.dart';
 import 'package:kmonie/core/utils/utils.dart';
-import 'package:kmonie/presentation/blocs/chart/chart.dart';
+import 'package:kmonie/presentation/blocs/blocs.dart';
 
 import 'chart_list_selector.dart';
 
@@ -15,9 +15,29 @@ class ChartPeriodSelector extends StatelessWidget {
       builder: (context, state) {
         switch (state.selectedPeriodType) {
           case IncomeType.month:
-            return ChartListSelector(itemCount: state.months.length, selectedIndex: state.selectedMonthIndex, labelBuilder: (actualIndex) => FormatUtils.formatCurrentMonthLabel(state.months[actualIndex]), onLoadMore: () => context.read<ChartBloc>().add(const LoadMoreMonths()), onSelect: (actualIndex) => context.read<ChartBloc>().add(SelectMonth(actualIndex)));
+            return ChartListSelector(
+              itemCount: state.months.length,
+              selectedIndex: state.selectedMonthIndex,
+              labelBuilder: (actualIndex) =>
+                  FormatUtils.formatCurrentMonthLabel(
+                    state.months[actualIndex],
+                  ),
+              onLoadMore: () =>
+                  context.read<ChartBloc>().add(const LoadMoreMonths()),
+              onSelect: (actualIndex) =>
+                  context.read<ChartBloc>().add(SelectMonth(actualIndex)),
+            );
           case IncomeType.year:
-            return ChartListSelector(itemCount: state.years.length, selectedIndex: state.selectedYearIndex, labelBuilder: (actualIndex) => FormatUtils.formatCurrentYearLabel(state.years[actualIndex]), onLoadMore: () => context.read<ChartBloc>().add(const LoadMoreYears()), onSelect: (actualIndex) => context.read<ChartBloc>().add(SelectYear(actualIndex)));
+            return ChartListSelector(
+              itemCount: state.years.length,
+              selectedIndex: state.selectedYearIndex,
+              labelBuilder: (actualIndex) =>
+                  FormatUtils.formatCurrentYearLabel(state.years[actualIndex]),
+              onLoadMore: () =>
+                  context.read<ChartBloc>().add(const LoadMoreYears()),
+              onSelect: (actualIndex) =>
+                  context.read<ChartBloc>().add(SelectYear(actualIndex)),
+            );
         }
       },
     );

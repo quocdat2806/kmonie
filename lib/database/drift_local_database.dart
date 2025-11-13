@@ -17,7 +17,11 @@ class TransactionsTb extends Table {
 
   DateTimeColumn get date => dateTime()();
 
-  IntColumn get transactionCategoryId => integer().references(TransactionCategoryTb, #id, onDelete: KeyAction.restrict)();
+  IntColumn get transactionCategoryId => integer().references(
+    TransactionCategoryTb,
+    #id,
+    onDelete: KeyAction.restrict,
+  )();
 
   TextColumn get content => text().withDefault(const Constant(''))();
 
@@ -34,14 +38,19 @@ class TransactionCategoryTb extends Table {
   TextColumn get pathAsset => text().withDefault(const Constant(''))();
 
   IntColumn get transactionType => integer().withDefault(const Constant(0))();
-  TextColumn get gradientColorsJson => text().withDefault(const Constant('[]'))();
+  TextColumn get gradientColorsJson =>
+      text().withDefault(const Constant('[]'))();
 }
 
 class BudgetsTb extends Table {
   IntColumn get id => integer().autoIncrement()();
   IntColumn get year => integer()();
   IntColumn get month => integer()();
-  IntColumn get transactionCategoryId => integer().references(TransactionCategoryTb, #id, onDelete: KeyAction.cascade)();
+  IntColumn get transactionCategoryId => integer().references(
+    TransactionCategoryTb,
+    #id,
+    onDelete: KeyAction.cascade,
+  )();
   IntColumn get amount => integer().withDefault(const Constant(0))();
   DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
   DateTimeColumn get updatedAt => dateTime().withDefault(currentDateAndTime)();
@@ -59,7 +68,8 @@ class MonthlyBudgetsTb extends Table {
 class AccountsTb extends Table {
   IntColumn get id => integer().autoIncrement()();
   TextColumn get name => text()();
-  TextColumn get type => text().withDefault(const Constant('Tiết kiệm'))();
+  TextColumn get type =>
+      text().withDefault(const Constant(AppTextConstants.saving))();
   IntColumn get amount => integer().withDefault(const Constant(0))();
   IntColumn get balance => integer().withDefault(const Constant(0))();
   TextColumn get accountNumber => text().withDefault(const Constant(''))();
@@ -69,7 +79,15 @@ class AccountsTb extends Table {
   DateTimeColumn get updatedAt => dateTime().withDefault(currentDateAndTime)();
 }
 
-@DriftDatabase(tables: [TransactionsTb, TransactionCategoryTb, BudgetsTb, MonthlyBudgetsTb, AccountsTb])
+@DriftDatabase(
+  tables: [
+    TransactionsTb,
+    TransactionCategoryTb,
+    BudgetsTb,
+    MonthlyBudgetsTb,
+    AccountsTb,
+  ],
+)
 class KMonieDatabase extends _$KMonieDatabase {
   static KMonieDatabase? _instance;
   static const _walBytesThreshold = 16 * 1024 * 1024;
@@ -84,7 +102,7 @@ class KMonieDatabase extends _$KMonieDatabase {
   KMonieDatabase._create() : super(_openConnection());
 
   @override
-  int get schemaVersion => 5;
+  int get schemaVersion => 1;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -101,16 +119,36 @@ class KMonieDatabase extends _$KMonieDatabase {
         'ON monthly_budgets_tb (year, month)',
       );
 
-      await customStatement('CREATE INDEX IF NOT EXISTS idx_transaction_content ON transactions_tb(content)');
-      await customStatement('CREATE INDEX IF NOT EXISTS idx_transaction_type ON transactions_tb(transaction_type)');
-      await customStatement('CREATE INDEX IF NOT EXISTS idx_transactions_date ON transactions_tb (date)');
-      await customStatement('CREATE INDEX IF NOT EXISTS idx_transactions_category ON transactions_tb (transaction_category_id)');
-      await customStatement('CREATE INDEX IF NOT EXISTS idx_category_type ON transaction_category_tb (transaction_type)');
-      await customStatement('CREATE INDEX IF NOT EXISTS idx_transaction_type_date ON transactions_tb (transaction_type, date DESC)');
-      await customStatement('CREATE UNIQUE INDEX IF NOT EXISTS idx_budget_unique_year_month ON budgets_tb (year, month, transaction_category_id)');
-      await customStatement('CREATE UNIQUE INDEX IF NOT EXISTS idx_monthly_budget_unique_year_month ON monthly_budgets_tb (year, month)');
-      await customStatement('CREATE INDEX IF NOT EXISTS idx_accounts_name ON accounts_tb (name)');
-      await customStatement('CREATE INDEX IF NOT EXISTS idx_accounts_type ON accounts_tb (type)');
+      await customStatement(
+        'CREATE INDEX IF NOT EXISTS idx_transaction_content ON transactions_tb(content)',
+      );
+      await customStatement(
+        'CREATE INDEX IF NOT EXISTS idx_transaction_type ON transactions_tb(transaction_type)',
+      );
+      await customStatement(
+        'CREATE INDEX IF NOT EXISTS idx_transactions_date ON transactions_tb (date)',
+      );
+      await customStatement(
+        'CREATE INDEX IF NOT EXISTS idx_transactions_category ON transactions_tb (transaction_category_id)',
+      );
+      await customStatement(
+        'CREATE INDEX IF NOT EXISTS idx_category_type ON transaction_category_tb (transaction_type)',
+      );
+      await customStatement(
+        'CREATE INDEX IF NOT EXISTS idx_transaction_type_date ON transactions_tb (transaction_type, date DESC)',
+      );
+      await customStatement(
+        'CREATE UNIQUE INDEX IF NOT EXISTS idx_budget_unique_year_month ON budgets_tb (year, month, transaction_category_id)',
+      );
+      await customStatement(
+        'CREATE UNIQUE INDEX IF NOT EXISTS idx_monthly_budget_unique_year_month ON monthly_budgets_tb (year, month)',
+      );
+      await customStatement(
+        'CREATE INDEX IF NOT EXISTS idx_accounts_name ON accounts_tb (name)',
+      );
+      await customStatement(
+        'CREATE INDEX IF NOT EXISTS idx_accounts_type ON accounts_tb (type)',
+      );
       await _seedSystemCategoriesIfEmpty();
     },
     onUpgrade: (migrator, from, to) async {},
@@ -134,7 +172,10 @@ class KMonieDatabase extends _$KMonieDatabase {
   }
 
   Future<String?> _getMeta(String key) async {
-    final row = await customSelect('SELECT value FROM $_metaTableName WHERE key = ?', variables: [Variable<String>(key)]).getSingleOrNull();
+    final row = await customSelect(
+      'SELECT value FROM $_metaTableName WHERE key = ?',
+      variables: [Variable<String>(key)],
+    ).getSingleOrNull();
     return row?.data['value'] as String?;
   }
 
@@ -177,7 +218,8 @@ class KMonieDatabase extends _$KMonieDatabase {
     final walSize = await _walFileSizeBytes();
     final last = await _lastMaintainAt();
     final now = DateTime.now().toUtc();
-    final needByTime = last == null || now.difference(last).inDays >= _maintenanceIntervalDays;
+    final needByTime =
+        last == null || now.difference(last).inDays >= _maintenanceIntervalDays;
     final needByWal = walSize >= _walBytesThreshold;
 
     if (!needByTime && !needByWal) return;
@@ -188,7 +230,8 @@ class KMonieDatabase extends _$KMonieDatabase {
       if (freePages > 0) {
         await customStatement('PRAGMA incremental_vacuum($freePages);');
       }
-      if (walSize > 64 * 1024 * 1024 || (needByTime && now.difference(last ?? now).inDays >= 90)) {
+      if (walSize > 64 * 1024 * 1024 ||
+          (needByTime && now.difference(last ?? now).inDays >= 90)) {
         await customStatement('VACUUM;');
         await customStatement('PRAGMA wal_checkpoint(TRUNCATE);');
       }
@@ -218,7 +261,9 @@ class KMonieDatabase extends _$KMonieDatabase {
   }
 
   Future<void> _seedSystemCategoriesIfEmpty() async {
-    final countRow = await customSelect('SELECT COUNT(*) AS c FROM transaction_category_tb').getSingle();
+    final countRow = await customSelect(
+      'SELECT COUNT(*) AS c FROM transaction_category_tb',
+    ).getSingle();
     final c = (countRow.data['c'] as int?) ?? 0;
     if (c > 0) return;
     final all = TransactionCategoryConstants.transactionCategorySystem;
@@ -227,7 +272,16 @@ class KMonieDatabase extends _$KMonieDatabase {
         for (final cat in all) {
           b.insert(
             transactionCategoryTb,
-            TransactionCategoryTbCompanion.insert(title: cat.title, pathAsset: Value(cat.pathAsset), transactionType: Value(cat.transactionType.typeIndex), gradientColorsJson: Value(cat.gradientColors.isEmpty ? '[]' : jsonEncode(cat.gradientColors))),
+            TransactionCategoryTbCompanion.insert(
+              title: cat.title,
+              pathAsset: Value(cat.pathAsset),
+              transactionType: Value(cat.transactionType.typeIndex),
+              gradientColorsJson: Value(
+                cat.gradientColors.isEmpty
+                    ? '[]'
+                    : jsonEncode(cat.gradientColors),
+              ),
+            ),
             mode: InsertMode.insertOrIgnore,
           );
         }

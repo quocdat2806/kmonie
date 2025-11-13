@@ -7,7 +7,7 @@ import 'package:kmonie/core/text_style/text_style.dart';
 import 'package:kmonie/presentation/blocs/blocs.dart';
 import 'package:kmonie/presentation/widgets/widgets.dart';
 
-import 'widgets/monthly_statistics_card.dart';
+import 'widgets/monthly_statistics_report.dart';
 import 'widgets/net_worth_card.dart';
 import 'widgets/report_tab_bar.dart';
 
@@ -41,24 +41,33 @@ class _ReportPageChildState extends State<ReportPageChild> {
               child: Column(
                 spacing: AppUIConstants.defaultSpacing,
                 children: [
-                  Text(AppTextConstants.report, style: AppTextStyle.blackS18Bold),
+                  Text(
+                    AppTextConstants.report,
+                    style: AppTextStyle.blackS18Bold,
+                  ),
                   const ReportTabBar(),
                 ],
               ),
             ),
           ),
           BlocBuilder<ReportBloc, ReportState>(
-            buildWhen: (prev, current) => prev.selectedTabIndex != current.selectedTabIndex || prev.monthlyBudget != current.monthlyBudget || prev.totalExpense != current.totalExpense,
+            buildWhen: (prev, current) =>
+                prev.selectedTabIndex != current.selectedTabIndex ||
+                prev.monthlyBudget != current.monthlyBudget ||
+                prev.totalExpense != current.totalExpense ||
+                prev.accounts != current.accounts,
             builder: (context, state) {
               if (state.selectedTabIndex == ReportType.account.typeIndex) {
                 return Expanded(
                   child: Padding(
-                    padding: const EdgeInsets.all(AppUIConstants.defaultPadding),
+                    padding: const EdgeInsets.all(
+                      AppUIConstants.defaultPadding,
+                    ),
                     child: Column(
                       children: [
                         const NetWorthCard(),
                         _buildAccountActionButtons(),
-                        const Expanded(child: AccountsList()),
+                        Expanded(child: AccountsList(accounts: state.accounts)),
                       ],
                     ),
                   ),
@@ -66,40 +75,48 @@ class _ReportPageChildState extends State<ReportPageChild> {
               }
               final monthlyBudget = state.monthlyBudget;
               final totalSpent = state.totalExpense;
-              return InkWell(
-                splashColor: Colors.transparent,
-                onTap: () {
-                  AppNavigator(context: context).push(RouterPath.budget);
-                },
-                child: Padding(
-                  padding: const EdgeInsets.all(AppUIConstants.defaultPadding),
-                  child: Column(
-                    spacing: AppUIConstants.defaultSpacing,
-                    children: [
-                      const MonthlyStatisticsCard(),
-                      Container(
-                        padding: const EdgeInsets.all(AppUIConstants.defaultPadding),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(AppUIConstants.defaultBorderRadius),
-                          boxShadow: [BoxShadow(color: Colors.grey.withValues(alpha: 0.4), spreadRadius: 1, blurRadius: 4, offset: const Offset(0, 2))],
+              return Padding(
+                padding: const EdgeInsets.all(AppUIConstants.defaultPadding),
+                child: Column(
+                  spacing: AppUIConstants.defaultSpacing,
+                  children: [
+                    const MonthlyStatisticsReport(),
+                    InkWell(
+                      splashColor: Colors.transparent,
+                      onTap: () {
+                        AppNavigator(context: context).push(RouterPath.budget);
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.all(
+                          AppUIConstants.defaultPadding,
                         ),
+                        decoration: AppUIConstants.defaultShadow(),
                         child: Column(
                           spacing: AppUIConstants.defaultSpacing,
                           children: [
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Text(AppTextConstants.monthlyBudget, style: AppTextStyle.blackS14Bold),
-                                const Icon(Icons.arrow_forward_ios, size: AppUIConstants.smallIconSize, color: AppColorConstants.grey),
+                                Text(
+                                  AppTextConstants.monthlyBudget,
+                                  style: AppTextStyle.blackS14Bold,
+                                ),
+                                const Icon(
+                                  Icons.arrow_forward_ios,
+                                  size: AppUIConstants.smallIconSize,
+                                  color: AppColorConstants.grey,
+                                ),
                               ],
                             ),
-                            BudgetProcessIndicator(moneyBudget: monthlyBudget.toInt(), totalSpent: totalSpent.toInt()),
+                            BudgetMonthlySection(
+                              moneyBudget: monthlyBudget.toInt(),
+                              totalSpent: totalSpent.toInt(),
+                            ),
                           ],
                         ),
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               );
             },
@@ -133,7 +150,14 @@ class _ReportPageChildState extends State<ReportPageChild> {
     );
   }
 
-  Widget _buildActionButton({required String text, required VoidCallback onTap}) {
-    return AppButton(text: text, onPressed: onTap, backgroundColor: Colors.transparent);
+  Widget _buildActionButton({
+    required String text,
+    required VoidCallback onTap,
+  }) {
+    return AppButton(
+      text: text,
+      onPressed: onTap,
+      backgroundColor: Colors.transparent,
+    );
   }
 }

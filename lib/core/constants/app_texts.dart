@@ -30,16 +30,21 @@ class AppTextConstants {
   static const String type = 'Kiểu';
 
   static const String balance = 'Số dư';
-  static const String overBudgetWarning = 'Bạn đã vượt quá ngân sách hàng tháng ! Bạn có chắc chắn muốn thêm giao dịch này?';
+  static const String overBudgetWarning =
+      'Bạn đã vượt quá ngân sách hàng tháng ! Bạn có chắc chắn muốn thêm giao dịch này?';
 
+  static const String emptyTransactionCurrentDay =
+      'Chưa có giao dịch trong ngày này';
   static const String detailTransaction = 'Chi tiết giao dịch';
   static const String date = 'Ngày';
-  static const String transactionAddedSuccess = 'Giao dịch đã được thêm thành công';
+  static const String transactionAddedSuccess =
+      'Giao dịch đã được thêm thành công';
   static const String requiredField = 'Trường này là bắt buộc';
   static const String invalidAmount = 'Số tiền không hợp lệ';
   static const String invalidDate = 'Ngày không hợp lệ';
   static const String emptyTransaction = 'Chưa có giao dịch nào';
-  static const String addTransactionAdvice = 'Hãy thêm giao dịch đầu tiên của bạn';
+  static const String addTransactionAdvice =
+      'Hãy thêm giao dịch đầu tiên của bạn';
   static const String noData = 'Không có dữ liệu để hiển thị';
   static const String monthlyStatistics = 'Thống kê hàng tháng';
   static const String netWorth = 'Giá trị ròng';
@@ -50,11 +55,11 @@ class AppTextConstants {
   static const String accountTypeLabel = 'Loại';
   static const String accountNameLabel = 'Tên TK';
   static const String accountBalanceLabel = 'Số dư';
+  static const String saving = 'Tiết kiệm';
 
   static const String all = 'Tất cả';
   static const String search = 'Tìm kiếm';
   static const String noResultsFound = 'Không có kết quả';
-
   static const String shopping = 'Mua sắm';
   static const String food = 'Đồ ăn';
   static const String telephone = 'Điện thoại';
@@ -104,4 +109,5 @@ class AppTextConstants {
   static const String budget = 'Ngân sách';
   static const String spent = 'Chi tiêu';
   static const String overBudget = 'Vượt quá';
+  static const String settingBudget = '+ Cài đặt ngân sách';
 }

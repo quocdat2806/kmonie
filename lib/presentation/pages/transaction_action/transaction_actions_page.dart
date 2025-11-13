@@ -5,25 +5,12 @@ import 'package:kmonie/core/constants/constants.dart';
 import 'package:kmonie/core/enums/enums.dart';
 import 'package:kmonie/core/navigation/navigation.dart';
 import 'package:kmonie/core/text_style/text_style.dart';
-import 'package:kmonie/entities/entities.dart';
 import 'package:kmonie/presentation/blocs/blocs.dart';
 import 'package:kmonie/presentation/widgets/widgets.dart';
-
+import 'package:kmonie/args/args.dart';
 import 'widgets/transaction_actions_input_header.dart';
 import 'widgets/transaction_category_grid.dart';
 import 'widgets/transaction_tab_bar.dart';
-
-class TransactionActionsPageArgs {
-  final ActionsMode mode;
-  final Transaction? transaction;
-  final DateTime? selectedDate;
-
-  TransactionActionsPageArgs({
-    this.mode = ActionsMode.add,
-    this.transaction,
-    this.selectedDate,
-  });
-}
 
 class TransactionActionsPage extends StatelessWidget {
   final TransactionActionsPageArgs? args;
@@ -98,9 +85,9 @@ class _TransactionActionsPageChildState
 
     if (keyboardHeight > 0) {
       _animationController.forward();
-    } else {
-      _animationController.reverse();
+      return;
     }
+    _animationController.reverse();
   }
 
   @override
@@ -116,7 +103,6 @@ class _TransactionActionsPageChildState
             AppNavigator(context: context).pop();
           }
         }
-
         if (state.selectDateState == SelectDateState.showDatePicker) {
           _showDatePicker(context);
           context.read<TransactionActionsBloc>().add(
@@ -143,7 +129,7 @@ class _TransactionActionsPageChildState
               final targetPosition = gridHeight / 2;
               _scrollController.animateTo(
                 targetPosition,
-                duration: const Duration(milliseconds: 300),
+                duration: const Duration(milliseconds: 350),
                 curve: Curves.easeOut,
               );
               context.read<TransactionActionsBloc>().add(
@@ -177,7 +163,7 @@ class _TransactionActionsPageChildState
                             _buildAppBar(),
                             const TransactionActionsTabBar(),
                             const SizedBox(
-                              height: AppUIConstants.defaultPadding,
+                              height: AppUIConstants.defaultSpacing,
                             ),
                           ],
                         ),
@@ -224,7 +210,7 @@ class _TransactionActionsPageChildState
                                                   _scrollController.animateTo(
                                                     targetPosition,
                                                     duration: const Duration(
-                                                      milliseconds: 300,
+                                                      milliseconds: 350,
                                                     ),
                                                     curve: Curves.easeOut,
                                                   );

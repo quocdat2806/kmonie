@@ -2,16 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:kmonie/core/constants/constants.dart';
-import 'package:kmonie/core/di/di.dart';
-import 'package:kmonie/core/navigation/router_path.dart';
-import 'package:kmonie/repositories/repositories.dart';
+import 'package:kmonie/core/navigation/navigation.dart';
 import 'package:kmonie/core/text_style/text_style.dart';
-import 'package:kmonie/presentation/blocs/budget/budget_bloc.dart';
-import 'package:kmonie/presentation/blocs/budget/budget_event.dart';
-import 'package:kmonie/presentation/blocs/budget/budget_state.dart';
+import 'package:kmonie/presentation/blocs/blocs.dart';
+import 'package:kmonie/entities/entities.dart';
 import 'package:kmonie/presentation/widgets/widgets.dart';
-
-import '../../../entities/transaction_category/transaction_category.dart';
+import 'package:kmonie/args/args.dart';
 import 'widgets/budget_category_card.dart';
 
 class BudgetPage extends StatelessWidget {
@@ -19,32 +15,21 @@ class BudgetPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final now = DateTime(DateTime.now().year, DateTime.now().month);
-    return BlocProvider<BudgetBloc>(
-      create: (_) => BudgetBloc(sl<TransactionCategoryRepository>(), sl<BudgetRepository>())..add(BudgetEvent.init(period: now)),
-      child: const _BudgetPageChild(),
-    );
+    return const BudgetPageChild();
   }
 }
 
-class _BudgetPageChild extends StatefulWidget {
-  const _BudgetPageChild();
+class BudgetPageChild extends StatefulWidget {
+  const BudgetPageChild({super.key});
 
   @override
-  State<_BudgetPageChild> createState() => _BudgetPageChildState();
+  State<BudgetPageChild> createState() => _BudgetPageChildState();
 }
 
-class _BudgetPageChildState extends State<_BudgetPageChild> {
-  @override
-  void initState() {
-    super.initState();
-    final now = DateTime(DateTime.now().year, DateTime.now().month);
-    context.read<BudgetBloc>().add(BudgetEvent.setSelectedPeriod(period: now));
-  }
-
+class _BudgetPageChildState extends State<BudgetPageChild> {
   void _showMonthPicker() async {
     final bloc = context.read<BudgetBloc>();
-    final sp = bloc.state.selectedPeriod ?? DateTime.now();
+    final sp = bloc.state.period ?? DateTime.now();
 
     final result = await showDialog<Map<String, int>>(
       context: context,
@@ -55,7 +40,6 @@ class _BudgetPageChildState extends State<_BudgetPageChild> {
 
     if (result != null && mounted) {
       final newP = DateTime(result['year']!, result['month']!);
-      context.read<BudgetBloc>().add(BudgetEvent.setSelectedPeriod(period: newP));
       context.read<BudgetBloc>().add(BudgetEvent.changePeriod(period: newP));
     }
   }
@@ -65,28 +49,8 @@ class _BudgetPageChildState extends State<_BudgetPageChild> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: CustomAppBar(
-        title: 'Ngân sách',
-        actions: [
-          GestureDetector(
-            onTap: _showMonthPicker,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: AppUIConstants.defaultPadding),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Builder(
-                    builder: (context) {
-                      final sp = context.select((BudgetBloc b) => b.state.selectedPeriod ?? DateTime.now());
-                      return Text('thg ${sp.month} ${sp.year}', style: AppTextStyle.blackS14Medium);
-                    },
-                  ),
-                  const SizedBox(width: 4),
-                  const Icon(Icons.keyboard_arrow_down, color: AppColorConstants.black, size: 16),
-                ],
-              ),
-            ),
-          ),
-        ],
+        title: AppTextConstants.budget,
+        actions: [_buildAppBarActions()],
       ),
       body: SafeArea(
         child: Stack(
@@ -94,24 +58,44 @@ class _BudgetPageChildState extends State<_BudgetPageChild> {
             Positioned.fill(
               child: BlocBuilder<BudgetBloc, BudgetState>(
                 builder: (context, state) {
-                  return SingleChildScrollView(
-                    padding: const EdgeInsets.all(AppUIConstants.defaultPadding),
-                    child: Column(children: [...state.expenseCategories.where((TransactionCategory c) => (state.categoryBudgets[c.id!] ?? 0) > 0).map((TransactionCategory c) => _buildCategoryCard(c, state))]),
+                  final List<TransactionCategory> listBudget = state
+                      .expenseCategories
+                      .where((c) => (state.categoryBudgets[c.id!] ?? 0) > 0)
+                      .toList();
+                  return ListView.builder(
+                    itemCount: listBudget.length,
+                    itemBuilder: (context, index) {
+                      final category = listBudget[index];
+                      final budget = state.categoryBudgets[category.id!] ?? 0;
+                      final spent = state.categorySpent[category.id!] ?? 0;
+                      return _buildCategoryCard(category, budget, spent);
+                    },
                   );
                 },
               ),
             ),
-            Positioned(
-              bottom: 20,
-              left: AppUIConstants.defaultPadding,
-              right: AppUIConstants.defaultPadding,
-              child: AppButton(
-                text: '+ Cài đặt ngân sách',
-                onPressed: () {
-                  context.push(RouterPath.addBudget);
-                },
-                fontWeight: FontWeight.bold,
-              ),
+            BlocBuilder<BudgetBloc, BudgetState>(
+              builder: (context, state) {
+                return Positioned(
+                  bottom: AppUIConstants.defaultPadding,
+                  left: AppUIConstants.defaultPadding,
+                  right: AppUIConstants.defaultPadding,
+                  child: AppButton(
+                    text: AppTextConstants.settingBudget,
+                    onPressed: () {
+                      context.push(
+                        RouterPath.addBudget,
+                        extra: AddBudgetArgs(
+                          monthlyBudget: state.monthlyBudget,
+                          categoryBudgets: state.categoryBudgets,
+                          expenseCategories: state.expenseCategories,
+                        ),
+                      );
+                    },
+                    fontWeight: FontWeight.bold,
+                  ),
+                );
+              },
             ),
           ],
         ),
@@ -119,9 +103,45 @@ class _BudgetPageChildState extends State<_BudgetPageChild> {
     );
   }
 
-  Widget _buildCategoryCard(TransactionCategory category, BudgetState state) {
-    final budget = state.categoryBudgets[category.id!] ?? 0;
-    final spent = state.categorySpent[category.id!] ?? 0;
+  Widget _buildAppBarActions() {
+    return InkWell(
+      splashColor: Colors.transparent,
+      onTap: _showMonthPicker,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppUIConstants.defaultPadding,
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Builder(
+              builder: (context) {
+                final sp = context.select(
+                  (BudgetBloc b) => b.state.period ?? DateTime.now(),
+                );
+                return Text(
+                  '${AppTextConstants.month} ${sp.month} ${sp.year}',
+                  style: AppTextStyle.blackS14Medium,
+                );
+              },
+            ),
+            const SizedBox(width: 4),
+            const Icon(
+              Icons.keyboard_arrow_down,
+              color: AppColorConstants.black,
+              size: 16,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCategoryCard(
+    TransactionCategory category,
+    int budget,
+    int spent,
+  ) {
     return BudgetCategoryCard(category: category, budget: budget, spent: spent);
   }
 }

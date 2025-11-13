@@ -32,7 +32,7 @@ class BudgetMonthlyCard extends StatelessWidget {
             ],
           ),
           const SizedBox(height: AppUIConstants.defaultSpacing),
-          BudgetProcessIndicator(moneyBudget: monthlyBudget, totalSpent: totalSpent),
+          BudgetMonthlySection(moneyBudget: monthlyBudget, totalSpent: totalSpent),
         ],
       ),
     );

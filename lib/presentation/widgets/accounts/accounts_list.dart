@@ -15,19 +15,22 @@ class AccountsList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (accounts == null || accounts!.isEmpty) {
+      return const SizedBox.shrink();
+    }
     return Column(
       spacing: AppUIConstants.defaultSpacing,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         if (showTitle) Text(title ?? AppTextConstants.accountList, style: AppTextStyle.blackS14Bold),
-        ListView.builder(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          itemCount: accounts!.length,
-          itemBuilder: (context, index) {
-            final account = accounts![index];
-            return AccountItem(account: account, onTap: onAccountTap != null ? () => onAccountTap!(account) : null, showPinned: true);
-          },
+        Expanded(
+          child: ListView.builder(
+            itemCount: accounts!.length,
+            itemBuilder: (context, index) {
+              final account = accounts![index];
+              return AccountItem(account: account, onTap: onAccountTap != null ? () => onAccountTap!(account) : null, showPinned: true);
+            },
+          ),
         ),
       ],
     );

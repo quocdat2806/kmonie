@@ -2,7 +2,6 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 
 import 'package:kmonie/core/enums/enums.dart';
 import 'package:kmonie/entities/entities.dart';
-import 'package:kmonie/core/services/transaction_category.dart';
 
 part 'transaction_actions_state.freezed.dart';
 

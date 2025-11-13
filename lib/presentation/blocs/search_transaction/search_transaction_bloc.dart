@@ -30,16 +30,12 @@ class SearchTransactionBloc
     _subscription = AppStreamEvent.eventStreamStatic.listen((data) {
       switch (data.event) {
         case AppEvent.updateTransaction:
-          if (data.payload is Transaction) {
-            final tx = data.payload as Transaction;
-            add(SearchTransactionUpdateTransaction(tx));
-          }
+          final tx = data.payload as Transaction;
+          add(SearchTransactionUpdateTransaction(tx));
           break;
         case AppEvent.deleteTransaction:
-          if (data.payload is int) {
-            final id = data.payload as int;
-            add(SearchTransactionDeleteTransaction(id));
-          }
+          final id = data.payload as int;
+          add(SearchTransactionDeleteTransaction(id));
           break;
         default:
           break;
@@ -66,6 +62,7 @@ class SearchTransactionBloc
     SearchTransactionReset event,
     Emitter<SearchTransactionState> emit,
   ) {
+    if (event.transactionType == state.selectedType) return;
     emit(
       state.copyWith(
         query: '',
@@ -87,8 +84,6 @@ class SearchTransactionBloc
       transactionType: state.selectedType,
     );
 
-    if (emit.isDone) return;
-
     final result = searchResult.fold((failure) {
       logger.e(
         'SearchTransactionBloc: error when applying search: ${failure.message}',
@@ -96,39 +91,31 @@ class SearchTransactionBloc
       return const <Transaction>[];
     }, (data) => data);
 
-    if (emit.isDone) return;
-
     final grouped = transactionRepository.groupByDate(result);
     final categoriesResult = await categoryRepository.getAll();
-
-    if (emit.isDone) return;
 
     categoriesResult.fold(
       (failure) {
         logger.e(
           'SearchTransactionBloc: error getting categories: ${failure.message}',
         );
-        if (!emit.isDone) {
-          emit(
-            state.copyWith(
-              results: result,
-              groupedResults: grouped,
-              categoriesMap: {},
-            ),
-          );
-        }
+        emit(
+          state.copyWith(
+            results: result,
+            groupedResults: grouped,
+            categoriesMap: {},
+          ),
+        );
       },
       (allCategories) {
         final categoriesMap = {for (final cat in allCategories) cat.id!: cat};
-        if (!emit.isDone) {
-          emit(
-            state.copyWith(
-              results: result,
-              groupedResults: grouped,
-              categoriesMap: categoriesMap,
-            ),
-          );
-        }
+        emit(
+          state.copyWith(
+            results: result,
+            groupedResults: grouped,
+            categoriesMap: categoriesMap,
+          ),
+        );
       },
     );
   }
@@ -176,8 +163,9 @@ class SearchTransactionBloc
       if (!contentMatch) return false;
     }
     if (state.selectedType != null) {
-      if (transaction.transactionType != state.selectedType!.typeIndex)
+      if (transaction.transactionType != state.selectedType!.typeIndex) {
         return false;
+      }
     }
 
     return true;

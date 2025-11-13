@@ -15,6 +15,7 @@ class ReportBloc extends Bloc<ReportEvent, ReportState> {
   final TransactionCategoryRepository categoryRepository;
   final AccountRepository accountRepository;
   StreamSubscription<AppStreamData>? _budgetSub;
+  StreamSubscription<AppStreamData>? _transactionSub;
 
   ReportBloc(this.budgetRepository, this.transactionRepository, this.categoryRepository, this.accountRepository) : super(const ReportState()) {
     on<ReportInit>(_onInit);
@@ -26,16 +27,51 @@ class ReportBloc extends Bloc<ReportEvent, ReportState> {
       if (data.event == AppEvent.budgetChanged) {
         final p = state.period ?? DateTime.now();
         add(ReportChangePeriod(period: DateTime(p.year, p.month)));
+      } else if (data.event == AppEvent.accountChanged) {
+        final p = state.period ?? DateTime.now();
+        add(ReportChangePeriod(period: DateTime(p.year, p.month)));
       }
     });
+
+    _transactionSub = AppStreamEvent.eventStreamStatic.listen((data) {
+      final currentPeriod = state.period ?? DateTime.now();
+      switch (data.event) {
+        case AppEvent.insertTransaction:
+          if (data.payload is Transaction) {
+            final tx = data.payload as Transaction;
+            if (_isTransactionInPeriod(tx, currentPeriod)) {
+              add(ReportChangePeriod(period: DateTime(currentPeriod.year, currentPeriod.month)));
+            }
+          }
+          break;
+        case AppEvent.updateTransaction:
+          if (data.payload is Transaction) {
+            final tx = data.payload as Transaction;
+            if (_isTransactionInPeriod(tx, currentPeriod)) {
+              add(ReportChangePeriod(period: DateTime(currentPeriod.year, currentPeriod.month)));
+            }
+          }
+          break;
+        case AppEvent.deleteTransaction:
+          add(ReportChangePeriod(period: DateTime(currentPeriod.year, currentPeriod.month)));
+          break;
+        default:
+          break;
+      }
+    });
+
     add(ReportEvent.init(period: DateTime.now()));
+  }
+
+  bool _isTransactionInPeriod(Transaction transaction, DateTime period) {
+    return AppDateUtils.isDateInCurrentMonth(transaction.date, period);
   }
 
   Future<void> _load(DateTime period, Emitter<ReportState> emit) async {
     final p = DateTime(period.year, period.month);
     final range = AppDateUtils.monthRangeUtc(p.year, p.month);
 
-    emit(state.copyWith(isLoading: true, period: p));
+    emit(state.copyWith(loadStatus: LoadStatus.loading, period: p));
 
     try {
       final budgetsResult = await budgetRepository.getBudgetsForMonth(p.year, p.month);
@@ -65,10 +101,10 @@ class ReportBloc extends Bloc<ReportEvent, ReportState> {
       final accountsResult = await accountRepository.getAllAccounts();
       final accounts = accountsResult.fold((failure) => <Account>[], (accounts) => accounts);
 
-      emit(state.copyWith(isLoading: false, budgetsByCategory: budgets, spentByCategory: spent, monthlyBudget: monthlyBudget, transactions: inMonth, accounts: accounts, message: null));
+      emit(state.copyWith(loadStatus: LoadStatus.success, budgetsByCategory: budgets, spentByCategory: spent, monthlyBudget: monthlyBudget, transactions: inMonth, accounts: accounts, message: null));
     } catch (e) {
       logger.e('ReportBloc: Error loading data: $e');
-      emit(state.copyWith(isLoading: false, message: 'Lỗi tải báo cáo: $e'));
+      emit(state.copyWith(loadStatus: LoadStatus.error, message: 'Lỗi tải báo cáo: $e'));
     }
   }
 
@@ -92,6 +128,7 @@ class ReportBloc extends Bloc<ReportEvent, ReportState> {
   @override
   Future<void> close() async {
     await _budgetSub?.cancel();
+    await _transactionSub?.cancel();
     return super.close();
   }
 }

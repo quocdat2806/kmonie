@@ -101,9 +101,6 @@ class _SearchTransactionPageChildState
             BlocBuilder<SearchTransactionBloc, SearchTransactionState>(
               buildWhen: (previous, current) => previous.query != current.query,
               builder: (context, state) {
-                if (state.query != _searchController.text) {
-                  _searchController.text = state.query;
-                }
                 return AppTextField(
                   controller: _searchController,
                   filledColor: AppColorConstants.white,
@@ -134,6 +131,7 @@ class _SearchTransactionPageChildState
                             size: SvgSizeType.medium,
                           ),
                         ),
+
                   onChanged: (value) => context
                       .read<SearchTransactionBloc>()
                       .add(SearchTransactionEvent.queryChanged(value)),
@@ -256,7 +254,7 @@ class _SearchTransactionPageChildState
               ),
               onPressed: () {
                 context.read<SearchTransactionBloc>().add(
-                  const SearchTransactionEvent.reset(),
+                  const SearchTransactionEvent.reset(null),
                 );
                 _searchController.clear();
               },

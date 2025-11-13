@@ -6,7 +6,7 @@ import 'package:kmonie/core/navigation/navigation.dart';
 import 'package:kmonie/core/text_style/text_style.dart';
 import 'package:kmonie/core/utils/utils.dart';
 import 'package:kmonie/generated/generated.dart';
-import 'package:kmonie/presentation/blocs/home/home.dart';
+import 'package:kmonie/presentation/blocs/blocs.dart';
 import 'package:kmonie/presentation/widgets/widgets.dart';
 
 class MonthlyExpenseSummary extends StatelessWidget {
@@ -20,28 +20,49 @@ class MonthlyExpenseSummary extends StatelessWidget {
       color: AppColorConstants.primary,
       child: Padding(
         padding: const EdgeInsets.all(AppUIConstants.defaultPadding),
-        child: Column(spacing: AppUIConstants.defaultSpacing, children: <Widget>[_buildHeader(context), _buildSummary()]),
+        child: Column(
+          spacing: AppUIConstants.defaultSpacing,
+          children: <Widget>[
+            _buildHeader(context: context),
+            _buildSummary(),
+          ],
+        ),
       ),
     );
   }
 
-  Widget _buildHeader(BuildContext context) {
+  Widget _buildHeader({required BuildContext context}) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: <Widget>[
-        Text(AppTextConstants.incomeAndExpenditureBook, style: AppTextStyle.blackS18Bold),
+        Text(
+          AppTextConstants.incomeAndExpenditureBook,
+          style: AppTextStyle.blackS18Bold,
+        ),
         Row(
           spacing: AppUIConstants.defaultSpacing,
           children: <Widget>[
-            _buildIcon(context: context, path: Assets.svgsSearch, routerPath: RouterPath.searchTransaction),
-            _buildIcon(context: context, path: Assets.svgsCalendar, routerPath: RouterPath.calendarMonthlyTransaction),
+            _buildIcon(
+              context: context,
+              path: Assets.svgsSearch,
+              routerPath: RouterPath.searchTransaction,
+            ),
+            _buildIcon(
+              context: context,
+              path: Assets.svgsCalendar,
+              routerPath: RouterPath.calendarMonthlyTransaction,
+            ),
           ],
         ),
       ],
     );
   }
 
-  Widget _buildIcon({required BuildContext context, required String path, required String routerPath}) {
+  Widget _buildIcon({
+    required BuildContext context,
+    required String path,
+    required String routerPath,
+  }) {
     return InkWell(
       splashColor: Colors.transparent,
       onTap: () => AppNavigator(context: context).push(routerPath),
@@ -50,8 +71,22 @@ class MonthlyExpenseSummary extends StatelessWidget {
   }
 
   Widget _buildSummary() {
-    return BlocSelector<HomeBloc, HomeState, ({DateTime? selectedDate, double totalExpense, double totalIncome, double totalBalance})>(
-      selector: (state) => (selectedDate: state.selectedDate, totalExpense: state.totalExpense, totalIncome: state.totalIncome, totalBalance: state.totalBalance),
+    return BlocSelector<
+      HomeBloc,
+      HomeState,
+      ({
+        DateTime? selectedDate,
+        double totalExpense,
+        double totalIncome,
+        double totalBalance,
+      })
+    >(
+      selector: (state) => (
+        selectedDate: state.selectedDate,
+        totalExpense: state.totalExpense,
+        totalIncome: state.totalIncome,
+        totalBalance: state.totalBalance,
+      ),
       builder: (context, data) {
         final selectedDate = data.selectedDate ?? DateTime.now();
         final year = selectedDate.year;
@@ -62,17 +97,23 @@ class MonthlyExpenseSummary extends StatelessWidget {
           expense: data.totalExpense.toInt(),
           income: data.totalIncome.toInt(),
           balance: data.totalBalance.toInt(),
-          onTap: () => _onSelectDateTap(context, year, month),
-          suffix: SvgUtils.icon(assetPath: Assets.svgsArrowDown, size: SvgSizeType.medium),
+          onTap: () =>
+              _onSelectDateTap(context: context, year: year, month: month),
+          suffix: SvgUtils.icon(assetPath: Assets.svgsArrowDown),
         );
       },
     );
   }
 
-  Future<void> _onSelectDateTap(BuildContext context, int year, int month) async {
+  Future<void> _onSelectDateTap({
+    required BuildContext context,
+    required int year,
+    required int month,
+  }) async {
     final result = await showDialog<Map<String, int>>(
       context: context,
-      builder: (context) => MonthPickerDialog(initialMonth: month, initialYear: year),
+      builder: (context) =>
+          MonthPickerDialog(initialMonth: month, initialYear: year),
     );
 
     if (result != null && onDateChanged != null) {
