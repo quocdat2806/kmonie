@@ -1,5 +1,6 @@
 import 'package:kmonie/core/enums/enums.dart';
 import 'package:kmonie/entities/entities.dart';
+
 class TransactionActionsPageArgs {
   final ActionsMode mode;
   final Transaction? transaction;

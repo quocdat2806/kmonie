@@ -42,14 +42,33 @@ class TransactionCategoryConstants {
 
     for (int i = 0; i < expenseCategories.length; i++) {
       final (title, asset) = expenseCategories[i];
-      categories.add(TransactionCategory(title: title, pathAsset: asset, gradientColors: GradientHelper.generateSmartGradientColors()));
+      categories.add(
+        TransactionCategory(
+          title: title,
+          pathAsset: asset,
+          gradientColors: GradientHelper.generateSmartGradientColors(),
+        ),
+      );
     }
 
-    final incomeCategories = [(AppTextConstants.salary, Assets.svgsCreditCard), (AppTextConstants.bonus, Assets.svgsInvest), (AppTextConstants.interest, Assets.svgsInterest), (AppTextConstants.gift, Assets.svgsAward), (AppTextConstants.other, Assets.svgsCommand)];
+    final incomeCategories = [
+      (AppTextConstants.salary, Assets.svgsCreditCard),
+      (AppTextConstants.bonus, Assets.svgsInvest),
+      (AppTextConstants.interest, Assets.svgsInterest),
+      (AppTextConstants.gift, Assets.svgsAward),
+      (AppTextConstants.other, Assets.svgsCommand),
+    ];
 
     for (int i = 0; i < incomeCategories.length; i++) {
       final (title, asset) = incomeCategories[i];
-      categories.add(TransactionCategory(title: title, pathAsset: asset, transactionType: TransactionType.income, gradientColors: GradientHelper.generateSmartGradientColors()));
+      categories.add(
+        TransactionCategory(
+          title: title,
+          pathAsset: asset,
+          transactionType: TransactionType.income,
+          gradientColors: GradientHelper.generateSmartGradientColors(),
+        ),
+      );
     }
 
     return categories;

@@ -5,30 +5,59 @@ import 'package:kmonie/core/services/services.dart';
 import 'package:kmonie/core/utils/utils.dart';
 import 'package:kmonie/entities/entities.dart';
 import 'package:kmonie/args/args.dart';
-
+import 'package:kmonie/core/config/config.dart';
 
 abstract class TransactionRepository {
-  Future<Either<Failure, Transaction>> createTransaction({required int amount, required DateTime date, required int transactionCategoryId, String content, required int transactionType});
+  Future<Either<Failure, Transaction>> createTransaction({
+    required int amount,
+    required DateTime date,
+    required int transactionCategoryId,
+    String content,
+    required int transactionType,
+  });
 
   Future<Either<Failure, Transaction?>> getTransactionById(int id);
 
-  Future<Either<Failure, Transaction?>> updateTransaction({required int id, int? amount, DateTime? date, int? transactionCategoryId, String? content});
+  Future<Either<Failure, Transaction?>> updateTransaction({
+    required int id,
+    int? amount,
+    DateTime? date,
+    int? transactionCategoryId,
+    String? content,
+  });
 
   Future<Either<Failure, bool>> deleteTransaction(int id);
 
   Future<Either<Failure, List<Transaction>>> getAllTransactions();
 
-  Future<Either<Failure, PagedTransactionResult>> getTransactionsInMonth({required int year, required int month, int pageSize, int pageIndex});
+  Future<Either<Failure, PagedTransactionResult>> getTransactionsInMonth({
+    required int year,
+    required int month,
+    int pageSize,
+    int pageIndex,
+  });
 
-  Future<Either<Failure, List<Transaction>>> getTransactionsInYear(int year, {bool forceRefresh});
+  Future<Either<Failure, List<Transaction>>> getTransactionsInYear(
+    int year, {
+    bool forceRefresh,
+  });
 
-  Future<Either<Failure, PagedTransactionResult>> searchByContent({String? keyword, int? transactionType, int pageSize, int pageIndex});
+  Future<Either<Failure, PagedTransactionResult>> searchByContent({
+    String? keyword,
+    int? transactionType,
+    int pageSize,
+    int pageIndex,
+  });
 
   Map<String, List<Transaction>> groupByDate(List<Transaction> transactions);
 
   DailyTransactionTotal calculateDailyTotal(List<Transaction> transactions);
 
-  Future<Either<Failure, int>> getSpentAmountForCategory({required int categoryId, required int year, required int month});
+  Future<Either<Failure, int>> getSpentAmountForCategory({
+    required int categoryId,
+    required int year,
+    required int month,
+  });
 
   Stream<List<Transaction>> watchTransactions();
 
@@ -38,7 +67,9 @@ abstract class TransactionRepository {
 
   void clearAllGroupCache();
 
-  Future<Either<Failure, List<MonthlyArgs>>> getAllMonthlyStatistics({int? year});
+  Future<Either<Failure, List<MonthlyArgs>>> getAllMonthlyStatistics({
+    int? year,
+  });
 }
 
 class TransactionRepositoryImpl implements TransactionRepository {
@@ -47,9 +78,21 @@ class TransactionRepositoryImpl implements TransactionRepository {
   final TransactionService _transactionService;
 
   @override
-  Future<Either<Failure, Transaction>> createTransaction({required int amount, required DateTime date, required int transactionCategoryId, String content = '', required int transactionType}) async {
+  Future<Either<Failure, Transaction>> createTransaction({
+    required int amount,
+    required DateTime date,
+    required int transactionCategoryId,
+    String content = '',
+    required int transactionType,
+  }) async {
     try {
-      final transaction = await _transactionService.createTransaction(amount: amount, date: date, transactionCategoryId: transactionCategoryId, content: content, transactionType: transactionType);
+      final transaction = await _transactionService.createTransaction(
+        amount: amount,
+        date: date,
+        transactionCategoryId: transactionCategoryId,
+        content: content,
+        transactionType: transactionType,
+      );
       return Right(transaction);
     } catch (e) {
       return Left(Failure.cache(e.toString()));
@@ -67,9 +110,21 @@ class TransactionRepositoryImpl implements TransactionRepository {
   }
 
   @override
-  Future<Either<Failure, Transaction?>> updateTransaction({required int id, int? amount, DateTime? date, int? transactionCategoryId, String? content}) async {
+  Future<Either<Failure, Transaction?>> updateTransaction({
+    required int id,
+    int? amount,
+    DateTime? date,
+    int? transactionCategoryId,
+    String? content,
+  }) async {
     try {
-      final transaction = await _transactionService.updateTransaction(id: id, amount: amount, date: date, transactionCategoryId: transactionCategoryId, content: content);
+      final transaction = await _transactionService.updateTransaction(
+        id: id,
+        amount: amount,
+        date: date,
+        transactionCategoryId: transactionCategoryId,
+        content: content,
+      );
       return Right(transaction);
     } catch (e) {
       return Left(Failure.cache(e.toString()));
@@ -97,9 +152,19 @@ class TransactionRepositoryImpl implements TransactionRepository {
   }
 
   @override
-  Future<Either<Failure, PagedTransactionResult>> getTransactionsInMonth({required int year, required int month, int pageSize = 20, int pageIndex = 0}) async {
+  Future<Either<Failure, PagedTransactionResult>> getTransactionsInMonth({
+    required int year,
+    required int month,
+    int pageSize = AppConfigs.defaultPageSize,
+    int pageIndex = AppConfigs.defaultPageIndex,
+  }) async {
     try {
-      final result = await _transactionService.getTransactionsInMonth(year: year, month: month, pageSize: pageSize, pageIndex: pageIndex);
+      final result = await _transactionService.getTransactionsInMonth(
+        year: year,
+        month: month,
+        pageSize: pageSize,
+        pageIndex: pageIndex,
+      );
       return Right(result);
     } catch (e) {
       return Left(Failure.cache(e.toString()));
@@ -107,9 +172,15 @@ class TransactionRepositoryImpl implements TransactionRepository {
   }
 
   @override
-  Future<Either<Failure, List<Transaction>>> getTransactionsInYear(int year, {bool forceRefresh = false}) async {
+  Future<Either<Failure, List<Transaction>>> getTransactionsInYear(
+    int year, {
+    bool forceRefresh = false,
+  }) async {
     try {
-      final transactions = await _transactionService.getTransactionsInYear(year, forceRefresh: forceRefresh);
+      final transactions = await _transactionService.getTransactionsInYear(
+        year,
+        forceRefresh: forceRefresh,
+      );
       return Right(transactions);
     } catch (e) {
       return Left(Failure.cache(e.toString()));
@@ -117,9 +188,19 @@ class TransactionRepositoryImpl implements TransactionRepository {
   }
 
   @override
-  Future<Either<Failure, PagedTransactionResult>> searchByContent({String? keyword, int? transactionType, int pageSize = 20, int pageIndex = 0}) async {
+  Future<Either<Failure, PagedTransactionResult>> searchByContent({
+    String? keyword,
+    int? transactionType,
+    int pageSize = AppConfigs.defaultPageSize,
+    int pageIndex = AppConfigs.defaultPageIndex,
+  }) async {
     try {
-      final result = await _transactionService.searchByContent(keyword: keyword, transactionType: transactionType, pageSize: pageSize, pageIndex: pageIndex);
+      final result = await _transactionService.searchByContent(
+        keyword: keyword,
+        transactionType: transactionType,
+        pageSize: pageSize,
+        pageIndex: pageIndex,
+      );
       return Right(result);
     } catch (e) {
       return Left(Failure.cache(e.toString()));
@@ -132,7 +213,11 @@ class TransactionRepositoryImpl implements TransactionRepository {
   }
 
   @override
-  Future<Either<Failure, int>> getSpentAmountForCategory({required int categoryId, required int year, required int month}) async {
+  Future<Either<Failure, int>> getSpentAmountForCategory({
+    required int categoryId,
+    required int year,
+    required int month,
+  }) async {
     try {
       final range = AppDateUtils.monthRangeUtc(year, month);
       final allTransactions = await _transactionService.getAllTransactions();
@@ -140,7 +225,15 @@ class TransactionRepositoryImpl implements TransactionRepository {
       final startLocal = range.startUtc.toLocal();
       final endLocal = range.endUtc.toLocal();
 
-      final spentAmount = allTransactions.where((t) => t.transactionCategoryId == categoryId && t.transactionType == TransactionType.expense.typeIndex && !t.date.isBefore(startLocal) && t.date.isBefore(endLocal)).fold<int>(0, (sum, t) => sum + t.amount);
+      final spentAmount = allTransactions
+          .where(
+            (t) =>
+                t.transactionCategoryId == categoryId &&
+                t.transactionType == TransactionType.expense.typeIndex &&
+                !t.date.isBefore(startLocal) &&
+                t.date.isBefore(endLocal),
+          )
+          .fold<int>(0, (sum, t) => sum + t.amount);
 
       return Right(spentAmount);
     } catch (e) {
@@ -174,21 +267,41 @@ class TransactionRepositoryImpl implements TransactionRepository {
   }
 
   @override
-  Future<Either<Failure, List<MonthlyArgs>>> getAllMonthlyStatistics({int? year}) async {
+  Future<Either<Failure, List<MonthlyArgs>>> getAllMonthlyStatistics({
+    int? year,
+  }) async {
     try {
       final allTransactions = await _transactionService.getAllTransactions();
 
-      final transactions = year != null ? allTransactions.where((t) => t.date.year == year).toList() : allTransactions;
+      final transactions = year != null
+          ? allTransactions.where((t) => t.date.year == year).toList()
+          : allTransactions;
 
       final Map<String, MonthlyArgs> monthlyAggMap = {};
 
       for (final transaction in transactions) {
         final key = '${transaction.date.year}-${transaction.date.month}';
-        final existing = monthlyAggMap[key] ?? MonthlyArgs(year: transaction.date.year, month: transaction.date.month);
+        final existing =
+            monthlyAggMap[key] ??
+            MonthlyArgs(
+              year: transaction.date.year,
+              month: transaction.date.month,
+            );
         if (transaction.transactionType == TransactionType.income.typeIndex) {
-          monthlyAggMap[key] = MonthlyArgs(year: existing.year, month: existing.month, income: existing.income + transaction.amount.toDouble(), expense: existing.expense);
-        } else if (transaction.transactionType == TransactionType.expense.typeIndex) {
-          monthlyAggMap[key] = MonthlyArgs(year: existing.year, month: existing.month, income: existing.income, expense: existing.expense + transaction.amount.toDouble());
+          monthlyAggMap[key] = MonthlyArgs(
+            year: existing.year,
+            month: existing.month,
+            income: existing.income + transaction.amount.toDouble(),
+            expense: existing.expense,
+          );
+        } else if (transaction.transactionType ==
+            TransactionType.expense.typeIndex) {
+          monthlyAggMap[key] = MonthlyArgs(
+            year: existing.year,
+            month: existing.month,
+            income: existing.income,
+            expense: existing.expense + transaction.amount.toDouble(),
+          );
         }
       }
 

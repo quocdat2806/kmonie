@@ -19,8 +19,17 @@ class AppKeyboard extends StatelessWidget {
         value: 'SELECT_DATE',
         child: Wrap(
           children: [
-            const Icon(Icons.calendar_month, color: AppColorConstants.primary, size: AppUIConstants.smallIconSize),
-            Text(AppDateUtils.formatDateMonthAndDay(selectDate ?? DateTime.now()), style: AppTextStyle.blackS12Medium.copyWith(color: AppColorConstants.primary)),
+            const Icon(
+              Icons.calendar_month,
+              color: AppColorConstants.primary,
+              size: AppUIConstants.smallIconSize,
+            ),
+            Text(
+              AppDateUtils.formatDateMonthAndDay(selectDate ?? DateTime.now()),
+              style: AppTextStyle.blackS12Medium.copyWith(
+                color: AppColorConstants.primary,
+              ),
+            ),
           ],
         ),
       ),
@@ -34,16 +43,28 @@ class AppKeyboard extends StatelessWidget {
       _KeySpec.text('-'),
       _KeySpec.text(','),
       _KeySpec.text('0'),
-      _KeySpec.widget(value: 'CLEAR', child: const Icon(Icons.backspace_outlined)),
+      _KeySpec.widget(
+        value: 'CLEAR',
+        child: const Icon(Icons.backspace_outlined),
+      ),
       _KeySpec.widget(value: 'DONE', child: const Icon(Icons.check)),
     ];
 
     return LayoutBuilder(
       builder: (context, constraints) {
-        final totalSpacing = AppUIConstants.smallGridSpacing * (AppUIConstants.defaultGridCrossAxisCount - 1);
-        final itemWidth = (constraints.maxWidth - totalSpacing) / AppUIConstants.defaultGridCrossAxisCount;
+        final totalSpacing =
+            AppUIConstants.smallGridSpacing *
+            (AppUIConstants.defaultGridCrossAxisCount - 1);
+        final itemWidth =
+            (constraints.maxWidth - totalSpacing) /
+            AppUIConstants.defaultGridCrossAxisCount;
         return GridView.builder(
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: AppUIConstants.defaultGridCrossAxisCount, mainAxisSpacing: AppUIConstants.smallGridSpacing, crossAxisSpacing: AppUIConstants.smallGridSpacing, childAspectRatio: itemWidth / AppUIConstants.largeButtonHeight),
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: AppUIConstants.defaultGridCrossAxisCount,
+            mainAxisSpacing: AppUIConstants.smallGridSpacing,
+            crossAxisSpacing: AppUIConstants.smallGridSpacing,
+            childAspectRatio: itemWidth / AppUIConstants.largeButtonHeight,
+          ),
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
           itemCount: items.length,
@@ -68,10 +89,17 @@ class _KeyButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bgColor = spec.value == 'DONE' ? AppColorConstants.grey : AppColorConstants.white;
+    final bgColor = spec.value == 'DONE'
+        ? AppColorConstants.grey
+        : AppColorConstants.white;
     return Container(
-      decoration: BoxDecoration(color: bgColor, borderRadius: BorderRadius.circular(AppUIConstants.smallBorderRadius)),
-      child: Center(child: spec.child ?? Text(spec.value, style: AppTextStyle.blackS20)),
+      decoration: BoxDecoration(
+        color: bgColor,
+        borderRadius: BorderRadius.circular(AppUIConstants.smallBorderRadius),
+      ),
+      child: Center(
+        child: spec.child ?? Text(spec.value, style: AppTextStyle.blackS20),
+      ),
     );
   }
 }
@@ -84,5 +112,6 @@ class _KeySpec {
 
   factory _KeySpec.text(String value) => _KeySpec._(value: value);
 
-  factory _KeySpec.widget({required String value, required Widget child}) => _KeySpec._(value: value, child: child);
+  factory _KeySpec.widget({required String value, required Widget child}) =>
+      _KeySpec._(value: value, child: child);
 }

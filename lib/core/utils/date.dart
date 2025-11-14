@@ -51,7 +51,10 @@ class AppDateUtils {
     return years;
   }
 
-  static List<DateTime> generateMoreMonths(List<DateTime> currentMonths, {int addCount = 12}) {
+  static List<DateTime> generateMoreMonths(
+    List<DateTime> currentMonths, {
+    int addCount = 12,
+  }) {
     if (currentMonths.isEmpty) return currentMonths;
     final List<DateTime> newMonths = [];
     final DateTime oldestMonth = currentMonths.first;
@@ -61,7 +64,10 @@ class AppDateUtils {
     return [...newMonths, ...currentMonths];
   }
 
-  static List<int> generateMoreYears(List<int> currentYears, {int rangeBack = 5}) {
+  static List<int> generateMoreYears(
+    List<int> currentYears, {
+    int rangeBack = 8,
+  }) {
     if (currentYears.isEmpty) return currentYears;
     final List<int> newYears = [];
     final int oldestYear = currentYears.first;
@@ -71,9 +77,14 @@ class AppDateUtils {
     return [...newYears, ...currentYears];
   }
 
-  static ({DateTime startUtc, DateTime endUtc}) monthRangeUtc(int year, int month) {
+  static ({DateTime startUtc, DateTime endUtc}) monthRangeUtc(
+    int year,
+    int month,
+  ) {
     final localStart = DateTime(year, month);
-    final localNext = (month == 12) ? DateTime(year + 1) : DateTime(year, month + 1);
+    final localNext = (month == 12)
+        ? DateTime(year + 1)
+        : DateTime(year, month + 1);
     return (startUtc: localStart.toUtc(), endUtc: localNext.toUtc());
   }
 
@@ -92,7 +103,9 @@ class AppDateUtils {
   }
 
   static bool isSameDate(DateTime date1, DateTime date2) {
-    return date1.year == date2.year && date1.month == date2.month && date1.day == date2.day;
+    return date1.year == date2.year &&
+        date1.month == date2.month &&
+        date1.day == date2.day;
   }
 
   static List<DateTime?> generateCalendarDays(DateTime selectedDate) {

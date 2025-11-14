@@ -67,7 +67,24 @@ class AppTextField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return TextFormField(onFieldSubmitted: onFieldSubmitted, enabled: editAble, style: style, controller: controller, obscureText: obscureText, keyboardType: keyboardType, validator: validator, maxLines: maxLines, readOnly: readOnly, textInputAction: textInputAction, maxLength: maxLength, textAlign: textAlign, focusNode: focusNode, onChanged: onChanged, inputFormatters: inputFormatters, decoration: decoration ?? _buildDefaultDecoration());
+    return TextFormField(
+      onFieldSubmitted: onFieldSubmitted,
+      enabled: editAble,
+      style: style,
+      controller: controller,
+      obscureText: obscureText,
+      keyboardType: keyboardType,
+      validator: validator,
+      maxLines: maxLines,
+      readOnly: readOnly,
+      textInputAction: textInputAction,
+      maxLength: maxLength,
+      textAlign: textAlign,
+      focusNode: focusNode,
+      onChanged: onChanged,
+      inputFormatters: inputFormatters,
+      decoration: decoration ?? _buildDefaultDecoration(),
+    );
   }
 
   InputDecoration _buildDefaultDecoration() {
@@ -78,16 +95,66 @@ class AppTextField extends StatelessWidget {
       hintStyle: AppTextStyle.greyS14,
       filled: true,
       fillColor: filledColor,
-      suffixIcon: Row(mainAxisSize: MainAxisSize.min, children: <Widget>[if (suffixIcon != null) suffixIcon!]),
+      suffixIcon: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[if (suffixIcon != null) suffixIcon!],
+      ),
       prefixIconConstraints: const BoxConstraints(),
       suffixIconConstraints: const BoxConstraints(),
-      border: border ?? OutlineInputBorder(borderRadius: BorderRadius.circular(AppUIConstants.smallBorderRadius), borderSide: BorderSide.none),
-      enabledBorder: border ?? OutlineInputBorder(borderRadius: BorderRadius.circular(AppUIConstants.smallBorderRadius), borderSide: BorderSide.none),
-      focusedBorder: border ?? OutlineInputBorder(borderRadius: BorderRadius.circular(AppUIConstants.smallBorderRadius), borderSide: BorderSide.none),
-      disabledBorder: border ?? OutlineInputBorder(borderRadius: BorderRadius.circular(AppUIConstants.smallBorderRadius), borderSide: BorderSide.none),
-      errorBorder: border ?? OutlineInputBorder(borderRadius: BorderRadius.circular(AppUIConstants.smallBorderRadius), borderSide: BorderSide.none),
-      focusedErrorBorder: border ?? OutlineInputBorder(borderRadius: BorderRadius.circular(AppUIConstants.smallBorderRadius), borderSide: BorderSide.none),
-      contentPadding: contentPadding ?? const EdgeInsets.symmetric(horizontal: AppUIConstants.defaultPadding, vertical: AppUIConstants.smallPadding),
+      border:
+          border ??
+          OutlineInputBorder(
+            borderRadius: BorderRadius.circular(
+              AppUIConstants.smallBorderRadius,
+            ),
+            borderSide: BorderSide.none,
+          ),
+      enabledBorder:
+          border ??
+          OutlineInputBorder(
+            borderRadius: BorderRadius.circular(
+              AppUIConstants.smallBorderRadius,
+            ),
+            borderSide: BorderSide.none,
+          ),
+      focusedBorder:
+          border ??
+          OutlineInputBorder(
+            borderRadius: BorderRadius.circular(
+              AppUIConstants.smallBorderRadius,
+            ),
+            borderSide: BorderSide.none,
+          ),
+      disabledBorder:
+          border ??
+          OutlineInputBorder(
+            borderRadius: BorderRadius.circular(
+              AppUIConstants.smallBorderRadius,
+            ),
+            borderSide: BorderSide.none,
+          ),
+      errorBorder:
+          border ??
+          OutlineInputBorder(
+            borderRadius: BorderRadius.circular(
+              AppUIConstants.smallBorderRadius,
+            ),
+            borderSide: BorderSide.none,
+          ),
+      focusedErrorBorder:
+          border ??
+          OutlineInputBorder(
+            borderRadius: BorderRadius.circular(
+              AppUIConstants.smallBorderRadius,
+            ),
+            borderSide: BorderSide.none,
+          ),
+      contentPadding:
+          contentPadding ??
+          const EdgeInsets.symmetric(
+            horizontal: AppUIConstants.defaultPadding,
+            vertical: AppUIConstants.smallPadding,
+          ),
     );
   }
 }

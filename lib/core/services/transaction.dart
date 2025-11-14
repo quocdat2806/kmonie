@@ -6,42 +6,83 @@ import 'package:kmonie/core/utils/utils.dart';
 import 'package:kmonie/database/database.dart';
 import 'package:kmonie/entities/entities.dart';
 
-
 class TransactionService {
   final KMonieDatabase _db;
   final AccountService _accountService;
   TransactionService(this._db, this._accountService);
 
-  final LRUCache<String, Map<String, List<Transaction>>> _groupCache = LRUCache(maxSize: 15);
+  final LRUCache<String, Map<String, List<Transaction>>> _groupCache = LRUCache(
+    maxSize: 30,
+  );
 
   final Map<int, List<Transaction>> _yearCache = {};
   final Set<int> _dirtyYears = {};
 
   Transaction _mapRow(TransactionsTbData row) {
-    return Transaction(id: row.id, amount: row.amount, date: row.date.toLocal(), transactionCategoryId: row.transactionCategoryId, content: row.content, transactionType: row.transactionType, createdAt: row.createdAt.toLocal(), updatedAt: row.updatedAt.toLocal());
+    return Transaction(
+      id: row.id,
+      amount: row.amount,
+      date: row.date.toLocal(),
+      transactionCategoryId: row.transactionCategoryId,
+      content: row.content,
+      transactionType: row.transactionType,
+      createdAt: row.createdAt.toLocal(),
+      updatedAt: row.updatedAt.toLocal(),
+    );
   }
 
-  Expression<bool> _dateInMonthRange(Expression<DateTime> dateCol, int year, int month) {
+  Expression<bool> _dateInMonthRange(
+    Expression<DateTime> dateCol,
+    int year,
+    int month,
+  ) {
     final r = AppDateUtils.monthRangeUtc(year, month);
-    return dateCol.isBiggerOrEqualValue(r.startUtc) & dateCol.isSmallerThanValue(r.endUtc);
+    return dateCol.isBiggerOrEqualValue(r.startUtc) &
+        dateCol.isSmallerThanValue(r.endUtc);
   }
 
   Expression<bool> _dateInYearRange(Expression<DateTime> dateCol, int year) {
     final r = AppDateUtils.yearRangeUtc(year);
-    return dateCol.isBiggerOrEqualValue(r.startUtc) & dateCol.isSmallerThanValue(r.endUtc);
+    return dateCol.isBiggerOrEqualValue(r.startUtc) &
+        dateCol.isSmallerThanValue(r.endUtc);
   }
 
-  Future<int> calculateTotalAmountInMonth({required int year, required int month, int? transactionType, int? categoryId}) async {
-    final transactions = await _getTransactionsInMonth(year, month, transactionType, categoryId);
+  Future<int> calculateTotalAmountInMonth({
+    required int year,
+    required int month,
+    int? transactionType,
+    int? categoryId,
+  }) async {
+    final transactions = await _getTransactionsInMonth(
+      year,
+      month,
+      transactionType,
+      categoryId,
+    );
     return TransactionCalculator.calculateTotalAmount(transactions);
   }
 
-  Future<int> calculateTotalAmountInYear({required int year, int? transactionType, int? categoryId}) async {
-    final transactions = await _getTransactionsInYear(year, transactionType, categoryId);
+  Future<int> calculateTotalAmountInYear({
+    required int year,
+    int? transactionType,
+    int? categoryId,
+  }) async {
+    final transactions = await _getTransactionsInYear(
+      year,
+      transactionType,
+      categoryId,
+    );
     return TransactionCalculator.calculateTotalAmount(transactions);
   }
 
-  Future<List<TransactionsTbData>> getTransactionsFiltered({int? year, int? month, int? transactionType, int? categoryId, int? limit, int? offset}) async {
+  Future<List<TransactionsTbData>> getTransactionsFiltered({
+    int? year,
+    int? month,
+    int? transactionType,
+    int? categoryId,
+    int? limit,
+    int? offset,
+  }) async {
     final q = _db.select(_db.transactionsTb);
 
     if (year != null && month != null) {
@@ -68,8 +109,14 @@ class TransactionService {
     return await q.get();
   }
 
-  Future<List<Transaction>> _getTransactionsInMonth(int year, int month, int? transactionType, int? categoryId) async {
-    final q = _db.select(_db.transactionsTb)..where((t) => _dateInMonthRange(t.date, year, month));
+  Future<List<Transaction>> _getTransactionsInMonth(
+    int year,
+    int month,
+    int? transactionType,
+    int? categoryId,
+  ) async {
+    final q = _db.select(_db.transactionsTb)
+      ..where((t) => _dateInMonthRange(t.date, year, month));
 
     if (transactionType != null) {
       q.where((t) => t.transactionType.equals(transactionType));
@@ -83,8 +130,13 @@ class TransactionService {
     return rows.map(_mapRow).toList();
   }
 
-  Future<List<Transaction>> _getTransactionsInYear(int year, int? transactionType, int? categoryId) async {
-    final q = _db.select(_db.transactionsTb)..where((t) => _dateInYearRange(t.date, year));
+  Future<List<Transaction>> _getTransactionsInYear(
+    int year,
+    int? transactionType,
+    int? categoryId,
+  ) async {
+    final q = _db.select(_db.transactionsTb)
+      ..where((t) => _dateInYearRange(t.date, year));
 
     if (transactionType != null) {
       q.where((t) => t.transactionType.equals(transactionType));
@@ -110,24 +162,52 @@ class TransactionService {
     _dirtyYears.clear();
   }
 
-  Future<Transaction> createTransaction({required int amount, required DateTime date, required int transactionCategoryId, String content = '', required int transactionType}) async {
+  Future<Transaction> createTransaction({
+    required int amount,
+    required DateTime date,
+    required int transactionCategoryId,
+    String content = '',
+    required int transactionType,
+  }) async {
     try {
       final utc = date.toUtc();
 
-      final id = await _db.into(_db.transactionsTb).insert(TransactionsTbCompanion.insert(amount: amount, date: utc, transactionCategoryId: transactionCategoryId, content: Value(content), transactionType: Value(transactionType)));
+      final id = await _db
+          .into(_db.transactionsTb)
+          .insert(
+            TransactionsTbCompanion.insert(
+              amount: amount,
+              date: utc,
+              transactionCategoryId: transactionCategoryId,
+              content: Value(content),
+              transactionType: Value(transactionType),
+            ),
+          );
 
       _invalidateAllCaches(date.year);
 
       await _updatePinnedAccountBalance(amount, transactionType);
 
-      return Transaction(id: id, amount: amount, date: utc.toLocal(), transactionCategoryId: transactionCategoryId, content: content, transactionType: transactionType, createdAt: DateTime.now(), updatedAt: DateTime.now());
+      return Transaction(
+        id: id,
+        amount: amount,
+        date: utc.toLocal(),
+        transactionCategoryId: transactionCategoryId,
+        content: content,
+        transactionType: transactionType,
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
+      );
     } catch (e) {
       logger.e('Error creating transaction: $e');
       rethrow;
     }
   }
 
-  Future<void> _updatePinnedAccountBalance(int amount, int transactionType) async {
+  Future<void> _updatePinnedAccountBalance(
+    int amount,
+    int transactionType,
+  ) async {
     try {
       final pinnedAccount = await _accountService.getPinnedAccount();
 
@@ -139,15 +219,21 @@ class TransactionService {
           newBalance += amount;
         }
 
-        await _accountService.updateAccountBalance(pinnedAccount.id!, newBalance);
-        logger.i('Updated pinned account balance: ${pinnedAccount.name} -> $newBalance VND');
+        await _accountService.updateAccountBalance(
+          pinnedAccount.id!,
+          newBalance,
+        );
+        logger.i(
+          'Updated pinned account balance: ${pinnedAccount.name} -> $newBalance VND',
+        );
       }
     } catch (e) {
       logger.e('Error updating pinned account balance: $e');
     }
   }
 
-  String _buildCacheKey(List<Transaction> list) => list.map((e) => e.id).join(',');
+  String _buildCacheKey(List<Transaction> list) =>
+      list.map((e) => e.id).join(',');
 
   Map<String, List<Transaction>> groupByDate(List<Transaction> transactions) {
     final key = _buildCacheKey(transactions);
@@ -167,7 +253,12 @@ class TransactionService {
     return sortedGrouped;
   }
 
-  Future<PagedTransactionResult> searchByContent({String? keyword, int? transactionType, int pageSize = AppConfigs.defaultPageSize, int pageIndex = AppConfigs.defaultPageIndex}) async {
+  Future<PagedTransactionResult> searchByContent({
+    String? keyword,
+    int? transactionType,
+    int pageSize = AppConfigs.defaultPageSize,
+    int pageIndex = AppConfigs.defaultPageIndex,
+  }) async {
     try {
       final countExp = _db.transactionsTb.id.count();
       final countQ = _db.selectOnly(_db.transactionsTb)..addColumns([countExp]);
@@ -177,7 +268,9 @@ class TransactionService {
         countQ.where(_db.transactionsTb.content.like(like));
       }
       if (transactionType != null) {
-        countQ.where(_db.transactionsTb.transactionType.equals(transactionType));
+        countQ.where(
+          _db.transactionsTb.transactionType.equals(transactionType),
+        );
       }
 
       final totalRecords = (await countQ.getSingle()).read(countExp) ?? 0;
@@ -198,7 +291,10 @@ class TransactionService {
       final rows = await q.get();
       final items = rows.map(_mapRow).toList();
 
-      return PagedTransactionResult(transactions: items, totalRecords: totalRecords);
+      return PagedTransactionResult(
+        transactions: items,
+        totalRecords: totalRecords,
+      );
     } catch (e) {
       logger.e('Error searchByContent: $e');
       return PagedTransactionResult(transactions: [], totalRecords: 0);
@@ -206,18 +302,35 @@ class TransactionService {
   }
 
   Future<Transaction?> getTransactionById(int id) async {
-    final row = await (_db.select(_db.transactionsTb)..where((t) => t.id.equals(id))).getSingleOrNull();
+    final row = await (_db.select(
+      _db.transactionsTb,
+    )..where((t) => t.id.equals(id))).getSingleOrNull();
 
     return row != null ? _mapRow(row) : null;
   }
 
-  Future<Transaction?> updateTransaction({required int id, int? amount, DateTime? date, int? transactionCategoryId, String? content}) async {
+  Future<Transaction?> updateTransaction({
+    required int id,
+    int? amount,
+    DateTime? date,
+    int? transactionCategoryId,
+    String? content,
+  }) async {
     try {
       final oldTx = await getTransactionById(id);
 
-      final companion = TransactionsTbCompanion(amount: amount != null ? Value(amount) : const Value.absent(), date: date != null ? Value(date.toUtc()) : const Value.absent(), transactionCategoryId: transactionCategoryId != null ? Value(transactionCategoryId) : const Value.absent(), content: content != null ? Value(content) : const Value.absent());
+      final companion = TransactionsTbCompanion(
+        amount: amount != null ? Value(amount) : const Value.absent(),
+        date: date != null ? Value(date.toUtc()) : const Value.absent(),
+        transactionCategoryId: transactionCategoryId != null
+            ? Value(transactionCategoryId)
+            : const Value.absent(),
+        content: content != null ? Value(content) : const Value.absent(),
+      );
 
-      await (_db.update(_db.transactionsTb)..where((t) => t.id.equals(id))).write(companion);
+      await (_db.update(
+        _db.transactionsTb,
+      )..where((t) => t.id.equals(id))).write(companion);
 
       final affectedYears = <int>{};
       if (oldTx != null) affectedYears.add(oldTx.date.year);
@@ -238,7 +351,9 @@ class TransactionService {
     try {
       final tx = await getTransactionById(id);
 
-      final deletedRows = await (_db.delete(_db.transactionsTb)..where((t) => t.id.equals(id))).go();
+      final deletedRows = await (_db.delete(
+        _db.transactionsTb,
+      )..where((t) => t.id.equals(id))).go();
 
       if (deletedRows > 0 && tx != null) {
         _invalidateAllCaches(tx.date.year);
@@ -253,7 +368,9 @@ class TransactionService {
 
   Future<List<Transaction>> getAllTransactions() async {
     try {
-      final rows = await (_db.select(_db.transactionsTb)..orderBy([(t) => OrderingTerm.desc(t.date)])).get();
+      final rows = await (_db.select(
+        _db.transactionsTb,
+      )..orderBy([(t) => OrderingTerm.desc(t.date)])).get();
       return rows.map(_mapRow).toList();
     } catch (e) {
       logger.e('Error getting all transactions: $e');
@@ -261,14 +378,20 @@ class TransactionService {
     }
   }
 
-  Future<PagedTransactionResult> getTransactionsInMonth({required int year, required int month, int pageSize = AppConfigs.defaultPageSize, int pageIndex = AppConfigs.defaultPageIndex}) async {
+  Future<PagedTransactionResult> getTransactionsInMonth({
+    required int year,
+    required int month,
+    int pageSize = AppConfigs.defaultPageSize,
+    int pageIndex = AppConfigs.defaultPageIndex,
+  }) async {
     try {
       final totalCountExp = _db.transactionsTb.id.count();
       final totalCountQuery = _db.selectOnly(_db.transactionsTb)
         ..where(_dateInMonthRange(_db.transactionsTb.date, year, month))
         ..addColumns([totalCountExp]);
 
-      final totalRecords = (await totalCountQuery.getSingle()).read(totalCountExp) ?? 0;
+      final totalRecords =
+          (await totalCountQuery.getSingle()).read(totalCountExp) ?? 0;
 
       final query = _db.select(_db.transactionsTb)
         ..where((t) => _dateInMonthRange(t.date, year, month))
@@ -278,14 +401,20 @@ class TransactionService {
       final rows = await query.get();
       final transactions = rows.map(_mapRow).toList();
 
-      return PagedTransactionResult(transactions: transactions, totalRecords: totalRecords);
+      return PagedTransactionResult(
+        transactions: transactions,
+        totalRecords: totalRecords,
+      );
     } catch (e) {
       logger.e('Error getting paged transactions by month/year: $e');
       return PagedTransactionResult(transactions: [], totalRecords: 0);
     }
   }
 
-  Future<List<Transaction>> getTransactionsInYear(int year, {bool forceRefresh = false}) async {
+  Future<List<Transaction>> getTransactionsInYear(
+    int year, {
+    bool forceRefresh = false,
+  }) async {
     if (_dirtyYears.contains(year)) {
       _yearCache.remove(year);
       _dirtyYears.remove(year);
@@ -325,11 +454,16 @@ class TransactionService {
   }
 
   Stream<List<Transaction>> watchTransactions() {
-    return _db.select(_db.transactionsTb).watch().map((rows) => rows.map(_mapRow).toList());
+    return _db
+        .select(_db.transactionsTb)
+        .watch()
+        .map((rows) => rows.map(_mapRow).toList());
   }
 
   Stream<List<Transaction>> watchTransactionsByCategory(int categoryId) {
-    return (_db.select(_db.transactionsTb)..where((t) => t.transactionCategoryId.equals(categoryId))).watch().map((rows) => rows.map(_mapRow).toList());
+    return (_db.select(_db.transactionsTb)
+          ..where((t) => t.transactionCategoryId.equals(categoryId)))
+        .watch()
+        .map((rows) => rows.map(_mapRow).toList());
   }
 }
-

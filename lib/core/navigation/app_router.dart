@@ -110,12 +110,10 @@ class AppRouter {
         name: RouterPath.addBudget,
         path: RouterPath.addBudget,
         builder: (_, GoRouterState state) {
+          final AddBudgetArgs? args = state.extra as AddBudgetArgs?;
           return BlocProvider<AddBudgetBloc>(
-            create: (_) => AddBudgetBloc(
-              sl<TransactionCategoryRepository>(),
-              sl<BudgetRepository>(),
-            ),
-            child: const AddBudgetPage(),
+            create: (_) => AddBudgetBloc(),
+            child: AddBudgetPage(args: args),
           );
         },
       ),

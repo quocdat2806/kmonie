@@ -9,6 +9,7 @@ class AppUIConstants {
   static const double smallPadding = 8.0;
   static const double largePadding = 24.0;
   static const double extraLargePadding = 32.0;
+  static const double extraSmallPadding = 4.0;
 
   static const double defaultMargin = 16.0;
   static const double smallMargin = 8.0;
@@ -72,11 +73,18 @@ class AppUIConstants {
 
   static const double strokeWidthDefault = 20.0;
   static const double strokeWidthSmall = 8.0;
-  static BoxDecoration defaultShadow({Color color = Colors.grey}) {
+  static BoxDecoration defaultShadow({Color color = AppColorConstants.grey}) {
     return BoxDecoration(
       color: AppColorConstants.white,
       borderRadius: BorderRadius.circular(AppUIConstants.defaultBorderRadius),
-      boxShadow: [BoxShadow(color: color.withValues(alpha: 0.4), spreadRadius: 1, blurRadius: 4, offset: const Offset(0, 2))],
+      boxShadow: [
+        BoxShadow(
+          color: color.withValues(alpha: 0.4),
+          spreadRadius: 1,
+          blurRadius: 4,
+          offset: const Offset(0, 2),
+        ),
+      ],
     );
   }
 }

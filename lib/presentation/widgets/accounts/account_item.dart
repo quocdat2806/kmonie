@@ -14,16 +14,33 @@ class AccountItem extends StatelessWidget {
   final bool showUnpinnedIcon;
   final bool showEditButton;
 
-  const AccountItem({super.key, required this.account, this.onTap, this.onPinTap, this.onEditTap, this.showPinned = false, this.showUnpinnedIcon = false, this.showEditButton = false});
+  const AccountItem({
+    super.key,
+    required this.account,
+    this.onTap,
+    this.onPinTap,
+    this.onEditTap,
+    this.showPinned = false,
+    this.showUnpinnedIcon = false,
+    this.showEditButton = false,
+  });
 
   @override
   Widget build(BuildContext context) {
     final bank = BankConstants.vietNamBanks.firstWhere(
       (b) => b.id == account.bankId,
-      orElse: () => Bank(id: account.bankId!, name: 'Unknown Bank', code: '', shortName: ''),
+      orElse: () => Bank(
+        id: account.bankId!,
+        name: 'Unknown Bank',
+        code: '',
+        shortName: '',
+      ),
     );
     return Container(
-      margin: const EdgeInsets.only(bottom: AppUIConstants.defaultSpacing, top: AppUIConstants.smallMargin),
+      margin: const EdgeInsets.only(
+        bottom: AppUIConstants.defaultMargin,
+        top: AppUIConstants.smallMargin,
+      ),
       decoration: AppUIConstants.defaultShadow(),
       child: Row(
         spacing: AppUIConstants.smallSpacing,
@@ -32,18 +49,32 @@ class AccountItem extends StatelessWidget {
             splashColor: Colors.transparent,
             onTap: onPinTap,
             child: SizedBox(
-              width: 80,
-              height: 80,
+              width: AppUIConstants.extraLargeContainerSize,
+              height: AppUIConstants.extraLargeContainerSize,
               child: Stack(
                 children: [
-                  CachedNetworkImage(imageUrl: bank.logo, maxWidthDiskCache: 80, maxHeightDiskCache: 80, width: 80, height: 80),
+                  CachedNetworkImage(
+                    imageUrl: bank.logo,
+                    maxWidthDiskCache: AppUIConstants.extraLargeContainerSize
+                        .toInt(),
+                    maxHeightDiskCache: AppUIConstants.extraLargeContainerSize
+                        .toInt(),
+                    width: AppUIConstants.extraLargeContainerSize,
+                    height: AppUIConstants.extraLargeContainerSize,
+                  ),
                   if (showPinned || showUnpinnedIcon)
                     Positioned(
                       top: 0,
                       right: 0,
                       child: AnimatedContainer(
                         duration: AppUIConstants.shortAnimationDuration,
-                        child: Icon(Icons.push_pin, size: AppUIConstants.smallIconSize, color: account.isPinned ? AppColorConstants.primary : AppColorConstants.grey),
+                        child: Icon(
+                          Icons.push_pin,
+                          size: AppUIConstants.smallIconSize,
+                          color: account.isPinned
+                              ? AppColorConstants.primary
+                              : AppColorConstants.grey,
+                        ),
                       ),
                     ),
                 ],
@@ -57,11 +88,23 @@ class AccountItem extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 spacing: AppUIConstants.smallSpacing,
                 children: [
-                  Text('${AppTextConstants.accountNameLabel}: ${account.name}', style: AppTextStyle.grayS12Medium),
+                  Text(
+                    '${AppTextConstants.accountNameLabel}: ${account.name}',
+                    style: AppTextStyle.grayS12Medium,
+                  ),
                   Text(bank.name, style: AppTextStyle.grayS12Medium),
-                  Text('${AppTextConstants.accountNumberLabel}: ${account.accountNumber}', style: AppTextStyle.grayS12Medium),
-                  Text('${AppTextConstants.accountTypeLabel}: ${account.type}', style: AppTextStyle.grayS12Medium),
-                  Text('${AppTextConstants.accountBalanceLabel}: ${FormatUtils.formatCurrency(account.balance)} ${AppTextConstants.currency}', style: AppTextStyle.grayS12Medium),
+                  Text(
+                    '${AppTextConstants.accountNumberLabel}: ${account.accountNumber}',
+                    style: AppTextStyle.grayS12Medium,
+                  ),
+                  Text(
+                    '${AppTextConstants.accountTypeLabel}: ${account.type}',
+                    style: AppTextStyle.grayS12Medium,
+                  ),
+                  Text(
+                    '${AppTextConstants.accountBalanceLabel}: ${FormatUtils.formatCurrency(account.balance)} ${AppTextConstants.currency}',
+                    style: AppTextStyle.grayS12Medium,
+                  ),
                 ],
               ),
             ),
@@ -70,7 +113,10 @@ class AccountItem extends StatelessWidget {
             InkWell(
               splashColor: Colors.transparent,
               onTap: onEditTap,
-              child: Text(AppTextConstants.editAccountText, style: AppTextStyle.blackS14Medium),
+              child: Text(
+                AppTextConstants.editAccountText,
+                style: AppTextStyle.blackS14Medium,
+              ),
             ),
           const SizedBox(width: AppUIConstants.smallSpacing),
         ],

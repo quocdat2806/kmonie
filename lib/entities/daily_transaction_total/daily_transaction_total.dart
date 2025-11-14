@@ -5,7 +5,12 @@ part 'daily_transaction_total.g.dart';
 
 @freezed
 abstract class DailyTransactionTotal with _$DailyTransactionTotal {
-  const factory DailyTransactionTotal({@Default(0.0) double income, @Default(0.0) double expense, @Default(0.0) double transfer}) = _DailyTransactionTotal;
+  const factory DailyTransactionTotal({
+    @Default(0.0) double income,
+    @Default(0.0) double expense,
+    @Default(0.0) double transfer,
+  }) = _DailyTransactionTotal;
 
-  factory DailyTransactionTotal.fromJson(Map<String, dynamic> json) => _$DailyTransactionTotalFromJson(json);
+  factory DailyTransactionTotal.fromJson(Map<String, dynamic> json) =>
+      _$DailyTransactionTotalFromJson(json);
 }

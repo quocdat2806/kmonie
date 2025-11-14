@@ -11,7 +11,17 @@ class AppGrid extends StatelessWidget {
   final ScrollPhysics? physics;
   final num? itemHeightFactor;
 
-  const AppGrid({super.key, required this.crossAxisCount, required this.itemCount, required this.itemBuilder, this.itemHeightFactor = 1.2, this.mainAxisSpacing = AppUIConstants.defaultGridMainAxisSpacing, this.crossAxisSpacing = AppUIConstants.defaultGridCrossAxisSpacing, this.shrinkWrap = false, this.physics});
+  const AppGrid({
+    super.key,
+    required this.crossAxisCount,
+    required this.itemCount,
+    required this.itemBuilder,
+    this.itemHeightFactor = 1.2,
+    this.mainAxisSpacing = AppUIConstants.defaultGridMainAxisSpacing,
+    this.crossAxisSpacing = AppUIConstants.defaultGridCrossAxisSpacing,
+    this.shrinkWrap = false,
+    this.physics,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +32,12 @@ class AppGrid extends StatelessWidget {
         return GridView.builder(
           shrinkWrap: shrinkWrap,
           physics: physics,
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: crossAxisCount, mainAxisExtent: itemHeight, crossAxisSpacing: crossAxisSpacing, mainAxisSpacing: mainAxisSpacing),
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: crossAxisCount,
+            mainAxisExtent: itemHeight,
+            crossAxisSpacing: crossAxisSpacing,
+            mainAxisSpacing: mainAxisSpacing,
+          ),
           itemCount: itemCount,
           itemBuilder: itemBuilder,
         );

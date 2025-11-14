@@ -4,7 +4,8 @@ class RouterPath {
   static const String main = '/main';
   static const String transactionActions = '/transaction-actions';
   static const String searchTransaction = '/search-transaction';
-  static const String calendarMonthlyTransaction = '/calendar-monthly-transaction';
+  static const String calendarMonthlyTransaction =
+      '/calendar-monthly-transaction';
   static const String addTransactionCategory = '/add-transaction-category';
   static const String detailTransaction = '/detail-transaction';
   static const String dailyTransactions = '/daily-transactions';

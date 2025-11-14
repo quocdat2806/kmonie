@@ -11,7 +11,10 @@ abstract class AccountRepository {
   Future<Either<Failure, Account?>> getPinnedAccount();
   Future<Either<Failure, void>> pinAccount(int accountId);
   Future<Either<Failure, void>> unpinAccount(int accountId);
-  Future<Either<Failure, void>> updateAccountBalance(int accountId, int newBalance);
+  Future<Either<Failure, void>> updateAccountBalance(
+    int accountId,
+    int newBalance,
+  );
   Stream<List<Account>> watchAccounts();
 }
 
@@ -91,7 +94,10 @@ class AccountRepositoryImpl implements AccountRepository {
   }
 
   @override
-  Future<Either<Failure, void>> updateAccountBalance(int accountId, int newBalance) async {
+  Future<Either<Failure, void>> updateAccountBalance(
+    int accountId,
+    int newBalance,
+  ) async {
     try {
       await _accountService.updateAccountBalance(accountId, newBalance);
       return const Right(null);

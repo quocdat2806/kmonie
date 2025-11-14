@@ -15,7 +15,8 @@ class AppStreamEvent {
   factory AppStreamEvent() => _instance;
   AppStreamEvent._internal();
 
-  final StreamController<AppStreamData> _eventController = StreamController<AppStreamData>.broadcast();
+  final StreamController<AppStreamData> _eventController =
+      StreamController<AppStreamData>.broadcast();
 
   Stream<AppStreamData> get eventStream => _eventController.stream;
 

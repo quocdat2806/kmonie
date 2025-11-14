@@ -8,7 +8,11 @@ class MonthPickerDialog extends StatefulWidget {
   final int initialMonth;
   final int initialYear;
 
-  const MonthPickerDialog({super.key, required this.initialMonth, required this.initialYear});
+  const MonthPickerDialog({
+    super.key,
+    required this.initialMonth,
+    required this.initialYear,
+  });
 
   @override
   State<MonthPickerDialog> createState() => _MonthPickerDialogState();
@@ -35,17 +39,24 @@ class _MonthPickerDialogState extends State<MonthPickerDialog> {
   Widget build(BuildContext context) {
     return Dialog(
       insetPadding: const EdgeInsets.all(AppUIConstants.smallPadding),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppUIConstants.defaultBorderRadius)),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(AppUIConstants.defaultBorderRadius),
+      ),
       child: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(AppUIConstants.defaultPadding),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text('${AppTextConstants.month} $selectedMonth ${AppTextConstants.year.toLowerCase()} $selectedYear', style: AppTextStyle.blackS18Bold),
+              Text(
+                '${AppTextConstants.month} $selectedMonth ${AppTextConstants.year.toLowerCase()} $selectedYear',
+                style: AppTextStyle.blackS18Bold,
+              ),
               const SizedBox(height: AppUIConstants.smallSpacing),
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: AppUIConstants.smallPadding),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppUIConstants.smallPadding,
+                ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -53,14 +64,20 @@ class _MonthPickerDialogState extends State<MonthPickerDialog> {
                       splashColor: Colors.transparent,
 
                       onTap: () => _changeYear(-1),
-                      child: const Icon(Icons.arrow_back_ios, size: AppUIConstants.smallIconSize),
+                      child: const Icon(
+                        Icons.arrow_back_ios,
+                        size: AppUIConstants.smallIconSize,
+                      ),
                     ),
                     Text('$selectedYear', style: AppTextStyle.blackS14Medium),
                     InkWell(
                       splashColor: Colors.transparent,
 
                       onTap: () => _changeYear(1),
-                      child: const Icon(Icons.arrow_forward_ios, size: AppUIConstants.smallIconSize),
+                      child: const Icon(
+                        Icons.arrow_forward_ios,
+                        size: AppUIConstants.smallIconSize,
+                      ),
                     ),
                   ],
                 ),
@@ -80,13 +97,25 @@ class _MonthPickerDialogState extends State<MonthPickerDialog> {
                     child: Center(
                       child: DecoratedBox(
                         decoration: BoxDecoration(
-                          color: isSelected ? AppColorConstants.primary : Colors.transparent,
-                          border: isSelected ? Border.all(color: AppColorConstants.black) : null,
-                          borderRadius: BorderRadius.circular(AppUIConstants.extraLargeBorderRadius),
+                          color: isSelected
+                              ? AppColorConstants.primary
+                              : Colors.transparent,
+                          border: isSelected
+                              ? Border.all(color: AppColorConstants.black)
+                              : null,
+                          borderRadius: BorderRadius.circular(
+                            AppUIConstants.extraLargeBorderRadius,
+                          ),
                         ),
                         child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: AppUIConstants.smallPadding, vertical: AppUIConstants.extraSmallSpacing),
-                          child: Text('Thg $month', style: AppTextStyle.blackS14Medium),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: AppUIConstants.smallPadding,
+                            vertical: AppUIConstants.extraSmallPadding,
+                          ),
+                          child: Text(
+                            'Thg $month',
+                            style: AppTextStyle.blackS14Medium,
+                          ),
                         ),
                       ),
                     ),
@@ -102,7 +131,9 @@ class _MonthPickerDialogState extends State<MonthPickerDialog> {
                     backgroundColor: Colors.transparent,
                   ),
                   AppButton(
-                    onPressed: () => AppNavigator(context: context).pop({'month': selectedMonth, 'year': selectedYear}),
+                    onPressed: () => AppNavigator(
+                      context: context,
+                    ).pop({'month': selectedMonth, 'year': selectedYear}),
                     text: AppTextConstants.confirm,
                     backgroundColor: Colors.transparent,
                   ),

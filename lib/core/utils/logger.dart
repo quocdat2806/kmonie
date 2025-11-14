@@ -36,7 +36,11 @@ class LoggerUtils {
     }
   }
 
-  void log(dynamic message, {bool printFullText = false, StackTrace? stackTrace}) {
+  void log(
+    dynamic message, {
+    bool printFullText = false,
+    StackTrace? stackTrace,
+  }) {
     if (printFullText) {
       _log(message);
     } else {

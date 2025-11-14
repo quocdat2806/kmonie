@@ -3,11 +3,14 @@ class Assets {
   Assets._();
 
   static const String fontsOpenSansBold = 'assets/fonts/OpenSans-Bold.ttf';
-  static const String fontsOpenSansExtraBold = 'assets/fonts/OpenSans-ExtraBold.ttf';
+  static const String fontsOpenSansExtraBold =
+      'assets/fonts/OpenSans-ExtraBold.ttf';
   static const String fontsOpenSansLight = 'assets/fonts/OpenSans-Light.ttf';
   static const String fontsOpenSansMedium = 'assets/fonts/OpenSans-Medium.ttf';
-  static const String fontsOpenSansRegular = 'assets/fonts/OpenSans-Regular.ttf';
-  static const String fontsOpenSansSemiBold = 'assets/fonts/OpenSans-SemiBold.ttf';
+  static const String fontsOpenSansRegular =
+      'assets/fonts/OpenSans-Regular.ttf';
+  static const String fontsOpenSansSemiBold =
+      'assets/fonts/OpenSans-SemiBold.ttf';
   static const String imagesLogo = 'assets/images/logo.png';
   static const String svgsAirPlain = 'assets/svgs/air_plain.svg';
   static const String svgsAngel = 'assets/svgs/angel.svg';

@@ -11,7 +11,13 @@ class AccountsList extends StatelessWidget {
   final String? title;
   final bool showTitle;
 
-  const AccountsList({super.key, this.accounts, this.onAccountTap, this.title, this.showTitle = true});
+  const AccountsList({
+    super.key,
+    this.accounts,
+    this.onAccountTap,
+    this.title,
+    this.showTitle = true,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -22,13 +28,23 @@ class AccountsList extends StatelessWidget {
       spacing: AppUIConstants.defaultSpacing,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        if (showTitle) Text(title ?? AppTextConstants.accountList, style: AppTextStyle.blackS14Bold),
+        if (showTitle)
+          Text(
+            title ?? AppTextConstants.accountList,
+            style: AppTextStyle.blackS14Bold,
+          ),
         Expanded(
           child: ListView.builder(
             itemCount: accounts!.length,
             itemBuilder: (context, index) {
               final account = accounts![index];
-              return AccountItem(account: account, onTap: onAccountTap != null ? () => onAccountTap!(account) : null, showPinned: true);
+              return AccountItem(
+                account: account,
+                onTap: onAccountTap != null
+                    ? () => onAccountTap!(account)
+                    : null,
+                showPinned: true,
+              );
             },
           ),
         ),

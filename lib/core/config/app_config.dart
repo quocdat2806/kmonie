@@ -11,5 +11,6 @@ class AppConfigs {
   static const String dailyChannelDescription = 'Thông báo nhắc nhở hằng ngày';
   static const String defaultLocation = 'Asia/Ho_Chi_Minh';
   static const String titleNotificationReminder = '💸 Nhắc nhở giao dịch';
-  static const String bodyNotificationReminder = 'Đừng quên ghi lại các giao dịch hôm nay nhé!';
+  static const String bodyNotificationReminder =
+      'Đừng quên ghi lại các giao dịch hôm nay nhé!';
 }

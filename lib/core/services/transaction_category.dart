@@ -17,7 +17,15 @@ class TransactionCategoryService {
   }
 
   TransactionCategory _mapRow(TransactionCategoryTbData r) {
-    return TransactionCategory(id: r.id, title: r.title, pathAsset: r.pathAsset, transactionType: TransactionType.values[r.transactionType], gradientColors: (jsonDecode(r.gradientColorsJson) as List).map((e) => e.toString()).toList());
+    return TransactionCategory(
+      id: r.id,
+      title: r.title,
+      pathAsset: r.pathAsset,
+      transactionType: TransactionType.values[r.transactionType],
+      gradientColors: (jsonDecode(r.gradientColorsJson) as List)
+          .map((e) => e.toString())
+          .toList(),
+    );
   }
 
   SeparatedCategories _separateCategories(List<TransactionCategory> all) {
@@ -39,7 +47,11 @@ class TransactionCategoryService {
       }
     }
 
-    return SeparatedCategories(expense: expense, income: income, transfer: transfer);
+    return SeparatedCategories(
+      expense: expense,
+      income: income,
+      transfer: transfer,
+    );
   }
 
   Future<List<TransactionCategory>> getAll({bool forceRefresh = false}) async {
@@ -56,10 +68,13 @@ class TransactionCategoryService {
   Future<List<TransactionCategory>> getByType(TransactionType type) async {
     try {
       if (_isCacheInitialized && _cachedCategories != null) {
-        return _cachedCategories!.where((e) => e.transactionType == type).toList();
+        return _cachedCategories!
+            .where((e) => e.transactionType == type)
+            .toList();
       }
 
-      final q = _db.select(_db.transactionCategoryTb)..where((t) => t.transactionType.equals(type.typeIndex));
+      final q = _db.select(_db.transactionCategoryTb)
+        ..where((t) => t.transactionType.equals(type.typeIndex));
       final rows = await q.get();
       return rows.map(_mapRow).toList();
     } catch (e) {
@@ -73,11 +88,3 @@ class TransactionCategoryService {
     return _separateCategories(all);
   }
 }
-
-// class SeparatedCategories {
-//   final List<TransactionCategory> expense;
-//   final List<TransactionCategory> income;
-//   final List<TransactionCategory> transfer;
-//
-//   const SeparatedCategories({required this.expense, required this.income, required this.transfer});
-// }

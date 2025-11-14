@@ -11,9 +11,15 @@ class AppExceedBudgetDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppUIConstants.defaultBorderRadius)),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(AppUIConstants.defaultBorderRadius),
+      ),
       actionsAlignment: MainAxisAlignment.center,
-      content: Text(AppTextConstants.overBudgetWarning, style: AppTextStyle.redS14, textAlign: TextAlign.center),
+      content: Text(
+        AppTextConstants.overBudgetWarning,
+        style: AppTextStyle.redS14,
+        textAlign: TextAlign.center,
+      ),
       actions: <Widget>[
         Row(
           spacing: AppUIConstants.smallSpacing,
@@ -26,7 +32,11 @@ class AppExceedBudgetDialog extends StatelessWidget {
               ),
             ),
             Expanded(
-              child: AppButton(onPressed: onConfirm ?? () {}, text: AppTextConstants.confirm, backgroundColor: Colors.transparent),
+              child: AppButton(
+                onPressed: onConfirm ?? () {},
+                text: AppTextConstants.confirm,
+                backgroundColor: Colors.transparent,
+              ),
             ),
           ],
         ),

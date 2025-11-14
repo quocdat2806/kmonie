@@ -34,7 +34,11 @@ class _DatePickerScreenState extends State<DatePickerScreen> {
   @override
   Widget build(BuildContext context) {
     final firstDayOfMonth = DateTime(_displayMonth.year, _displayMonth.month);
-    final lastDayOfMonth = DateTime(_displayMonth.year, _displayMonth.month + 1, 0);
+    final lastDayOfMonth = DateTime(
+      _displayMonth.year,
+      _displayMonth.month + 1,
+      0,
+    );
     final daysInMonth = lastDayOfMonth.day;
     final firstWeekday = ((firstDayOfMonth.weekday - 1) % 7);
 
@@ -43,18 +47,33 @@ class _DatePickerScreenState extends State<DatePickerScreen> {
       body: Center(
         child: Container(
           margin: const EdgeInsets.all(AppUIConstants.defaultMargin),
-          decoration: BoxDecoration(color: AppColorConstants.white, borderRadius: BorderRadius.circular(AppUIConstants.largeBorderRadius)),
+          decoration: BoxDecoration(
+            color: AppColorConstants.white,
+            borderRadius: BorderRadius.circular(
+              AppUIConstants.largeBorderRadius,
+            ),
+          ),
           child: Padding(
             padding: const EdgeInsets.all(AppUIConstants.defaultPadding),
             child: Column(
               spacing: AppUIConstants.defaultSpacing,
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text(AppDateUtils.formatHeaderDate(_selectedDate), style: AppTextStyle.blackS24Bold),
+                Text(
+                  AppDateUtils.formatHeaderDate(_selectedDate),
+                  style: AppTextStyle.blackS24Bold,
+                ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Row(children: [Text('${AppTextConstants.month} ${_displayMonth.month} ${AppTextConstants.year.toLowerCase()} ${_displayMonth.year}', style: AppTextStyle.blackS14)]),
+                    Row(
+                      children: [
+                        Text(
+                          '${AppTextConstants.month} ${_displayMonth.month} ${AppTextConstants.year.toLowerCase()} ${_displayMonth.year}',
+                          style: AppTextStyle.blackS14,
+                        ),
+                      ],
+                    ),
                     Row(
                       spacing: AppUIConstants.defaultSpacing,
                       children: [
@@ -63,14 +82,20 @@ class _DatePickerScreenState extends State<DatePickerScreen> {
                           onTap: () {
                             _changeMonth(-1);
                           },
-                          child: const Icon(Icons.arrow_back_ios_new, size: AppUIConstants.smallIconSize),
+                          child: const Icon(
+                            Icons.arrow_back_ios_new,
+                            size: AppUIConstants.smallIconSize,
+                          ),
                         ),
                         InkWell(
                           splashColor: Colors.transparent,
                           onTap: () {
                             _changeMonth(1);
                           },
-                          child: const Icon(Icons.arrow_forward_ios, size: AppUIConstants.smallIconSize),
+                          child: const Icon(
+                            Icons.arrow_forward_ios,
+                            size: AppUIConstants.smallIconSize,
+                          ),
                         ),
                       ],
                     ),
@@ -84,7 +109,12 @@ class _DatePickerScreenState extends State<DatePickerScreen> {
                   physics: const NeverScrollableScrollPhysics(),
                   itemBuilder: (context, index) {
                     if (index < 7) {
-                      return Center(child: Text(AppDateUtils.weekdays[index], style: AppTextStyle.blackS14Medium));
+                      return Center(
+                        child: Text(
+                          AppDateUtils.weekdays[index],
+                          style: AppTextStyle.blackS14Medium,
+                        ),
+                      );
                     }
 
                     final dayIndex = index - 7 - firstWeekday;
@@ -93,21 +123,43 @@ class _DatePickerScreenState extends State<DatePickerScreen> {
                     }
 
                     final day = dayIndex + 1;
-                    final date = DateTime(_displayMonth.year, _displayMonth.month, day);
-                    final isSelected = AppDateUtils.isSameDate(date, _selectedDate);
+                    final date = DateTime(
+                      _displayMonth.year,
+                      _displayMonth.month,
+                      day,
+                    );
+                    final isSelected = AppDateUtils.isSameDate(
+                      date,
+                      _selectedDate,
+                    );
 
                     return InkWell(
                       splashColor: Colors.transparent,
                       onTap: () {
-                        final now = DateTime.now();
-                        final date = DateTime(_displayMonth.year, _displayMonth.month, day, now.hour, now.minute, now.second, now.millisecond, now.microsecond);
+                        final date = DateTime(
+                          _displayMonth.year,
+                          _displayMonth.month,
+                          day,
+                        );
                         setState(() {
                           _selectedDate = date;
                         });
                       },
                       child: Container(
-                        decoration: BoxDecoration(color: isSelected ? AppColorConstants.primary : Colors.transparent, shape: BoxShape.circle),
-                        child: Center(child: Text('$day', style: isSelected ? AppTextStyle.blackS14Bold : AppTextStyle.blackS14Medium)),
+                        decoration: BoxDecoration(
+                          color: isSelected
+                              ? AppColorConstants.primary
+                              : Colors.transparent,
+                          shape: BoxShape.circle,
+                        ),
+                        child: Center(
+                          child: Text(
+                            '$day',
+                            style: isSelected
+                                ? AppTextStyle.blackS14Bold
+                                : AppTextStyle.blackS14Medium,
+                          ),
+                        ),
                       ),
                     );
                   },
@@ -125,7 +177,8 @@ class _DatePickerScreenState extends State<DatePickerScreen> {
                     Expanded(
                       child: AppButton(
                         text: AppTextConstants.confirm,
-                        onPressed: () => AppNavigator(context: context).pop(_selectedDate),
+                        onPressed: () =>
+                            AppNavigator(context: context).pop(_selectedDate),
                         backgroundColor: Colors.transparent,
                       ),
                     ),

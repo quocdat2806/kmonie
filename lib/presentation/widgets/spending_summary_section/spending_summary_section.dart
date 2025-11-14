@@ -4,8 +4,8 @@ import 'package:kmonie/core/text_style/text_style.dart';
 import 'package:kmonie/core/utils/utils.dart';
 
 class SpendingSummarySection extends StatelessWidget {
-  final int ? year;
-  final int ? month;
+  final int? year;
+  final int? month;
   final int expense;
   final int income;
   final int balance;
@@ -14,8 +14,8 @@ class SpendingSummarySection extends StatelessWidget {
 
   const SpendingSummarySection({
     super.key,
-     this.year,
-     this.month,
+    this.year,
+    this.month,
     required this.expense,
     required this.income,
     required this.balance,
@@ -27,7 +27,7 @@ class SpendingSummarySection extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        if(year != null && month != null)...[
+        if (year != null && month != null) ...[
           Expanded(
             child: InkWell(
               onTap: onTap,

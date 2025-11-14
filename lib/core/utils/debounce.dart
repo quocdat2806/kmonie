@@ -6,6 +6,7 @@ class DebounceUtils {
   DebounceUtils._();
 
   static EventTransformer<T> restartableDebounce<T>(Duration duration) {
-    return (Stream<T> events, EventMapper<T> mapper) => restartable<T>()(events.debounceTime(duration), mapper);
+    return (Stream<T> events, EventMapper<T> mapper) =>
+        restartable<T>()(events.debounceTime(duration), mapper);
   }
 }

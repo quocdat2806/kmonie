@@ -8,7 +8,8 @@ class NotificationService {
   static final NotificationService I = NotificationService._();
   factory NotificationService() => I;
 
-  final FlutterLocalNotificationsPlugin _plugin = FlutterLocalNotificationsPlugin();
+  final FlutterLocalNotificationsPlugin _plugin =
+      FlutterLocalNotificationsPlugin();
   bool _initialized = false;
 
   Future<void> init() async {
@@ -19,25 +20,53 @@ class NotificationService {
 
     const androidInit = AndroidInitializationSettings('@mipmap/ic_launcher');
     const iosInit = DarwinInitializationSettings();
-    const initSettings = InitializationSettings(android: androidInit, iOS: iosInit);
+    const initSettings = InitializationSettings(
+      android: androidInit,
+      iOS: iosInit,
+    );
 
     await _plugin.initialize(initSettings);
 
     _initialized = true;
   }
 
-  Future<void> scheduleDailyReminder({int hour = 21, int minute = 0, int id = 0}) async {
+  Future<void> scheduleDailyReminder({
+    int hour = 21,
+    int minute = 0,
+    int id = 0,
+  }) async {
     final now = tz.TZDateTime.now(tz.local);
-    var scheduled = tz.TZDateTime(tz.local, now.year, now.month, now.day, hour, minute);
+    var scheduled = tz.TZDateTime(
+      tz.local,
+      now.year,
+      now.month,
+      now.day,
+      hour,
+      minute,
+    );
     if (scheduled.isBefore(now)) {
       scheduled = scheduled.add(const Duration(days: 1));
     }
 
-    const androidDetails = AndroidNotificationDetails(AppConfigs.dailyChannelId, AppConfigs.dailyChannelName, channelDescription: AppConfigs.dailyChannelDescription, importance: Importance.max, priority: Priority.high);
+    const androidDetails = AndroidNotificationDetails(
+      AppConfigs.dailyChannelId,
+      AppConfigs.dailyChannelName,
+      channelDescription: AppConfigs.dailyChannelDescription,
+      importance: Importance.max,
+      priority: Priority.high,
+    );
 
     const notificationDetails = NotificationDetails(android: androidDetails);
 
-    await _plugin.zonedSchedule(id, AppConfigs.titleNotificationReminder, AppConfigs.bodyNotificationReminder, scheduled, notificationDetails, androidScheduleMode: AndroidScheduleMode.alarmClock, matchDateTimeComponents: DateTimeComponents.time);
+    await _plugin.zonedSchedule(
+      id,
+      AppConfigs.titleNotificationReminder,
+      AppConfigs.bodyNotificationReminder,
+      scheduled,
+      notificationDetails,
+      androidScheduleMode: AndroidScheduleMode.alarmClock,
+      matchDateTimeComponents: DateTimeComponents.time,
+    );
   }
 
   // Future<void> showInAppNotification({required int id, required String title, required String body, String? payload}) async {

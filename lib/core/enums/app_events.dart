@@ -3,5 +3,5 @@ enum AppEvent {
   updateTransaction,
   deleteTransaction,
   budgetChanged,
-  accountChanged
+  accountChanged,
 }

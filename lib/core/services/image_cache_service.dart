@@ -11,7 +11,12 @@ class ImageCacheService {
     for (final bank in BankConstants.vietNamBanks) {
       if (bank.logo.isNotEmpty) {
         try {
-          CachedNetworkImageProvider(bank.logo, maxHeight: 80, maxWidth: 80, cacheKey: bank.logo).resolve(const ImageConfiguration());
+          CachedNetworkImageProvider(
+            bank.logo,
+            maxHeight: AppUIConstants.extraLargeContainerSize.toInt(),
+            maxWidth: AppUIConstants.extraLargeContainerSize.toInt(),
+            cacheKey: bank.logo,
+          ).resolve(const ImageConfiguration());
         } catch (e) {
           continue;
         }

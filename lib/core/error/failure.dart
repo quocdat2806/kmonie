@@ -3,5 +3,7 @@ part 'failure.freezed.dart';
 
 @freezed
 sealed class Failure with _$Failure {
-  const factory Failure.cache([@Default('Cache error occurred') String message]) = CacheFailure;
+  const factory Failure.cache([
+    @Default('Cache error occurred') String message,
+  ]) = CacheFailure;
 }
