@@ -12,5 +12,7 @@ abstract class AddBudgetState with _$AddBudgetState {
     @Default(0) int currentInput,
     @Default(0) int monthlyBudget,
     @Default({}) Map<int, int> categoryBudgets,
+    int? currentInputIdCategory,
+    @Default(false) bool isKeyboardVisible,
   }) = _AddBudgetState;
 }

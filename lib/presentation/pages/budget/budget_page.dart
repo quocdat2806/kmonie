@@ -63,12 +63,18 @@ class _BudgetPageChildState extends State<BudgetPageChild> {
                       .where((c) => (state.categoryBudgets[c.id!] ?? 0) > 0)
                       .toList();
                   return ListView.builder(
+                    padding: const EdgeInsets.only(bottom: 80),
                     itemCount: listBudget.length,
                     itemBuilder: (context, index) {
                       final category = listBudget[index];
                       final budget = state.categoryBudgets[category.id!] ?? 0;
                       final spent = state.categorySpent[category.id!] ?? 0;
-                      return _buildCategoryCard(category, budget, spent);
+                      return Padding(
+                        padding: const EdgeInsets.all(
+                          AppUIConstants.smallPadding,
+                        ),
+                        child: _buildCategoryCard(category, budget, spent),
+                      );
                     },
                   );
                 },

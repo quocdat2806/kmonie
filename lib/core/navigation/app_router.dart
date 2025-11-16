@@ -112,13 +112,13 @@ class AppRouter {
         builder: (_, GoRouterState state) {
           final AddBudgetArgs? args = state.extra as AddBudgetArgs?;
           return BlocProvider<AddBudgetBloc>(
-            create: (_) => AddBudgetBloc(),
+            create: (_) => AddBudgetBloc(sl<BudgetRepository>()),
             child: AddBudgetPage(args: args),
           );
         },
       ),
       GoRoute(
-        path: RouterPath.addAccount,
+        path: RouterPath.accountActions,
         builder: (_, GoRouterState state) {
           final AccountActionsPageArgs? args =
               state.extra as AccountActionsPageArgs?;
@@ -131,10 +131,7 @@ class AppRouter {
       GoRoute(
         path: RouterPath.manageAccount,
         builder: (_, GoRouterState state) {
-          return BlocProvider<AccountActionsBloc>(
-            create: (context) => AccountActionsBloc(sl<AccountRepository>()),
-            child: const ManageAccountPage(),
-          );
+          return const ManageAccountPage();
         },
       ),
       GoRoute(

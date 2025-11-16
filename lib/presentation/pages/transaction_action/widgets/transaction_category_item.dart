@@ -10,15 +10,22 @@ class TransactionCategoryItem extends StatelessWidget {
   final double itemWidth;
   final VoidCallback onTap;
 
-  const TransactionCategoryItem({super.key, required this.category, required this.isSelected, required this.itemWidth, required this.onTap});
+  const TransactionCategoryItem({
+    super.key,
+    required this.category,
+    required this.isSelected,
+    required this.itemWidth,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
-    final Color backgroundColor = isSelected ? AppColorConstants.primary : AppColorConstants.greyWhite;
+    final Color backgroundColor = isSelected
+        ? AppColorConstants.primary
+        : AppColorConstants.greyWhite;
     final iconSize = itemWidth * AppUIConstants.categoryIconSizeRatio;
     return InkWell(
       splashColor: Colors.transparent,
-
       onTap: onTap,
       child: Column(
         children: [
@@ -26,15 +33,28 @@ class TransactionCategoryItem extends StatelessWidget {
             width: itemWidth * AppUIConstants.categoryItemSizeRatio,
             height: itemWidth * AppUIConstants.categoryItemSizeRatio,
             child: DecoratedBox(
-              decoration: BoxDecoration(color: backgroundColor, shape: BoxShape.circle),
+              decoration: BoxDecoration(
+                color: backgroundColor,
+                shape: BoxShape.circle,
+              ),
               child: Center(
-                child: SvgPicture.asset(category.pathAsset, width: iconSize, height: iconSize),
+                child: SvgPicture.asset(
+                  category.pathAsset,
+                  width: iconSize,
+                  height: iconSize,
+                ),
               ),
             ),
           ),
           const SizedBox(height: AppUIConstants.smallSpacing),
           Flexible(
-            child: Text(category.title, textAlign: TextAlign.center, style: AppTextStyle.blackS12Medium, maxLines: AppUIConstants.defaultMaxLines, overflow: TextOverflow.ellipsis),
+            child: Text(
+              category.title,
+              textAlign: TextAlign.center,
+              style: AppTextStyle.blackS12Medium,
+              maxLines: AppUIConstants.defaultMaxLines,
+              overflow: TextOverflow.ellipsis,
+            ),
           ),
         ],
       ),

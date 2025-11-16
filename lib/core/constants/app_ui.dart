@@ -34,7 +34,9 @@ class AppUIConstants {
 
   static const double superSmallContainerSize = 12.0;
   static const double extraSmallContainerSize = 24.0;
+
   static const double smallContainerSize = 32.0;
+  static const double defaultContainerSize = 40.0;
   static const double mediumContainerSize = 48.0;
   static const double largeContainerSize = 60.0;
   static const double extraLargeContainerSize = 80.0;

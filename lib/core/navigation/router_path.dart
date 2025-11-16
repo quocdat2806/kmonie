@@ -11,7 +11,7 @@ class RouterPath {
   static const String dailyTransactions = '/daily-transactions';
   static const String budget = '/budget';
   static const String addBudget = '/add-budget';
-  static const String addAccount = '/add-account';
+  static const String accountActions = '/account-actions';
   static const String manageAccount = '/manage-account';
   static const String monthlyStatistics = '/monthly-statistics';
   static const String settings = '/settings';

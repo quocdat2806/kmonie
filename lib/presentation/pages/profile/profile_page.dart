@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:kmonie/core/constants/constants.dart';
-import 'package:kmonie/core/navigation/router_path.dart';
+import 'package:kmonie/core/navigation/navigation.dart';
 import 'package:kmonie/core/text_style/text_style.dart';
-import 'package:kmonie/generated/assets.dart';
+import 'package:kmonie/generated/generated.dart';
 import 'package:kmonie/presentation/presentation.dart';
 
 import 'widgets/menu_item.dart';
@@ -18,7 +18,10 @@ class ProfilePage extends StatelessWidget {
       child: Column(
         children: [
           _buildHeader(),
-          ColoredBox(color: AppColorConstants.white, child: _buildBody(context)),
+          ColoredBox(
+            color: AppColorConstants.white,
+            child: _buildBody(context),
+          ),
         ],
       ),
     );
@@ -29,7 +32,11 @@ class ProfilePage extends StatelessWidget {
       color: AppColorConstants.primary,
       child: Padding(
         padding: const EdgeInsets.all(AppUIConstants.largePadding),
-        child: Row(children: [Text('KMonie - Xin chào', style: AppTextStyle.blackS20Bold)]),
+        child: Row(
+          children: [
+            Text(AppTextConstants.hello, style: AppTextStyle.blackS20Bold),
+          ],
+        ),
       ),
     );
   }
@@ -37,9 +44,16 @@ class ProfilePage extends StatelessWidget {
   Widget _buildBody(BuildContext context) {
     return Column(
       children: [
-        const MenuItem(iconAsset: Assets.svgsLike, title: 'Giới thiệu cho bạn bè'),
+        const MenuItem(
+          iconAsset: Assets.svgsLike,
+          title: 'Giới thiệu cho bạn bè',
+        ),
         const AppDivider(),
-        MenuItem(iconAsset: Assets.svgsSetting, title: 'Cài đặt', onTap: () => context.push(RouterPath.settings)),
+        MenuItem(
+          iconAsset: Assets.svgsSetting,
+          title: AppTextConstants.settings,
+          onTap: () => context.push(RouterPath.settings),
+        ),
       ],
     );
   }

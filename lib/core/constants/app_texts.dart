@@ -110,4 +110,13 @@ class AppTextConstants {
   static const String spent = 'Chi tiêu';
   static const String overBudget = 'Vượt quá';
   static const String settingBudget = '+ Cài đặt ngân sách';
+  static const String settingMonthlyBudget = 'Ngân sách hàng tháng';
+  static const String settings = 'Cài đặt';
+  static const String deleteAllData = 'Xóa tất cả dữ liệu';
+  static const String reminder = 'Lời nhắc nhở';
+  static const String autoSchedule = 'Đặt lịch tự động';
+  static const String useAI = 'Sử dụng AI';
+  static const String hello = 'KMonie - Xin chào';
+  static const String noAccount = 'Chưa có tài khoản nào';
+  static const String addAccountText = 'Nhấn nút + để thêm tài khoản mới';
 }

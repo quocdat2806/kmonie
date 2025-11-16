@@ -25,7 +25,6 @@ class AccountsList extends StatelessWidget {
       return const SizedBox.shrink();
     }
     return Column(
-      spacing: AppUIConstants.defaultSpacing,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         if (showTitle)
@@ -38,12 +37,15 @@ class AccountsList extends StatelessWidget {
             itemCount: accounts!.length,
             itemBuilder: (context, index) {
               final account = accounts![index];
-              return AccountItem(
-                account: account,
-                onTap: onAccountTap != null
-                    ? () => onAccountTap!(account)
-                    : null,
-                showPinned: true,
+              return Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: AccountItem(
+                  account: account,
+                  onTap: onAccountTap != null
+                      ? () => onAccountTap!(account)
+                      : null,
+                  showPinned: true,
+                ),
               );
             },
           ),

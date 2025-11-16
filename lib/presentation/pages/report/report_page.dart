@@ -60,9 +60,7 @@ class _ReportPageChildState extends State<ReportPageChild> {
               if (state.selectedTabIndex == ReportType.account.typeIndex) {
                 return Expanded(
                   child: Padding(
-                    padding: const EdgeInsets.all(
-                      AppUIConstants.defaultPadding,
-                    ),
+                    padding: const EdgeInsets.all(AppUIConstants.smallPadding),
                     child: Column(
                       children: [
                         const NetWorthCard(),
@@ -133,7 +131,7 @@ class _ReportPageChildState extends State<ReportPageChild> {
           child: _buildActionButton(
             text: AppTextConstants.addAccount,
             onTap: () {
-              AppNavigator(context: context).push(RouterPath.addAccount);
+              AppNavigator(context: context).push(RouterPath.accountActions);
             },
           ),
         ),

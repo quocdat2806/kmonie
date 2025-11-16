@@ -3,11 +3,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kmonie/core/constants/constants.dart';
 import 'package:kmonie/core/text_style/text_style.dart';
 import 'package:kmonie/presentation/widgets/widgets.dart';
-import 'package:kmonie/core/di/di.dart';
-import 'package:kmonie/presentation/blocs/account_actions/account_actions.dart';
+import 'package:kmonie/presentation/blocs/blocs.dart';
 import 'package:kmonie/entities/entities.dart';
-import 'package:kmonie/repositories/repositories.dart';
-import 'package:kmonie/presentation/pages/manage_account/manage_account_page.dart';
+import 'package:kmonie/args/args.dart';
 
 class AccountActionsPage extends StatelessWidget {
   final AccountActionsPageArgs? args;
@@ -16,10 +14,7 @@ class AccountActionsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider<AccountActionsBloc>(
-      create: (_) => AccountActionsBloc(sl<AccountRepository>()),
-      child: AccountActionsPageChild(args: args),
-    );
+    return AccountActionsPageChild(args: args);
   }
 }
 
@@ -37,7 +32,8 @@ class _AccountActionsPageState extends State<AccountActionsPageChild> {
   final TextEditingController _amountController = TextEditingController();
   final TextEditingController _balanceController = TextEditingController();
   final TextEditingController _notesController = TextEditingController();
-  final TextEditingController _accountNumberController = TextEditingController();
+  final TextEditingController _accountNumberController =
+      TextEditingController();
 
   String _selectedType = 'Tiết kiệm';
   Bank? _selectedBank;
@@ -68,7 +64,12 @@ class _AccountActionsPageState extends State<AccountActionsPageChild> {
       if (account.bankId != null) {
         _selectedBank = BankConstants.vietNamBanks.firstWhere(
           (b) => b.id == account.bankId,
-          orElse: () => Bank(id: account.bankId!, name: 'Unknown Bank', code: '', shortName: ''),
+          orElse: () => Bank(
+            id: account.bankId!,
+            name: 'Unknown Bank',
+            code: '',
+            shortName: '',
+          ),
         );
       } else {
         _selectedBank = null;
@@ -90,7 +91,6 @@ class _AccountActionsPageState extends State<AccountActionsPageChild> {
   Widget build(BuildContext context) {
     return BlocListener<AccountActionsBloc, AccountActionsState>(
       listener: (context, state) {
-        // Listen to accounts changes
         if (_submitted && state.accounts.isNotEmpty) {
           _submitted = false;
           Navigator.of(context).pop();
@@ -104,7 +104,9 @@ class _AccountActionsPageState extends State<AccountActionsPageChild> {
     return Scaffold(
       backgroundColor: AppColorConstants.greyWhite,
       appBar: CustomAppBar(
-        title: _isEditMode ? AppTextConstants.editAccount : AppTextConstants.addAccount,
+        title: _isEditMode
+            ? AppTextConstants.editAccount
+            : AppTextConstants.addAccount,
         actions: [
           IconButton(
             onPressed: () => _saveAccount(context),
@@ -121,15 +123,29 @@ class _AccountActionsPageState extends State<AccountActionsPageChild> {
             children: [
               _buildInputField(
                 label: AppTextConstants.accountName,
-                child: AppTextField(controller: _nameController, hintText: AppTextConstants.accountNameHint, filledColor: AppColorConstants.white),
+                child: AppTextField(
+                  controller: _nameController,
+                  hintText: AppTextConstants.accountNameHint,
+                  filledColor: AppColorConstants.white,
+                ),
               ),
               _buildInputField(
                 label: AppTextConstants.accountNumber,
-                child: AppTextField(controller: _accountNumberController, keyboardType: TextInputType.number, hintText: AppTextConstants.accountNumberHint, filledColor: AppColorConstants.white),
+                child: AppTextField(
+                  controller: _accountNumberController,
+                  keyboardType: TextInputType.number,
+                  hintText: AppTextConstants.accountNumberHint,
+                  filledColor: AppColorConstants.white,
+                ),
               ),
               _buildInputField(
                 label: 'Số dư',
-                child: AppTextField(controller: _balanceController, keyboardType: TextInputType.number, hintText: 'Nhập số dư tài khoản', filledColor: AppColorConstants.white),
+                child: AppTextField(
+                  controller: _balanceController,
+                  keyboardType: TextInputType.number,
+                  hintText: 'Nhập số dư tài khoản',
+                  filledColor: AppColorConstants.white,
+                ),
               ),
               // const SizedBox(height: AppUIConstants.defaultSpacing),
               _buildInputField(
@@ -140,13 +156,23 @@ class _AccountActionsPageState extends State<AccountActionsPageChild> {
                     _showTypePicker();
                   },
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: AppUIConstants.defaultPadding, vertical: AppUIConstants.defaultSpacing),
-                    decoration: BoxDecoration(color: AppColorConstants.white, borderRadius: BorderRadius.circular(4)),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: AppUIConstants.defaultPadding,
+                      vertical: AppUIConstants.defaultSpacing,
+                    ),
+                    decoration: BoxDecoration(
+                      color: AppColorConstants.white,
+                      borderRadius: BorderRadius.circular(4),
+                    ),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(_selectedType, style: AppTextStyle.blackS14Medium),
-                        const Icon(Icons.keyboard_arrow_down, color: AppColorConstants.black, size: 20),
+                        const Icon(
+                          Icons.keyboard_arrow_down,
+                          color: AppColorConstants.black,
+                          size: 20,
+                        ),
                       ],
                     ),
                   ),
@@ -160,50 +186,48 @@ class _AccountActionsPageState extends State<AccountActionsPageChild> {
                     _showBankPicker();
                   },
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: AppUIConstants.defaultPadding, vertical: AppUIConstants.defaultSpacing),
-                    decoration: BoxDecoration(color: AppColorConstants.white, borderRadius: BorderRadius.circular(4)),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: AppUIConstants.defaultPadding,
+                      vertical: AppUIConstants.defaultSpacing,
+                    ),
+                    decoration: BoxDecoration(
+                      color: AppColorConstants.white,
+                      borderRadius: BorderRadius.circular(4),
+                    ),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Expanded(
                           child: Row(
                             children: [
-                              if ((_selectedBank?.logo ?? '').isNotEmpty) ...[Image.network(_selectedBank!.logo, width: 40, height: 40), const SizedBox(width: 8)],
+                              if ((_selectedBank?.logo ?? '').isNotEmpty) ...[
+                                Image.network(
+                                  _selectedBank!.logo,
+                                  width: 40,
+                                  height: 40,
+                                ),
+                                const SizedBox(width: 8),
+                              ],
                               Flexible(
-                                child: Text(_selectedBank?.name ?? 'Chưa chọn ngân hàng', style: AppTextStyle.blackS14Medium, overflow: TextOverflow.ellipsis),
+                                child: Text(
+                                  _selectedBank?.name ?? 'Chưa chọn ngân hàng',
+                                  style: AppTextStyle.blackS14Medium,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
                               ),
                             ],
                           ),
                         ),
-                        const Icon(Icons.keyboard_arrow_down, color: AppColorConstants.black, size: 20),
+                        const Icon(
+                          Icons.keyboard_arrow_down,
+                          color: AppColorConstants.black,
+                          size: 20,
+                        ),
                       ],
                     ),
                   ),
                 ),
               ),
-              // const SizedBox(height: AppUIConstants.defaultSpacing),
-              // // Pinned status indicator (only show in edit mode)
-              // if (_isEditMode) ...[
-              //   Container(
-              //     padding: const EdgeInsets.all(AppUIConstants.defaultPadding),
-              //     decoration: BoxDecoration(
-              //       color: widget.args!.account!.isPinned ? Colors.orange.withValues(alpha: 0.1) : AppColorConstants.greyWhite,
-              //       borderRadius: BorderRadius.circular(8),
-              //       border: Border.all(color: widget.args!.account!.isPinned ? Colors.orange : AppColorConstants.grey),
-              //     ),
-              //     child: Row(
-              //       children: [
-              //         Icon(widget.args!.account!.isPinned ? Icons.push_pin : Icons.push_pin_outlined, color: widget.args!.account!.isPinned ? Colors.orange : AppColorConstants.grey, size: 20),
-              //         const SizedBox(width: 8),
-              //         Text(
-              //           widget.args!.account!.isPinned ? 'Tài khoản đã được ghim' : 'Tài khoản chưa được ghim',
-              //           style: TextStyle(color: widget.args!.account!.isPinned ? Colors.orange : AppColorConstants.grey, fontWeight: FontWeight.w500),
-              //         ),
-              //       ],
-              //     ),
-              //   ),
-              //   const SizedBox(height: AppUIConstants.defaultSpacing),
-              // ],
             ],
           ),
         ),
@@ -214,6 +238,7 @@ class _AccountActionsPageState extends State<AccountActionsPageChild> {
   Widget _buildInputField({required String label, required Widget child}) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
+      spacing: AppUIConstants.smallSpacing,
       children: [
         Text(label, style: AppTextStyle.blackS14Medium),
         child,
@@ -229,7 +254,9 @@ class _AccountActionsPageState extends State<AccountActionsPageChild> {
       isScrollControlled: true,
       shape: const RoundedRectangleBorder(),
       builder: (context) => Container(
-        constraints: BoxConstraints(maxHeight: MediaQuery.of(context).size.height * 0.5),
+        constraints: BoxConstraints(
+          maxHeight: MediaQuery.of(context).size.height * 0.5,
+        ),
         padding: const EdgeInsets.all(AppUIConstants.defaultPadding),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -242,9 +269,17 @@ class _AccountActionsPageState extends State<AccountActionsPageChild> {
                 children: _banks
                     .map(
                       (b) => ListTile(
-                        leading: b.logo.isNotEmpty ? Image.network(b.logo, width: 80, height: 80) : const SizedBox(width: 24, height: 24),
-                        title: Text(b.shortName, style: AppTextStyle.blackS14Medium),
-                        subtitle: Text(b.code, style: AppTextStyle.grayS12Medium),
+                        leading: b.logo.isNotEmpty
+                            ? Image.network(b.logo, width: 80, height: 80)
+                            : const SizedBox(width: 24, height: 24),
+                        title: Text(
+                          b.shortName,
+                          style: AppTextStyle.blackS14Medium,
+                        ),
+                        subtitle: Text(
+                          b.code,
+                          style: AppTextStyle.grayS12Medium,
+                        ),
                         onTap: () {
                           setState(() {
                             _selectedBank = b;
@@ -272,12 +307,17 @@ class _AccountActionsPageState extends State<AccountActionsPageChild> {
       isScrollControlled: true,
       shape: const RoundedRectangleBorder(),
       builder: (context) => Container(
-        constraints: BoxConstraints(maxHeight: MediaQuery.of(context).size.height * 0.5),
+        constraints: BoxConstraints(
+          maxHeight: MediaQuery.of(context).size.height * 0.5,
+        ),
         padding: const EdgeInsets.all(AppUIConstants.defaultPadding),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(AppTextConstants.accountType, style: AppTextStyle.blackS16Bold),
+            Text(
+              AppTextConstants.accountType,
+              style: AppTextStyle.blackS16Bold,
+            ),
             const SizedBox(height: AppUIConstants.defaultSpacing),
             Flexible(
               child: ListView(
@@ -309,12 +349,24 @@ class _AccountActionsPageState extends State<AccountActionsPageChild> {
       return;
     }
 
-    final account = Account(id: _isEditMode ? widget.args!.account!.id : null, name: _nameController.text.trim(), type: _selectedType, amount: int.tryParse(_amountController.text) ?? 0, balance: int.tryParse(_balanceController.text) ?? 0, accountNumber: _accountNumberController.text.trim(), bankId: _selectedBankId);
+    final account = Account(
+      id: _isEditMode ? widget.args!.account!.id : null,
+      name: _nameController.text.trim(),
+      type: _selectedType,
+      amount: int.tryParse(_amountController.text) ?? 0,
+      balance: int.tryParse(_balanceController.text) ?? 0,
+      accountNumber: _accountNumberController.text.trim(),
+      bankId: _selectedBankId,
+    );
     _submitted = true;
     if (_isEditMode) {
-      context.read<AccountActionsBloc>().add(AccountActionsEvent.updateAccount(account));
+      context.read<AccountActionsBloc>().add(
+        AccountActionsEvent.updateAccount(account),
+      );
     } else {
-      context.read<AccountActionsBloc>().add(AccountActionsEvent.createAccount(account));
+      context.read<AccountActionsBloc>().add(
+        AccountActionsEvent.createAccount(account),
+      );
     }
   }
 }

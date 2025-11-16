@@ -55,10 +55,6 @@ class AccountItem extends StatelessWidget {
                 children: [
                   CachedNetworkImage(
                     imageUrl: bank.logo,
-                    maxWidthDiskCache: AppUIConstants.extraLargeContainerSize
-                        .toInt(),
-                    maxHeightDiskCache: AppUIConstants.extraLargeContainerSize
-                        .toInt(),
                     width: AppUIConstants.extraLargeContainerSize,
                     height: AppUIConstants.extraLargeContainerSize,
                   ),

@@ -5,7 +5,6 @@ part 'account_actions_state.freezed.dart';
 
 @freezed
 abstract class AccountActionsState with _$AccountActionsState {
-  const factory AccountActionsState({
-    @Default([]) List<Account> accounts,
-  }) = _AccountActionsState;
+  const factory AccountActionsState({@Default([]) List<Account> accounts}) =
+      _AccountActionsState;
 }

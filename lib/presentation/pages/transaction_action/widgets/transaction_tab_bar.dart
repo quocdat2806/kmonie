@@ -16,7 +16,9 @@ class TransactionActionsTabBar extends StatelessWidget {
       builder: (context, selectedIndex) {
         final transactionTypes = ExTransactionType.transactionTypes;
         return Padding(
-          padding: const EdgeInsets.symmetric(horizontal: AppUIConstants.smallPadding),
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppUIConstants.smallPadding,
+          ),
           child: AppTabView<TransactionType>(
             types: transactionTypes,
             selectedIndex: selectedIndex,

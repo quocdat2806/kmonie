@@ -5,9 +5,10 @@ import 'package:kmonie/core/di/di.dart';
 import 'package:kmonie/core/navigation/navigation.dart';
 import 'package:kmonie/core/text_style/text_style.dart';
 import 'package:kmonie/entities/entities.dart';
-import 'package:kmonie/presentation/blocs/account_actions/account_actions.dart';
 import 'package:kmonie/presentation/widgets/widgets.dart';
 import 'package:kmonie/repositories/repositories.dart';
+import 'package:kmonie/presentation/blocs/blocs.dart';
+import 'package:kmonie/args/args.dart';
 
 class ManageAccountPage extends StatefulWidget {
   const ManageAccountPage({super.key});
@@ -22,7 +23,9 @@ class _ManageAccountPageState extends State<ManageAccountPage> {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => AccountActionsBloc(sl<AccountRepository>())..add(const AccountActionsEvent.loadAllAccounts()),
+      create: (context) =>
+          AccountActionsBloc(sl<AccountRepository>())
+            ..add(const AccountActionsEvent.loadAllAccounts()),
       child: BlocListener<AccountActionsBloc, AccountActionsState>(
         listener: (context, state) {},
         child: Builder(builder: (context) => _buildScaffold(context)),
@@ -32,7 +35,7 @@ class _ManageAccountPageState extends State<ManageAccountPage> {
 
   Widget _buildScaffold(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColorConstants.greyWhite,
+      backgroundColor: AppColorConstants.white,
       appBar: CustomAppBar(
         title: AppTextConstants.manageAccount,
         actions: [
@@ -45,7 +48,6 @@ class _ManageAccountPageState extends State<ManageAccountPage> {
       body: SafeArea(
         child: BlocListener<AccountActionsBloc, AccountActionsState>(
           listener: (context, state) {
-            // Sync local state với BLoC state
             setState(() {
               _localAccounts = List.from(state.accounts);
             });
@@ -61,66 +63,75 @@ class _ManageAccountPageState extends State<ManageAccountPage> {
   }
 
   Widget _buildAccountList(BuildContext context, List<Account> accounts) {
-    // Sync local state từ BLoC khi lần đầu load
     _localAccounts ??= List.from(accounts);
 
-    // Sử dụng accounts từ BLoC để render
     final displayAccounts = accounts;
 
     if (displayAccounts.isEmpty) {
       return Center(
         child: Column(
+          spacing: AppUIConstants.smallSpacing,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.account_balance_wallet, size: 64, color: AppColorConstants.grey),
-            const SizedBox(height: 16),
-            Text('Chưa có tài khoản nào', style: AppTextStyle.grayS16Medium),
-            const SizedBox(height: 8),
-            Text('Nhấn nút + để thêm tài khoản mới', style: AppTextStyle.grayS14),
+            Text(AppTextConstants.noAccount, style: AppTextStyle.grayS16Medium),
+            Text(AppTextConstants.addAccountText, style: AppTextStyle.grayS14),
           ],
         ),
       );
     }
 
     return Padding(
-      padding: const EdgeInsets.all(AppUIConstants.defaultPadding),
+      padding: const EdgeInsets.all(AppUIConstants.smallPadding),
       child: ListView.builder(
         itemCount: displayAccounts.length,
         itemBuilder: (context, index) {
           final account = displayAccounts[index];
-          return AccountItem(key: ValueKey(account.id), account: account, onTap: () => _editAccount(context, account), onPinTap: () => _togglePinAccount(context, account, displayAccounts), onEditTap: () => _editAccount(context, account), showPinned: true, showUnpinnedIcon: true, showEditButton: true);
+          return AccountItem(
+            key: ValueKey(account.id),
+            account: account,
+            onTap: () => _editAccount(context, account),
+            onPinTap: () =>
+                _togglePinAccount(context, account, displayAccounts),
+            onEditTap: () => _editAccount(context, account),
+            showPinned: true,
+            showUnpinnedIcon: true,
+            showEditButton: true,
+          );
         },
       ),
     );
   }
 
   void _navigateToAddAccount(BuildContext context) {
-    AppNavigator(context: context).push(RouterPath.addAccount);
+    AppNavigator(context: context).push(RouterPath.accountActions);
   }
 
   void _editAccount(BuildContext context, Account account) {
-    AppNavigator(context: context).push(RouterPath.addAccount, extra: AccountActionsPageArgs(account: account));
+    AppNavigator(context: context).push(
+      RouterPath.accountActions,
+      extra: AccountActionsPageArgs(account: account),
+    );
   }
 
-  void _togglePinAccount(BuildContext context, Account account, List<Account> allAccounts) {
+  void _togglePinAccount(
+    BuildContext context,
+    Account account,
+    List<Account> allAccounts,
+  ) {
     if (account.id == null) return;
 
-    // Unpin tất cả accounts hiện tại
     for (final acc in allAccounts) {
       if (acc.isPinned && acc.id != null && acc.id != account.id) {
-        context.read<AccountActionsBloc>().add(AccountActionsEvent.unpinAccount(acc.id!));
+        context.read<AccountActionsBloc>().add(
+          AccountActionsEvent.unpinAccount(acc.id!),
+        );
       }
     }
 
-    // Pin account mới nếu chưa pinned
     if (!account.isPinned) {
-      context.read<AccountActionsBloc>().add(AccountActionsEvent.pinAccount(account.id!));
+      context.read<AccountActionsBloc>().add(
+        AccountActionsEvent.pinAccount(account.id!),
+      );
     }
   }
-}
-
-class AccountActionsPageArgs {
-  final Account? account;
-
-  const AccountActionsPageArgs({this.account});
 }
