@@ -14,32 +14,61 @@ class SettingsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColorConstants.white,
-      appBar: const CustomAppBar(title: AppTextConstants.settings),
+      appBar: CustomAppBar(title: AppTextConstants.settings),
       body: SafeArea(
         child: Column(
           children: [
+            /// TODO: I will implement this later when app publish on google play
             _buildSettingsItem(
               iconAsset: Assets.svgsReport,
               title: AppTextConstants.deleteAllData,
-              onTap: () {},
+              onTap: () {
+                showDialog<void>(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return const AppDevelopmentProcessDialog();
+                  },
+                );
+              },
             ),
             const AppDivider(),
             _buildSettingsItem(
               iconAsset: Assets.svgsGroup,
               title: AppTextConstants.reminder,
-              onTap: () {},
+              onTap: () {
+                showDialog<void>(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return const AppDevelopmentProcessDialog();
+                  },
+                );
+              },
             ),
             const AppDivider(),
             _buildSettingsItem(
               iconAsset: Assets.svgsNote,
               title: AppTextConstants.autoSchedule,
-              onTap: () {},
+              onTap: () {
+                showDialog<void>(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return const AppDevelopmentProcessDialog();
+                  },
+                );
+              },
             ),
             const AppDivider(),
             _buildSettingsItem(
               iconAsset: Assets.svgsNote,
               title: AppTextConstants.useAI,
-              onTap: () {},
+              onTap: () {
+                showDialog<void>(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return const AppDevelopmentProcessDialog();
+                  },
+                );
+              },
             ),
           ],
         ),
