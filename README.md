@@ -8,13 +8,13 @@ Before running this project, make sure you have the following installed on your 
 
 ### Required Software
 
-| Software | Version  | Download Link |
-|----------|----------|---------------|
-| **Flutter SDK** | `3.35.3` | [Download Flutter](https://flutter.dev/docs/get-started/install) |
-| **Dart SDK** | `3.9.2`  | (Included with Flutter) |
-| **Java JDK** | `17`     | [Download OpenJDK 17](https://adoptium.net/temurin/releases/?version=17) |
-| **Android Studio** | Latest   | [Download Android Studio](https://developer.android.com/studio) |
-| **Gradle** | `9.0.0`  | (Included with Android Studio) |
+| Software           | Version  | Download Link                                                            |
+|--------------------|----------|--------------------------------------------------------------------------|
+| **Flutter SDK**    | `3.35.3` | [Download Flutter](https://flutter.dev/docs/get-started/install)         |
+| **Dart SDK**       | `3.9.2`  | (Included with Flutter)                                                  |
+| **Java JDK**       | `17`     | [Download OpenJDK 17](https://adoptium.net/temurin/releases/?version=17) |
+| **Android Studio** | Latest   | [Download Android Studio](https://developer.android.com/studio)          |
+| **Gradle**         | `9.0.0`  | (Included with Android Studio)                                           |
 
 ### System Requirements
 
@@ -52,6 +52,12 @@ flutter run --release
 
 # Specific device
 flutter run -d <device-id>
+```
+
+# Build release
+
+```bash
+flutter build appbundle --release
 ```
 
 ### Flutter Configuration
@@ -115,7 +121,6 @@ The app is configured to build for Android with the following settings:
 - **Target SDK**: 36 (Android 16)
 - **Compile SDK**: 36
 
-
 ## 🚨 Troubleshooting
 
 ### Common Issues
@@ -146,6 +151,7 @@ The app is configured to build for Android with the following settings:
    flutter packages pub run build_runner clean
    flutter packages pub run build_runner build --delete-conflicting-outputs
    ```
+
 ## 📞 Support
 
 For support and questions, please contact dath33603@gmail.com(+84327596141)
