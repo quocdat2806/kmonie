@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:kmonie/core/constants/constants.dart';
-import 'package:kmonie/core/navigation/navigation.dart';
 import 'package:kmonie/core/text_style/text_style.dart';
 import 'package:kmonie/generated/generated.dart';
 import 'package:kmonie/presentation/presentation.dart';
@@ -44,15 +42,31 @@ class ProfilePage extends StatelessWidget {
   Widget _buildBody(BuildContext context) {
     return Column(
       children: [
-        const MenuItem(
+        /// TODO: I will implement this later when app publish on google play
+        MenuItem(
           iconAsset: Assets.svgsLike,
           title: 'Giới thiệu cho bạn bè',
+          onTap: () {
+            showDialog<void>(
+              context: context,
+              builder: (BuildContext context) {
+                return const AppDevelopmentProcessDialog();
+              },
+            );
+          },
         ),
         const AppDivider(),
         MenuItem(
           iconAsset: Assets.svgsSetting,
           title: AppTextConstants.settings,
-          onTap: () => context.push(RouterPath.settings),
+          onTap: () {
+            showDialog<void>(
+              context: context,
+              builder: (BuildContext context) {
+                return const AppDevelopmentProcessDialog();
+              },
+            );
+          },
         ),
       ],
     );

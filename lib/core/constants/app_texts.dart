@@ -119,4 +119,6 @@ class AppTextConstants {
   static const String hello = 'KMonie - Xin chào';
   static const String noAccount = 'Chưa có tài khoản nào';
   static const String addAccountText = 'Nhấn nút + để thêm tài khoản mới';
+  static const String developmentProcess =
+      'Chức năng đang trong quá trình phát triển.Vui lòng thử lại sau';
 }
