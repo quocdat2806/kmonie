@@ -139,5 +139,8 @@ class AddBudgetBloc extends Bloc<AddBudgetEvent, AddBudgetState> {
       emit(state.copyWith(currentInput: state.currentInput ~/ 10));
       return;
     }
+    final amountString = state.currentInput.toString();
+    final newAmount = int.parse(amountString + key);
+    emit(state.copyWith(currentInput: newAmount));
   }
 }

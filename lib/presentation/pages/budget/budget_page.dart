@@ -63,6 +63,7 @@ class _BudgetPageChildState extends State<BudgetPageChild> {
                       .where((c) => (state.categoryBudgets[c.id!] ?? 0) > 0)
                       .toList();
                   return ListView.builder(
+                    cacheExtent: 250.0,
                     padding: const EdgeInsets.only(bottom: 80),
                     itemCount: listBudget.length,
                     itemBuilder: (context, index) {

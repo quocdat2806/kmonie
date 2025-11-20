@@ -453,6 +453,26 @@ class TransactionService {
     _groupCache.clear();
   }
 
+  Future<Map<int, int>> getSpentAmountsByCategoryForMonth({
+    required int year,
+    required int month,
+  }) async {
+    final transactions = await _getTransactionsInMonth(
+      year,
+      month,
+      TransactionType.expense.typeIndex,
+      null,
+    );
+
+    final Map<int, int> result = {};
+    for (final tx in transactions) {
+      result[tx.transactionCategoryId] =
+          (result[tx.transactionCategoryId] ?? 0) + tx.amount;
+    }
+
+    return result;
+  }
+
   Stream<List<Transaction>> watchTransactions() {
     return _db
         .select(_db.transactionsTb)

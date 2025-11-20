@@ -34,6 +34,7 @@ class AccountsList extends StatelessWidget {
           ),
         Expanded(
           child: ListView.builder(
+            cacheExtent: 250.0,
             itemCount: accounts!.length,
             itemBuilder: (context, index) {
               final account = accounts![index];

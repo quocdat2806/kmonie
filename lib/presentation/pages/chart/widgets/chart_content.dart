@@ -45,6 +45,7 @@ class ChartContent extends StatelessWidget {
           const SizedBox(width: AppUIConstants.smallSpacing),
           Expanded(
             child: ListView.builder(
+              cacheExtent: 250.0,
               itemCount: chartData.length,
               itemBuilder: (context, index) {
                 final data = chartData[index];
@@ -85,6 +86,7 @@ class ChartContent extends StatelessWidget {
   Widget _buildDetailedList(List<ChartDataArgs> chartData) {
     return Expanded(
       child: ListView.separated(
+        cacheExtent: 250.0,
         itemCount: chartData.length,
         separatorBuilder: (_, _) =>
             const SizedBox(height: AppUIConstants.smallSpacing),

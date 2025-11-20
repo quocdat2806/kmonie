@@ -67,6 +67,7 @@ class _AddBudgetPageChildState extends State<AddBudgetPageChild> {
                         ),
                         Expanded(
                           child: ListView.builder(
+                            cacheExtent: 250.0,
                             padding: EdgeInsets.only(
                               bottom: state.isKeyboardVisible ? 280 : 0,
                             ),
@@ -112,10 +113,6 @@ class _AddBudgetPageChildState extends State<AddBudgetPageChild> {
                             curr.currentInputIdCategory ||
                         prev.currentInput != curr.currentInput,
                     builder: (context, state) {
-                      state.expenseCategories.firstWhere(
-                        (cat) => (cat.id ?? 0) == state.currentInputIdCategory,
-                        orElse: () => state.expenseCategories.first,
-                      );
                       return Container(
                         padding: const EdgeInsets.all(
                           AppUIConstants.smallPadding,

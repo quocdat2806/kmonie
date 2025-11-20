@@ -83,6 +83,7 @@ class _ManageAccountPageState extends State<ManageAccountPage> {
     return Padding(
       padding: const EdgeInsets.all(AppUIConstants.smallPadding),
       child: ListView.builder(
+        cacheExtent: 250.0,
         itemCount: displayAccounts.length,
         itemBuilder: (context, index) {
           final account = displayAccounts[index];

@@ -134,6 +134,7 @@ class _MonthlyStatisticsPageChildState
                 ),
                 Expanded(
                   child: ListView.builder(
+                    cacheExtent: 250.0,
                     itemCount: state.monthsByYear.keys.length,
                     itemBuilder: (_, yearIndex) {
                       final year = state.monthsByYear.keys.toList()[yearIndex];

@@ -14,7 +14,7 @@ class SettingsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColorConstants.white,
-      appBar: CustomAppBar(title: AppTextConstants.settings),
+      appBar: const CustomAppBar(title: AppTextConstants.settings),
       body: SafeArea(
         child: Column(
           children: [

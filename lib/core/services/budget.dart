@@ -53,19 +53,29 @@ class BudgetService {
                   t.transactionCategoryId.equals(categoryId),
             ))
             .getSingleOrNull();
-    final companion = BudgetsTbCompanion(
-      year: Value(year),
-      month: Value(month),
-      transactionCategoryId: Value(categoryId),
-      amount: Value(amount),
-    );
+
     if (existing != null) {
       await (_db.update(
         _db.budgetsTb,
-      )..where((t) => t.id.equals(existing.id))).write(companion);
+      )..where((t) => t.id.equals(existing.id))).write(
+        BudgetsTbCompanion(
+          amount: Value(amount),
+          updatedAt: Value(DateTime.now().toUtc()),
+        ),
+      );
       return;
     }
-    await _db.into(_db.budgetsTb).insert(companion);
+
+    await _db
+        .into(_db.budgetsTb)
+        .insert(
+          BudgetsTbCompanion(
+            year: Value(year),
+            month: Value(month),
+            transactionCategoryId: Value(categoryId),
+            amount: Value(amount),
+          ),
+        );
   }
 
   Future<int> getMonthlyBudget({required int year, required int month}) async {
@@ -90,19 +100,27 @@ class BudgetService {
               ..where((t) => t.year.equals(year) & t.month.equals(month)))
             .getSingleOrNull();
 
-    final companion = MonthlyBudgetsTbCompanion(
-      year: Value(year),
-      month: Value(month),
-      totalAmount: Value(amount),
-    );
-
     if (existing != null) {
       await (_db.update(
         _db.monthlyBudgetsTb,
-      )..where((t) => t.id.equals(existing.id))).write(companion);
+      )..where((t) => t.id.equals(existing.id))).write(
+        MonthlyBudgetsTbCompanion(
+          totalAmount: Value(amount),
+          updatedAt: Value(DateTime.now().toUtc()),
+        ),
+      );
       return;
     }
-    await _db.into(_db.monthlyBudgetsTb).insert(companion);
+
+    await _db
+        .into(_db.monthlyBudgetsTb)
+        .insert(
+          MonthlyBudgetsTbCompanion(
+            year: Value(year),
+            month: Value(month),
+            totalAmount: Value(amount),
+          ),
+        );
   }
 
   Future<int> getTotalSpentForMonth({
@@ -156,18 +174,15 @@ class BudgetService {
   Future<Map<int, ({int budget, int spent, double percentUsed})>>
   getBudgetComparison({required int year, required int month}) async {
     final budgets = await getBudgetsForMonth(year, month);
+    final spentAmountsByCategory = await _transactionService
+        .getSpentAmountsByCategoryForMonth(year: year, month: month);
     final Map<int, ({int budget, int spent, double percentUsed})> result = {};
 
     for (final entry in budgets.entries) {
       final categoryId = entry.key;
       final budgetAmount = entry.value;
 
-      final spentAmount = await _transactionService.calculateTotalAmountInMonth(
-        year: year,
-        month: month,
-        transactionType: TransactionType.expense.typeIndex,
-        categoryId: categoryId,
-      );
+      final spentAmount = spentAmountsByCategory[categoryId] ?? 0;
 
       final percentUsed = budgetAmount > 0
           ? (spentAmount / budgetAmount) * 100
