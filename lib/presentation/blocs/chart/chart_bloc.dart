@@ -36,6 +36,7 @@ class ChartBloc extends Bloc<ChartEvent, ChartState> {
         case AppEvent.updateTransaction:
         case AppEvent.insertTransaction:
         case AppEvent.deleteTransaction:
+        case AppEvent.deleteAllData:
           add(const LoadInitialData());
           break;
         default:

@@ -4,21 +4,21 @@ import 'package:kmonie/core/navigation/app_navigation.dart';
 import 'package:kmonie/core/text_style/text_style.dart';
 import 'package:kmonie/presentation/widgets/widgets.dart';
 
-class MonthPickerDialog extends StatefulWidget {
+class AppMonthPickerDialog extends StatefulWidget {
   final int initialMonth;
   final int initialYear;
 
-  const MonthPickerDialog({
+  const AppMonthPickerDialog({
     super.key,
     required this.initialMonth,
     required this.initialYear,
   });
 
   @override
-  State<MonthPickerDialog> createState() => _MonthPickerDialogState();
+  State<AppMonthPickerDialog> createState() => _AppMonthPickerDialogState();
 }
 
-class _MonthPickerDialogState extends State<MonthPickerDialog> {
+class _AppMonthPickerDialogState extends State<AppMonthPickerDialog> {
   late int selectedMonth;
   late int selectedYear;
 

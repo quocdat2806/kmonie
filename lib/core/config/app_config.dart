@@ -13,4 +13,6 @@ class AppConfigs {
   static const String titleNotificationReminder = '💸 Nhắc nhở giao dịch';
   static const String bodyNotificationReminder =
       'Đừng quên ghi lại các giao dịch hôm nay nhé!';
+  static const String appLink =
+      'https://play.google.com/store/apps/details?id=com.quocdat.kmonie';
 }

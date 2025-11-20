@@ -146,7 +146,19 @@ class AppRouter {
       GoRoute(
         name: RouterPath.settings,
         path: RouterPath.settings,
-        builder: (_, GoRouterState state) => const SettingsPage(),
+        builder: (_, GoRouterState state) =>
+            SettingsPage(dataRepository: sl<DataRepository>()),
+      ),
+      GoRoute(
+        name: RouterPath.reminder,
+        path: RouterPath.reminder,
+        builder: (_, GoRouterState state) => const ReminderPage(),
+      ),
+      GoRoute(
+        name: RouterPath.reminderTransactionAutomation,
+        path: RouterPath.reminderTransactionAutomation,
+        builder: (_, GoRouterState state) =>
+            const ReminderTransactionAutomationPage(),
       ),
     ],
   );

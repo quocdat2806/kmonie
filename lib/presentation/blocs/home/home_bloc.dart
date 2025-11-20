@@ -46,6 +46,9 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
           final id = data.payload as int;
           add(HomeDeleteTransaction(id));
           break;
+        case AppEvent.deleteAllData:
+          add(const HomeLoadTransactions());
+          break;
         default:
           break;
       }

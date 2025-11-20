@@ -119,6 +119,18 @@ class AppTextConstants {
   static const String hello = 'KMonie - Xin chào';
   static const String noAccount = 'Chưa có tài khoản nào';
   static const String addAccountText = 'Nhấn nút + để thêm tài khoản mới';
+  static const String deleteAllDataConfirmMessage =
+      'Bạn có chắc muốn xoá tất cả dữ liệu không?';
   static const String developmentProcess =
       'Chức năng đang trong quá trình phát triển.Vui lòng thử lại sau';
+  static const String exit = 'Thoát';
+  static const String save = 'Lưu';
+  static const String turnOffOnHolidays = 'Tắt trong các ngày lễ';
+  static const String turnOffOnHolidaysSubtitle =
+      'Không bao gồm ngày nghỉ bù và nghỉ lễ tạm...';
+  static const String alarmName = 'Tên chuông báo';
+  static const String alarmSound = 'Âm thanh chuông báo';
+  static const String vibrate = 'Rung';
+  static const String homecoming = 'Homecoming';
+  static const String basicCall = 'Basic call';
 }

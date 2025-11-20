@@ -30,6 +30,9 @@ class ReportBloc extends Bloc<ReportEvent, ReportState> {
       } else if (data.event == AppEvent.accountChanged) {
         final p = state.period ?? DateTime.now();
         add(ReportChangePeriod(period: DateTime(p.year, p.month)));
+      } else if (data.event == AppEvent.deleteAllData) {
+        final p = state.period ?? DateTime.now();
+        add(ReportChangePeriod(period: DateTime(p.year, p.month)));
       }
     });
 
@@ -53,6 +56,9 @@ class ReportBloc extends Bloc<ReportEvent, ReportState> {
           }
           break;
         case AppEvent.deleteTransaction:
+          add(ReportChangePeriod(period: DateTime(currentPeriod.year, currentPeriod.month)));
+          break;
+        case AppEvent.deleteAllData:
           add(ReportChangePeriod(period: DateTime(currentPeriod.year, currentPeriod.month)));
           break;
         default:

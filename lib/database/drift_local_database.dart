@@ -290,6 +290,18 @@ class KMonieDatabase extends _$KMonieDatabase {
       logger.e('Error seeding system categories: $e');
     }
   }
+
+  Future<void> deleteAllUserData() async {
+    try {
+      await customStatement('DELETE FROM transactions_tb');
+      await customStatement('DELETE FROM budgets_tb');
+      await customStatement('DELETE FROM monthly_budgets_tb');
+      await customStatement('DELETE FROM accounts_tb');
+    } catch (e) {
+      logger.e('Error deleting all user data: $e');
+      rethrow;
+    }
+  }
 }
 
 LazyDatabase _openConnection() {

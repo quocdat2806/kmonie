@@ -5,16 +5,16 @@ import 'package:kmonie/core/text_style/text_style.dart';
 import 'package:kmonie/core/utils/utils.dart';
 import 'package:kmonie/presentation/widgets/widgets.dart';
 
-class DatePickerScreen extends StatefulWidget {
+class AppDatePickerDialog extends StatefulWidget {
   final DateTime? initialDate;
 
-  const DatePickerScreen({super.key, this.initialDate});
+  const AppDatePickerDialog({super.key, this.initialDate});
 
   @override
-  State<DatePickerScreen> createState() => _DatePickerScreenState();
+  State<AppDatePickerDialog> createState() => _AppDatePickerDialogState();
 }
 
-class _DatePickerScreenState extends State<DatePickerScreen> {
+class _AppDatePickerDialogState extends State<AppDatePickerDialog> {
   late DateTime _selectedDate;
   late DateTime _displayMonth;
 

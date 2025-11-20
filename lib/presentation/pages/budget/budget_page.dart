@@ -34,7 +34,10 @@ class _BudgetPageChildState extends State<BudgetPageChild> {
     final result = await showDialog<Map<String, int>>(
       context: context,
       builder: (context) {
-        return MonthPickerDialog(initialMonth: sp.month, initialYear: sp.year);
+        return AppMonthPickerDialog(
+          initialMonth: sp.month,
+          initialYear: sp.year,
+        );
       },
     );
 

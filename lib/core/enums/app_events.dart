@@ -4,4 +4,5 @@ enum AppEvent {
   deleteTransaction,
   budgetChanged,
   accountChanged,
+  deleteAllData,
 }

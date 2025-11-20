@@ -15,4 +15,7 @@ class RouterPath {
   static const String manageAccount = '/manage-account';
   static const String monthlyStatistics = '/monthly-statistics';
   static const String settings = '/settings';
+  static const String reminder = '/reminder';
+  static const String reminderTransactionAutomation =
+      '/reminder-transaction-automation';
 }

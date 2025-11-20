@@ -1,5 +1,5 @@
 import 'package:intl/intl.dart';
-
+import 'package:flutter/material.dart';
 import 'package:kmonie/core/config/config.dart';
 
 class AppDateUtils {
@@ -7,6 +7,12 @@ class AppDateUtils {
 
   static String formatDateKey(DateTime date) {
     return DateFormat(AppConfigs.dateDisplayFormat).format(date);
+  }
+
+  static String formatTimeOfDay(TimeOfDay timeOfDay) {
+    return DateFormat(
+      'HH:mm',
+    ).format(DateTime(0, 0, 0, timeOfDay.hour, timeOfDay.minute));
   }
 
   static DateTime parseDateKey(String dateKey) {

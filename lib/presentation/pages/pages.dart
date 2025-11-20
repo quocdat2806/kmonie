@@ -15,3 +15,5 @@ export 'search_transaction/search_transaction_page.dart';
 export 'settings/settings_page.dart';
 export 'splash/splash_page.dart';
 export 'transaction_action/transaction_actions_page.dart';
+export 'reminder/reminder_page.dart';
+export 'reminder_transaction_automation/reminder_transaction_automation_page.dart';

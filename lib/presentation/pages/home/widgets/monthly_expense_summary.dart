@@ -113,7 +113,7 @@ class MonthlyExpenseSummary extends StatelessWidget {
     final result = await showDialog<Map<String, int>>(
       context: context,
       builder: (context) =>
-          MonthPickerDialog(initialMonth: month, initialYear: year),
+          AppMonthPickerDialog(initialMonth: month, initialYear: year),
     );
 
     if (result != null && onDateChanged != null) {

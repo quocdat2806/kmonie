@@ -363,7 +363,7 @@ class _TransactionActionsPageChildState
 
     final picked = await showDialog<DateTime>(
       context: context,
-      builder: (context) => DatePickerScreen(initialDate: state.date),
+      builder: (context) => AppDatePickerDialog(initialDate: state.date),
     );
 
     if (picked != null) {

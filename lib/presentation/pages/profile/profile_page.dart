@@ -3,7 +3,9 @@ import 'package:kmonie/core/constants/constants.dart';
 import 'package:kmonie/core/text_style/text_style.dart';
 import 'package:kmonie/generated/generated.dart';
 import 'package:kmonie/presentation/presentation.dart';
-
+import 'package:share_plus/share_plus.dart';
+import 'package:kmonie/core/navigation/navigation.dart';
+import 'package:kmonie/core/config/config.dart';
 import 'widgets/menu_item.dart';
 
 class ProfilePage extends StatelessWidget {
@@ -42,16 +44,14 @@ class ProfilePage extends StatelessWidget {
   Widget _buildBody(BuildContext context) {
     return Column(
       children: [
-        /// TODO: I will implement this later when app publish on google play
         MenuItem(
           iconAsset: Assets.svgsLike,
           title: 'Giới thiệu cho bạn bè',
           onTap: () {
-            showDialog<void>(
-              context: context,
-              builder: (BuildContext context) {
-                return const AppDevelopmentProcessDialog();
-              },
+            SharePlus.instance.share(
+              ShareParams(
+                text: 'Tải ứng dụng Kmonie tại ${AppConfigs.appLink}',
+              ),
             );
           },
         ),
@@ -60,12 +60,7 @@ class ProfilePage extends StatelessWidget {
           iconAsset: Assets.svgsSetting,
           title: AppTextConstants.settings,
           onTap: () {
-            showDialog<void>(
-              context: context,
-              builder: (BuildContext context) {
-                return const AppDevelopmentProcessDialog();
-              },
-            );
+            AppNavigator(context: context).push(RouterPath.settings);
           },
         ),
       ],

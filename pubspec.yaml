@@ -2,7 +2,7 @@ name: kmonie
 description: "A new Flutter project."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
-publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+publish_to: "none" # Remove this line if you wish to publish to pub.dev
 
 # The following defines the version and build number for your application.
 # A version number is three numbers separated by dots, like 1.2.43
@@ -56,16 +56,14 @@ dependencies:
   sqlite3_flutter_libs: ^0.5.39
   flutter_local_notifications: ^19.4.2
   timezone: ^0.10.1
-  firebase_crashlytics: ^5.0.3
-  firebase_analytics: ^12.0.4
+  firebase_crashlytics: ^5.0.5
   flutter_slidable: ^4.0.3
-  share_plus: ^12.0.0
+  share_plus: ^12.0.1
   google_mobile_ads: ^6.0.0
   json_serializable: ^6.11.1
   json_annotation: ^4.9.0
   cached_network_image: ^3.4.1
   workmanager: ^0.9.0+3
-  speech_to_text: ^7.3.0
 
 dev_dependencies:
   flutter_test:
@@ -86,7 +84,6 @@ dev_dependencies:
 
 # The following category is specific to Flutter packages.
 flutter:
-
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
   # the material Icons class.

@@ -44,6 +44,10 @@ class AppStreamEvent {
     triggerEvent(AppEvent.accountChanged);
   }
 
+  void deleteAllData() {
+    triggerEvent(AppEvent.deleteAllData);
+  }
+
   void dispose() {
     _eventController.close();
   }
@@ -66,6 +70,10 @@ class AppStreamEvent {
 
   static void accountChangedStatic() {
     _instance.accountChanged();
+  }
+
+  static void deleteAllDataStatic() {
+    _instance.deleteAllData();
   }
 
   static Stream<AppStreamData> get eventStreamStatic => _instance.eventStream;

@@ -34,7 +34,7 @@ class _CalendarMonthlyTransactionPageChildState
     final bloc = context.read<CalendarMonthlyTransactionBloc>();
     final result = await showDialog<Map<String, int>>(
       context: context,
-      builder: (context) => MonthPickerDialog(
+      builder: (context) => AppMonthPickerDialog(
         initialMonth: currentDate.month,
         initialYear: currentDate.year,
       ),

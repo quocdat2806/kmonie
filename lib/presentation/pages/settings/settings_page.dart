@@ -1,14 +1,19 @@
 import 'package:flutter/material.dart';
 
 import 'package:kmonie/core/constants/constants.dart';
+import 'package:kmonie/core/di/di.dart';
 import 'package:kmonie/core/text_style/text_style.dart';
 import 'package:kmonie/core/utils/utils.dart';
 import 'package:kmonie/generated/generated.dart';
 import 'package:kmonie/presentation/widgets/widgets.dart';
 import 'package:kmonie/core/enums/enums.dart';
+import 'package:kmonie/core/navigation/navigation.dart';
+import 'package:kmonie/core/streams/streams.dart';
+import 'package:kmonie/repositories/repositories.dart';
 
 class SettingsPage extends StatelessWidget {
-  const SettingsPage({super.key});
+  final DataRepository dataRepository;
+  const SettingsPage({super.key, required this.dataRepository});
 
   @override
   Widget build(BuildContext context) {
@@ -18,15 +23,29 @@ class SettingsPage extends StatelessWidget {
       body: SafeArea(
         child: Column(
           children: [
-            /// TODO: I will implement this later when app publish on google play
             _buildSettingsItem(
               iconAsset: Assets.svgsReport,
               title: AppTextConstants.deleteAllData,
               onTap: () {
                 showDialog<void>(
                   context: context,
-                  builder: (BuildContext context) {
-                    return const AppDevelopmentProcessDialog();
+                  builder: (BuildContext dialogContext) {
+                    return AppDeleteAllDataDialog(
+                      onConfirm: () async {
+                        AppNavigator(context: dialogContext).pop();
+                        final result = await dataRepository.deleteAllUserData();
+                        result.fold(
+                          (failure) {
+                            logger.e(
+                              'Error deleting all data: ${failure.message}',
+                            );
+                          },
+                          (_) {
+                            AppStreamEvent.deleteAllDataStatic();
+                          },
+                        );
+                      },
+                    );
                   },
                 );
               },
@@ -36,12 +55,7 @@ class SettingsPage extends StatelessWidget {
               iconAsset: Assets.svgsGroup,
               title: AppTextConstants.reminder,
               onTap: () {
-                showDialog<void>(
-                  context: context,
-                  builder: (BuildContext context) {
-                    return const AppDevelopmentProcessDialog();
-                  },
-                );
+                AppNavigator(context: context).push(RouterPath.reminder);
               },
             ),
             const AppDivider(),
@@ -49,12 +63,9 @@ class SettingsPage extends StatelessWidget {
               iconAsset: Assets.svgsNote,
               title: AppTextConstants.autoSchedule,
               onTap: () {
-                showDialog<void>(
+                AppNavigator(
                   context: context,
-                  builder: (BuildContext context) {
-                    return const AppDevelopmentProcessDialog();
-                  },
-                );
+                ).push(RouterPath.reminderTransactionAutomation);
               },
             ),
             const AppDivider(),

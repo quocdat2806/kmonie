@@ -21,6 +21,9 @@ Future<void> init() async {
     ..registerLazySingleton<AccountService>(
       () => AccountService(sl<KMonieDatabase>()),
     )
+    ..registerLazySingleton<DataService>(
+      () => DataService(sl<KMonieDatabase>(), sl<TransactionService>()),
+    )
     ..registerLazySingleton<NotificationService>(() => NotificationService.I)
     ..registerLazySingleton<AppStreamEvent>(() => AppStreamEvent())
     ..registerLazySingleton<AccountRepository>(
@@ -34,6 +37,9 @@ Future<void> init() async {
     )
     ..registerLazySingleton<BudgetRepository>(
       () => BudgetRepositoryImpl(sl<BudgetService>()),
+    )
+    ..registerLazySingleton<DataRepository>(
+      () => DataRepositoryImpl(sl<DataService>()),
     );
   await sl<KMonieDatabase>().warmUp();
   await sl<NotificationService>().init();
