@@ -160,6 +160,12 @@ class AppRouter {
         builder: (_, GoRouterState state) =>
             const ReminderTransactionAutomationPage(),
       ),
+      GoRoute(
+        name: RouterPath.historyReminderTransactionAutomation,
+        path: RouterPath.historyReminderTransactionAutomation,
+        builder: (_, GoRouterState state) =>
+            const HistoryReminderTransactionAutomation(),
+      ),
     ],
   );
 }

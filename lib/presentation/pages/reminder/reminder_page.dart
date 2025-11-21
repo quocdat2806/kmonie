@@ -5,6 +5,7 @@ import 'package:kmonie/core/text_style/text_style.dart';
 import 'package:kmonie/core/utils/utils.dart';
 import 'package:kmonie/presentation/widgets/widgets.dart';
 import 'package:kmonie/core/di/di.dart';
+import 'package:kmonie/core/navigation/navigation.dart';
 
 class ReminderPage extends StatefulWidget {
   const ReminderPage({super.key});
@@ -61,11 +62,14 @@ class _ReminderPageState extends State<ReminderPage> {
             const SizedBox(height: AppUIConstants.defaultSpacing),
             AppButton(
               width: 120,
-              onPressed: () {
-                sl<NotificationService>().scheduleDailyReminder(
+              onPressed: () async {
+                await sl<NotificationService>().scheduleDailyReminder(
                   hour: _selectedTime!.hour,
                   minute: _selectedTime!.minute,
                 );
+                if (mounted && context.mounted) {
+                  AppNavigator(context: context).pop();
+                }
               },
               text: AppTextConstants.save,
             ),

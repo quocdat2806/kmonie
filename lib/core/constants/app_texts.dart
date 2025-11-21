@@ -117,6 +117,7 @@ class AppTextConstants {
   static const String deleteAllData = 'Xóa tất cả dữ liệu';
   static const String reminder = 'Lời nhắc nhở';
   static const String autoSchedule = 'Đặt lịch tự động';
+  static const String historyAutomation = 'Lịch sử tự động';
   static const String useAI = 'Sử dụng AI';
   static const String hello = 'KMonie - Xin chào';
   static const String noAccount = 'Chưa có tài khoản nào';
@@ -142,4 +143,6 @@ class AppTextConstants {
   static const String budgetLabel = 'Ngân sách :';
   static const String spentLabel = 'Chi tiêu :';
   static const String selectBank = 'Chọn ngân hàng';
+  static const String active = 'Hoạt động';
+  static const String inactive = 'Đã tắt';
 }

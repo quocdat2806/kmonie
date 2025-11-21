@@ -18,4 +18,6 @@ class RouterPath {
   static const String reminder = '/reminder';
   static const String reminderTransactionAutomation =
       '/reminder-transaction-automation';
+  static const String historyReminderTransactionAutomation =
+      '/history-reminder-transaction-automation';
 }

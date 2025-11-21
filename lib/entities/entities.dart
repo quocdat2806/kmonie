@@ -6,3 +6,4 @@ export 'daily_transaction_total/daily_transaction_total.dart';
 export 'transaction_category/separated_categories.dart';
 export 'cache/cache.dart';
 export 'transaction/transaction_result.dart';
+export 'transaction_automation_group/transaction_automation_group.dart';
