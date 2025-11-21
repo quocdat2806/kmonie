@@ -61,7 +61,7 @@ class _ReminderTransactionAutomationPageState
   }
 
   Future<void> _selectDate() async {
-    final picked = await showDialog(
+    final picked = await showDialog<DateTime>(
       context: context,
       builder: (context) => AppDatePickerDialog(initialDate: _selectedDate),
     );
@@ -260,39 +260,6 @@ class _ReminderTransactionAutomationPageState
           ),
         ),
       ),
-    );
-  }
-
-  Widget _buildToggleItem({
-    required String title,
-    String? subtitle,
-    required bool value,
-    required ValueChanged<bool> onChanged,
-  }) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(title, style: AppTextStyle.blackS14Medium),
-              if (subtitle != null) ...[
-                const SizedBox(height: AppUIConstants.extraSmallSpacing),
-                Text(
-                  subtitle,
-                  style: AppTextStyle.greyS12.copyWith(fontSize: 10),
-                ),
-              ],
-            ],
-          ),
-        ),
-        Switch(
-          value: value,
-          onChanged: onChanged,
-          activeColor: AppColorConstants.secondary,
-        ),
-      ],
     );
   }
 }

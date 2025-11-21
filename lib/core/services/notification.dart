@@ -35,6 +35,7 @@ class NotificationService {
     int minute = 0,
     int id = 0,
   }) async {
+    // _plugin.cancel(id);
     final now = tz.TZDateTime.now(tz.local);
     var scheduled = tz.TZDateTime(
       tz.local,

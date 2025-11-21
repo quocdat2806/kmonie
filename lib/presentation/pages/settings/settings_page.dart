@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import 'package:kmonie/core/constants/constants.dart';
-import 'package:kmonie/core/di/di.dart';
 import 'package:kmonie/core/text_style/text_style.dart';
 import 'package:kmonie/core/utils/utils.dart';
 import 'package:kmonie/generated/generated.dart';
