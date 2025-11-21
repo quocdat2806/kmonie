@@ -16,39 +16,13 @@ class ReminderPage extends StatefulWidget {
 class _ReminderPageState extends State<ReminderPage> {
   TimeOfDay? _selectedTime;
 
-  Future<void> _selectTime() async {
-    final TimeOfDay? picked = await showTimePicker(
-      initialEntryMode: TimePickerEntryMode.dialOnly,
-      helpText: '',
-      hourLabelText: '',
-      minuteLabelText: '',
-      context: context,
-
-      initialTime: _selectedTime ?? TimeOfDay.now(),
-      builder: (BuildContext context, Widget? child) {
-        return Theme(
-          data: Theme.of(context).copyWith(
-            colorScheme: const ColorScheme.light(
-              primary: AppColorConstants.primary,
-              onSurface: AppColorConstants.black,
-            ),
-          ),
-          child: child!,
-        );
-      },
-    );
-    if (picked != null && picked != _selectedTime) {
+  void _onTimeChanged(TimeOfDay time) async {
+    if (_selectedTime != time) {
       setState(() {
-        _selectedTime = picked;
+        _selectedTime = time;
       });
-      await sl<NotificationService>().scheduleDailyReminder(
-        hour: picked.hour,
-        minute: picked.minute,
-      );
     }
   }
-
-  
 
   @override
   Widget build(BuildContext context) {
@@ -57,22 +31,45 @@ class _ReminderPageState extends State<ReminderPage> {
       appBar: const CustomAppBar(title: AppTextConstants.reminder),
       body: Padding(
         padding: const EdgeInsets.all(AppUIConstants.defaultPadding),
-        child: InkWell(
-          splashColor: Colors.transparent,
-          onTap: _selectTime,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                AppTextConstants.reminder,
-                style: AppTextStyle.blackS14Medium,
+        child: Column(
+          children: [
+            InkWell(
+              splashColor: Colors.transparent,
+              onTap: () {},
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    AppTextConstants.reminder,
+                    style: AppTextStyle.blackS14Medium,
+                  ),
+                  Text(
+                    _selectedTime != null
+                        ? AppDateUtils.formatTimeOfDay(_selectedTime!)
+                        : '21:15',
+                    style: AppTextStyle.blackS14Medium,
+                  ),
+                ],
               ),
-              Text(
-                _selectedTime != null ? AppDateUtils.formatTimeOfDay(_selectedTime!) : '21:00',
-                style: AppTextStyle.blackS14Medium,
-              ),
-            ],
-          ),
+            ),
+            const SizedBox(height: AppUIConstants.defaultSpacing),
+            TimePickerWidget(
+              selectedTime:
+                  _selectedTime ?? const TimeOfDay(hour: 21, minute: 15),
+              onTimeChanged: _onTimeChanged,
+            ),
+            const SizedBox(height: AppUIConstants.defaultSpacing),
+            AppButton(
+              width: 120,
+              onPressed: () {
+                sl<NotificationService>().scheduleDailyReminder(
+                  hour: _selectedTime!.hour,
+                  minute: _selectedTime!.minute,
+                );
+              },
+              text: AppTextConstants.save,
+            ),
+          ],
         ),
       ),
     );

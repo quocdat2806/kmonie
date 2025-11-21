@@ -24,10 +24,10 @@ class BudgetMonthlyCard extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('Ngân sách hàng tháng', style: AppTextStyle.blackS16Bold),
+              Text(AppTextConstants.settingMonthlyBudget, style: AppTextStyle.blackS16Bold),
               TextButton(
                 onPressed: () {},
-                child: Text('Sửa', style: AppTextStyle.blueS14Medium),
+                child: Text(AppTextConstants.edit, style: AppTextStyle.blueS14Medium),
               ),
             ],
           ),

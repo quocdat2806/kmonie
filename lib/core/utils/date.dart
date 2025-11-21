@@ -15,6 +15,26 @@ class AppDateUtils {
     ).format(DateTime(0, 0, 0, timeOfDay.hour, timeOfDay.minute));
   }
 
+  static List<int> generateAllHoursOfDay() {
+    final List<int> hours = [];
+    for (int i = 0; i < 24; i++) {
+      hours.add(i);
+    }
+    return hours;
+  }
+
+  static List<String> generateTimeType() {
+    return ['AM', 'PM'];
+  }
+
+  static List<int> generateAllMinutesOfDay() {
+    final List<int> minutes = [];
+    for (int i = 0; i < 60; i++) {
+      minutes.add(i);
+    }
+    return minutes;
+  }
+
   static DateTime parseDateKey(String dateKey) {
     return DateFormat(AppConfigs.dateDisplayFormat).parse(dateKey);
   }

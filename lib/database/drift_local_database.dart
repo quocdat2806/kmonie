@@ -79,6 +79,25 @@ class AccountsTb extends Table {
   DateTimeColumn get updatedAt => dateTime().withDefault(currentDateAndTime)();
 }
 
+class UserReminderTransactionDayTb extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  IntColumn get amount => integer()();
+  IntColumn get transactionCategoryId => integer().references(
+    TransactionCategoryTb,
+    #id,
+    onDelete: KeyAction.restrict,
+  )();
+  TextColumn get content => text().withDefault(const Constant(''))();
+  IntColumn get transactionType => integer().withDefault(const Constant(0))();
+  IntColumn get day => integer()();
+  IntColumn get hour => integer()();
+  IntColumn get minute => integer()();
+  DateTimeColumn get lastExecutedDate => dateTime().nullable()();
+  BoolColumn get isActive => boolean().withDefault(const Constant(true))();
+  DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
+  DateTimeColumn get updatedAt => dateTime().withDefault(currentDateAndTime)();
+}
+
 @DriftDatabase(
   tables: [
     TransactionsTb,
@@ -86,6 +105,7 @@ class AccountsTb extends Table {
     BudgetsTb,
     MonthlyBudgetsTb,
     AccountsTb,
+    UserReminderTransactionDayTb,
   ],
 )
 class KMonieDatabase extends _$KMonieDatabase {
@@ -148,6 +168,12 @@ class KMonieDatabase extends _$KMonieDatabase {
       );
       await customStatement(
         'CREATE INDEX IF NOT EXISTS idx_accounts_type ON accounts_tb (type)',
+      );
+      await customStatement(
+        'CREATE INDEX IF NOT EXISTS idx_reminder_transaction_day ON user_reminder_transaction_day_tb (day, hour, minute, is_active)',
+      );
+      await customStatement(
+        'CREATE INDEX IF NOT EXISTS idx_reminder_last_executed ON user_reminder_transaction_day_tb (last_executed_date)',
       );
       await _seedSystemCategoriesIfEmpty();
     },

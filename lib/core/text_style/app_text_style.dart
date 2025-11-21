@@ -51,6 +51,12 @@ class AppTextStyle {
   static final TextStyle blackS24Black = blackS24.copyWith(
     fontWeight: blackWeight,
   );
+  static final TextStyle blackS28 = black.copyWith(fontSize: 28);
+  static final TextStyle blackS28Medium = blackS28.copyWith(fontWeight: medium);
+  static final TextStyle blackS28Bold = blackS28.copyWith(fontWeight: bold);
+  static final TextStyle blackS28Black = blackS28.copyWith(
+    fontWeight: blackWeight,
+  );
 
   static const TextStyle grey = TextStyle(color: AppColorConstants.grey);
   static final TextStyle greyS12 = grey.copyWith(fontSize: 12);
@@ -64,6 +70,12 @@ class AppTextStyle {
   static final TextStyle greyS14Medium = greyS14.copyWith(fontWeight: medium);
   static final TextStyle greyS14Bold = greyS14.copyWith(fontWeight: bold);
   static final TextStyle greyS14Black = greyS14.copyWith(
+    fontWeight: blackWeight,
+  );
+  static final TextStyle greyS28 = grey.copyWith(fontSize: 28);
+  static final TextStyle greyS28Medium = greyS28.copyWith(fontWeight: medium);
+  static final TextStyle greyS28Bold = greyS28.copyWith(fontWeight: bold);
+  static final TextStyle greyS28Black = greyS28.copyWith(
     fontWeight: blackWeight,
   );
 

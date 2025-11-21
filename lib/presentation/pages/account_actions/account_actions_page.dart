@@ -261,7 +261,7 @@ class _AccountActionsPageState extends State<AccountActionsPageChild> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text('Chọn ngân hàng', style: AppTextStyle.blackS16Bold),
+            Text(AppTextConstants.selectBank, style: AppTextStyle.blackS16Bold),
             const SizedBox(height: AppUIConstants.defaultSpacing),
             Flexible(
               child: ListView(

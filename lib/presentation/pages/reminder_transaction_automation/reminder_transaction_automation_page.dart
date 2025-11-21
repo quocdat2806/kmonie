@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:kmonie/core/constants/constants.dart';
 import 'package:kmonie/core/enums/enums.dart';
 import 'package:kmonie/core/text_style/text_style.dart';
-import 'package:kmonie/presentation/widgets/widgets.dart';
-import 'package:kmonie/generated/generated.dart';
 import 'package:kmonie/core/utils/utils.dart';
+import 'package:kmonie/entities/entities.dart';
+import 'package:kmonie/generated/generated.dart';
+import 'package:kmonie/core/navigation/navigation.dart';
+import 'package:kmonie/presentation/widgets/widgets.dart';
+import 'widgets/day_selector_widget.dart';
+import 'package:kmonie/core/services/services.dart';
+import 'package:kmonie/core/di/di.dart';
+import 'package:kmonie/core/tools/gradient.dart';
 
 class ReminderTransactionAutomationPage extends StatefulWidget {
   const ReminderTransactionAutomationPage({super.key});
@@ -18,100 +23,149 @@ class ReminderTransactionAutomationPage extends StatefulWidget {
 class _ReminderTransactionAutomationPageState
     extends State<ReminderTransactionAutomationPage> {
   TimeOfDay? _selectedTime;
+  final Set<int> _selectedDays = {};
   DateTime? _selectedDate;
-  final Set<int> _selectedDays = {7};
-
+  final TextEditingController _notesController = TextEditingController();
+  final TextEditingController _amountController = TextEditingController();
+  String _selectedType = AppTextConstants.income;
+  List<TransactionCategory> _incomeCategories = [];
+  List<TransactionCategory> _expenseCategories = [];
+  TransactionCategory? _selectedTransactionCategory;
   @override
   void initState() {
     super.initState();
-    _selectedTime = const TimeOfDay(hour: 7, minute: 0);
-    _selectedDate = DateTime.now().add(const Duration(days: 1));
+    final now = TimeOfDay.now();
+    _selectedTime = now;
+    _selectedDate = DateTime.now();
+    _loadCategories();
+  }
+
+  Future<void> _loadCategories() async {
+    final income = await sl<TransactionCategoryService>().getByType(
+      TransactionType.income,
+    );
+    final expense = await sl<TransactionCategoryService>().getByType(
+      TransactionType.expense,
+    );
+    if (mounted) {
+      setState(() {
+        _incomeCategories = income;
+        _expenseCategories = expense;
+      });
+    }
   }
 
   @override
   void dispose() {
+    _notesController.dispose();
+    _amountController.dispose();
     super.dispose();
   }
 
-  Future<void> _selectTime() async {
-    final TimeOfDay? picked = await showTimePicker(
-      initialEntryMode: TimePickerEntryMode.dialOnly,
-      helpText: '',
-      hourLabelText: '',
-      minuteLabelText: '',
-      context: context,
-      initialTime: _selectedTime ?? TimeOfDay.now(),
-      builder: (BuildContext context, Widget? child) {
-        return Theme(
-          data: Theme.of(context).copyWith(
-            colorScheme: const ColorScheme.light(
-              primary: AppColorConstants.primary,
-              onSurface: AppColorConstants.black,
-            ),
-          ),
-          child: child!,
-        );
-      },
-    );
-    if (picked != null && picked != _selectedTime) {
-      setState(() {
-        _selectedTime = picked;
-      });
-    }
-  }
-
-  Future<void> _selectDate() async {
-    final picked = await showDialog<DateTime>(
-      context: context,
-      builder: (context) => AppDatePickerDialog(initialDate: _selectedDate),
-    );
-    if (picked != null && picked != _selectedDate) {
-      setState(() {
-        _selectedDate = picked as DateTime?;
-      });
-    }
-  }
-
-  String _formatTime(TimeOfDay time) {
-    final hour = time.hourOfPeriod == 0 ? 12 : time.hourOfPeriod;
-    final minute = time.minute.toString().padLeft(2, '0');
-    final period = time.period == DayPeriod.am ? 'AM' : 'PM';
-    return '$hour : $minute $period';
-  }
-
-  String _formatDate(DateTime date) {
-    final now = DateTime.now();
-    final tomorrow = now.add(const Duration(days: 1));
-
-    if (date.year == tomorrow.year &&
-        date.month == tomorrow.month &&
-        date.day == tomorrow.day) {
-      final weekday = DateFormat('E', 'vi').format(date);
-      final dayMonth = DateFormat('d MMM', 'vi').format(date);
-      return 'Ngày mai-$weekday, $dayMonth';
-    }
-
-    final weekday = DateFormat('E', 'vi').format(date);
-    final dayMonth = DateFormat('d MMM', 'vi').format(date);
-    return '$weekday, $dayMonth';
+  void _onTimeChanged(TimeOfDay time) {
+    setState(() {
+      _selectedTime = time;
+    });
   }
 
   void _toggleDay(int day) {
     setState(() {
       if (_selectedDays.contains(day)) {
         _selectedDays.remove(day);
-      } else {
-        _selectedDays.add(day);
+        return;
       }
+      _selectedDays.add(day);
     });
   }
 
-  void _save() {
-    Navigator.of(context).pop();
+  String _getDateDisplayText() {
+    if (_selectedDays.isEmpty) {
+      final date = _selectedDate ?? DateTime.now();
+      return AppDateUtils.formatDate(date);
+    }
+
+    if (_selectedDays.length == 7) {
+      return AppTextConstants.everyDay;
+    }
+
+    const weekdayNames = AppDateUtils.weekdays;
+    final dayMapping = {
+      0: weekdayNames[0],
+      2: weekdayNames[1],
+      3: weekdayNames[2],
+      4: weekdayNames[3],
+      5: weekdayNames[4],
+      6: weekdayNames[5],
+      7: weekdayNames[6],
+    };
+
+    final sortedDays = _selectedDays.toList()
+      ..sort((a, b) {
+        final order = [2, 3, 4, 5, 6, 7, 0];
+        return order.indexOf(a).compareTo(order.indexOf(b));
+      });
+
+    final dayNames = sortedDays
+        .map((day) => dayMapping[day] ?? '')
+        .where((name) => name.isNotEmpty)
+        .toList();
+
+    if (dayNames.length == 1) {
+      return '${AppTextConstants.every} ${dayNames[0]}';
+    }
+
+    return '${AppTextConstants.every} ${dayNames.join(', ')}';
+  }
+
+  Future<void> _save() async {
+    if (_selectedTransactionCategory == null) {
+      return;
+    }
+
+    final amountText = _amountController.text.trim();
+    if (amountText.isEmpty) {
+      return;
+    }
+
+    final amount = int.tryParse(amountText.replaceAll(RegExp(r'[^\d]'), ''));
+    if (amount == null || amount <= 0) {
+      return;
+    }
+
+    if (_selectedDays.isEmpty && _selectedDate == null) {
+      return;
+    }
+
+    final dayMapping = {1: 2, 2: 3, 3: 4, 4: 5, 5: 6, 6: 7, 7: 0};
+    final selectedDaysToSave = _selectedDays.isEmpty
+        ? {dayMapping[(_selectedDate ?? DateTime.now()).weekday] ?? 2}
+        : _selectedDays;
+    final timeToSave = _selectedTime ?? TimeOfDay.now();
+    final transactionType = _selectedType == AppTextConstants.income
+        ? TransactionType.income.typeIndex
+        : TransactionType.expense.typeIndex;
+
+    try {
+      await sl<TransactionAutomationService>().createAutomation(
+        amount: amount,
+        hour: timeToSave.hour,
+        minute: timeToSave.minute,
+        selectedDays: selectedDaysToSave,
+        transactionCategoryId: _selectedTransactionCategory!.id!,
+        content: _notesController.text.trim(),
+        transactionType: transactionType,
+      );
+
+      if (mounted) {
+        AppNavigator(context: context).pop();
+      }
+    } catch (e) {
+      logger.e('Error saving transaction automation: $e');
+    }
   }
 
   void _exit() {
-    Navigator.of(context).pop();
+    AppNavigator(context: context).pop();
   }
 
   @override
@@ -120,107 +174,201 @@ class _ReminderTransactionAutomationPageState
       backgroundColor: AppColorConstants.white,
       appBar: const CustomAppBar(title: AppTextConstants.autoSchedule),
       body: SafeArea(
-        child: Column(
-          children: [
-            Expanded(
-              child: SingleChildScrollView(
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              TimePickerWidget(
+                selectedTime: _selectedTime,
+                onTimeChanged: _onTimeChanged,
+              ),
+              _buildContentSection(),
+              Padding(
                 padding: const EdgeInsets.all(AppUIConstants.defaultPadding),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    InkWell(
-                      splashColor: Colors.transparent,
-                      onTap: _selectTime,
-                      child: Container(
-                        width: double.infinity,
-                        padding: const EdgeInsets.symmetric(
-                          vertical: AppUIConstants.largePadding,
-                        ),
-                        child: Center(
-                          child: Text(
-                            _selectedTime != null
-                                ? _formatTime(_selectedTime!)
-                                : '07 : 00 AM',
-                            style: AppTextStyle.blackS20Bold.copyWith(
-                              fontSize: 48,
-                            ),
-                          ),
-                        ),
-                      ),
+                    Text(
+                      AppTextConstants.transactionType,
+                      style: AppTextStyle.blackS14Medium,
                     ),
                     const SizedBox(height: AppUIConstants.defaultSpacing),
 
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                    Row(
+                      spacing: AppUIConstants.defaultSpacing,
+                      children: [
+                        AppButton(
+                          backgroundColor:
+                              _selectedType == AppTextConstants.income
+                              ? AppColorConstants.primary
+                              : AppColorConstants.grey.withAlpha(50),
+                          width: 120,
+                          text: AppTextConstants.income,
+                          onPressed: () {
+                            setState(() {
+                              _selectedType = AppTextConstants.income;
+                            });
+                          },
+                        ),
+                        AppButton(
+                          backgroundColor:
+                              _selectedType == AppTextConstants.expense
+                              ? AppColorConstants.primary
+                              : AppColorConstants.grey.withAlpha(50),
+                          width: 120,
+                          text: AppTextConstants.expense,
+                          onPressed: () {
+                            setState(() {
+                              _selectedType = AppTextConstants.expense;
+                            });
+                          },
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: AppUIConstants.largeSpacing),
+                    Row(
                       children: [
                         InkWell(
-                          onTap: _selectDate,
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      _selectedDate != null
-                                          ? _formatDate(_selectedDate!)
-                                          : 'Ngày mai-T.6, 21 Th11',
-                                      style: AppTextStyle.blackS14Medium,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              SvgUtils.icon(
-                                assetPath: Assets.svgsCalendar,
-                                size: SvgSizeType.medium,
-                                color: AppColorConstants.primary,
-                              ),
-                            ],
+                          onTap: _showTransactionCategoryPicker,
+                          child: Text(
+                            AppTextConstants.selectCategory,
+                            style: AppTextStyle.blackS14Medium,
                           ),
                         ),
-                        const SizedBox(height: AppUIConstants.defaultSpacing),
-
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          children: [
-                            _buildDayButton(2, '2'),
-                            _buildDayButton(3, '3'),
-                            _buildDayButton(4, '4'),
-                            _buildDayButton(5, '5'),
-                            _buildDayButton(6, '6'),
-                            _buildDayButton(7, '7'),
-                            _buildDayButton(0, 'CN'),
-                          ],
-                        ),
-                        const SizedBox(height: AppUIConstants.largeSpacing),
+                        const SizedBox(width: AppUIConstants.smallSpacing),
+                        if (_selectedTransactionCategory != null) ...[
+                          SvgUtils.icon(
+                            assetPath: Assets.svgsArrowDown,
+                            size: SvgSizeType.medium,
+                          ),
+                          const SizedBox(width: AppUIConstants.smallSpacing),
+                          Text(
+                            '${_selectedTransactionCategory!.title} : ',
+                            style: AppTextStyle.blackS14Bold,
+                          ),
+                          const SizedBox(width: AppUIConstants.smallSpacing),
+                          Container(
+                            width: AppUIConstants.defaultContainerSize,
+                            height: AppUIConstants.defaultContainerSize,
+                            padding: const EdgeInsets.all(
+                              AppUIConstants.smallPadding,
+                            ),
+                            decoration: BoxDecoration(
+                              gradient: GradientHelper.fromColorHexList(
+                                _selectedTransactionCategory!.gradientColors,
+                              ),
+                              shape: BoxShape.circle,
+                            ),
+                            child: SvgUtils.icon(
+                              assetPath:
+                                  _selectedTransactionCategory!.pathAsset,
+                              size: SvgSizeType.medium,
+                            ),
+                          ),
+                        ] else
+                          SvgUtils.icon(
+                            assetPath: Assets.svgsArrowDown,
+                            size: SvgSizeType.medium,
+                          ),
                       ],
+                    ),
+                    const SizedBox(height: AppUIConstants.defaultSpacing),
+                    _buildInputField(
+                      label: AppTextConstants.notes,
+                      child: AppTextField(
+                        controller: _notesController,
+                        hintText: AppTextConstants.noteHint,
+                        filledColor: AppColorConstants.greyWhite,
+                      ),
+                    ),
+                    const SizedBox(height: AppUIConstants.defaultSpacing),
+                    _buildInputField(
+                      label: AppTextConstants.amount,
+                      child: AppTextField(
+                        keyboardType: TextInputType.number,
+                        controller: _amountController,
+                        hintText: AppTextConstants.amountHint,
+                        filledColor: AppColorConstants.greyWhite,
+                      ),
                     ),
                   ],
                 ),
               ),
-            ),
+              _buildActionButtons(),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 
-            Container(
-              padding: const EdgeInsets.all(AppUIConstants.defaultPadding),
-              decoration: AppUIConstants.defaultShadow(),
-              child: Row(
-                spacing: AppUIConstants.defaultSpacing,
-                children: [
-                  Expanded(
-                    child: AppButton(
-                      text: AppTextConstants.exit,
-                      backgroundColor: Colors.transparent,
-                      onPressed: _exit,
-                    ),
-                  ),
-                  Expanded(
-                    child: AppButton(
-                      text: AppTextConstants.save,
-                      onPressed: _save,
-                    ),
-                  ),
-                ],
+  void _clearFocus() {
+    FocusManager.instance.primaryFocus?.unfocus();
+  }
+
+  void _showTransactionCategoryPicker() {
+    _clearFocus();
+    final categories = _selectedType == AppTextConstants.income
+        ? _incomeCategories
+        : _expenseCategories;
+
+    if (categories.isEmpty) {
+      return;
+    }
+
+    showModalBottomSheet<void>(
+      context: context,
+      backgroundColor: AppColorConstants.white,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(AppUIConstants.defaultBorderRadius),
+        ),
+      ),
+      builder: (context) => Container(
+        constraints: BoxConstraints(
+          maxHeight: MediaQuery.of(context).size.height * 0.7,
+        ),
+        padding: const EdgeInsets.all(AppUIConstants.defaultPadding),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              AppTextConstants.selectCategory,
+              style: AppTextStyle.blackS16Bold,
+            ),
+            const SizedBox(height: AppUIConstants.defaultSpacing),
+            Flexible(
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  final itemWidth =
+                      constraints.maxWidth /
+                      AppUIConstants.defaultGridCrossAxisCount;
+                  return GridView.builder(
+                    shrinkWrap: true,
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount:
+                              AppUIConstants.defaultGridCrossAxisCount,
+                        ),
+                    itemCount: categories.length,
+                    itemBuilder: (context, index) {
+                      final category = categories[index];
+                      return TransactionCategoryItem(
+                        category: category,
+                        isSelected:
+                            _selectedTransactionCategory?.id == category.id,
+                        itemWidth: itemWidth,
+                        onTap: () {
+                          setState(() {
+                            _selectedTransactionCategory = category;
+                          });
+                          Navigator.pop(context);
+                        },
+                      );
+                    },
+                  );
+                },
               ),
             ),
           ],
@@ -229,36 +377,74 @@ class _ReminderTransactionAutomationPageState
     );
   }
 
-  Widget _buildDayButton(int day, String label) {
-    final isSelected = _selectedDays.contains(day);
-    return InkWell(
-      onTap: () => _toggleDay(day),
-      borderRadius: BorderRadius.circular(AppUIConstants.defaultBorderRadius),
-      child: Container(
-        width: 40,
-        height: 40,
-        decoration: BoxDecoration(
-          color: isSelected
-              ? (day == 7
-                    ? AppColorConstants.secondary
-                    : day == 0
-                    ? AppColorConstants.red
-                    : AppColorConstants.secondary)
-              : Colors.transparent,
-          borderRadius: BorderRadius.circular(
-            AppUIConstants.defaultBorderRadius,
+  Widget _buildInputField({required String label, required Widget child}) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      spacing: AppUIConstants.smallSpacing,
+      children: [
+        Text(label, style: AppTextStyle.blackS14Medium),
+        child,
+      ],
+    );
+  }
+
+  Widget _buildContentSection() {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(AppUIConstants.defaultPadding),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildDateSelector(),
+          const SizedBox(height: AppUIConstants.defaultSpacing),
+          DaySelectorWidget(
+            selectedDays: _selectedDays,
+            onDayToggled: _toggleDay,
           ),
-        ),
-        child: Center(
-          child: Text(
-            label,
-            style: AppTextStyle.blackS14Medium.copyWith(
-              color: isSelected
-                  ? AppColorConstants.white
-                  : AppColorConstants.black,
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDateSelector() {
+    return InkWell(
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(_getDateDisplayText(), style: AppTextStyle.blackS14Medium),
+              ],
             ),
           ),
-        ),
+          SvgUtils.icon(
+            assetPath: Assets.svgsCalendar,
+            size: SvgSizeType.medium,
+            color: AppColorConstants.primary,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildActionButtons() {
+    return Container(
+      padding: const EdgeInsets.all(AppUIConstants.defaultPadding),
+      child: Row(
+        spacing: AppUIConstants.defaultSpacing,
+        children: [
+          Expanded(
+            child: AppButton(
+              text: AppTextConstants.exit,
+              backgroundColor: Colors.transparent,
+              onPressed: _exit,
+            ),
+          ),
+          Expanded(
+            child: AppButton(text: AppTextConstants.save, onPressed: _save),
+          ),
+        ],
       ),
     );
   }

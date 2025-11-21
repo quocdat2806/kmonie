@@ -132,10 +132,10 @@ class BudgetCategoryCard extends StatelessWidget {
                       isNegative: remaining < 0,
                     ),
                     const SizedBox(height: 6),
-                    _buildBudgetInfoItem('Ngân sách :', _formatAmount(budget)),
+                    _buildBudgetInfoItem(AppTextConstants.budgetLabel, _formatAmount(budget)),
                     const SizedBox(height: 6),
                     _buildBudgetInfoItem(
-                      'Chi tiêu :',
+                      AppTextConstants.spentLabel,
                       _formatAmount(spent),
                       isOverBudget: remaining < 0,
                     ),

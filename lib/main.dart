@@ -11,10 +11,14 @@ import 'package:workmanager/workmanager.dart';
 import 'app.dart';
 import 'core/di/di.dart' as di;
 import 'core/services/services.dart';
+import 'core/services/workmanager_callback.dart';
 
 @pragma('vm:entry-point')
 void callbackDispatcher() {
-  Workmanager().executeTask((task, inputData) async {
+  Workmanager().executeTask((task, i) async {
+    if (task == 'transactionAutomation') {
+      return await executeTransactionAutomation();
+    }
     return Future.value(true);
   });
 }
@@ -33,11 +37,11 @@ Future<void> main() async {
         FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
         return true;
       };
-
-
       SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+      SystemChrome.setSystemUIOverlayStyle(
+        const SystemUiOverlayStyle(statusBarColor: Colors.transparent),
+      );
       SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
-
       await di.init();
       runApp(const App());
       ImageCacheService.instance.preloadBankLogos();

@@ -5,7 +5,7 @@ import 'package:kmonie/core/constants/constants.dart';
 import 'package:kmonie/core/enums/enums.dart';
 import 'package:kmonie/entities/entities.dart';
 import 'package:kmonie/presentation/blocs/blocs.dart';
-import 'transaction_category_item.dart';
+import 'package:kmonie/presentation/widgets/widgets.dart';
 
 class TransactionCategoryGrid extends StatelessWidget {
   final VoidCallback? onItemClick;

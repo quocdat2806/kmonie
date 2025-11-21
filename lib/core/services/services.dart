@@ -5,3 +5,4 @@ export 'budget.dart';
 export 'account.dart';
 export 'image_cache_service.dart';
 export 'data.dart';
+export 'transaction_automation.dart';

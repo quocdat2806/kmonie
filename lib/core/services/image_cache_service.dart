@@ -13,8 +13,6 @@ class ImageCacheService {
         try {
           CachedNetworkImageProvider(
             bank.logo,
-            maxHeight: AppUIConstants.extraLargeContainerSize.toInt(),
-            maxWidth: AppUIConstants.extraLargeContainerSize.toInt(),
             cacheKey: bank.logo,
           ).resolve(const ImageConfiguration());
         } catch (e) {

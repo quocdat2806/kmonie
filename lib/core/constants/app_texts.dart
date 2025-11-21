@@ -26,6 +26,8 @@ class AppTextConstants {
   static const String account = 'Tài khoản';
   static const String month = 'Tháng';
   static const String year = 'Năm';
+  static const String thisMonth = 'Tháng này';
+  static const String thisYear = 'Năm nay';
   static const String calendar = 'Lịch';
   static const String type = 'Kiểu';
 
@@ -125,4 +127,19 @@ class AppTextConstants {
       'Chức năng đang trong quá trình phát triển.Vui lòng thử lại sau';
   static const String exit = 'Thoát';
   static const String save = 'Lưu';
+  static const String noteHint = 'Nhập ghi chú';
+  static const String amountHint = 'Nhập số tiền';
+  static const String notes = 'Ghi chú';
+  static const String transactionType = 'Loại giao dịch';
+  static const String selectCategory = 'Chọn danh mục';
+  static const String everyDay = 'Mỗi ngày';
+  static const String every = 'Mỗi';
+  static const String transactionAddedNotificationTitle = 'Thêm mới giao dịch';
+  static const String transactionAddedNotificationBody =
+      'Một giao dịch đã được tạo tự động';
+  static const String transactionsAddedNotificationBody =
+      'giao dịch đã được tạo tự động';
+  static const String budgetLabel = 'Ngân sách :';
+  static const String spentLabel = 'Chi tiêu :';
+  static const String selectBank = 'Chọn ngân hàng';
 }

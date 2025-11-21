@@ -35,7 +35,7 @@ class NotificationService {
     int minute = 0,
     int id = 0,
   }) async {
-    // _plugin.cancel(id);
+    _plugin.cancel(id);
     final now = tz.TZDateTime.now(tz.local);
     var scheduled = tz.TZDateTime(
       tz.local,
@@ -70,12 +70,23 @@ class NotificationService {
     );
   }
 
-  // Future<void> showInAppNotification({required int id, required String title, required String body, String? payload}) async {
-  //   const androidDetails = AndroidNotificationDetails(AppConfigs.dailyChannelId, AppConfigs.dailyChannelName, channelDescription: AppConfigs.dailyChannelDescription, importance: Importance.max, priority: Priority.high);
-  //
-  //   const details = NotificationDetails(android: androidDetails);
-  //   await _plugin.show(id, title, body, details, payload: payload);
-  // }
+  Future<void> showInAppNotification({
+    required int id,
+    required String title,
+    required String body,
+    String? payload,
+  }) async {
+    const androidDetails = AndroidNotificationDetails(
+      AppConfigs.dailyChannelId,
+      AppConfigs.dailyChannelName,
+      channelDescription: AppConfigs.dailyChannelDescription,
+      importance: Importance.max,
+      priority: Priority.high,
+    );
+
+    const details = NotificationDetails(android: androidDetails);
+    await _plugin.show(id, title, body, details, payload: payload);
+  }
 
   Future<void> cancelAll() async {
     await _plugin.cancelAll();

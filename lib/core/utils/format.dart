@@ -1,4 +1,5 @@
 import 'package:intl/intl.dart';
+import 'package:kmonie/core/constants/constants.dart';
 
 class FormatUtils {
   FormatUtils._();
@@ -19,7 +20,7 @@ class FormatUtils {
   static String formatCurrentMonthLabel(DateTime month) {
     final now = DateTime.now();
     if (month.year == now.year && month.month == now.month) {
-      return 'Tháng này';
+      return AppTextConstants.thisMonth;
     }
     return 'T${month.month}/${month.year}';
   }
@@ -27,9 +28,9 @@ class FormatUtils {
   static String formatCurrentYearLabel(int year) {
     final now = DateTime.now();
     if (year == now.year) {
-      return 'Năm nay';
+      return AppTextConstants.thisYear;
     }
-    return 'Năm $year';
+    return '${AppTextConstants.year} $year';
   }
 
   static String formatDailyTransactionTotal(
