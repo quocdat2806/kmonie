@@ -12,6 +12,7 @@ class Assets {
   static const String fontsOpenSansSemiBold =
       'assets/fonts/OpenSans-SemiBold.ttf';
   static const String imagesLogo = 'assets/images/logo.png';
+  static const String imagesLogoApp = 'assets/images/logo_app.png';
   static const String svgsAirPlain = 'assets/svgs/air_plain.svg';
   static const String svgsAngel = 'assets/svgs/angel.svg';
   static const String svgsArrowBack = 'assets/svgs/arrow_back.svg';
