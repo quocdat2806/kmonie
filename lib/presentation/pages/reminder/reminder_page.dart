@@ -16,7 +16,6 @@ class ReminderPage extends StatefulWidget {
 
 class _ReminderPageState extends State<ReminderPage> {
   TimeOfDay? _selectedTime;
-  bool _isLoading = true;
 
   @override
   void initState() {
@@ -37,21 +36,15 @@ class _ReminderPageState extends State<ReminderPage> {
           } else {
             _selectedTime = const TimeOfDay(hour: 21, minute: 15);
           }
-          _isLoading = false;
         });
       }
     } catch (e) {
       logger.e('Error loading reminder time: $e');
-      if (mounted) {
-        setState(() {
-          _selectedTime = const TimeOfDay(hour: 21, minute: 15);
-          _isLoading = false;
-        });
-      }
     }
   }
 
-  void _onTimeChanged(TimeOfDay time) async {
+  void _onTimeChanged(TimeOfDay time) {
+    print('onTimeChanged${time.hour}:${time.minute}');
     if (_selectedTime != time) {
       setState(() {
         _selectedTime = time;
@@ -70,7 +63,6 @@ class _ReminderPageState extends State<ReminderPage> {
           children: [
             InkWell(
               splashColor: Colors.transparent,
-              onTap: () {},
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -79,11 +71,7 @@ class _ReminderPageState extends State<ReminderPage> {
                     style: AppTextStyle.blackS14Medium,
                   ),
                   Text(
-                    _isLoading
-                        ? '21:15'
-                        : _selectedTime != null
-                        ? AppDateUtils.formatTimeOfDay(_selectedTime!)
-                        : '21:15',
+                    AppDateUtils.formatTimeOfDay(_selectedTime!),
                     style: AppTextStyle.blackS14Medium,
                   ),
                 ],
@@ -91,9 +79,7 @@ class _ReminderPageState extends State<ReminderPage> {
             ),
             const SizedBox(height: AppUIConstants.defaultSpacing),
             TimePickerWidget(
-              selectedTime: _isLoading
-                  ? const TimeOfDay(hour: 21, minute: 15)
-                  : _selectedTime ?? const TimeOfDay(hour: 21, minute: 15),
+              selectedTime: _selectedTime,
               onTimeChanged: _onTimeChanged,
             ),
             const SizedBox(height: AppUIConstants.defaultSpacing),

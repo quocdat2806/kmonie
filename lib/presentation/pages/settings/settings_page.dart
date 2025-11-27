@@ -77,20 +77,6 @@ class SettingsPage extends StatelessWidget {
                 ).push(RouterPath.historyReminderTransactionAutomation);
               },
             ),
-
-            const AppDivider(),
-            _buildSettingsItem(
-              iconAsset: Assets.svgsKing,
-              title: AppTextConstants.useAI,
-              onTap: () {
-                showDialog<void>(
-                  context: context,
-                  builder: (BuildContext context) {
-                    return const AppDevelopmentProcessDialog();
-                  },
-                );
-              },
-            ),
           ],
         ),
       ),
