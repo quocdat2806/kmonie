@@ -16,6 +16,40 @@ class ReminderPage extends StatefulWidget {
 
 class _ReminderPageState extends State<ReminderPage> {
   TimeOfDay? _selectedTime;
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadReminderTime();
+  }
+
+  Future<void> _loadReminderTime() async {
+    try {
+      final reminderTime = await sl<ReminderService>().getReminderTime();
+      if (mounted) {
+        setState(() {
+          if (reminderTime != null) {
+            _selectedTime = TimeOfDay(
+              hour: reminderTime.hour,
+              minute: reminderTime.minute,
+            );
+          } else {
+            _selectedTime = const TimeOfDay(hour: 21, minute: 15);
+          }
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
+      logger.e('Error loading reminder time: $e');
+      if (mounted) {
+        setState(() {
+          _selectedTime = const TimeOfDay(hour: 21, minute: 15);
+          _isLoading = false;
+        });
+      }
+    }
+  }
 
   void _onTimeChanged(TimeOfDay time) async {
     if (_selectedTime != time) {
@@ -45,7 +79,9 @@ class _ReminderPageState extends State<ReminderPage> {
                     style: AppTextStyle.blackS14Medium,
                   ),
                   Text(
-                    _selectedTime != null
+                    _isLoading
+                        ? '21:15'
+                        : _selectedTime != null
                         ? AppDateUtils.formatTimeOfDay(_selectedTime!)
                         : '21:15',
                     style: AppTextStyle.blackS14Medium,
@@ -55,20 +91,38 @@ class _ReminderPageState extends State<ReminderPage> {
             ),
             const SizedBox(height: AppUIConstants.defaultSpacing),
             TimePickerWidget(
-              selectedTime:
-                  _selectedTime ?? const TimeOfDay(hour: 21, minute: 15),
+              selectedTime: _isLoading
+                  ? const TimeOfDay(hour: 21, minute: 15)
+                  : _selectedTime ?? const TimeOfDay(hour: 21, minute: 15),
               onTimeChanged: _onTimeChanged,
             ),
             const SizedBox(height: AppUIConstants.defaultSpacing),
             AppButton(
               width: 120,
               onPressed: () async {
-                await sl<NotificationService>().scheduleDailyReminder(
-                  hour: _selectedTime!.hour,
-                  minute: _selectedTime!.minute,
-                );
-                if (mounted && context.mounted) {
-                  AppNavigator(context: context).pop();
+                if (_selectedTime != null) {
+                  try {
+                    await sl<ReminderService>().saveReminderTime(
+                      hour: _selectedTime!.hour,
+                      minute: _selectedTime!.minute,
+                    );
+                    await sl<NotificationService>().scheduleDailyReminder(
+                      hour: _selectedTime!.hour,
+                      minute: _selectedTime!.minute,
+                    );
+                    if (mounted && context.mounted) {
+                      AppNavigator(context: context).pop();
+                    }
+                  } catch (e) {
+                    logger.e('Error saving reminder: $e');
+                    await sl<NotificationService>().scheduleDailyReminder(
+                      hour: _selectedTime!.hour,
+                      minute: _selectedTime!.minute,
+                    );
+                    if (mounted && context.mounted) {
+                      AppNavigator(context: context).pop();
+                    }
+                  }
                 }
               },
               text: AppTextConstants.save,

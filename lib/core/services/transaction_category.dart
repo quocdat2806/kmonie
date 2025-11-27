@@ -31,7 +31,6 @@ class TransactionCategoryService {
   SeparatedCategories _separateCategories(List<TransactionCategory> all) {
     final expense = <TransactionCategory>[];
     final income = <TransactionCategory>[];
-    final transfer = <TransactionCategory>[];
 
     for (final e in all) {
       switch (e.transactionType) {
@@ -41,16 +40,12 @@ class TransactionCategoryService {
         case TransactionType.income:
           income.add(e);
           break;
-        case TransactionType.transfer:
-          transfer.add(e);
-          break;
       }
     }
 
     return SeparatedCategories(
       expense: expense,
       income: income,
-      transfer: transfer,
     );
   }
 

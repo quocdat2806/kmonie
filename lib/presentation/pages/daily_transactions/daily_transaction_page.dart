@@ -65,7 +65,6 @@ class _DailyTransactionPageChildState extends State<DailyTransactionPageChild> {
                   FormatUtils.formatDailyTransactionTotal(
                     dailyTotal.income,
                     dailyTotal.expense,
-                    dailyTotal.transfer,
                   ),
                   style: AppTextStyle.blackS12,
                 );

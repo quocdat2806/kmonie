@@ -33,19 +33,13 @@ class FormatUtils {
     return '${AppTextConstants.year} $year';
   }
 
-  static String formatDailyTransactionTotal(
-    double income,
-    double expense,
-    double? transfer,
-  ) {
+  static String formatDailyTransactionTotal(double income, double expense) {
     if (income > 0 && expense > 0) {
       return 'Thu: ${_formatAmount(income)} | Chi: ${_formatAmount(expense)}';
     } else if (income > 0) {
       return 'Thu: ${_formatAmount(income)}';
     } else if (expense > 0) {
       return 'Chi: ${_formatAmount(expense)}';
-    } else if (transfer != null && transfer > 0) {
-      return 'CK: ${_formatAmount(transfer)}';
     }
     return '';
   }

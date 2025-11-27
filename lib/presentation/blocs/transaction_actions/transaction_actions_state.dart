@@ -41,8 +41,6 @@ abstract class TransactionActionsState with _$TransactionActionsState {
         return separatedCategories!.expense;
       case TransactionType.income:
         return separatedCategories!.income;
-      case TransactionType.transfer:
-        return separatedCategories!.transfer;
     }
   }
 

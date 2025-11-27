@@ -35,7 +35,6 @@ class _SearchTransactionPageChildState
     {'label': AppTextConstants.all, 'type': null},
     {'label': AppTextConstants.income, 'type': TransactionType.income},
     {'label': AppTextConstants.expense, 'type': TransactionType.expense},
-    {'label': AppTextConstants.transfer, 'type': TransactionType.transfer},
   ];
 
   @override

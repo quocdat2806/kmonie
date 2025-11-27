@@ -97,7 +97,6 @@ class _HomePageChildState extends State<HomePageChild> {
                     FormatUtils.formatDailyTransactionTotal(
                       daily.income,
                       daily.expense,
-                      daily.transfer,
                     ),
                     style: AppTextStyle.blackS12,
                   );

@@ -98,6 +98,13 @@ class UserReminderTransactionDayTb extends Table {
   DateTimeColumn get updatedAt => dateTime().withDefault(currentDateAndTime)();
 }
 
+class DailyReminderTb extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  IntColumn get hour => integer().withDefault(const Constant(21))();
+  IntColumn get minute => integer().withDefault(const Constant(15))();
+  DateTimeColumn get updatedAt => dateTime().withDefault(currentDateAndTime)();
+}
+
 @DriftDatabase(
   tables: [
     TransactionsTb,
@@ -106,6 +113,7 @@ class UserReminderTransactionDayTb extends Table {
     MonthlyBudgetsTb,
     AccountsTb,
     UserReminderTransactionDayTb,
+    DailyReminderTb,
   ],
 )
 class KMonieDatabase extends _$KMonieDatabase {
@@ -122,7 +130,7 @@ class KMonieDatabase extends _$KMonieDatabase {
   KMonieDatabase._create() : super(_openConnection());
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -177,7 +185,14 @@ class KMonieDatabase extends _$KMonieDatabase {
       );
       await _seedSystemCategoriesIfEmpty();
     },
-    onUpgrade: (migrator, from, to) async {},
+    onUpgrade: (migrator, from, to) async {
+      if (from < 2) {
+        await migrator.createTable(dailyReminderTb);
+        await customStatement(
+          'INSERT INTO daily_reminder_tb (hour, minute) VALUES (21, 15)',
+        );
+      }
+    },
   );
 
   Future<void> warmUp() async {

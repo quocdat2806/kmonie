@@ -20,26 +20,18 @@ class TransactionCalculator {
         .fold(0.0, (sum, t) => sum + t.amount);
   }
 
-  static double calculateTransfer(List<Transaction> transactions) {
-    return transactions
-        .where((t) => t.transactionType == TransactionType.transfer.typeIndex)
-        .fold(0.0, (sum, t) => sum + t.amount);
-  }
-
   static DailyTransactionTotal calculateDailyTotal(
     List<Transaction> transactions,
   ) {
     return DailyTransactionTotal(
       income: calculateIncome(transactions),
       expense: calculateExpense(transactions),
-      transfer: calculateTransfer(transactions),
     );
   }
 
   static double calculateBalance(List<Transaction> transactions) {
     return calculateIncome(transactions) -
-        calculateExpense(transactions) -
-        calculateTransfer(transactions);
+        calculateExpense(transactions);
   }
 
   static int calculateTotalAmount(List<Transaction> transactions) {

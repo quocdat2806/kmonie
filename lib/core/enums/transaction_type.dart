@@ -2,8 +2,7 @@ import 'package:kmonie/core/constants/constants.dart';
 
 enum TransactionType {
   expense(0, AppTextConstants.expense),
-  income(1, AppTextConstants.income),
-  transfer(2, AppTextConstants.transfer);
+  income(1, AppTextConstants.income);
 
   const TransactionType(this.typeIndex, this.displayName);
 
@@ -17,7 +16,7 @@ enum TransactionType {
     );
   }
 
-  static const int totalTypes = 3;
+  static const int totalTypes = 2;
 }
 
 extension ExTransactionType on TransactionType {

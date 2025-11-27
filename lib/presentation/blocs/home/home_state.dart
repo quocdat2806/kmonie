@@ -23,9 +23,6 @@ abstract class HomeState with _$HomeState {
   double get totalExpense =>
       TransactionCalculator.calculateExpense(transactions);
 
-  double get totalTransfer =>
-      TransactionCalculator.calculateTransfer(transactions);
-
   double get totalBalance =>
       TransactionCalculator.calculateBalance(transactions);
 

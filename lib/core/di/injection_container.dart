@@ -53,6 +53,11 @@ Future<void> init({bool backgroundMode = false}) async {
         () => NotificationService.I,
       );
     }
+    if (!sl.isRegistered<ReminderService>()) {
+      sl.registerLazySingleton<ReminderService>(
+        () => ReminderService(sl<KMonieDatabase>()),
+      );
+    }
     if (!sl.isRegistered<AppStreamEvent>()) {
       sl.registerLazySingleton<AppStreamEvent>(() => AppStreamEvent());
     }
